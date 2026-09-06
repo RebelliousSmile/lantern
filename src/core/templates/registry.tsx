@@ -1,5 +1,6 @@
 import dangerTemplate from '@/templates/city-of-mist/danger/definition'
 import challengeTemplate from '@/templates/legend-in-the-mist/challenge/definition'
+import storyThemeTemplate from '@/templates/legend-in-the-mist/story-theme/definition'
 import {
     DEFAULT_TEMPLATE_PREVIEW_WIDTH,
     type AnyTemplateDefinition,
@@ -73,12 +74,7 @@ export const templateRegistry: AnyTemplateDefinition[] = [
         gameLabel: 'Legend in the Mist',
         label: 'Journey',
     }),
-    createComingSoonTemplate({
-        id: 'legend.storyTheme',
-        gameId: 'legend',
-        gameLabel: 'Legend in the Mist',
-        label: 'Story Theme',
-    }),
+    storyThemeTemplate,
     createComingSoonTemplate({
         id: 'legend.themeKit',
         gameId: 'legend',
