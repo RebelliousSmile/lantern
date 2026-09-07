@@ -1,0 +1,323 @@
+/* A Journey is printed as a two-page spread, not as a card: a full-width band
+   across the top, then a parchment page split into two columns. The Obsidian
+   plugin lays the same data out as a note; where the two disagree the book
+   wins, since this template prints the spread. */
+
+/* The shared LitM palette is repeated here rather than imported from a sibling
+   template, so this sheet renders on its own even when no other Legend
+   template is on the page. */
+.journey-sheet {
+    --litm-black: #000;
+    --litm-dark-brown: #302522;
+    --litm-soft-brown: #4f311d;
+    --litm-light-brown: #724b32;
+    --litm-clear-brown: #856b5b;
+    --litm-brick-red: #752b2b;
+    --litm-parchment-yellow: #e3d2c1;
+
+    --journey-cream: #f4ead8;
+    --journey-gold: #c9a24a;
+    --journey-gold-light: #f6e6b4;
+    --journey-vignette-bg: rgba(255, 253, 246, 0.72);
+
+    /* Overridden by the type modifiers below; landscape is the blank sheet's
+       starting point, so it is also the fallback. */
+    --journey-band: var(--litm-soft-brown);
+
+    --font-journey-heading:
+        'CCTreasureTrove', 'IM Fell Great Primer', ui-serif, Georgia,
+        'Times New Roman', serif;
+    --font-journey-name:
+        'IM Fell English', 'IM Fell Great Primer', ui-serif, Georgia,
+        'Times New Roman', serif;
+    --font-journey-body: 'Labrada', ui-serif, Georgia, 'Times New Roman', serif;
+}
+
+/* ---------- Type tints ----------
+   Three clearly separate values: the band is the only thing on the spread that
+   says which of the three kinds this Journey is. */
+.journey-sheet--landscape {
+    --journey-band: #4f311d;
+}
+.journey-sheet--occasion {
+    --journey-band: #752b2b;
+}
+.journey-sheet--undertaking {
+    --journey-band: #2f4739;
+}
+
+/* ---------- Sheet frame ---------- */
+.journey-sheet {
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.1);
+    border-radius: 6px;
+    background: transparent;
+    overflow: hidden;
+    color: var(--litm-dark-brown);
+    font-family: var(--font-journey-body);
+}
+
+.journey-sheet.bg-plain {
+    background: var(--litm-parchment-bg, #f7f2e7);
+}
+
+.journey-sheet.bg-parchment {
+    background-image: url(/assets/images/white_plaster.png);
+    background-color: #eae2da;
+    background-blend-mode: luminosity;
+}
+
+/* ---------- Band ----------
+   The book gives this half of the spread to an illustration. There is no image
+   field in the schema, so the band is a solid panel in the type's own tint,
+   and nothing inside it carries a heading. */
+.journey-sheet .journey-band {
+    background: var(--journey-band);
+    padding: 1.5rem 2rem 1.6rem;
+    color: var(--journey-cream);
+}
+
+.journey-sheet .journey-band__type {
+    opacity: 0.85;
+    font-weight: 700;
+    font-size: 0.62rem;
+    font-family: var(--font-journey-heading);
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+}
+
+.journey-sheet .journey-band__name {
+    margin: 0.3rem 0 0;
+    font-style: italic;
+    font-weight: 400;
+    font-size: 2.4rem;
+    line-height: 1.05;
+    font-family: var(--font-journey-name);
+}
+
+.journey-sheet .journey-band__description {
+    margin-top: 0.7rem;
+    max-width: 62ch;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.journey-sheet .journey-band__description p {
+    margin: 0 0 0.5rem;
+}
+
+.journey-sheet .journey-band__description p:last-child {
+    margin-bottom: 0;
+}
+
+.journey-sheet .journey-band__placeholder {
+    opacity: 0.75;
+    font-style: normal;
+    font-size: 0.9rem;
+    text-decoration: underline dotted;
+}
+
+/* ---------- Gold rule ----------
+   The rule closes the band; the strip under it carries the torn edge, cut as a
+   row of notches so it survives being rasterised for the PNG export. */
+.journey-sheet .journey-rule {
+    background: linear-gradient(
+        90deg,
+        #8a6a2f 0%,
+        var(--journey-gold) 18%,
+        var(--journey-gold-light) 50%,
+        var(--journey-gold) 82%,
+        #8a6a2f 100%
+    );
+    height: 4px;
+}
+
+.journey-sheet .journey-rule__tear {
+    background-image:
+        linear-gradient(45deg, transparent 50%, var(--journey-gold) 50%),
+        linear-gradient(-45deg, transparent 50%, var(--journey-gold) 50%);
+    background-repeat: repeat-x;
+    background-size: 12px 12px;
+    height: 12px;
+}
+
+/* ---------- Body ---------- */
+.journey-sheet .journey-body {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+    align-items: start;
+    gap: 2rem;
+    padding: 1.4rem 2rem 1.8rem;
+}
+
+/* One column alone takes the full width rather than leaving a hole where the
+   other was hidden. */
+.journey-sheet .journey-body > :only-child {
+    grid-column: 1 / -1;
+}
+
+.journey-sheet .journey-col {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+    min-width: 0;
+}
+
+/* ---------- Headings ----------
+   Letterspaced small caps in maroon, no rules around them: that is the whole
+   device on the printed spread. */
+.journey-sheet .journey-heading {
+    color: var(--litm-brick-red);
+    font-weight: 700;
+    font-size: 0.68rem;
+    font-family: var(--font-journey-heading);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+}
+
+.journey-sheet .journey-heading--center {
+    text-align: center;
+}
+
+.journey-sheet .journey-heading--left {
+    text-align: left;
+}
+
+.journey-sheet .journey-heading--button {
+    cursor: pointer;
+    width: 100%;
+}
+
+.journey-sheet .journey-heading--button:hover {
+    color: var(--litm-soft-brown);
+}
+
+/* ---------- Tags and benefits ----------
+   Both open with a bold label rather than a heading: they are sentences on the
+   page, not blocks with a title. */
+.journey-sheet .journey-tags,
+.journey-sheet .journey-benefits {
+    margin: 0;
+    font-size: 0.85rem;
+    line-height: 1.55;
+}
+
+.journey-sheet .journey-tags {
+    font-style: italic;
+}
+
+.journey-sheet .journey-tags__label,
+.journey-sheet .journey-benefits__label {
+    color: var(--litm-soft-brown);
+    font-style: normal;
+    font-weight: 700;
+}
+
+.journey-sheet .journey-tags .mist-tag {
+    /* Inline rather than the token's own inline-flex, so a long tag wraps
+       inside the run instead of pushing the column wider. The amber wash comes
+       from the Legend theme's own token styling. */
+    display: inline;
+    white-space: normal;
+}
+
+.journey-sheet .journey-tags__comma {
+    color: var(--litm-soft-brown);
+    font-style: normal;
+}
+
+/* ---------- Consequence lists ----------
+   Shared by the Journey's own list and by every vignette's, so the two read as
+   the same kind of thing at two levels. */
+.journey-sheet .journey-conseq-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    margin-top: 0.45rem;
+}
+
+.journey-sheet .journey-conseq-row {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: start;
+    gap: 0.4rem;
+    font-size: 0.82rem;
+    line-height: 1.4;
+    text-align: left;
+}
+
+.journey-sheet .journey-conseq-row .ico {
+    display: inline-block;
+    transform: translateY(0.35em);
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+.journey-sheet .journey-conseq-row .ico-conseq {
+    background-image: url('/assets/images/consequence.svg');
+    width: 13px;
+    height: 13px;
+}
+
+.journey-sheet .journey-conseq-text p {
+    margin: 0;
+}
+
+.journey-sheet .journey-consequences__empty,
+.journey-sheet .journey-vignettes__empty {
+    margin: 0;
+    color: var(--litm-clear-brown);
+}
+
+/* ---------- Vignettes ----------
+   Cards of unequal height on lighter parchment, tiled so an overflowing
+   Journey wraps rather than stretching the column. */
+.journey-sheet .journey-vignettes {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+    align-items: start;
+    gap: 0.9rem;
+}
+
+.journey-sheet .journey-vignette {
+    /* Mixed radii rather than a symmetric corner: the printed cards are torn
+       out of a lighter sheet and no two edges match. */
+    border: 1px solid rgba(133, 107, 91, 0.35);
+    border-radius: 14px 5px 16px 7px / 7px 16px 5px 14px;
+    background: var(--journey-vignette-bg);
+    padding: 0.8rem 0.9rem 0.9rem;
+}
+
+.journey-sheet .journey-vignette__name {
+    margin: 0;
+    color: var(--litm-brick-red);
+    font-weight: 700;
+    font-size: 0.72rem;
+    font-family: var(--font-journey-heading);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    text-align: center;
+}
+
+.journey-sheet .journey-vignette__trigger {
+    margin: 0.4rem 0 0;
+    color: var(--litm-soft-brown);
+    font-size: 0.8rem;
+    line-height: 1.4;
+    text-align: center;
+}
+
+/* ---------- Footer (metadata, badges) ---------- */
+.meta-footer {
+    color: var(--litm-clear-brown);
+    font-size: 0.68rem;
+}
+.meta-footer .badge {
+    display: inline-block;
+    margin-left: 0.35rem;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    border-radius: 0.25rem;
+    background: #fff7ed;
+    padding: 0.1rem 0.4rem;
+    color: #92400e;
+}
