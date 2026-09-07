@@ -64,13 +64,12 @@ In practice, TOML gives Lantern a stable import/export layer for structured data
 ### Implemented now
 
 - **City of Mist**: Danger Profile
-- **Legend in the Mist**: Challenges
+- **Legend in the Mist**: Challenges, Story Themes, Journeys, Theme Kits
 - **:Otherscape**: _Nothing yet_
 
 ### Planned support
 
 - **City of Mist**: Custom Moves, Icebergs, Theme Kits
-- **Legend in the Mist**: Journeys and Vignettes, Story Themes, Theme Kits
 - **:Otherscape**: Challenges, Theme Kits
 
 ## Current Status
