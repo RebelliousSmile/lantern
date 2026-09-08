@@ -152,7 +152,6 @@ function FeatureTagsForm({
     // IDs must stay unique even when two tags read the same.
     const itemIds = useMemo(
         () => tags.map((value, offset) => `${absolute(offset)}::${value}`),
-        // eslint-disable-next-line react-hooks/exhaustive-deps
         [tags]
     )
 

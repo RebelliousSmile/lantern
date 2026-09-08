@@ -4,6 +4,7 @@ import journeyTemplate from '@/templates/legend-in-the-mist/journey/definition'
 import storyThemeTemplate from '@/templates/legend-in-the-mist/story-theme/definition'
 import themeKitTemplate from '@/templates/legend-in-the-mist/theme-kit/definition'
 import otherscapeChallengeTemplate from '@/templates/otherscape/challenge/definition'
+import otherscapeCharacterTropeTemplate from '@/templates/otherscape/character-trope/definition'
 import otherscapeLoadoutItemTemplate from '@/templates/otherscape/loadout-item/definition'
 import otherscapePowerSetTemplate from '@/templates/otherscape/power-set/definition'
 import otherscapeThemeKitTemplate from '@/templates/otherscape/theme-kit/definition'
@@ -79,6 +80,7 @@ export const templateRegistry: AnyTemplateDefinition[] = [
     storyThemeTemplate,
     themeKitTemplate,
     otherscapeChallengeTemplate,
+    otherscapeCharacterTropeTemplate,
     otherscapePowerSetTemplate,
     otherscapeThemeKitTemplate,
     otherscapeThemeTemplate,
