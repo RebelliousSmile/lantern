@@ -1,0 +1,210 @@
+/* The Power Set card is the narrowest of the Otherscape cards: a slanted band
+   naming what the card is and which source it draws on, the name on a coloured
+   slab, the prose, then a single column - the Specials it grants, the Threats it
+   adds, and the Consequences those pay out.
+
+   Everything this card shares with the other Otherscape cards, the ground, the
+   accents, the skew and the type, comes from `../../shared/tokens.css`. The
+   accent in particular is left to the type modifier the sheet root carries, so
+   what is here is this card's layout only. */
+@import '../../shared/tokens.css';
+
+.power-set-sheet {
+    /* No accent is set here on purpose: the card takes the one its type
+       modifier paints, so Self, Mythos and Noise each read as themselves. */
+    width: 100%;
+}
+
+.power-set-sheet__body {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem 1.15rem 1.35rem;
+}
+
+/* ---------- Header band ---------- */
+.power-set-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+    /* Wider than the card and pulled back, so the skew runs off both edges
+       instead of leaving a wedge of paper at the corners. */
+    margin: 0 -0.6rem;
+    background: linear-gradient(
+        100deg,
+        var(--os-accent) 0%,
+        color-mix(in srgb, var(--os-accent) 62%, #0b1220) 100%
+    );
+    padding: 0.34rem 1.35rem;
+    min-height: 1.75rem;
+    color: var(--os-accent-ink);
+}
+
+.power-set-header__kind {
+    /* The band's own label overrides the muted ink `os-label` sets: it sits on
+       the accent, not on the paper. */
+    opacity: 0.95;
+    color: var(--os-accent-ink);
+}
+
+.power-set-header__type {
+    font-style: italic;
+    font-weight: 700;
+    font-size: 0.62rem;
+    font-family: var(--os-font-display);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+}
+
+/* ---------- Name ---------- */
+.power-set-title {
+    margin: 0.6rem -0.35rem 0;
+    background: linear-gradient(
+        100deg,
+        color-mix(in srgb, var(--os-accent) 88%, #ffffff) 0%,
+        var(--os-accent) 100%
+    );
+    padding: 0.42rem 1.1rem;
+    color: var(--os-accent-ink);
+}
+
+.power-set-title__text {
+    display: block;
+    font-size: 1.6rem;
+    line-height: 1.1;
+    letter-spacing: 0.01em;
+}
+
+/* ---------- Description ---------- */
+/* The MC-facing prose, set in the body face rather than the display one: it is
+   the only region of the card meant to be read as sentences. */
+.power-set-description {
+    padding: 0.7rem 1.15rem 0;
+    color: var(--os-ink-soft);
+    font-size: 0.8rem;
+    line-height: 1.45;
+}
+
+.power-set-description__text p {
+    margin: 0 0 0.5rem;
+}
+
+.power-set-description__text p:last-child {
+    margin-bottom: 0;
+}
+
+/* ---------- Lists ---------- */
+.power-set-specials__list,
+.power-set-threats__list,
+.power-set-consequences__list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    margin: 0.45rem 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+/* ---------- Specials ---------- */
+.power-set-special {
+    border-left: 3px solid var(--os-ink-faint);
+    padding: 0.05rem 0 0.05rem 0.55rem;
+    font-size: 0.78rem;
+    line-height: 1.4;
+    text-align: left;
+}
+
+.power-set-special__name {
+    display: block;
+    font-style: italic;
+    font-weight: 700;
+    font-family: var(--os-font-display);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.power-set-special__text {
+    display: block;
+    color: var(--os-ink-soft);
+}
+
+/* ---------- Threats ---------- */
+.power-set-threat__head {
+    display: flex;
+    align-items: baseline;
+    gap: 0.45rem;
+}
+
+.power-set-threat__name {
+    flex: none;
+    background: var(--os-ink);
+    padding: 0.1rem 0.55rem;
+    color: var(--os-ink-inverse);
+    font-style: italic;
+    font-weight: 700;
+    font-size: 0.74rem;
+    font-family: var(--os-font-display);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.power-set-threat__text {
+    color: var(--os-ink-soft);
+    font-size: 0.78rem;
+    line-height: 1.4;
+}
+
+/* Indented and ruled off, so the list a Threat carries reads as belonging to
+   that Threat rather than to the card. */
+.power-set-threat__consequences {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    margin: 0.3rem 0 0;
+    border-left: 1px solid var(--os-edge);
+    padding: 0 0 0 0.75rem;
+    list-style: none;
+}
+
+/* ---------- Consequences ---------- */
+/* One shape for a consequence wherever it is printed, so the general list and a
+   threat's own list read as the same kind of thing. */
+.power-set-consequence {
+    position: relative;
+    padding-left: 0.85rem;
+    color: var(--os-ink);
+    font-size: 0.76rem;
+    line-height: 1.4;
+    text-align: left;
+}
+
+.power-set-consequence::before {
+    position: absolute;
+    top: 0.45em;
+    left: 0;
+    /* The diamond the book puts in front of an outcome, drawn rather than
+       loaded. */
+    transform: rotate(45deg);
+    background: var(--os-accent);
+    width: 0.4rem;
+    height: 0.4rem;
+    content: '';
+}
+
+/* ---------- Footer (metadata, badges) ---------- */
+.power-set-meta .meta-footer {
+    color: var(--muted-foreground, #64748b);
+    font-size: 0.68rem;
+    font-family: var(--os-font-body);
+}
+
+.power-set-meta .meta-footer .badge {
+    display: inline-block;
+    border: 1px solid var(--os-edge);
+    border-radius: 0.25rem;
+    background: rgba(255, 255, 255, 0.7);
+    padding: 0.1rem 0.4rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}

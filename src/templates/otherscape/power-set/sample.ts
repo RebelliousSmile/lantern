@@ -1,0 +1,54 @@
+import type { OtherscapePowerSet } from './model'
+
+/* Source-Touched Berserk, the worked example of
+   `../schema-in-the-mist/examples/otherscape/power-set/`. Held in the shape the
+   import produces, down to the key order, so the example and an imported file
+   are the same object to everything downstream. */
+export function getSampleOtherscapePowerSet(): OtherscapePowerSet {
+    return {
+        name: 'Source-Touched Berserk',
+        type: 'mythos',
+        description:
+            'Something older than the arcology got a grip, and now the body does what it wants with the person still inside it.\n\nGraft this onto anything that can be made angry. It does not make the Challenge smarter, only harder to stop and worse to be near.',
+        specials: [
+            {
+                name: 'Feels No Wound',
+                description:
+                    'While it holds a status of tier 3 or higher, it ignores the first tier of any status that would slow it down.',
+            },
+            {
+                name: 'Past Reasoning',
+                description:
+                    'The first time someone tries to talk it down in a scene, the attempt simply does not land, and they learn that it will not.',
+            },
+        ],
+        threats: [
+            {
+                name: 'Go through it',
+                description:
+                    'Takes the shortest line to whoever is closest, through whatever is in the way',
+                consequences: [
+                    'Give {thrown-2} to whoever stood in the way.',
+                    'A wall stops being a wall, and the noise brings company (**Exposure**).',
+                    'Whatever it was holding is now underfoot.',
+                ],
+            },
+            // Standalone: a Threat with no Consequence list of its own.
+            {
+                name: 'Stop answering to its name',
+                description: 'Whoever knew it before is talking to nobody now',
+                consequences: [],
+            },
+        ],
+        general_consequences: [
+            'Give {rattled-1} to whoever saw it happen.',
+            'Something the Crew was standing on stops holding weight.',
+        ],
+        meta: {
+            publication_type: 'homebrew',
+            source: undefined,
+            authors: ['schema-in-the-mist contributors'],
+            page: undefined,
+        },
+    }
+}
