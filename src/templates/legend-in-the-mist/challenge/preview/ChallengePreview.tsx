@@ -15,7 +15,12 @@ export function ChallengePreview() {
     const bg = ui.background
 
     return (
-        <div>
+        // `litm-doc` scopes this game's stylesheet. Legend in the Mist and
+        // :Otherscape print several documents of the same name and share class
+        // names for them (`theme-kit-sheet`, `section-title`, `meta-footer`),
+        // and every sheet is loaded at once, so without a per-game root the two
+        // games' rules land on each other's cards.
+        <div className="litm-doc">
             <div
                 className={cn(
                     'challenge-sheet',

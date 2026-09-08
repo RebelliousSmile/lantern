@@ -1,7 +1,7 @@
 /* What every :Otherscape card is made of, and nothing that belongs to one card
-   in particular. The six Otherscape documents print the same object: a pale
-   slab under slanted coloured bars, set in condensed italic caps, with one
-   accent hue standing for the theme type. That vocabulary lives here so a
+   in particular. The six Otherscape documents print the same object: a near
+   black slab under slanted coloured bars, set in condensed italic caps, with
+   one accent hue standing for the theme type. That vocabulary lives here so a
    change to the ground or to an accent reaches all of them at once; each card
    keeps its own stylesheet for its own layout.
 
@@ -11,18 +11,24 @@
    them there. */
 
 .os-card {
-    /* Ground. The printed card is pale, not dark: the dark navy belongs to the
-       page behind it, which the game theme already paints. */
-    --os-paper: #eff2f6;
-    --os-paper-deep: #dde3ea;
-    --os-surface: #ffffff;
-    --os-edge: rgba(16, 24, 38, 0.14);
+    /* Ground. :Otherscape is a dark game and its interfaces are dark objects:
+       a near-black navy slab, the same `#030d21` family the game's own HUDs
+       use, with the neon doing all the talking. */
+    --os-paper: #0a1424;
+    --os-paper-deep: #050c19;
+    --os-surface: #0d1929;
+    --os-edge: rgba(150, 195, 245, 0.16);
 
-    /* Ink */
-    --os-ink: #101826;
-    --os-ink-soft: #56637a;
-    --os-ink-faint: rgba(16, 24, 38, 0.45);
-    --os-ink-inverse: #f6f9ff;
+    /* Ink. Light on the slab; `--os-ink-inverse` is what goes on top of a light
+       or accent-filled shape. */
+    --os-ink: #e9eef7;
+    --os-ink-soft: #a4b4cb;
+    --os-ink-faint: rgba(212, 226, 247, 0.42);
+    --os-ink-inverse: #050c19;
+
+    /* A raised row: a sheen of the ink over the slab rather than a second
+       colour, so every list keeps the ground it sits on. */
+    --os-raised: rgba(160, 200, 250, 0.09);
 
     /* Accents, one per theme type. The hues are the ones the game's own
        interfaces use, so a Self card here and a Self card anywhere else are the
@@ -31,7 +37,7 @@
     --os-mythos: #9833f2;
     --os-noise: #04e6fb;
     --os-crew: #84c600;
-    --os-neutral: #64748b;
+    --os-neutral: #7d93b1;
     --os-accent: var(--os-neutral);
     --os-accent-ink: #ffffff;
 
@@ -50,25 +56,37 @@
         system-ui, 'Segoe UI', sans-serif;
 }
 
-.os-card--self {
+/* Each modifier is compounded with `.os-card` rather than written on its own.
+   Every card stylesheet inlines this file, so the app carries one copy of the
+   `.os-card` block per card; a single-class modifier would be reset by the next
+   copy's `--os-accent: var(--os-neutral)` and every card would print neutral.
+   Two classes outrank all of those copies. Anything overriding an accent from a
+   card's own stylesheet has to do the same. */
+.os-card.os-card--self {
     --os-accent: var(--os-self);
 }
-.os-card--mythos {
+.os-card.os-card--mythos {
     --os-accent: var(--os-mythos);
 }
-.os-card--noise {
+.os-card.os-card--noise {
     --os-accent: var(--os-noise);
     /* Cyan is too light to carry white lettering. */
     --os-accent-ink: #04202a;
 }
-.os-card--crew {
+.os-card.os-card--crew {
     --os-accent: var(--os-crew);
     --os-accent-ink: #10200a;
 }
 
 /* ---------- Card frame ---------- */
 .os-card {
-    box-shadow: 0 10px 24px rgba(3, 13, 33, 0.22);
+    /* Three layers: the drop the card casts on the page, a hairline that keeps
+       a dark slab from bleeding into a dark ground, and the accent's own light
+       leaking out of the frame. */
+    box-shadow:
+        0 12px 30px rgba(0, 0, 0, 0.5),
+        0 0 0 1px var(--os-edge),
+        0 0 34px -14px color-mix(in srgb, var(--os-accent) 70%, transparent);
     border-radius: 2px;
     overflow: hidden;
     color: var(--os-ink);
@@ -85,8 +103,13 @@
     background-image:
         radial-gradient(
             120% 80% at 100% 0%,
-            color-mix(in srgb, var(--os-accent) 18%, transparent) 0%,
-            transparent 55%
+            color-mix(in srgb, var(--os-accent) 26%, transparent) 0%,
+            transparent 58%
+        ),
+        radial-gradient(
+            90% 60% at 0% 100%,
+            color-mix(in srgb, var(--os-noise) 12%, transparent) 0%,
+            transparent 60%
         ),
         linear-gradient(170deg, var(--os-surface) 0%, var(--os-paper-deep) 100%);
     background-color: var(--os-paper);

@@ -8,7 +8,10 @@
    here is this card's layout only. */
 @import '../../shared/tokens.css';
 
-.loadout-item-sheet {
+/* Compounded with `.os-card`: the shared tokens are inlined once per card
+   stylesheet, and a later copy of the `.os-card` block would reset an accent
+   set on a single class. */
+.os-card.loadout-item-sheet {
     /* A catalog entry belongs to no theme type, so it takes an accent of its
        own rather than one of the four: amber reads as hardware beside the four
        theme hues, and never collides with them on a page that mixes cards. */
@@ -18,7 +21,7 @@
     width: 100%;
 }
 
-.loadout-item-sheet__body {
+.os-card .loadout-item-sheet__body {
     display: flex;
     flex-direction: column;
     gap: 0.85rem;
@@ -26,7 +29,7 @@
 }
 
 /* ---------- Header band ---------- */
-.loadout-item-header {
+.os-card .loadout-item-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -37,14 +40,14 @@
     background: linear-gradient(
         100deg,
         var(--os-accent) 0%,
-        color-mix(in srgb, var(--os-accent) 62%, #0b1220) 100%
+        color-mix(in srgb, var(--os-accent) 78%, var(--os-paper-deep)) 100%
     );
     padding: 0.34rem 1.25rem;
     min-height: 1.75rem;
     color: var(--os-accent-ink);
 }
 
-.loadout-item-header__category {
+.os-card .loadout-item-header__category {
     flex: 1;
     font-style: italic;
     font-weight: 700;
@@ -55,7 +58,7 @@
     text-transform: uppercase;
 }
 
-.loadout-item-header__kind {
+.os-card .loadout-item-header__kind {
     opacity: 0.95;
     font-weight: 600;
     font-size: 0.55rem;
@@ -65,18 +68,18 @@
 }
 
 /* ---------- Name ---------- */
-.loadout-item-title {
+.os-card .loadout-item-title {
     margin: 0.55rem -0.35rem 0;
     background: linear-gradient(
         100deg,
-        color-mix(in srgb, var(--os-accent) 88%, #ffffff) 0%,
+        color-mix(in srgb, var(--os-accent) 86%, #f4faff) 0%,
         var(--os-accent) 100%
     );
     padding: 0.38rem 0.95rem;
     color: var(--os-accent-ink);
 }
 
-.loadout-item-title__text {
+.os-card .loadout-item-title__text {
     display: block;
     font-size: 1.35rem;
     line-height: 1.1;
@@ -86,28 +89,28 @@
 /* ---------- Description ---------- */
 /* The catalog's prose, set in the body face rather than the display one: it is
    the only region of the card meant to be read as sentences. */
-.loadout-item-description {
+.os-card .loadout-item-description {
     color: var(--os-ink-soft);
     font-size: 0.78rem;
     line-height: 1.4;
 }
 
-.loadout-item-description__text p {
+.os-card .loadout-item-description__text p {
     margin: 0 0 0.5rem;
 }
 
-.loadout-item-description__text p:last-child {
+.os-card .loadout-item-description__text p:last-child {
     margin-bottom: 0;
 }
 
 /* ---------- Tag rows ---------- */
-.loadout-item-tag-runs {
+.os-card .loadout-item-tag-runs {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
 }
 
-.loadout-item-tags {
+.os-card .loadout-item-tags {
     display: flex;
     flex-direction: column;
     gap: 0.22rem;
@@ -118,17 +121,13 @@
 
 /* One row per tag, the way the card stacks them, rather than the flowing run
    the Legend card uses. */
-.loadout-item-tag-row {
+.os-card .loadout-item-tag-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
     gap: 0.5rem;
     border-left: 3px solid var(--os-accent);
-    background: linear-gradient(
-        100deg,
-        rgba(255, 255, 255, 0.9) 0%,
-        var(--os-paper-deep) 100%
-    );
+    background: linear-gradient(100deg, var(--os-raised) 0%, transparent 100%);
     padding: 0.24rem 0.6rem;
     width: 100%;
     font-size: 0.78rem;
@@ -136,15 +135,15 @@
     text-align: left;
 }
 
-.loadout-item-tags--weakness .loadout-item-tag-row {
+.os-card .loadout-item-tags--weakness .loadout-item-tag-row {
     /* The one tag the item turns against its bearer closes the stack on the
        hue the game gives to what works against you, and keeps its own marker:
        the row is a single tag, so nothing else would carry it. */
     border-left-color: var(--os-self);
 }
 
-.loadout-item-tag-row .mist-tag,
-.loadout-item-tag-row .mist-weakness {
+.os-card .loadout-item-tag-row .mist-tag,
+.os-card .loadout-item-tag-row .mist-weakness {
     /* Colour comes from the app's token palette; only the fit is set here, so a
        long tag wraps inside its row instead of widening the card. */
     display: inline;
@@ -154,7 +153,7 @@
 /* The check circle the printed card puts at the end of every row: the space a
    player marks when the tag is burnt. It is part of the frame, so it is drawn
    rather than loaded. */
-.loadout-item-tag-row__mark {
+.os-card .loadout-item-tag-row__mark {
     flex: none;
     border: 1.5px solid var(--os-ink-faint);
     border-radius: 999px;
@@ -162,24 +161,44 @@
     height: 0.7rem;
 }
 
-.loadout-item-tags__empty {
+.os-card .loadout-item-tags__empty {
     padding: 0.2rem 0;
     color: var(--os-ink-soft);
     font-size: 0.72rem;
 }
 
 /* ---------- Footer (metadata, badges) ---------- */
+/* The footer prints on the page, not on the card, so it is inked for the dark
+   Otherscape ground rather than inheriting the app's muted foreground, which
+   is a dark slate and disappears there. */
 .loadout-item-meta .meta-footer {
-    color: var(--muted-foreground, #64748b);
+    color: rgba(234, 241, 255, 0.86);
     font-size: 0.68rem;
     font-family: var(--os-font-body);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.55);
+}
+
+/* The placeholder carries the app's muted utility class; on this ground it has
+   to take the footer's own ink. */
+.loadout-item-meta .meta-footer .text-muted-foreground {
+    color: rgba(234, 241, 255, 0.72);
+}
+
+/* The line sits on its own plate rather than straight on the page: the
+   Otherscape backdrop runs from near black at the top to a bright orange at the
+   bottom, and no single ink is readable on both. */
+.loadout-item-meta .meta-footer > * {
+    display: inline-block;
+    border-radius: 0.3rem;
+    background: rgba(6, 12, 24, 0.62);
+    padding: 0.15rem 0.5rem;
 }
 
 .loadout-item-meta .meta-footer .badge {
     display: inline-block;
-    border: 1px solid var(--os-edge);
+    border: 1px solid rgba(234, 241, 255, 0.3);
     border-radius: 0.25rem;
-    background: rgba(255, 255, 255, 0.7);
+    background: rgba(9, 15, 28, 0.55);
     padding: 0.1rem 0.4rem;
     letter-spacing: 0.08em;
     text-transform: uppercase;

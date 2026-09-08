@@ -40,34 +40,50 @@
     color: #946435;
 }
 
+/* :Otherscape prints its tokens as lit capsules: a saturated, near opaque body
+   with a brighter rim, the way the game's own interfaces draw them. Near opaque
+   rather than translucent on purpose - the same capsule has to hold on the dark
+   card and in the pale editor panel beside it. */
 [data-game-theme='otherscape'] .mist-tag,
 [data-game-theme='otherscape'] .mist-status,
 [data-game-theme='otherscape'] .mist-limit,
 [data-game-theme='otherscape'] .mist-weakness {
+    border: 1px solid var(--mist-token-rim, transparent);
     border-radius: 999px;
     background: none;
+    background-color: var(--mist-token-body, transparent);
     padding: 0.08rem 0.42rem;
+    color: #f2f8ff;
     font-style: normal;
 }
 
 [data-game-theme='otherscape'] .mist-tag {
-    background-color: rgb(226 232 240 / 0.85);
+    --mist-token-body: rgb(7 138 171 / 0.92);
+    --mist-token-rim: rgb(137 223 255 / 0.85);
 }
 
 [data-game-theme='otherscape'] .mist-status {
-    background-color: rgb(191 219 254 / 0.85);
+    --mist-token-body: rgb(56 88 214 / 0.92);
+    --mist-token-rim: rgb(160 190 255 / 0.85);
 }
 
 [data-game-theme='otherscape'] .mist-limit {
-    background-color: rgb(254 215 170 / 0.85);
+    --mist-token-body: rgb(206 118 28 / 0.94);
+    --mist-token-rim: rgb(255 199 124 / 0.85);
 }
 
+/* The capsule padding above is shorthand, so it wipes out the room the base
+   rule reserves for the arrows; a weakness has to claim it back or its own mark
+   prints over the first letters. */
 [data-game-theme='otherscape'] .mist-weakness {
-    background-color: rgb(254 202 202 / 0.9);
+    --mist-token-body: rgb(198 38 38 / 0.92);
+    --mist-token-rim: rgb(255 145 145 / 0.85);
+
+    padding-left: 1.9ch;
 }
 
 [data-game-theme='otherscape'] .mist-weakness::before {
-    left: 0.28rem;
+    left: 0.42ch;
 }
 
 [data-game-theme='legend'] .mist-tag,

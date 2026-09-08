@@ -9,13 +9,13 @@
    what is here is this card's layout only. */
 @import '../../shared/tokens.css';
 
-.power-set-sheet {
+.os-card.power-set-sheet {
     /* No accent is set here on purpose: the card takes the one its type
        modifier paints, so Self, Mythos and Noise each read as themselves. */
     width: 100%;
 }
 
-.power-set-sheet__body {
+.os-card .power-set-sheet__body {
     display: flex;
     flex-direction: column;
     gap: 1rem;
@@ -23,7 +23,7 @@
 }
 
 /* ---------- Header band ---------- */
-.power-set-header {
+.os-card .power-set-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -34,21 +34,21 @@
     background: linear-gradient(
         100deg,
         var(--os-accent) 0%,
-        color-mix(in srgb, var(--os-accent) 62%, #0b1220) 100%
+        color-mix(in srgb, var(--os-accent) 78%, var(--os-paper-deep)) 100%
     );
     padding: 0.34rem 1.35rem;
     min-height: 1.75rem;
     color: var(--os-accent-ink);
 }
 
-.power-set-header__kind {
+.os-card .power-set-header__kind {
     /* The band's own label overrides the muted ink `os-label` sets: it sits on
        the accent, not on the paper. */
     opacity: 0.95;
     color: var(--os-accent-ink);
 }
 
-.power-set-header__type {
+.os-card .power-set-header__type {
     font-style: italic;
     font-weight: 700;
     font-size: 0.62rem;
@@ -58,18 +58,18 @@
 }
 
 /* ---------- Name ---------- */
-.power-set-title {
+.os-card .power-set-title {
     margin: 0.6rem -0.35rem 0;
     background: linear-gradient(
         100deg,
-        color-mix(in srgb, var(--os-accent) 88%, #ffffff) 0%,
+        color-mix(in srgb, var(--os-accent) 86%, #f4faff) 0%,
         var(--os-accent) 100%
     );
     padding: 0.42rem 1.1rem;
     color: var(--os-accent-ink);
 }
 
-.power-set-title__text {
+.os-card .power-set-title__text {
     display: block;
     font-size: 1.6rem;
     line-height: 1.1;
@@ -79,25 +79,25 @@
 /* ---------- Description ---------- */
 /* The MC-facing prose, set in the body face rather than the display one: it is
    the only region of the card meant to be read as sentences. */
-.power-set-description {
+.os-card .power-set-description {
     padding: 0.7rem 1.15rem 0;
     color: var(--os-ink-soft);
     font-size: 0.8rem;
     line-height: 1.45;
 }
 
-.power-set-description__text p {
+.os-card .power-set-description__text p {
     margin: 0 0 0.5rem;
 }
 
-.power-set-description__text p:last-child {
+.os-card .power-set-description__text p:last-child {
     margin-bottom: 0;
 }
 
 /* ---------- Lists ---------- */
-.power-set-specials__list,
-.power-set-threats__list,
-.power-set-consequences__list {
+.os-card .power-set-specials__list,
+.os-card .power-set-threats__list,
+.os-card .power-set-consequences__list {
     display: flex;
     flex-direction: column;
     gap: 0.4rem;
@@ -107,7 +107,7 @@
 }
 
 /* ---------- Specials ---------- */
-.power-set-special {
+.os-card .power-set-special {
     border-left: 3px solid var(--os-ink-faint);
     padding: 0.05rem 0 0.05rem 0.55rem;
     font-size: 0.78rem;
@@ -115,7 +115,7 @@
     text-align: left;
 }
 
-.power-set-special__name {
+.os-card .power-set-special__name {
     display: block;
     font-style: italic;
     font-weight: 700;
@@ -124,19 +124,19 @@
     text-transform: uppercase;
 }
 
-.power-set-special__text {
+.os-card .power-set-special__text {
     display: block;
     color: var(--os-ink-soft);
 }
 
 /* ---------- Threats ---------- */
-.power-set-threat__head {
+.os-card .power-set-threat__head {
     display: flex;
     align-items: baseline;
     gap: 0.45rem;
 }
 
-.power-set-threat__name {
+.os-card .power-set-threat__name {
     flex: none;
     background: var(--os-ink);
     padding: 0.1rem 0.55rem;
@@ -149,7 +149,7 @@
     text-transform: uppercase;
 }
 
-.power-set-threat__text {
+.os-card .power-set-threat__text {
     color: var(--os-ink-soft);
     font-size: 0.78rem;
     line-height: 1.4;
@@ -157,7 +157,7 @@
 
 /* Indented and ruled off, so the list a Threat carries reads as belonging to
    that Threat rather than to the card. */
-.power-set-threat__consequences {
+.os-card .power-set-threat__consequences {
     display: flex;
     flex-direction: column;
     gap: 0.2rem;
@@ -170,7 +170,7 @@
 /* ---------- Consequences ---------- */
 /* One shape for a consequence wherever it is printed, so the general list and a
    threat's own list read as the same kind of thing. */
-.power-set-consequence {
+.os-card .power-set-consequence {
     position: relative;
     padding-left: 0.85rem;
     color: var(--os-ink);
@@ -179,7 +179,7 @@
     text-align: left;
 }
 
-.power-set-consequence::before {
+.os-card .power-set-consequence::before {
     position: absolute;
     top: 0.45em;
     left: 0;
@@ -193,17 +193,37 @@
 }
 
 /* ---------- Footer (metadata, badges) ---------- */
+/* The footer prints on the page, not on the card, so it is inked for the dark
+   Otherscape ground rather than inheriting the app's muted foreground, which
+   is a dark slate and disappears there. */
 .power-set-meta .meta-footer {
-    color: var(--muted-foreground, #64748b);
+    color: rgba(234, 241, 255, 0.86);
     font-size: 0.68rem;
     font-family: var(--os-font-body);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.55);
+}
+
+/* The placeholder carries the app's muted utility class; on this ground it has
+   to take the footer's own ink. */
+.power-set-meta .meta-footer .text-muted-foreground {
+    color: rgba(234, 241, 255, 0.72);
+}
+
+/* The line sits on its own plate rather than straight on the page: the
+   Otherscape backdrop runs from near black at the top to a bright orange at the
+   bottom, and no single ink is readable on both. */
+.power-set-meta .meta-footer > * {
+    display: inline-block;
+    border-radius: 0.3rem;
+    background: rgba(6, 12, 24, 0.62);
+    padding: 0.15rem 0.5rem;
 }
 
 .power-set-meta .meta-footer .badge {
     display: inline-block;
-    border: 1px solid var(--os-edge);
+    border: 1px solid rgba(234, 241, 255, 0.3);
     border-radius: 0.25rem;
-    background: rgba(255, 255, 255, 0.7);
+    background: rgba(9, 15, 28, 0.55);
     padding: 0.1rem 0.4rem;
     letter-spacing: 0.08em;
     text-transform: uppercase;

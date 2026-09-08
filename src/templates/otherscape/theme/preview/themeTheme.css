@@ -8,11 +8,11 @@
    here is this card's layout only. */
 @import '../../shared/tokens.css';
 
-.theme-sheet {
+.os-card.theme-sheet {
     width: 100%;
 }
 
-.theme-sheet__body {
+.os-card .theme-sheet__body {
     display: flex;
     flex-direction: column;
     gap: 0.85rem;
@@ -20,7 +20,7 @@
 }
 
 /* ---------- Header band ---------- */
-.theme-header {
+.os-card .theme-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -31,14 +31,14 @@
     background: linear-gradient(
         100deg,
         var(--os-accent) 0%,
-        color-mix(in srgb, var(--os-accent) 62%, #0b1220) 100%
+        color-mix(in srgb, var(--os-accent) 78%, var(--os-paper-deep)) 100%
     );
     padding: 0.34rem 1.25rem;
     min-height: 1.75rem;
     color: var(--os-accent-ink);
 }
 
-.theme-header__category {
+.os-card .theme-header__category {
     flex: 1;
     font-style: italic;
     font-weight: 700;
@@ -49,7 +49,7 @@
     text-transform: uppercase;
 }
 
-.theme-header__type {
+.os-card .theme-header__type {
     display: inline-flex;
     align-items: center;
     gap: 0.3rem;
@@ -61,7 +61,7 @@
     text-transform: uppercase;
 }
 
-.theme-header__glyph {
+.os-card .theme-header__glyph {
     width: 0.95rem;
     height: 0.95rem;
     color: currentColor;
@@ -70,7 +70,7 @@
 /* ---------- Tag legend ---------- */
 /* The printed card names the three kinds of row before it prints any, so the
    reader knows what the stack below means. */
-.theme-legend {
+.os-card .theme-legend {
     display: flex;
     align-items: center;
     gap: 0.45rem;
@@ -78,27 +78,27 @@
     padding: 0.5rem 0 0.35rem;
 }
 
-.theme-legend__key {
+.os-card .theme-legend__key {
     color: var(--os-accent);
 }
 
-.theme-legend__sep {
+.os-card .theme-legend__sep {
     color: var(--os-ink-faint);
 }
 
 /* ---------- Title tag ---------- */
-.theme-title {
+.os-card .theme-title {
     margin: 0.55rem -0.35rem 0;
     background: linear-gradient(
         100deg,
-        color-mix(in srgb, var(--os-accent) 88%, #ffffff) 0%,
+        color-mix(in srgb, var(--os-accent) 86%, #f4faff) 0%,
         var(--os-accent) 100%
     );
     padding: 0.38rem 0.95rem;
     color: var(--os-accent-ink);
 }
 
-.theme-title__text {
+.os-card .theme-title__text {
     display: block;
     font-size: 1.45rem;
     line-height: 1.1;
@@ -106,13 +106,13 @@
 }
 
 /* ---------- Tag rows ---------- */
-.theme-tag-runs {
+.os-card .theme-tag-runs {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
 }
 
-.theme-tags {
+.os-card .theme-tags {
     display: flex;
     flex-direction: column;
     gap: 0.22rem;
@@ -123,17 +123,13 @@
 
 /* One row per tag, the way the card stacks them, rather than the flowing run
    the Legend card uses. */
-.theme-tag-row {
+.os-card .theme-tag-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
     gap: 0.5rem;
     border-left: 3px solid var(--os-accent);
-    background: linear-gradient(
-        100deg,
-        rgba(255, 255, 255, 0.9) 0%,
-        var(--os-paper-deep) 100%
-    );
+    background: linear-gradient(100deg, var(--os-raised) 0%, transparent 100%);
     padding: 0.24rem 0.6rem;
     width: 100%;
     font-size: 0.78rem;
@@ -141,15 +137,15 @@
     text-align: left;
 }
 
-.theme-tags--weakness .theme-tag-row {
+.os-card .theme-tags--weakness .theme-tag-row {
     /* The weakness closes the stack on its own colour, and keeps its marker:
        each row is one tag, so the marker belongs to the tag and not to the run
        the way it does on the Legend card. */
     border-left-color: var(--os-crew);
 }
 
-.theme-tag-row .mist-tag,
-.theme-tag-row .mist-weakness {
+.os-card .theme-tag-row .mist-tag,
+.os-card .theme-tag-row .mist-weakness {
     /* Colour comes from the app's token palette; only the fit is set here, so a
        long tag wraps inside its row instead of widening the card. */
     display: inline;
@@ -159,7 +155,7 @@
 /* The check circle the printed card puts at the end of every power row: the
    space a player marks when the tag is burnt. It is part of the frame, so it
    is drawn rather than loaded. */
-.theme-tag-row__mark {
+.os-card .theme-tag-row__mark {
     flex: none;
     border: 1.5px solid var(--os-ink-faint);
     border-radius: 999px;
@@ -167,14 +163,14 @@
     height: 0.7rem;
 }
 
-.theme-tags__empty {
+.os-card .theme-tags__empty {
     padding: 0.2rem 0;
     color: var(--os-ink-soft);
     font-size: 0.72rem;
 }
 
 /* ---------- Quest ---------- */
-.theme-quest {
+.os-card .theme-quest {
     display: flex;
     flex-direction: column;
     gap: 0.3rem;
@@ -182,11 +178,11 @@
     padding-top: 0.6rem;
 }
 
-.theme-quest__label {
+.os-card .theme-quest__label {
     color: var(--os-accent);
 }
 
-.theme-quest__text {
+.os-card .theme-quest__text {
     font-style: italic;
     font-size: 0.95rem;
     line-height: 1.25;
@@ -194,14 +190,14 @@
     text-transform: uppercase;
 }
 
-.theme-quest__text p {
+.os-card .theme-quest__text p {
     margin: 0;
 }
 
 /* ---------- Tracks ---------- */
 /* The two rows :Otherscape prints under the quest. Three boxes each, and no
    tier or milestone row: those belong to Legend in the Mist. */
-.theme-tracks {
+.os-card .theme-tracks {
     display: flex;
     flex-direction: column;
     gap: 0.28rem;
@@ -209,7 +205,7 @@
     padding-top: 0.6rem;
 }
 
-.theme-track {
+.os-card .theme-track {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -217,22 +213,22 @@
     padding: 0.16rem 0.1rem;
 }
 
-.theme-track__label {
+.os-card .theme-track__label {
     color: var(--os-ink-soft);
 }
 
-.theme-track--upgrade .theme-track__label {
+.os-card .theme-track--upgrade .theme-track__label {
     color: var(--os-accent);
 }
 
-.theme-track__pips {
+.os-card .theme-track__pips {
     display: inline-flex;
     gap: 0.28rem;
 }
 
 /* Boxes rather than circles: the burn marker on a tag row is the round one, so
    the two never read as the same mark. */
-.theme-track__pip {
+.os-card .theme-track__pip {
     transform: skewX(var(--os-skew));
     border: 1.5px solid var(--os-ink-faint);
     border-radius: 1px;
@@ -240,30 +236,50 @@
     height: 0.78rem;
 }
 
-.theme-track--upgrade .theme-track__pip--filled {
+.os-card .theme-track--upgrade .theme-track__pip--filled {
     border-color: var(--os-accent);
     background: var(--os-accent);
 }
 
 /* Decay runs against the theme, so it fills in the card's ink rather than in
    its accent: a full decay track is not something the accent should celebrate. */
-.theme-track--decay .theme-track__pip--filled {
+.os-card .theme-track--decay .theme-track__pip--filled {
     border-color: var(--os-ink);
     background: var(--os-ink);
 }
 
 /* ---------- Footer (metadata, badges) ---------- */
+/* The footer prints on the page, not on the card, so it is inked for the dark
+   Otherscape ground rather than inheriting the app's muted foreground, which
+   is a dark slate and disappears there. */
 .theme-meta .meta-footer {
-    color: var(--muted-foreground, #64748b);
+    color: rgba(234, 241, 255, 0.86);
     font-size: 0.68rem;
     font-family: var(--os-font-body);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.55);
+}
+
+/* The placeholder carries the app's muted utility class; on this ground it has
+   to take the footer's own ink. */
+.theme-meta .meta-footer .text-muted-foreground {
+    color: rgba(234, 241, 255, 0.72);
+}
+
+/* The line sits on its own plate rather than straight on the page: the
+   Otherscape backdrop runs from near black at the top to a bright orange at the
+   bottom, and no single ink is readable on both. */
+.theme-meta .meta-footer > * {
+    display: inline-block;
+    border-radius: 0.3rem;
+    background: rgba(6, 12, 24, 0.62);
+    padding: 0.15rem 0.5rem;
 }
 
 .theme-meta .meta-footer .badge {
     display: inline-block;
-    border: 1px solid var(--os-edge);
+    border: 1px solid rgba(234, 241, 255, 0.3);
     border-radius: 0.25rem;
-    background: rgba(255, 255, 255, 0.7);
+    background: rgba(9, 15, 28, 0.55);
     padding: 0.1rem 0.4rem;
     letter-spacing: 0.08em;
     text-transform: uppercase;

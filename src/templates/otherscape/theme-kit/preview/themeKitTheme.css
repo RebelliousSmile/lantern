@@ -8,11 +8,11 @@
    here is this card's layout only. */
 @import '../../shared/tokens.css';
 
-.theme-kit-sheet {
+.os-card.theme-kit-sheet {
     width: 100%;
 }
 
-.theme-kit-sheet__body {
+.os-card .theme-kit-sheet__body {
     display: flex;
     flex-direction: column;
     gap: 0.85rem;
@@ -20,7 +20,7 @@
 }
 
 /* ---------- Header band ---------- */
-.theme-kit-header {
+.os-card .theme-kit-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -31,14 +31,14 @@
     background: linear-gradient(
         100deg,
         var(--os-accent) 0%,
-        color-mix(in srgb, var(--os-accent) 62%, #0b1220) 100%
+        color-mix(in srgb, var(--os-accent) 78%, var(--os-paper-deep)) 100%
     );
     padding: 0.34rem 1.25rem;
     min-height: 1.75rem;
     color: var(--os-accent-ink);
 }
 
-.theme-kit-header__category {
+.os-card .theme-kit-header__category {
     flex: 1;
     font-style: italic;
     font-weight: 700;
@@ -49,7 +49,7 @@
     text-transform: uppercase;
 }
 
-.theme-kit-header__type {
+.os-card .theme-kit-header__type {
     display: inline-flex;
     align-items: center;
     gap: 0.3rem;
@@ -61,7 +61,7 @@
     text-transform: uppercase;
 }
 
-.theme-kit-header__glyph {
+.os-card .theme-kit-header__glyph {
     width: 0.95rem;
     height: 0.95rem;
     color: currentColor;
@@ -70,7 +70,7 @@
 /* ---------- Tag legend ---------- */
 /* The printed card names the three kinds of row before it prints any, so the
    reader knows what the stack below means. */
-.theme-kit-legend {
+.os-card .theme-kit-legend {
     display: flex;
     align-items: center;
     gap: 0.45rem;
@@ -78,27 +78,27 @@
     padding: 0.5rem 0 0.35rem;
 }
 
-.theme-kit-legend__key {
+.os-card .theme-kit-legend__key {
     color: var(--os-accent);
 }
 
-.theme-kit-legend__sep {
+.os-card .theme-kit-legend__sep {
     color: var(--os-ink-faint);
 }
 
 /* ---------- Title tag ---------- */
-.theme-kit-title {
+.os-card .theme-kit-title {
     margin: 0.55rem -0.35rem 0;
     background: linear-gradient(
         100deg,
-        color-mix(in srgb, var(--os-accent) 88%, #ffffff) 0%,
+        color-mix(in srgb, var(--os-accent) 86%, #f4faff) 0%,
         var(--os-accent) 100%
     );
     padding: 0.38rem 0.95rem;
     color: var(--os-accent-ink);
 }
 
-.theme-kit-title__text {
+.os-card .theme-kit-title__text {
     display: block;
     font-size: 1.45rem;
     line-height: 1.1;
@@ -106,13 +106,13 @@
 }
 
 /* ---------- Tag rows ---------- */
-.theme-kit-tag-runs {
+.os-card .theme-kit-tag-runs {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
 }
 
-.theme-kit-tags {
+.os-card .theme-kit-tags {
     display: flex;
     flex-direction: column;
     gap: 0.22rem;
@@ -123,17 +123,13 @@
 
 /* One row per tag, the way the card stacks them, rather than the flowing run
    the Legend card uses. */
-.theme-kit-tag-row {
+.os-card .theme-kit-tag-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
     gap: 0.5rem;
     border-left: 3px solid var(--os-accent);
-    background: linear-gradient(
-        100deg,
-        rgba(255, 255, 255, 0.9) 0%,
-        var(--os-paper-deep) 100%
-    );
+    background: linear-gradient(100deg, var(--os-raised) 0%, transparent 100%);
     padding: 0.24rem 0.6rem;
     width: 100%;
     font-size: 0.78rem;
@@ -141,15 +137,15 @@
     text-align: left;
 }
 
-.theme-kit-tags--weakness .theme-kit-tag-row {
+.os-card .theme-kit-tags--weakness .theme-kit-tag-row {
     /* The weakness closes the stack on its own colour, and keeps its marker:
        each row is one tag, so the marker belongs to the tag and not to the run
        the way it does on the Legend card. */
     border-left-color: var(--os-crew);
 }
 
-.theme-kit-tag-row .mist-tag,
-.theme-kit-tag-row .mist-weakness {
+.os-card .theme-kit-tag-row .mist-tag,
+.os-card .theme-kit-tag-row .mist-weakness {
     /* Colour comes from the app's token palette; only the fit is set here, so a
        long tag wraps inside its row instead of widening the card. */
     display: inline;
@@ -159,7 +155,7 @@
 /* The check circle the printed card puts at the end of every power row: the
    space a player marks when the tag is burnt. It is part of the frame, so it
    is drawn rather than loaded. */
-.theme-kit-tag-row__mark {
+.os-card .theme-kit-tag-row__mark {
     flex: none;
     border: 1.5px solid var(--os-ink-faint);
     border-radius: 999px;
@@ -167,14 +163,14 @@
     height: 0.7rem;
 }
 
-.theme-kit-tags__empty {
+.os-card .theme-kit-tags__empty {
     padding: 0.2rem 0;
     color: var(--os-ink-soft);
     font-size: 0.72rem;
 }
 
 /* ---------- Quest ---------- */
-.theme-kit-quest {
+.os-card .theme-kit-quest {
     display: flex;
     flex-direction: column;
     gap: 0.3rem;
@@ -182,11 +178,11 @@
     padding-top: 0.6rem;
 }
 
-.theme-kit-quest__label {
+.os-card .theme-kit-quest__label {
     color: var(--os-accent);
 }
 
-.theme-kit-quest__text {
+.os-card .theme-kit-quest__text {
     font-style: italic;
     font-size: 0.95rem;
     line-height: 1.25;
@@ -194,22 +190,42 @@
     text-transform: uppercase;
 }
 
-.theme-kit-quest__text p {
+.os-card .theme-kit-quest__text p {
     margin: 0;
 }
 
 /* ---------- Footer (metadata, badges) ---------- */
+/* The footer prints on the page, not on the card, so it is inked for the dark
+   Otherscape ground rather than inheriting the app's muted foreground, which
+   is a dark slate and disappears there. */
 .theme-kit-meta .meta-footer {
-    color: var(--muted-foreground, #64748b);
+    color: rgba(234, 241, 255, 0.86);
     font-size: 0.68rem;
     font-family: var(--os-font-body);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.55);
+}
+
+/* The placeholder carries the app's muted utility class; on this ground it has
+   to take the footer's own ink. */
+.theme-kit-meta .meta-footer .text-muted-foreground {
+    color: rgba(234, 241, 255, 0.72);
+}
+
+/* The line sits on its own plate rather than straight on the page: the
+   Otherscape backdrop runs from near black at the top to a bright orange at the
+   bottom, and no single ink is readable on both. */
+.theme-kit-meta .meta-footer > * {
+    display: inline-block;
+    border-radius: 0.3rem;
+    background: rgba(6, 12, 24, 0.62);
+    padding: 0.15rem 0.5rem;
 }
 
 .theme-kit-meta .meta-footer .badge {
     display: inline-block;
-    border: 1px solid var(--os-edge);
+    border: 1px solid rgba(234, 241, 255, 0.3);
     border-radius: 0.25rem;
-    background: rgba(255, 255, 255, 0.7);
+    background: rgba(9, 15, 28, 0.55);
     padding: 0.1rem 0.4rem;
     letter-spacing: 0.08em;
     text-transform: uppercase;

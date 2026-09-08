@@ -10,12 +10,15 @@
    about the person, whatever the kits it hands out draw on. */
 @import '../../shared/tokens.css';
 
-.character-trope-sheet {
+/* Compounded with `.os-card`: the shared tokens are inlined once per card
+   stylesheet, and a later copy of the `.os-card` block would reset an accent
+   set on a single class. */
+.os-card.character-trope-sheet {
     --os-accent: var(--os-self);
     width: 100%;
 }
 
-.character-trope-sheet__body {
+.os-card .character-trope-sheet__body {
     display: flex;
     flex-direction: column;
     gap: 1rem;
@@ -23,7 +26,7 @@
 }
 
 /* ---------- Header band ---------- */
-.character-trope-header {
+.os-card .character-trope-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -34,21 +37,21 @@
     background: linear-gradient(
         100deg,
         var(--os-accent) 0%,
-        color-mix(in srgb, var(--os-accent) 62%, #0b1220) 100%
+        color-mix(in srgb, var(--os-accent) 78%, var(--os-paper-deep)) 100%
     );
     padding: 0.34rem 1.35rem;
     min-height: 1.75rem;
     color: var(--os-accent-ink);
 }
 
-.character-trope-header__kind {
+.os-card .character-trope-header__kind {
     /* The band's own label overrides the muted ink `os-label` sets: it sits on
        the accent, not on the paper. */
     opacity: 0.95;
     color: var(--os-accent-ink);
 }
 
-.character-trope-header__category {
+.os-card .character-trope-header__category {
     font-style: italic;
     font-weight: 700;
     font-size: 0.62rem;
@@ -58,18 +61,18 @@
 }
 
 /* ---------- Name ---------- */
-.character-trope-title {
+.os-card .character-trope-title {
     margin: 0.6rem -0.35rem 0;
     background: linear-gradient(
         100deg,
-        color-mix(in srgb, var(--os-accent) 88%, #ffffff) 0%,
+        color-mix(in srgb, var(--os-accent) 86%, #f4faff) 0%,
         var(--os-accent) 100%
     );
     padding: 0.42rem 1.1rem;
     color: var(--os-accent-ink);
 }
 
-.character-trope-title__text {
+.os-card .character-trope-title__text {
     display: block;
     font-size: 1.6rem;
     line-height: 1.1;
@@ -79,25 +82,25 @@
 /* ---------- Description ---------- */
 /* The player-facing prose, set in the body face rather than the display one: it
    is the only region of the card meant to be read as sentences. */
-.character-trope-description {
+.os-card .character-trope-description {
     padding: 0.7rem 1.15rem 0;
     color: var(--os-ink-soft);
     font-size: 0.8rem;
     line-height: 1.45;
 }
 
-.character-trope-description__text p {
+.os-card .character-trope-description__text p {
     margin: 0 0 0.5rem;
 }
 
-.character-trope-description__text p:last-child {
+.os-card .character-trope-description__text p:last-child {
     margin-bottom: 0;
 }
 
 /* ---------- Lists ---------- */
-.character-trope-kits__list,
-.character-trope-choices__list,
-.character-trope-loadout__list {
+.os-card .character-trope-kits__list,
+.os-card .character-trope-choices__list,
+.os-card .character-trope-loadout__list {
     display: flex;
     flex-direction: column;
     gap: 0.4rem;
@@ -109,7 +112,7 @@
 /* ---------- Theme kit references ----------
    One shape for the two lists to start from, so what separates a grant from a
    choice below is the frame around it rather than a different kind of row. */
-.character-trope-kit {
+.os-card .character-trope-kit {
     display: flex;
     align-items: baseline;
     gap: 0.5rem;
@@ -119,7 +122,7 @@
 
 /* Plain text on purpose: this names a kit record, it is not a tag anyone
    invokes at the table. The pill belongs to the kit card. */
-.character-trope-kit__title {
+.os-card .character-trope-kit__title {
     color: var(--os-ink);
     font-style: italic;
     font-weight: 700;
@@ -129,7 +132,7 @@
     text-transform: uppercase;
 }
 
-.character-trope-kit__category {
+.os-card .character-trope-kit__category {
     flex: none;
     color: var(--os-ink-soft);
     font-weight: 600;
@@ -142,7 +145,7 @@
 /* ---------- Granted kits ----------
    What the trope hands over, printed as settled: a solid accent rule down the
    side, the way the book marks what a package includes. */
-.character-trope-kits__list .character-trope-kit {
+.os-card .character-trope-kits__list .character-trope-kit {
     border-left: 3px solid var(--os-accent);
     background: color-mix(in srgb, var(--os-accent) 7%, transparent);
     padding: 0.2rem 0.5rem 0.2rem 0.55rem;
@@ -151,7 +154,7 @@
 /* ---------- Choices ----------
    What the player still has to settle, printed as open: a dashed outline and
    nothing filled in, so a choice is never read as a grant. */
-.character-trope-choices__hint {
+.os-card .character-trope-choices__hint {
     display: block;
     margin: 0.35rem 0 0;
     color: var(--os-ink-faint);
@@ -162,24 +165,24 @@
     text-transform: uppercase;
 }
 
-.character-trope-choices__list .character-trope-kit {
+.os-card .character-trope-choices__list .character-trope-kit {
     border: 1px dashed var(--os-edge);
     border-radius: 2px;
     background: transparent;
     padding: 0.2rem 0.5rem;
 }
 
-.character-trope-choices__list .character-trope-kit__title {
+.os-card .character-trope-choices__list .character-trope-kit__title {
     color: var(--os-ink-soft);
     font-style: normal;
 }
 
 /* ---------- Loadout ---------- */
-.character-trope-loadout__list {
+.os-card .character-trope-loadout__list {
     gap: 0.2rem;
 }
 
-.character-trope-entry {
+.os-card .character-trope-entry {
     position: relative;
     padding-left: 0.85rem;
     color: var(--os-ink);
@@ -188,7 +191,7 @@
     text-align: left;
 }
 
-.character-trope-entry::before {
+.os-card .character-trope-entry::before {
     position: absolute;
     top: 0.45em;
     left: 0;
@@ -202,17 +205,37 @@
 }
 
 /* ---------- Footer (metadata, badges) ---------- */
+/* The footer prints on the page, not on the card, so it is inked for the dark
+   Otherscape ground rather than inheriting the app's muted foreground, which
+   is a dark slate and disappears there. */
 .character-trope-meta .meta-footer {
-    color: var(--muted-foreground, #64748b);
+    color: rgba(234, 241, 255, 0.86);
     font-size: 0.68rem;
     font-family: var(--os-font-body);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.55);
+}
+
+/* The placeholder carries the app's muted utility class; on this ground it has
+   to take the footer's own ink. */
+.character-trope-meta .meta-footer .text-muted-foreground {
+    color: rgba(234, 241, 255, 0.72);
+}
+
+/* The line sits on its own plate rather than straight on the page: the
+   Otherscape backdrop runs from near black at the top to a bright orange at the
+   bottom, and no single ink is readable on both. */
+.character-trope-meta .meta-footer > * {
+    display: inline-block;
+    border-radius: 0.3rem;
+    background: rgba(6, 12, 24, 0.62);
+    padding: 0.15rem 0.5rem;
 }
 
 .character-trope-meta .meta-footer .badge {
     display: inline-block;
-    border: 1px solid var(--os-edge);
+    border: 1px solid rgba(234, 241, 255, 0.3);
     border-radius: 0.25rem;
-    background: rgba(255, 255, 255, 0.7);
+    background: rgba(9, 15, 28, 0.55);
     padding: 0.1rem 0.4rem;
     letter-spacing: 0.08em;
     text-transform: uppercase;
