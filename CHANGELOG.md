@@ -5,6 +5,25 @@ All notable changes to this project are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.4.0] - 2026-09-08
+
+### Added
+
+- **:Otherscape** support, six templates: Theme, Theme Kit, Loadout Item, Challenge, Power Set
+  and Character Trope. Each carries its schema, TOML import/export with warnings, one form per
+  region of the sheet, a clickable themed preview and PNG export.
+- A shared :Otherscape vocabulary (`templates/otherscape/shared/`): the dark card ground, the
+  five theme accents and the section components its six sheets have in common.
+- An :Otherscape page background.
+
+### Fixed
+
+- The template landing panel was translucent and its description was unreadable over the darker
+  game backgrounds.
+- Legend in the Mist and :Otherscape share class names for the documents they both print, and
+  every preview stylesheet is bundled globally, so one game's rules could land on the other's
+  cards. Each game's rules now descend from its own root.
+
 ## [v0.3.0] - 2026-09-08
 
 ### Added
