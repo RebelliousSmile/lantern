@@ -3,6 +3,7 @@ import challengeTemplate from '@/templates/legend-in-the-mist/challenge/definiti
 import journeyTemplate from '@/templates/legend-in-the-mist/journey/definition'
 import storyThemeTemplate from '@/templates/legend-in-the-mist/story-theme/definition'
 import themeKitTemplate from '@/templates/legend-in-the-mist/theme-kit/definition'
+import otherscapeChallengeTemplate from '@/templates/otherscape/challenge/definition'
 import otherscapeLoadoutItemTemplate from '@/templates/otherscape/loadout-item/definition'
 import otherscapeThemeKitTemplate from '@/templates/otherscape/theme-kit/definition'
 import otherscapeThemeTemplate from '@/templates/otherscape/theme/definition'
@@ -76,12 +77,7 @@ export const templateRegistry: AnyTemplateDefinition[] = [
     journeyTemplate,
     storyThemeTemplate,
     themeKitTemplate,
-    createComingSoonTemplate({
-        id: 'otherscape.challenge',
-        gameId: 'otherscape',
-        gameLabel: ':Otherscape',
-        label: 'Challenge',
-    }),
+    otherscapeChallengeTemplate,
     otherscapeThemeKitTemplate,
     otherscapeThemeTemplate,
     otherscapeLoadoutItemTemplate,
