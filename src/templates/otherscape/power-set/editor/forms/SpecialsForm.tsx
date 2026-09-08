@@ -1,0 +1,359 @@
+import { SystemMarkdownScope } from '@/components/markdown/SystemMarkdownScope'
+import { renderLitmMarkdown } from '@/utils/markdown'
+import { useEffect, useMemo, useState } from 'react'
+import { useOtherscapePowerSetStore } from '../../hooks'
+
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
+import { GripVertical, Pencil, Plus, Trash2 } from 'lucide-react'
+
+import {
+    DndContext,
+    KeyboardSensor,
+    PointerSensor,
+    closestCenter,
+    useSensor,
+    useSensors,
+    type DragEndEvent,
+} from '@dnd-kit/core'
+import {
+    SortableContext,
+    sortableKeyboardCoordinates,
+    useSortable,
+    verticalListSortingStrategy,
+} from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
+
+export default function SpecialsForm({ focusIndex }: { focusIndex?: number }) {
+    const {
+        otherscapePowerSet,
+        addSpecial,
+        updateSpecialAt,
+        removeSpecialAt,
+        moveSpecial,
+    } = useOtherscapePowerSetStore()
+
+    // One inline editor at a time
+    const [editingIndex, setEditingIndex] = useState<number | null>(null)
+    const [eName, setEName] = useState('')
+    const [eDesc, setEDesc] = useState('')
+    const [error, setError] = useState<string | null>(null)
+
+    // Deep-link open from preview/sheet
+    useEffect(() => {
+        if (
+            typeof focusIndex === 'number' &&
+            otherscapePowerSet.specials[focusIndex]
+        ) {
+            startEdit(focusIndex)
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [focusIndex])
+
+    // dnd-kit sensors
+    const sensors = useSensors(
+        useSensor(PointerSensor, { activationConstraint: { distance: 4 } }),
+        useSensor(KeyboardSensor, {
+            coordinateGetter: sortableKeyboardCoordinates,
+        })
+    )
+
+    // Stable IDs for current render (index::name)
+    const itemIds = useMemo(
+        () =>
+            otherscapePowerSet.specials.map(
+                (sf, i) => `${i}::${sf.name || 'special'}`
+            ),
+        [otherscapePowerSet.specials]
+    )
+
+    function handleDragEnd(e: DragEndEvent) {
+        const { active, over } = e
+        if (!over || active.id === over.id) return
+        const from = Number(String(active.id).split('::')[0] || -1)
+        const to = Number(String(over.id).split('::')[0] || -1)
+        if (from >= 0 && to >= 0 && from !== to) moveSpecial(from, to)
+    }
+
+    const dragDisabled = editingIndex !== null
+
+    // Helpers
+    function uniquePlaceholderName(): string {
+        const base = 'New Special'
+        const used = new Set(
+            otherscapePowerSet.specials.map((sf) =>
+                (sf.name || '').toLowerCase()
+            )
+        )
+        if (!used.has(base.toLowerCase())) return base
+        let n = 2
+        while (used.has(`${base} ${n}`.toLowerCase())) n++
+        return `${base} ${n}`
+    }
+
+    function addPlaceholder() {
+        const placeholder = {
+            name: uniquePlaceholderName(),
+            description:
+                'Describe when this Special triggers and what it does.',
+        }
+        const newIndex = otherscapePowerSet.specials.length
+        addSpecial(placeholder)
+        // open inline editor for the new item
+        setEditingIndex(newIndex)
+        setEName(placeholder.name)
+        setEDesc(placeholder.description)
+        setError(null)
+    }
+
+    function startEdit(i: number) {
+        const sf = otherscapePowerSet.specials[i]
+        if (!sf) return
+        setEditingIndex(i)
+        setEName(sf.name || '')
+        setEDesc(sf.description || '')
+        setError(null)
+    }
+
+    function cancelEdit() {
+        setEditingIndex(null)
+        setEName('')
+        setEDesc('')
+        setError(null)
+    }
+
+    function saveEdit() {
+        if (editingIndex == null) return
+        if (!eName.trim()) return setError('Name is required.')
+        if (!eDesc.trim()) return setError('Description is required.')
+        updateSpecialAt(editingIndex, {
+            name: eName.trim(),
+            description: eDesc.trim(),
+        })
+        cancelEdit()
+    }
+
+    return (
+        <div className="space-y-2.5">
+            <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}
+            >
+                <SortableContext
+                    items={itemIds}
+                    strategy={verticalListSortingStrategy}
+                >
+                    <ul className="space-y-1.5">
+                        {otherscapePowerSet.specials.map((sf, i) => (
+                            <SortableSpecialItem
+                                key={itemIds[i]}
+                                id={itemIds[i]}
+                                name={sf.name}
+                                description={sf.description}
+                                dragDisabled={dragDisabled}
+                                onEdit={() => startEdit(i)}
+                                onRemove={() => removeSpecialAt(i)}
+                            >
+                                {editingIndex === i && (
+                                    <div className="mt-2 space-y-2.5 rounded-md border bg-muted/30 p-2.5">
+                                        {error && (
+                                            <p className="text-sm text-destructive">
+                                                {error}
+                                            </p>
+                                        )}
+                                        <div className="grid gap-1">
+                                            <Label
+                                                htmlFor={`sf-name-${i}`}
+                                                className="text-xs"
+                                            >
+                                                Name
+                                            </Label>
+                                            <Input
+                                                id={`sf-name-${i}`}
+                                                className="h-8 px-2 text-sm"
+                                                value={eName}
+                                                onChange={(e) =>
+                                                    setEName(e.target.value)
+                                                }
+                                            />
+                                        </div>
+                                        <div className="grid gap-1">
+                                            <Label
+                                                htmlFor={`sf-desc-${i}`}
+                                                className="text-xs"
+                                            >
+                                                Description{' '}
+                                                <span className="text-muted-foreground">
+                                                    (Markdown)
+                                                </span>
+                                            </Label>
+                                            <Textarea
+                                                id={`sf-desc-${i}`}
+                                                rows={4}
+                                                className="min-h-16 px-2 py-1 text-sm"
+                                                value={eDesc}
+                                                onChange={(e) =>
+                                                    setEDesc(e.target.value)
+                                                }
+                                                placeholder="When this happens... then do that."
+                                            />
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <Button
+                                                type="button"
+                                                size="sm"
+                                                className="h-7 px-2.5 text-xs"
+                                                onClick={saveEdit}
+                                            >
+                                                Save
+                                            </Button>
+                                            <Button
+                                                type="button"
+                                                variant="link"
+                                                className="h-7 px-0 text-xs"
+                                                onClick={cancelEdit}
+                                            >
+                                                Cancel
+                                            </Button>
+                                        </div>
+                                    </div>
+                                )}
+                            </SortableSpecialItem>
+                        ))}
+
+                        {/* Add button row */}
+                        <li className="flex">
+                            <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                className="mt-1 h-8 w-full justify-center gap-1.5 border-dashed px-2.5 text-xs"
+                                onClick={addPlaceholder}
+                            >
+                                <Plus className="h-3.5 w-3.5" /> Add special
+                            </Button>
+                        </li>
+                    </ul>
+                </SortableContext>
+            </DndContext>
+        </div>
+    )
+}
+
+/* ---------- Sortable item ---------- */
+function SortableSpecialItem({
+    id,
+    name,
+    description,
+
+    dragDisabled,
+    onEdit,
+    onRemove,
+    children,
+}: {
+    id: string
+    name: string
+    description?: string | null
+    dragDisabled: boolean
+    onEdit: () => void
+    onRemove: () => void
+    children?: React.ReactNode
+}) {
+    const {
+        attributes,
+        listeners,
+        setNodeRef,
+        transform,
+        transition,
+        isDragging,
+    } = useSortable({ id, disabled: dragDisabled })
+
+    const style: React.CSSProperties = {
+        transform: CSS.Transform.toString(transform),
+        transition,
+    }
+
+    return (
+        <li
+            ref={setNodeRef}
+            style={style}
+            className={`max-w-full rounded-md border bg-white px-2.5 py-1.5 ${
+                isDragging ? 'shadow-lg ring-1 ring-slate-200' : ''
+            }`}
+        >
+            <div className="flex items-start justify-between gap-3">
+                <div className="flex min-w-0 items-center gap-2">
+                    <button
+                        type="button"
+                        className={`inline-flex h-7 w-7 items-center justify-center rounded hover:bg-slate-50
+              ${
+                  dragDisabled
+                      ? 'opacity-40 cursor-not-allowed hover:bg-transparent'
+                      : 'cursor-grab active:cursor-grabbing'
+              }`}
+                        aria-label="Drag to reorder"
+                        title={
+                            dragDisabled
+                                ? 'Finish editing to reorder'
+                                : 'Drag to reorder'
+                        }
+                        disabled={dragDisabled}
+                        {...(!dragDisabled ? attributes : {})}
+                        {...(!dragDisabled ? listeners : {})}
+                    >
+                        <GripVertical className="h-3.5 w-3.5 text-slate-500" />
+                    </button>
+
+                    <SystemMarkdownScope className="min-w-0" as="div">
+                        <div className="truncate text-sm font-bold uppercase tracking-wider">
+                            {name}
+                        </div>
+                    </SystemMarkdownScope>
+                </div>
+
+                <div className="flex items-center gap-1">
+                    <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="h-7 w-7"
+                        title="Edit"
+                        onClick={onEdit}
+                    >
+                        <Pencil className="h-3.5 w-3.5" />
+                    </Button>
+                    <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="h-7 w-7 text-destructive"
+                        title="Remove"
+                        onClick={onRemove}
+                    >
+                        <Trash2 className="h-3.5 w-3.5" />
+                    </Button>
+                </div>
+            </div>
+
+            <SystemMarkdownScope className="mt-1.5 pl-9" as="div">
+                {description ? (
+                    <div
+                        className="prose-sm max-w-none text-sm text-foreground/80"
+                        dangerouslySetInnerHTML={{
+                            __html: renderLitmMarkdown(description),
+                        }}
+                    />
+                ) : (
+                    <div className="text-sm text-muted-foreground">
+                        No description
+                    </div>
+                )}
+            </SystemMarkdownScope>
+
+            {children}
+        </li>
+    )
+}

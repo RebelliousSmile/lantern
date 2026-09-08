@@ -15,7 +15,10 @@ export function TemplateLanding({
     onImport,
 }: TemplateLandingProps) {
     return (
-        <div className="rounded-lg border bg-muted/20 p-4">
+        // Opaque, not a tint: the panel floats over whatever ground the active
+        // game paints, and a translucent one left the description unreadable on
+        // the darker backgrounds.
+        <div className="rounded-lg border bg-card/95 p-4 shadow-sm backdrop-blur-sm">
             <h2 className="text-lg font-semibold">New {template.label}</h2>
             <p className="mt-1 text-sm text-muted-foreground">
                 {template.landing.description}

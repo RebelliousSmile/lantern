@@ -3,6 +3,12 @@ import challengeTemplate from '@/templates/legend-in-the-mist/challenge/definiti
 import journeyTemplate from '@/templates/legend-in-the-mist/journey/definition'
 import storyThemeTemplate from '@/templates/legend-in-the-mist/story-theme/definition'
 import themeKitTemplate from '@/templates/legend-in-the-mist/theme-kit/definition'
+import otherscapeChallengeTemplate from '@/templates/otherscape/challenge/definition'
+import otherscapeCharacterTropeTemplate from '@/templates/otherscape/character-trope/definition'
+import otherscapeLoadoutItemTemplate from '@/templates/otherscape/loadout-item/definition'
+import otherscapePowerSetTemplate from '@/templates/otherscape/power-set/definition'
+import otherscapeThemeKitTemplate from '@/templates/otherscape/theme-kit/definition'
+import otherscapeThemeTemplate from '@/templates/otherscape/theme/definition'
 import {
     DEFAULT_TEMPLATE_PREVIEW_WIDTH,
     type AnyTemplateDefinition,
@@ -73,18 +79,12 @@ export const templateRegistry: AnyTemplateDefinition[] = [
     journeyTemplate,
     storyThemeTemplate,
     themeKitTemplate,
-    createComingSoonTemplate({
-        id: 'otherscape.challenge',
-        gameId: 'otherscape',
-        gameLabel: ':Otherscape',
-        label: 'Challenge',
-    }),
-    createComingSoonTemplate({
-        id: 'otherscape.themeKit',
-        gameId: 'otherscape',
-        gameLabel: ':Otherscape',
-        label: 'Theme Kit',
-    }),
+    otherscapeChallengeTemplate,
+    otherscapeCharacterTropeTemplate,
+    otherscapePowerSetTemplate,
+    otherscapeThemeKitTemplate,
+    otherscapeThemeTemplate,
+    otherscapeLoadoutItemTemplate,
 ]
 
 export const templateById = new Map(

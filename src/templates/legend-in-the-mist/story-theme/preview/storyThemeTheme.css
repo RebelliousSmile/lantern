@@ -26,7 +26,7 @@
 }
 
 /* ---------- Card container ---------- */
-.story-theme-sheet {
+.litm-doc .story-theme-sheet {
     box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
     border: 1px solid rgba(0, 0, 0, 0.08);
     border-radius: 20px;
@@ -34,17 +34,17 @@
     overflow: hidden;
 }
 
-.story-theme-sheet.bg-plain {
+.litm-doc .story-theme-sheet.bg-plain {
     background: var(--litm-parchment-bg, #f7f2e7);
 }
 
-.story-theme-sheet.bg-parchment {
+.litm-doc .story-theme-sheet.bg-parchment {
     background-image: url(/assets/images/white_plaster.png);
     background-color: #eae2da;
     background-blend-mode: luminosity;
 }
 
-.story-theme-sheet__inner {
+.litm-doc .story-theme-sheet__inner {
     display: flex;
     position: relative;
     flex-direction: column;
@@ -53,41 +53,41 @@
 }
 
 /* ---------- Level badge ---------- */
-.story-theme-sheet .ico {
+.litm-doc .story-theme-sheet .ico {
     display: inline-block;
     background-position: center;
     background-size: contain;
     background-repeat: no-repeat;
 }
-.story-theme-sheet .ico-might-origin {
+.litm-doc .story-theme-sheet .ico-might-origin {
     background-image: url('/assets/images/might-origin.svg');
 }
-.story-theme-sheet .ico-might-adventure {
+.litm-doc .story-theme-sheet .ico-might-adventure {
     background-image: url('/assets/images/might-adventure.svg');
 }
-.story-theme-sheet .ico-might-greatness {
+.litm-doc .story-theme-sheet .ico-might-greatness {
     background-image: url('/assets/images/might-greatness.svg');
 }
 
-.story-theme-level {
+.litm-doc .story-theme-level {
     position: absolute;
     top: 1rem;
     right: 1rem;
 }
 
-.story-theme-level .ico {
+.litm-doc .story-theme-level .ico {
     display: block;
     width: 1.4rem;
     height: 1.4rem;
 }
 
-.story-theme-sheet--origin .story-theme-level .ico {
+.litm-doc .story-theme-sheet--origin .story-theme-level .ico {
     width: 1.8rem;
     height: 1.8rem;
 }
 
 /* ---------- Category ---------- */
-.story-theme-category {
+.litm-doc .story-theme-category {
     margin-bottom: 0.2em;
     font-variant: small-caps;
     font-weight: bold;
@@ -96,18 +96,18 @@
     text-align: center;
 }
 
-.story-theme-sheet--origin .story-theme-category {
+.litm-doc .story-theme-sheet--origin .story-theme-category {
     color: var(--litm-theme-origin);
 }
-.story-theme-sheet--adventure .story-theme-category {
+.litm-doc .story-theme-sheet--adventure .story-theme-category {
     color: var(--litm-theme-adventure);
 }
-.story-theme-sheet--greatness .story-theme-category {
+.litm-doc .story-theme-sheet--greatness .story-theme-category {
     color: var(--litm-theme-greatness);
 }
 
 /* ---------- Title tag ---------- */
-.story-theme-title-box {
+.litm-doc .story-theme-title-box {
     margin-bottom: 0.3em;
     width: 100%;
     font-style: italic;
@@ -119,7 +119,7 @@
 
 /* The highlight sits behind the lower half of the text and follows it across
    line breaks, the way a marker pen would. */
-.story-theme-title {
+.litm-doc .story-theme-title {
     box-decoration-break: clone;
     border: none;
     background: linear-gradient(var(--litm-pastel-yellow) 0 0) 0 / 100% 15px
@@ -127,7 +127,7 @@
 }
 
 /* ---------- Tags ---------- */
-.story-theme-tags {
+.litm-doc .story-theme-tags {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -143,7 +143,7 @@
 }
 
 /* ---------- Quest and tracks ---------- */
-.story-theme-quest {
+.litm-doc .story-theme-quest {
     color: var(--litm-dark-brown);
     font-size: 0.8rem;
     line-height: 1.4;
@@ -151,7 +151,7 @@
     text-align: center;
 }
 
-.story-theme-tracks {
+.litm-doc .story-theme-tracks {
     display: flex;
     justify-content: center;
     gap: 1.2rem;
@@ -162,18 +162,18 @@
     text-transform: uppercase;
 }
 
-.story-theme-track {
+.litm-doc .story-theme-track {
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
 }
 
-.story-theme-track__boxes {
+.litm-doc .story-theme-track__boxes {
     display: inline-flex;
     gap: 0.2rem;
 }
 
-.story-theme-box {
+.litm-doc .story-theme-box {
     display: inline-block;
     border: 1px solid var(--litm-clear-brown);
     border-radius: 2px;
@@ -182,11 +182,11 @@
     height: 0.6rem;
 }
 
-.story-theme-box--filled {
+.litm-doc .story-theme-box--filled {
     background: var(--litm-clear-brown);
 }
 
-.story-theme-milestone {
+.litm-doc .story-theme-milestone {
     color: var(--litm-soft-brown);
     font-weight: 700;
     font-size: 0.6rem;
@@ -195,16 +195,16 @@
     text-transform: uppercase;
 }
 
-.story-theme-milestone--off {
+.litm-doc .story-theme-milestone--off {
     opacity: 0.45;
 }
 
 /* ---------- Footer (metadata, badges) ---------- */
-.meta-footer {
+.litm-doc .meta-footer {
     color: var(--litm-clear-brown);
     font-size: 0.68rem;
 }
-.meta-footer .badge {
+.litm-doc .meta-footer .badge {
     display: inline-block;
     margin-left: 0.35rem;
     border: 1px solid rgba(0, 0, 0, 0.06);
@@ -215,7 +215,7 @@
 }
 
 /* ---------- Section header (same shape as the Challenge sheet) ---------- */
-.section-title {
+.litm-doc .section-title {
     color: var(--litm-clear-brown);
     font-weight: 700;
     font-size: 0.5rem;
@@ -224,23 +224,23 @@
     text-transform: uppercase;
     white-space: nowrap;
 }
-.section-line {
+.litm-doc .section-line {
     opacity: 0.7;
     background: var(--litm-clear-brown);
     height: 1px;
 }
-.section--center {
+.litm-doc .section--center {
     display: grid;
     grid-template-columns: 1fr auto 1fr;
     align-items: center;
     gap: 6px;
 }
-.section--left {
+.litm-doc .section--left {
     display: grid;
     grid-template-columns: auto 1fr;
     align-items: center;
     gap: 6px;
 }
-.section--left .section-line {
+.litm-doc .section--left .section-line {
     width: 60%;
 }

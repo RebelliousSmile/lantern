@@ -1,0 +1,332 @@
+/* The Challenge card is the widest of the six: a slanted band naming what the
+   card is and how large it is, the name on a coloured slab, the prose, then the
+   scene's tags across the top and two columns underneath - what the Crew can do
+   to the Challenge on the left, what the Challenge does to the Crew on the
+   right.
+
+   Everything this card shares with the other Otherscape cards, the ground, the
+   accents, the skew and the type, comes from `../../shared/tokens.css`. What is
+   here is this card's layout only. */
+@import '../../shared/tokens.css';
+
+/* Compounded with `.os-card` on purpose. Every Otherscape stylesheet inlines
+   the shared tokens, so the app ends up with one `.os-card` block per card, and
+   a later copy would otherwise reset the accent a single-class selector sets
+   here. Two classes outrank all of them. */
+.os-card.challenge-sheet {
+    /* A Challenge belongs to no theme type, so it takes an accent of its own
+       rather than one of the four: the red of a thing standing in the Crew's
+       way, kept clear of the Self pink it would otherwise be read as. */
+    --os-accent: #e8443a;
+    --os-accent-ink: #2a0906;
+
+    width: 100%;
+}
+
+.os-card .challenge-sheet__body {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem 1.15rem 1.35rem;
+}
+
+.os-card .challenge-sheet__columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+    gap: 1.25rem;
+}
+
+.os-card .challenge-sheet__column {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    min-width: 0;
+}
+
+/* ---------- Header band ---------- */
+.os-card .challenge-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+    /* Wider than the card and pulled back, so the skew runs off both edges
+       instead of leaving a wedge of paper at the corners. */
+    margin: 0 -0.6rem;
+    background: linear-gradient(
+        100deg,
+        var(--os-accent) 0%,
+        color-mix(in srgb, var(--os-accent) 78%, var(--os-paper-deep)) 100%
+    );
+    padding: 0.34rem 1.35rem;
+    min-height: 1.75rem;
+    color: var(--os-accent-ink);
+}
+
+.os-card .challenge-header__kind {
+    /* The band's own label overrides the muted ink `os-label` sets: it sits on
+       the accent, not on the paper. */
+    opacity: 0.95;
+    color: var(--os-accent-ink);
+}
+
+.os-card .challenge-header__scale {
+    font-style: italic;
+    font-weight: 700;
+    font-size: 0.62rem;
+    font-family: var(--os-font-display);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+}
+
+/* ---------- Name ---------- */
+.os-card .challenge-title {
+    margin: 0.6rem -0.35rem 0;
+    background: linear-gradient(
+        100deg,
+        color-mix(in srgb, var(--os-accent) 86%, #f4faff) 0%,
+        var(--os-accent) 100%
+    );
+    padding: 0.42rem 1.1rem;
+    color: var(--os-accent-ink);
+}
+
+.os-card .challenge-title__text {
+    display: block;
+    font-size: 1.6rem;
+    line-height: 1.1;
+    letter-spacing: 0.01em;
+}
+
+/* ---------- Description ---------- */
+/* The MC-facing prose, set in the body face rather than the display one: it is
+   the only region of the card meant to be read as sentences. */
+.os-card .challenge-description {
+    padding: 0.7rem 1.15rem 0;
+    color: var(--os-ink-soft);
+    font-size: 0.8rem;
+    line-height: 1.45;
+}
+
+.os-card .challenge-description__text p {
+    margin: 0 0 0.5rem;
+}
+
+.os-card .challenge-description__text p:last-child {
+    margin-bottom: 0;
+}
+
+/* ---------- Tags and statuses ---------- */
+.os-card .challenge-tags__list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem 0.45rem;
+    margin: 0.4rem 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+/* A flowing run rather than one row per tag: the scene's condition is read as a
+   line, not as a checklist. */
+.os-card .challenge-tags__item {
+    font-size: 0.8rem;
+    line-height: 1.35;
+}
+
+/* ---------- Limits ---------- */
+.os-card .challenge-limits__list,
+.os-card .challenge-specials__list,
+.os-card .challenge-threats__list,
+.os-card .challenge-consequences__list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    margin: 0.45rem 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.os-card .challenge-limit {
+    border-left: 3px solid var(--os-accent);
+    background: linear-gradient(100deg, var(--os-raised) 0%, transparent 100%);
+}
+
+.os-card .challenge-limit__inner {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.26rem 0.7rem;
+}
+
+.os-card .challenge-limit__name {
+    flex: 1;
+    min-width: 0;
+    font-style: italic;
+    font-weight: 700;
+    font-size: 0.82rem;
+    font-family: var(--os-font-display);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+/* Two flags, two marks, so a glance tells a polar Limit from a progress one. */
+.os-card .challenge-limit__mark {
+    flex: none;
+    font-size: 0.78rem;
+    line-height: 1;
+}
+
+.os-card .challenge-limit__mark--polar {
+    color: var(--os-accent);
+}
+
+.os-card .challenge-limit__mark--progress {
+    color: var(--os-ink-faint);
+}
+
+/* The tier a status has to reach, in the disc the printed card puts it in. */
+.os-card .challenge-limit__level {
+    display: inline-flex;
+    flex: none;
+    justify-content: center;
+    align-items: center;
+    border-radius: 999px;
+    background: var(--os-ink);
+    width: 1.15rem;
+    height: 1.15rem;
+    color: var(--os-ink-inverse);
+    font-weight: 700;
+    font-size: 0.7rem;
+    font-family: var(--os-font-display);
+}
+
+/* What filling the track up costs, hung under the Limit it belongs to. */
+.os-card .challenge-limit__outcome {
+    padding: 0.22rem 0.7rem 0 1.1rem;
+    color: var(--os-ink-soft);
+    font-size: 0.74rem;
+    line-height: 1.35;
+}
+
+/* ---------- Specials ---------- */
+.os-card .challenge-special {
+    border-left: 3px solid var(--os-ink-faint);
+    padding: 0.05rem 0 0.05rem 0.55rem;
+    font-size: 0.78rem;
+    line-height: 1.4;
+    text-align: left;
+}
+
+.os-card .challenge-special__name {
+    display: block;
+    font-style: italic;
+    font-weight: 700;
+    font-family: var(--os-font-display);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.os-card .challenge-special__text {
+    display: block;
+    color: var(--os-ink-soft);
+}
+
+/* ---------- Threats ---------- */
+.os-card .challenge-threat__head {
+    display: flex;
+    align-items: baseline;
+    gap: 0.45rem;
+}
+
+.os-card .challenge-threat__name {
+    flex: none;
+    background: var(--os-ink);
+    padding: 0.1rem 0.55rem;
+    color: var(--os-ink-inverse);
+    font-style: italic;
+    font-weight: 700;
+    font-size: 0.74rem;
+    font-family: var(--os-font-display);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.os-card .challenge-threat__text {
+    color: var(--os-ink-soft);
+    font-size: 0.78rem;
+    line-height: 1.4;
+}
+
+/* Indented and ruled off, so the list a Threat carries reads as belonging to
+   that Threat rather than to the card. */
+.os-card .challenge-threat__consequences {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    margin: 0.3rem 0 0;
+    border-left: 1px solid var(--os-edge);
+    padding: 0 0 0 0.75rem;
+    list-style: none;
+}
+
+/* ---------- Consequences ---------- */
+/* One shape for a consequence wherever it is printed, so the general list and a
+   threat's own list read as the same kind of thing. */
+.os-card .challenge-consequence {
+    position: relative;
+    padding-left: 0.85rem;
+    color: var(--os-ink);
+    font-size: 0.76rem;
+    line-height: 1.4;
+    text-align: left;
+}
+
+.os-card .challenge-consequence::before {
+    position: absolute;
+    top: 0.45em;
+    left: 0;
+    /* The diamond the book puts in front of an outcome, drawn rather than
+       loaded. */
+    transform: rotate(45deg);
+    background: var(--os-accent);
+    width: 0.4rem;
+    height: 0.4rem;
+    content: '';
+}
+
+/* ---------- Footer (metadata, badges) ---------- */
+/* The footer prints on the page, not on the card, so it is inked for the dark
+   Otherscape ground rather than inheriting the app's muted foreground, which
+   is a dark slate and disappears there. */
+.challenge-meta .meta-footer {
+    color: rgba(234, 241, 255, 0.86);
+    font-size: 0.68rem;
+    font-family: var(--os-font-body);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.55);
+}
+
+/* The placeholder carries the app's muted utility class; on this ground it has
+   to take the footer's own ink. */
+.challenge-meta .meta-footer .text-muted-foreground {
+    color: rgba(234, 241, 255, 0.72);
+}
+
+/* The line sits on its own plate rather than straight on the page: the
+   Otherscape backdrop runs from near black at the top to a bright orange at the
+   bottom, and no single ink is readable on both. */
+.challenge-meta .meta-footer > * {
+    display: inline-block;
+    border-radius: 0.3rem;
+    background: rgba(6, 12, 24, 0.62);
+    padding: 0.15rem 0.5rem;
+}
+
+.challenge-meta .meta-footer .badge {
+    display: inline-block;
+    border: 1px solid rgba(234, 241, 255, 0.3);
+    border-radius: 0.25rem;
+    background: rgba(9, 15, 28, 0.55);
+    padding: 0.1rem 0.4rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}

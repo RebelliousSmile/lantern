@@ -1,0 +1,474 @@
+import { SystemMarkdownScope } from '@/components/markdown/SystemMarkdownScope'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Switch } from '@/components/ui/switch'
+import { Textarea } from '@/components/ui/textarea'
+import { renderLitmMarkdown } from '@/utils/markdown'
+import { GripVertical, Pencil, Plus, Trash2 } from 'lucide-react'
+import { useEffect, useMemo, useState } from 'react'
+import { useOtherscapeChallengeStore, type Limit } from '../../hooks'
+
+import {
+    DndContext,
+    KeyboardSensor,
+    PointerSensor,
+    closestCenter,
+    useSensor,
+    useSensors,
+    type DragEndEvent,
+} from '@dnd-kit/core'
+import {
+    SortableContext,
+    sortableKeyboardCoordinates,
+    useSortable,
+    verticalListSortingStrategy,
+} from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
+
+const PRESET_LIMITS = ['Convince', 'Disable', 'Outrun', 'Overwhelm', 'Hack']
+
+export default function LimitsForm({ focusIndex }: { focusIndex?: number }) {
+    const {
+        otherscapeChallenge,
+        addLimit,
+        updateLimitAt,
+        removeLimitAt,
+        moveLimit,
+    } = useOtherscapeChallengeStore()
+
+    // --- inline editor state (for a single item at a time) ---
+    const [editingIndex, setEditingIndex] = useState<number | null>(null)
+    const [eName, setEName] = useState('')
+    const [eLevel, setELevel] = useState(4)
+    const [ePolar, setEPolar] = useState(false)
+    const [eProgress, setEProgress] = useState(false)
+    const [eOnMax, setEOnMax] = useState('')
+    const [error, setError] = useState<string | null>(null)
+
+    const dragDisabled = editingIndex !== null
+
+    // open editor for the focused index (from sheet deep link)
+    useEffect(() => {
+        if (
+            typeof focusIndex === 'number' &&
+            otherscapeChallenge.limits[focusIndex]
+        ) {
+            startEdit(focusIndex)
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [focusIndex])
+
+    // dnd-kit sensors
+    const sensors = useSensors(
+        useSensor(PointerSensor, { activationConstraint: { distance: 4 } }),
+        useSensor(KeyboardSensor, {
+            coordinateGetter: sortableKeyboardCoordinates,
+        })
+    )
+
+    const itemIds = useMemo(
+        () => otherscapeChallenge.limits.map((l) => l.name),
+        [otherscapeChallenge.limits]
+    )
+
+    function handleDragEnd(e: DragEndEvent) {
+        const { active, over } = e
+        if (!over || active.id === over.id) return
+        const from = itemIds.indexOf(String(active.id))
+        const to = itemIds.indexOf(String(over.id))
+        if (from !== -1 && to !== -1 && from !== to) moveLimit(from, to)
+    }
+
+    // ---- helpers ----
+    function isDuplicateName(nm: string, except?: number) {
+        const target = nm.trim().toLowerCase()
+        return otherscapeChallenge.limits.some(
+            (l, i) => i !== except && l.name.trim().toLowerCase() === target
+        )
+    }
+
+    function startEdit(idx: number) {
+        const l = otherscapeChallenge.limits[idx]
+        if (!l) return
+        setEditingIndex(idx)
+        setEName(l.name)
+        setELevel(l.level)
+        setEPolar(!!l.is_polar)
+        setEProgress(!!l.is_progress)
+        setEOnMax(l.on_max ?? '')
+        setError(null)
+    }
+
+    function cancelEdit() {
+        setEditingIndex(null)
+        setEName('')
+        setELevel(4)
+        setEPolar(false)
+        setEProgress(false)
+        setEOnMax('')
+        setError(null)
+    }
+
+    function confirmEdit() {
+        if (editingIndex == null) return
+        const nm = eName.trim()
+        if (!nm) return setError('Name is required.')
+        if (isDuplicateName(nm, editingIndex))
+            return setError('Limit name already exists.')
+        updateLimitAt(editingIndex, {
+            name: nm,
+            level: Math.max(1, Math.min(6, Number(eLevel) || 1)),
+            is_polar: ePolar,
+            is_progress: eProgress,
+            on_max: eProgress ? eOnMax.trim() || undefined : undefined,
+        })
+        cancelEdit()
+    }
+
+    function uniquePlaceholderName(): string {
+        // Prefer an unused preset at random
+        const used = new Set(
+            otherscapeChallenge.limits.map((l) => l.name.toLowerCase())
+        )
+        const available = PRESET_LIMITS.filter(
+            (p) => !used.has(p.toLowerCase())
+        )
+        if (available.length) {
+            const pick = available[Math.floor(Math.random() * available.length)]
+            return pick
+        }
+        // Fallback: New Limit, New Limit 2, 3, ...
+        const base = 'New Limit'
+        if (!used.has(base.toLowerCase())) return base
+        let n = 2
+        while (used.has(`${base} ${n}`.toLowerCase())) n++
+        return `${base} ${n}`
+    }
+
+    function addPlaceholder() {
+        const placeholder: Limit = {
+            name: uniquePlaceholderName(),
+            level: 4,
+            is_polar: false,
+            is_progress: false,
+            on_max: undefined,
+        }
+        // Add at the end, then open editor for it.
+        const newIndex = otherscapeChallenge.limits.length
+        addLimit(placeholder)
+        // Optimistically open the editor with placeholder values.
+        setEditingIndex(newIndex)
+        setEName(placeholder.name)
+        setELevel(placeholder.level)
+        setEPolar(!!placeholder.is_polar)
+        setEProgress(!!placeholder.is_progress)
+        setEOnMax(placeholder.on_max ?? '')
+        setError(null)
+    }
+
+    return (
+        <div className="space-y-2.5">
+            {/* Drag & drop list */}
+            <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}
+            >
+                <SortableContext
+                    items={itemIds}
+                    strategy={verticalListSortingStrategy}
+                >
+                    <ul className="space-y-1.5">
+                        {otherscapeChallenge.limits.map((l, idx) => (
+                            <SortableLimitItem
+                                key={itemIds[idx]}
+                                id={itemIds[idx]}
+                                limit={l}
+                                dragDisabled={dragDisabled}
+                                // row actions
+                                onEdit={() => startEdit(idx)}
+                                onRemove={() => removeLimitAt(idx)}
+                            >
+                                {editingIndex === idx && (
+                                    <div className="mt-2 space-y-2.5 rounded-md border bg-muted/30 p-2.5">
+                                        {error && (
+                                            <p className="text-sm text-destructive">
+                                                {error}
+                                            </p>
+                                        )}
+
+                                        <div className="grid gap-2 md:grid-cols-[1fr_5.5rem] md:items-end">
+                                            {/* Name */}
+                                            <div className="grid gap-1">
+                                                <Label
+                                                    htmlFor={`limit-name-${idx}`}
+                                                    className="text-xs"
+                                                >
+                                                    Name
+                                                </Label>
+                                                <Input
+                                                    id={`limit-name-${idx}`}
+                                                    className="h-8 px-2 text-sm"
+                                                    value={eName}
+                                                    onChange={(e) =>
+                                                        setEName(e.target.value)
+                                                    }
+                                                />
+                                            </div>
+
+                                            {/* Level */}
+                                            <div className="grid gap-1">
+                                                <Label
+                                                    htmlFor={`limit-level-${idx}`}
+                                                    className="text-xs"
+                                                >
+                                                    Level
+                                                </Label>
+                                                <Input
+                                                    id={`limit-level-${idx}`}
+                                                    className="h-8 px-2 text-sm"
+                                                    type="number"
+                                                    min={1}
+                                                    max={6}
+                                                    value={eLevel}
+                                                    onChange={(e) =>
+                                                        setELevel(
+                                                            Math.max(
+                                                                1,
+                                                                Math.min(
+                                                                    6,
+                                                                    Number(
+                                                                        e.target
+                                                                            .value
+                                                                    ) || 1
+                                                                )
+                                                            )
+                                                        )
+                                                    }
+                                                    title="1–6"
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+                                            {/* Polar */}
+                                            <div className="flex items-center gap-2">
+                                                <Switch
+                                                    id={`limit-polar-${idx}`}
+                                                    checked={ePolar}
+                                                    onCheckedChange={(v) =>
+                                                        setEPolar(!!v)
+                                                    }
+                                                />
+                                                <Label
+                                                    htmlFor={`limit-polar-${idx}`}
+                                                    className="text-xs"
+                                                    title="Two opposed poles written as one name, joined by a slash"
+                                                >
+                                                    Polar limit
+                                                </Label>
+                                            </div>
+
+                                            {/* Progress */}
+                                            <div className="flex items-center gap-2">
+                                                <Switch
+                                                    id={`limit-progress-${idx}`}
+                                                    checked={eProgress}
+                                                    onCheckedChange={(v) =>
+                                                        setEProgress(!!v)
+                                                    }
+                                                />
+                                                <Label
+                                                    htmlFor={`limit-progress-${idx}`}
+                                                    className="text-xs"
+                                                >
+                                                    Progress limit
+                                                </Label>
+                                            </div>
+                                        </div>
+
+                                        {eProgress && (
+                                            <Textarea
+                                                rows={2}
+                                                className="min-h-16 px-2 py-1 text-sm"
+                                                placeholder="When this progress limit fills up…"
+                                                value={eOnMax}
+                                                onChange={(ev) =>
+                                                    setEOnMax(ev.target.value)
+                                                }
+                                            />
+                                        )}
+
+                                        <div className="flex items-center gap-2">
+                                            <Button
+                                                size="sm"
+                                                className="h-7 px-2.5 text-xs"
+                                                onClick={confirmEdit}
+                                            >
+                                                Save
+                                            </Button>
+                                            <Button
+                                                variant="link"
+                                                className="h-7 px-0 text-xs"
+                                                onClick={cancelEdit}
+                                            >
+                                                Cancel
+                                            </Button>
+                                        </div>
+                                    </div>
+                                )}
+                            </SortableLimitItem>
+                        ))}
+
+                        {/* Add button as a list row */}
+                        <li className="flex">
+                            <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                className="mt-1 h-8 w-full justify-center gap-1.5 border-dashed px-2.5 text-xs"
+                                onClick={addPlaceholder}
+                            >
+                                <Plus className="h-3.5 w-3.5" /> Add limit
+                            </Button>
+                        </li>
+                    </ul>
+                </SortableContext>
+            </DndContext>
+        </div>
+    )
+}
+
+/* ---------- Sortable item ---------- */
+function SortableLimitItem({
+    id,
+    limit: l,
+    dragDisabled,
+    onEdit,
+    onRemove,
+    children,
+}: {
+    id: string
+    limit: Limit
+    dragDisabled: boolean
+    onEdit: () => void
+    onRemove: () => void
+    children?: React.ReactNode // inline editor renders here when open
+}) {
+    const {
+        attributes,
+        listeners,
+        setNodeRef,
+        transform,
+        transition,
+        isDragging,
+    } = useSortable({ id, disabled: dragDisabled })
+
+    const style: React.CSSProperties = {
+        transform: CSS.Transform.toString(transform),
+        transition,
+    }
+
+    return (
+        <li
+            ref={setNodeRef}
+            style={style}
+            className={`rounded-md border bg-white px-2.5 py-1.5 ${
+                isDragging ? 'shadow-lg ring-1 ring-slate-200' : ''
+            }`}
+        >
+            <div className="flex items-center justify-between gap-3">
+                <div className="flex items-center gap-2 min-w-0">
+                    <button
+                        className={`inline-flex h-7 w-7 items-center justify-center rounded hover:bg-slate-50
+              ${dragDisabled ? 'opacity-40 cursor-not-allowed hover:bg-transparent' : 'cursor-grab active:cursor-grabbing'}`}
+                        aria-label="Drag to reorder"
+                        title={
+                            dragDisabled
+                                ? 'Finish editing to reorder'
+                                : 'Drag to reorder'
+                        }
+                        disabled={dragDisabled}
+                        {...(!dragDisabled ? attributes : {})}
+                        {...(!dragDisabled ? listeners : {})}
+                    >
+                        <GripVertical className="h-3.5 w-3.5 text-slate-500" />
+                    </button>
+
+                    <SystemMarkdownScope
+                        className="flex min-w-0 flex-col gap-1"
+                        as="div"
+                    >
+                        <div className="flex items-end gap-1 flex-wrap">
+                            <span
+                                className="text-md mist-limit lowercase truncate"
+                                title={l.name}
+                                data-limit-value={Math.max(
+                                    1,
+                                    Math.min(6, Math.floor(l.level || 1))
+                                )}
+                            >
+                                {l.name}
+                            </span>
+
+                            {/* The same two marks the card prints, so the list
+                                and the card never disagree about which flag a
+                                limit carries. */}
+                            {l.is_polar && (
+                                <span
+                                    className="text-xs text-slate-500"
+                                    title="Polar limit"
+                                >
+                                    {'\u21C4'}
+                                </span>
+                            )}
+                            {l.is_progress && (
+                                <span
+                                    className="text-xs text-slate-500"
+                                    title="Progress limit"
+                                >
+                                    {'\u25B6'}
+                                </span>
+                            )}
+                        </div>
+
+                        {l.is_progress && l.on_max && (
+                            <div
+                                className="max-w-none text-xs text-slate-700"
+                                dangerouslySetInnerHTML={{
+                                    __html: renderLitmMarkdown(l.on_max),
+                                }}
+                            />
+                        )}
+                    </SystemMarkdownScope>
+                </div>
+
+                {/* Right: row actions */}
+                <div className="flex items-center gap-1">
+                    <Button
+                        variant="ghost"
+                        size="icon-sm"
+                        className="h-7 w-7"
+                        onClick={onEdit}
+                        title="Edit"
+                    >
+                        <Pencil className="h-3.5 w-3.5" />
+                    </Button>
+                    <Button
+                        variant="ghost"
+                        size="icon-sm"
+                        className="h-7 w-7 text-destructive"
+                        onClick={onRemove}
+                        title="Remove"
+                    >
+                        <Trash2 className="h-3.5 w-3.5" />
+                    </Button>
+                </div>
+            </div>
+
+            {/* Inline editor (collapsible area) */}
+            {children}
+        </li>
+    )
+}
