@@ -1,0 +1,36 @@
+import type { OtherscapeThemeKit } from './model'
+
+// The same kit the schema repository ships as its canonical example, so a card
+// built here and a file written there read as the same object. The title tag is
+// deliberately absent from the power tags: the card prints it as the title.
+export function getSampleOtherscapeThemeKit(): OtherscapeThemeKit {
+    return {
+        title_tag: 'Back-Alley Ripperdoc',
+        theme_type: 'self',
+        category: 'STREET TRADE',
+        power_tags: [
+            'steady hands',
+            'knows what the chrome costs',
+            'reads a body like a schematic',
+            'a clinic behind the noodle bar',
+            'off-book anaesthetic',
+            'everyone owes me a favour',
+            'can tell whose work that is',
+            'improvises with what is on the tray',
+            'no questions, no records',
+        ],
+        weakness_tags: [
+            'cannot say no to a patient',
+            'owes the wrong people',
+            'hands shake without the stims',
+            'the licence board has a file',
+        ],
+        quest: 'Keep the clinic open, whatever the district asks in return.',
+        meta: {
+            publication_type: 'homebrew',
+            source: undefined,
+            authors: ['schema-in-the-mist contributors'],
+            page: undefined,
+        },
+    }
+}

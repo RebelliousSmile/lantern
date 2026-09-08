@@ -24,8 +24,8 @@ export const gameThemeRegistry: Record<GameId, GameThemeDefinition> = {
     },
     otherscape: {
         id: 'otherscape',
-        backgroundMode: 'neutral',
-        backgroundImage: null,
+        backgroundMode: 'cover',
+        backgroundImage: '/assets/images/otherscape-bg.webp',
         tokenScopeClassName: EDITOR_TOKEN_SCOPE_CLASS,
     },
 }

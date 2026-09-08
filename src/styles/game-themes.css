@@ -14,7 +14,14 @@ body[data-game-theme='legend'] {
     background-attachment: fixed;
 }
 
-body[data-game-theme='otherscape'],
+body[data-game-theme='otherscape'] {
+    background-image: url('/assets/images/otherscape-bg.webp');
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+
 body:not([data-game-theme]) {
     background-image: none;
 }
