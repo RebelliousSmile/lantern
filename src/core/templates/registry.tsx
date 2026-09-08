@@ -1,3 +1,4 @@
+import cityCustomMoveTemplate from '@/templates/city-of-mist/custom-move/definition'
 import dangerTemplate from '@/templates/city-of-mist/danger/definition'
 import challengeTemplate from '@/templates/legend-in-the-mist/challenge/definition'
 import journeyTemplate from '@/templates/legend-in-the-mist/journey/definition'
@@ -57,12 +58,7 @@ function createComingSoonTemplate(config: {
 
 export const templateRegistry: AnyTemplateDefinition[] = [
     dangerTemplate,
-    createComingSoonTemplate({
-        id: 'city.customMove',
-        gameId: 'city',
-        gameLabel: 'City of Mist',
-        label: 'Custom Move',
-    }),
+    cityCustomMoveTemplate,
     createComingSoonTemplate({
         id: 'city.iceberg',
         gameId: 'city',

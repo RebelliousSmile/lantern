@@ -1,0 +1,127 @@
+/* What every City of Mist document is made of, and nothing that belongs to one
+   card in particular. The City sheets print the same object: a warm parchment
+   slab in near-black ink, headed by condensed caps and set in a serif, with a
+   handful of paper tints to choose the ground from. That vocabulary lives here
+   so a change to the paper or to the type stack reaches every City card at
+   once; each card keeps its own stylesheet for its own layout.
+
+   The values are the ones `danger/preview/dangerTheme.css` already prints, so
+   the oldest City document and the ones added after it stay the same object.
+   The Danger keeps its own copy: every one of its selectors is prefixed
+   `.city-danger-`, so it never needed a scope root, and nothing is gained by
+   rewriting a shipped card.
+
+   Nothing here styles `.mist-tag`, `.mist-status`, `.mist-limit` or
+   `.mist-weakness`: those are the app's inline tokens and their City colours
+   are set once in `src/styles/markdown-tokens.css`. Take any change to them
+   there. */
+
+.city-doc {
+    /* Ground. City of Mist prints on paper, and every sheet the books ship is
+       a tinted stock rather than white. `--city-paper` is the ground a card
+       falls back to when it carries no `bgN` class. */
+    --city-paper: hsl(42 38% 91%);
+
+    /* Ink. One near-black for the text, and two washes of it for the quieter
+       lines: a meta footer, a placeholder, a rule. */
+    --city-ink: #111;
+    --city-ink-soft: rgb(0 0 0 / 0.75);
+    --city-ink-faint: rgb(0 0 0 / 0.6);
+    --city-edge: rgb(0 0 0 / 0.18);
+
+    /* The wash a hoverable region takes. The card is parchment, so a region
+       lifts by darkening rather than by lightening. */
+    --city-hover: rgb(0 0 0 / 0.05);
+
+    /* Type. Condensed caps for a title, a serif for everything read as prose,
+       and the display face for the numbers and the small caps labels. */
+    --city-font-title: 'Fira Sans Extra Condensed', sans-serif;
+    --city-font-body: 'PT Serif', serif;
+    --city-font-display: 'Bebas Neue', sans-serif;
+
+    /* Every size on a City card is written against this, so a sheet scales as
+       one object rather than block by block. */
+    --city-scale: 0.9;
+
+    background-color: var(--city-paper);
+    color: var(--city-ink);
+    font-family: var(--city-font-body);
+}
+
+/* ---------- Paper tints ----------
+   The eight grounds the Danger offers, kept identical here so the same swatch
+   picks the same paper on every City card.
+
+   Each tint is compounded with the root rather than written on its own. Every
+   card stylesheet inlines this file, so the app carries one copy of the
+   `.city-doc` block per card; a single-class tint would be reset by the next
+   copy's `background-color: var(--city-paper)` and every card would print the
+   default. Two classes outrank all of those copies. Anything overriding a
+   ground from a card's own stylesheet has to do the same. */
+.city-doc.bg0 {
+    background-color: hsl(0 17% 82%);
+}
+
+.city-doc.bg1 {
+    background-color: hsl(42 38% 91%);
+}
+
+.city-doc.bg2 {
+    background-color: hsl(42 38% 95%);
+}
+
+.city-doc.bg3 {
+    background-color: hsl(43 38% 82%);
+}
+
+.city-doc.bg4 {
+    background-color: hsl(31 38% 88%);
+}
+
+.city-doc.bg5 {
+    background-color: hsl(57 38% 82%);
+}
+
+.city-doc.bg6 {
+    background-color: hsl(78 14% 85%);
+}
+
+.city-doc.bg7 {
+    background-color: hsl(26 15% 82%);
+}
+
+/* ---------- Section header ----------
+   The markup `SectionHeader` prints, styled once for every City card. The
+   component emits `section-title`, `section-line`, `section--center` and
+   `section--left` verbatim and unprefixed, and Legend in the Mist and
+   :Otherscape already style those names for their own sheets. Scoping them
+   under the root here is what keeps the two apart: they are the one set of
+   unprefixed class names a City sheet may carry, and they are declared once,
+   in this file. */
+.city-doc .section-title {
+    color: var(--city-ink);
+    font-size: calc(0.9rem * var(--city-scale));
+    font-family: var(--city-font-display);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.city-doc .section-line {
+    background: var(--city-edge);
+    height: 1px;
+}
+
+.city-doc .section--center {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 6px;
+}
+
+.city-doc .section--left {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: 8px;
+}
