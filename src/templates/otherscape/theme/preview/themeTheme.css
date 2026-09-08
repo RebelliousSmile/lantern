@@ -1,0 +1,270 @@
+/* The Theme card is what a character makes of a Theme Kit: the same slanted
+   coloured band, tag legend and title slab, the same stack of one tag per row,
+   the same quest under its own label, and then the two tracks the kit does not
+   carry, Upgrade and Decay, three boxes each.
+
+   Everything this card shares with the other Otherscape cards, the ground, the
+   accents, the skew and the type, comes from `../../shared/tokens.css`. What is
+   here is this card's layout only. */
+@import '../../shared/tokens.css';
+
+.theme-sheet {
+    width: 100%;
+}
+
+.theme-sheet__body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    padding: 0.9rem 0.95rem 1.15rem;
+}
+
+/* ---------- Header band ---------- */
+.theme-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+    /* Wider than the card and pulled back, so the skew runs off both edges
+       instead of leaving a wedge of paper at the corners. */
+    margin: 0 -0.6rem;
+    background: linear-gradient(
+        100deg,
+        var(--os-accent) 0%,
+        color-mix(in srgb, var(--os-accent) 62%, #0b1220) 100%
+    );
+    padding: 0.34rem 1.25rem;
+    min-height: 1.75rem;
+    color: var(--os-accent-ink);
+}
+
+.theme-header__category {
+    flex: 1;
+    font-style: italic;
+    font-weight: 700;
+    font-size: 0.74rem;
+    line-height: 1.15;
+    font-family: var(--os-font-display);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
+
+.theme-header__type {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    opacity: 0.95;
+    font-weight: 600;
+    font-size: 0.55rem;
+    font-family: var(--os-font-display);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+}
+
+.theme-header__glyph {
+    width: 0.95rem;
+    height: 0.95rem;
+    color: currentColor;
+}
+
+/* ---------- Tag legend ---------- */
+/* The printed card names the three kinds of row before it prints any, so the
+   reader knows what the stack below means. */
+.theme-legend {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    border-bottom: 1px solid var(--os-edge);
+    padding: 0.5rem 0 0.35rem;
+}
+
+.theme-legend__key {
+    color: var(--os-accent);
+}
+
+.theme-legend__sep {
+    color: var(--os-ink-faint);
+}
+
+/* ---------- Title tag ---------- */
+.theme-title {
+    margin: 0.55rem -0.35rem 0;
+    background: linear-gradient(
+        100deg,
+        color-mix(in srgb, var(--os-accent) 88%, #ffffff) 0%,
+        var(--os-accent) 100%
+    );
+    padding: 0.38rem 0.95rem;
+    color: var(--os-accent-ink);
+}
+
+.theme-title__text {
+    display: block;
+    font-size: 1.45rem;
+    line-height: 1.1;
+    letter-spacing: 0.01em;
+}
+
+/* ---------- Tag rows ---------- */
+.theme-tag-runs {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.theme-tags {
+    display: flex;
+    flex-direction: column;
+    gap: 0.22rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+/* One row per tag, the way the card stacks them, rather than the flowing run
+   the Legend card uses. */
+.theme-tag-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+    border-left: 3px solid var(--os-accent);
+    background: linear-gradient(
+        100deg,
+        rgba(255, 255, 255, 0.9) 0%,
+        var(--os-paper-deep) 100%
+    );
+    padding: 0.24rem 0.6rem;
+    width: 100%;
+    font-size: 0.78rem;
+    line-height: 1.3;
+    text-align: left;
+}
+
+.theme-tags--weakness .theme-tag-row {
+    /* The weakness closes the stack on its own colour, and keeps its marker:
+       each row is one tag, so the marker belongs to the tag and not to the run
+       the way it does on the Legend card. */
+    border-left-color: var(--os-crew);
+}
+
+.theme-tag-row .mist-tag,
+.theme-tag-row .mist-weakness {
+    /* Colour comes from the app's token palette; only the fit is set here, so a
+       long tag wraps inside its row instead of widening the card. */
+    display: inline;
+    white-space: normal;
+}
+
+/* The check circle the printed card puts at the end of every power row: the
+   space a player marks when the tag is burnt. It is part of the frame, so it
+   is drawn rather than loaded. */
+.theme-tag-row__mark {
+    flex: none;
+    border: 1.5px solid var(--os-ink-faint);
+    border-radius: 999px;
+    width: 0.7rem;
+    height: 0.7rem;
+}
+
+.theme-tags__empty {
+    padding: 0.2rem 0;
+    color: var(--os-ink-soft);
+    font-size: 0.72rem;
+}
+
+/* ---------- Quest ---------- */
+.theme-quest {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    border-top: 1px solid var(--os-edge);
+    padding-top: 0.6rem;
+}
+
+.theme-quest__label {
+    color: var(--os-accent);
+}
+
+.theme-quest__text {
+    font-style: italic;
+    font-size: 0.95rem;
+    line-height: 1.25;
+    font-family: var(--os-font-display);
+    text-transform: uppercase;
+}
+
+.theme-quest__text p {
+    margin: 0;
+}
+
+/* ---------- Tracks ---------- */
+/* The two rows :Otherscape prints under the quest. Three boxes each, and no
+   tier or milestone row: those belong to Legend in the Mist. */
+.theme-tracks {
+    display: flex;
+    flex-direction: column;
+    gap: 0.28rem;
+    border-top: 1px solid var(--os-edge);
+    padding-top: 0.6rem;
+}
+
+.theme-track {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.16rem 0.1rem;
+}
+
+.theme-track__label {
+    color: var(--os-ink-soft);
+}
+
+.theme-track--upgrade .theme-track__label {
+    color: var(--os-accent);
+}
+
+.theme-track__pips {
+    display: inline-flex;
+    gap: 0.28rem;
+}
+
+/* Boxes rather than circles: the burn marker on a tag row is the round one, so
+   the two never read as the same mark. */
+.theme-track__pip {
+    transform: skewX(var(--os-skew));
+    border: 1.5px solid var(--os-ink-faint);
+    border-radius: 1px;
+    width: 0.78rem;
+    height: 0.78rem;
+}
+
+.theme-track--upgrade .theme-track__pip--filled {
+    border-color: var(--os-accent);
+    background: var(--os-accent);
+}
+
+/* Decay runs against the theme, so it fills in the card's ink rather than in
+   its accent: a full decay track is not something the accent should celebrate. */
+.theme-track--decay .theme-track__pip--filled {
+    border-color: var(--os-ink);
+    background: var(--os-ink);
+}
+
+/* ---------- Footer (metadata, badges) ---------- */
+.theme-meta .meta-footer {
+    color: var(--muted-foreground, #64748b);
+    font-size: 0.68rem;
+    font-family: var(--os-font-body);
+}
+
+.theme-meta .meta-footer .badge {
+    display: inline-block;
+    border: 1px solid var(--os-edge);
+    border-radius: 0.25rem;
+    background: rgba(255, 255, 255, 0.7);
+    padding: 0.1rem 0.4rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
