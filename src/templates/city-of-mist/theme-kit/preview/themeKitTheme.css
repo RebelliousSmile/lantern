@@ -57,14 +57,21 @@
     text-transform: uppercase;
 }
 
+/* The rule under the title has to sit just under the capitals. On a
+   `display: inline` box a border is drawn at the bottom of the font's content
+   area — ascender plus descender — so it hung a full descender below a word
+   that carries no descender at all, landing nearer the keywords than the
+   title. `inline-block` makes the box height the line height instead, and a
+   line height under 1em pulls the border back up against the caps; the box
+   still shrinks to the word, so the rule keeps the title's width. */
 .city-doc .city-kit-title {
-    display: inline;
+    display: inline-block;
     margin: 0;
     border-bottom: 3px solid currentColor;
-    padding-bottom: 2px;
+    padding-bottom: 3px;
     font-weight: 900;
     font-size: calc(2.1rem * var(--city-scale));
-    line-height: 1;
+    line-height: 0.8;
     font-family: var(--city-font-title);
     text-transform: uppercase;
 }
@@ -76,7 +83,7 @@
    wash lighter, so the hierarchy runs banner, title, keywords. The margin
    clears the title's 3px rule, which the inline `h2` hangs right above. */
 .city-doc .city-kit-keywords {
-    margin-top: 0.45rem;
+    margin-top: 0.5rem;
     color: var(--city-ink-faint);
     font-weight: 600;
     font-size: calc(0.7rem * var(--city-scale));
