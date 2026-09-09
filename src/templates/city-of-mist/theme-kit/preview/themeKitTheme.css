@@ -69,12 +69,21 @@
     text-transform: uppercase;
 }
 
+/* The keyword baseline reads as part of the title block, not as a prompt. It
+   used to carry the italic serif the question examples use, which read as a
+   caption borrowed from another zone; the books set it in the header's own
+   idiom instead — small letterspaced caps, a size under the banner's and a
+   wash lighter, so the hierarchy runs banner, title, keywords. The margin
+   clears the title's 3px rule, which the inline `h2` hangs right above. */
 .city-doc .city-kit-keywords {
-    margin-top: 0.3rem;
-    color: var(--city-ink-soft);
-    font-style: italic;
-    font-size: calc(0.8rem * var(--city-scale));
+    margin-top: 0.45rem;
+    color: var(--city-ink-faint);
+    font-weight: 600;
+    font-size: calc(0.7rem * var(--city-scale));
     line-height: 1.3;
+    font-family: var(--city-font-body);
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
 }
 
 /* ---------- Prose zones ---------- */
