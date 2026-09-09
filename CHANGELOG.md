@@ -5,6 +5,29 @@ All notable changes to this project are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.5.0] - 2026-09-09
+
+### Added
+
+- **City of Mist Custom Moves.** A standalone move carries its trigger, its roll and up to five
+  outcome tiers (`miss`, `hit`, `7-9`, `10+`, `12+`), and can be written from the five MC Toolkit
+  templates or freehand.
+- **City of Mist Theme Kits.** The themebook questionnaire as the books print it: lettered power
+  and weakness tag questions with their selection rules, the motivation zone, crew relationships
+  and the five theme improvements.
+- **City of Mist Theme Cards.** The filled card a player writes from a themebook: the Attention
+  track, the Fade or Crack track, the Mystery or Identity, and lettered power and weakness tags
+  with their burn mark and invoke box.
+- A shared City of Mist vocabulary (`templates/city-of-mist/shared/`): the card tokens and the
+  section components the game's sheets have in common.
+
+### Changed
+
+- The City of Mist previews descend from a `.city-doc` root, so the section, badge and footer
+  class names they share with Legend in the Mist and :Otherscape can no longer cross games. The
+  Danger Profile is unchanged: its own `.city-danger-` prefix already made it safe.
+- The Iceberg is now the only planned City of Mist document.
+
 ## [v0.4.0] - 2026-09-08
 
 ### Added
