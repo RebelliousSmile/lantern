@@ -7,14 +7,14 @@ import { ThemeCardImageExportSettings } from './editor/ThemeCardImageExportSetti
 import { getCityOfMistThemeCardPreviewWidth } from './hooks'
 import { themeCardSections } from './metadata'
 import {
-    blankCityOfMistThemeCard,
-    defaultCityOfMistThemeCardSheetState,
-    defaultCityOfMistThemeCardView,
-    type CityOfMistThemeCard,
-    type CityOfMistThemeCardViewState,
+    blankThemeCard,
+    defaultThemeCardSheetState,
+    defaultThemeCardView,
+    type ThemeCardDocument,
+    type ThemeCardViewState,
 } from './model'
 import { ThemeCardPreview } from './preview/ThemeCardPreview'
-import { getSampleCityOfMistThemeCard } from './sample'
+import { getSampleThemeCard } from './sample'
 import { CityOfMistThemeCardSchema } from './schema'
 import { exportToTOML, importFromTOMLWithWarnings } from './toml'
 
@@ -40,7 +40,7 @@ function createImageExportAction() {
         }: {
             fileStem: string
             getPreviewNode: () => HTMLElement | null
-            view: CityOfMistThemeCardViewState
+            view: ThemeCardViewState
         }) => {
             const node = getPreviewNode()
             if (!node) {
@@ -79,12 +79,11 @@ const themeCardTemplate: AnyTemplateDefinition = {
     label: 'Theme Card',
     implemented: true,
     schema: CityOfMistThemeCardSchema,
-    createBlank: blankCityOfMistThemeCard,
-    createExample: getSampleCityOfMistThemeCard,
-    createInitialView: () => cloneValue(defaultCityOfMistThemeCardView),
-    createInitialSheet: () => cloneValue(defaultCityOfMistThemeCardSheetState),
-    getTabTitle: (doc: CityOfMistThemeCard) =>
-        doc.title.trim() || 'Theme Card',
+    createBlank: blankThemeCard,
+    createExample: getSampleThemeCard,
+    createInitialView: () => cloneValue(defaultThemeCardView),
+    createInitialSheet: () => cloneValue(defaultThemeCardSheetState),
+    getTabTitle: (doc: ThemeCardDocument) => doc.title.trim() || 'Theme Card',
     sections: themeCardSections,
     landing: {
         description:
@@ -100,15 +99,13 @@ const themeCardTemplate: AnyTemplateDefinition = {
             return {
                 doc: cityOfMistThemeCard,
                 warnings,
-                previewName:
-                    cityOfMistThemeCard.title || 'Imported Theme Card',
+                previewName: cityOfMistThemeCard.title || 'Imported Theme Card',
             }
         },
-        exportToml: (doc: CityOfMistThemeCard) => exportToTOML(doc),
+        exportToml: (doc: ThemeCardDocument) => exportToTOML(doc),
     },
     preview: {
-        getRootSelector: (tabId: string) =>
-            `[data-preview-root="${tabId}"]`,
+        getRootSelector: (tabId: string) => `[data-preview-root="${tabId}"]`,
         render: () => <ThemeCardPreview />,
     },
     editor: {
@@ -116,7 +113,7 @@ const themeCardTemplate: AnyTemplateDefinition = {
         renderPanel: () => <ThemeCardEditorPanel />,
     },
     appearance: {
-        getPreviewWidth: (view: CityOfMistThemeCardViewState) =>
+        getPreviewWidth: (view: ThemeCardViewState) =>
             getCityOfMistThemeCardPreviewWidth(view),
         renderPanel: () => <ThemeCardAppearancePanel />,
     },
@@ -131,7 +128,7 @@ const themeCardTemplate: AnyTemplateDefinition = {
                     doc,
                     fileStem,
                 }: {
-                    doc: CityOfMistThemeCard
+                    doc: ThemeCardDocument
                     fileStem: string
                 }) => {
                     try {
