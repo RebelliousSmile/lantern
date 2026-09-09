@@ -1,0 +1,253 @@
+/* The Custom Move card. Everything shared with the other City documents - the
+   paper, the ink, the type stack, the eight tints and the section header - is
+   declared once in `shared/tokens.css` and pulled in here.
+
+   Every rule below is scoped under `.city-doc` and named `city-move-`, so a
+   move card cannot reach a Legend or an :Otherscape sheet and neither of those
+   can reach it. The one set of names not prefixed is `section-title`,
+   `section-line`, `section--center` and `section--left`, which the shared
+   header emits verbatim; the root stylesheet already styles them under
+   `.city-doc` and this file leaves them alone. */
+
+@import '../../shared/tokens.css';
+
+.city-doc.city-move-card {
+    box-shadow: #00000033 0 0 8px 1px;
+    padding: 0.85rem 1rem;
+    width: 100%;
+}
+
+/* ---------- Header ---------- */
+
+.city-doc .city-move-header {
+    margin-bottom: 0.5rem;
+}
+
+.city-doc .city-move-title-row {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: calc(0.45rem * var(--city-scale));
+    border-bottom: 3px solid currentColor;
+    padding-bottom: 2px;
+    max-width: 100%;
+    line-height: 1;
+}
+
+.city-doc .city-move-title {
+    margin: 0;
+    font-weight: 900;
+    font-size: calc(2rem * var(--city-scale));
+    line-height: 0.95;
+    font-family: var(--city-font-title);
+    text-transform: uppercase;
+}
+
+.city-doc .city-move-header-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: 0.3rem;
+}
+
+.city-doc .city-move-badge {
+    border: 1px solid var(--city-edge);
+    border-radius: 999px;
+    padding: 0.05rem 0.4rem;
+    font-weight: 600;
+    font-size: calc(0.7rem * var(--city-scale));
+    font-family: var(--city-font-body);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+/* Impact is a count, not a scale: the filled pips carry the ink and the empty
+   ones only mark how far the count could have gone. */
+.city-doc .city-move-impact {
+    font-size: calc(0.8rem * var(--city-scale));
+    line-height: 1;
+    letter-spacing: 0.08em;
+}
+
+.city-doc .city-move-impact--empty {
+    color: var(--city-ink-faint);
+}
+
+/* ---------- Flow ---------- */
+
+.city-doc .city-move-flow {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+}
+
+.city-doc .city-move-separator {
+    margin: 0.25rem 0;
+    border: 0;
+    border-top: 1px solid var(--city-ink);
+}
+
+.city-doc .city-move-trigger,
+.city-doc .city-move-outcomes,
+.city-doc .city-move-empty-row {
+    font-size: calc(0.98rem * var(--city-scale));
+    line-height: 1.35;
+    font-family: var(--city-font-body);
+}
+
+.city-doc .city-move-trigger p {
+    margin: 0 0 0.45rem;
+}
+
+.city-doc .city-move-trigger p:last-child {
+    margin-bottom: 0;
+}
+
+.city-doc .city-move-frequency {
+    margin-top: 0.2rem;
+    color: var(--city-ink-soft);
+    font-style: italic;
+    font-size: calc(0.8rem * var(--city-scale));
+    font-family: var(--city-font-body);
+}
+
+/* ---------- Roll ---------- */
+
+.city-doc .city-move-roll {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.35rem;
+    font-size: calc(1.1rem * var(--city-scale));
+    line-height: 1.2;
+    font-family: var(--city-font-body);
+}
+
+.city-doc .city-move-roll__label {
+    font-size: calc(1.1rem * var(--city-scale));
+    font-family: var(--city-font-display);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.city-doc .city-move-roll__modifier {
+    border: 1px solid var(--city-edge);
+    border-radius: 999px;
+    padding: 0 0.35rem;
+    font-weight: 600;
+    font-size: calc(0.85rem * var(--city-scale));
+}
+
+/* ---------- Outcomes ---------- */
+
+.city-doc .city-move-outcomes {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.city-doc .city-move-outcome {
+    break-inside: avoid;
+    page-break-inside: avoid;
+    cursor: pointer;
+    margin: 0 -0.15rem;
+    border-radius: 2px;
+    padding: 0.1rem 0.15rem;
+}
+
+.city-doc .city-move-outcome:hover,
+.city-doc .city-move-outcome:focus-visible {
+    outline: none;
+    background: var(--city-hover);
+}
+
+.city-doc .city-move-outcome__head {
+    display: flex;
+    align-items: baseline;
+    gap: 0.4rem;
+}
+
+/* The tier reads as a label in the margin of the sentence it governs, so it
+   keeps a fixed width and the prose lines up whatever the tier. */
+.city-doc .city-move-outcome__tier {
+    flex: 0 0 auto;
+    min-width: 3.2rem;
+    font-size: calc(1rem * var(--city-scale));
+    font-family: var(--city-font-display);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.city-doc .city-move-options {
+    margin: 0.15rem 0 0 3.6rem;
+    padding-left: 1.1rem;
+    list-style: disc;
+}
+
+.city-doc .city-move-option {
+    break-inside: avoid;
+    page-break-inside: avoid;
+}
+
+.city-doc .city-move-outcome__pick {
+    margin-left: 3.6rem;
+    color: var(--city-ink-soft);
+    font-style: italic;
+    font-size: calc(0.8rem * var(--city-scale));
+}
+
+/* ---------- Placeholders and footer ---------- */
+
+.city-doc .city-move-placeholder {
+    color: var(--city-ink-faint);
+    text-decoration: underline;
+    text-decoration-style: dotted;
+    text-underline-offset: 0.12em;
+}
+
+.city-doc .city-move-placeholder--meta {
+    font-size: calc(0.78rem * var(--city-scale));
+}
+
+.city-doc .city-move-meta-wrap {
+    margin-top: 0.35rem;
+    width: fit-content;
+    max-width: 100%;
+}
+
+.city-doc .city-move-meta {
+    min-height: 1.5rem;
+    color: var(--city-ink-soft);
+    font-size: calc(0.78rem * var(--city-scale));
+    line-height: 1.25;
+    font-family: var(--city-font-body);
+}
+
+.city-doc .city-move-meta__content {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem;
+    border-radius: 999px;
+    padding: 0.15rem 0.35rem;
+}
+
+.city-doc .city-move-meta__badge {
+    border: 1px solid var(--city-edge);
+    border-radius: 999px;
+    padding: 0.05rem 0.4rem;
+    font-weight: 600;
+    font-size: calc(0.7rem * var(--city-scale));
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+/* The drop shadow is a screen affordance; a PNG of the card should not carry
+   it. */
+.exporting .city-doc.city-move-card {
+    box-shadow: none;
+}

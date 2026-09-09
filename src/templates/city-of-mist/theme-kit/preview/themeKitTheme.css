@@ -1,0 +1,309 @@
+@import '../../shared/tokens.css';
+
+/* The themebook page. It is the blank questionnaire, not the filled card, so
+   it prints wider and longer than `theme-card`: a full sheet rather than an
+   index card.
+
+   Every selector below descends from `.city-doc`, and every class of its own is
+   prefixed `city-kit-`. The four `section-` names the shared header emits are
+   declared once in `shared/tokens.css` and are deliberately not repeated here.
+   The page's own root compounds with the scope root instead of descending from
+   it, because `city-doc` sits on the same element. */
+.city-doc.city-kit-page {
+    box-shadow: #00000033 0 0 8px 1px;
+    padding: 1.1rem 1.2rem;
+    width: min(100%, 42rem);
+}
+
+/* ---------- Flow ----------
+   One column by default. The two-column layout balances by itself rather than
+   filling to a fixed height: the improvements block is the tallest thing on the
+   page and a height the author has to guess right is exactly what would clip
+   it. */
+.city-doc .city-kit-flow {
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+}
+
+.city-doc .city-kit-flow--columns {
+    display: block;
+    column-gap: 1.6rem;
+    column-count: 2;
+}
+
+.city-doc .city-kit-flow--columns > * {
+    margin-bottom: 0.7rem;
+}
+
+.city-doc .city-kit-section {
+    break-inside: avoid;
+    page-break-inside: avoid;
+}
+
+/* ---------- Header ---------- */
+.city-doc .city-kit-header {
+    break-inside: avoid;
+    margin-bottom: 0.2rem;
+}
+
+.city-doc .city-kit-banner {
+    margin-bottom: 0.15rem;
+    color: var(--city-ink-soft);
+    font-weight: 700;
+    font-size: calc(0.78rem * var(--city-scale));
+    font-family: var(--city-font-body);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.city-doc .city-kit-title {
+    display: inline;
+    margin: 0;
+    border-bottom: 3px solid currentColor;
+    padding-bottom: 2px;
+    font-weight: 900;
+    font-size: calc(2.1rem * var(--city-scale));
+    line-height: 1;
+    font-family: var(--city-font-title);
+    text-transform: uppercase;
+}
+
+.city-doc .city-kit-keywords {
+    margin-top: 0.3rem;
+    color: var(--city-ink-soft);
+    font-style: italic;
+    font-size: calc(0.8rem * var(--city-scale));
+    line-height: 1.3;
+}
+
+/* ---------- Prose zones ---------- */
+.city-doc .city-kit-prose {
+    padding-top: 0.15rem;
+    font-size: calc(0.92rem * var(--city-scale));
+    line-height: 1.35;
+}
+
+.city-doc .city-kit-prose p {
+    margin: 0 0 0.4rem;
+}
+
+.city-doc .city-kit-prose p:last-child {
+    margin-bottom: 0;
+}
+
+/* ---------- Question lists ---------- */
+.city-doc .city-kit-question-list,
+.city-doc .city-kit-improvement-list,
+.city-doc .city-kit-crew-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    margin: 0.25rem 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.city-doc .city-kit-question,
+.city-doc .city-kit-improvement,
+.city-doc .city-kit-crew-row {
+    display: flex;
+    align-items: baseline;
+    gap: 0.45rem;
+    margin-inline: -0.15rem;
+    border: 0;
+    border-radius: 2px;
+    background: transparent;
+    padding: 0.12rem 0.15rem;
+    width: calc(100% + 0.3rem);
+    color: inherit;
+    font-size: calc(0.92rem * var(--city-scale));
+    line-height: 1.3;
+    font-family: var(--city-font-body);
+}
+
+.city-doc .city-kit-question:hover,
+.city-doc .city-kit-question:focus-visible,
+.city-doc .city-kit-improvement:hover,
+.city-doc .city-kit-improvement:focus-visible,
+.city-doc .city-kit-crew-row:hover,
+.city-doc .city-kit-crew-row:focus-visible,
+.city-doc .city-kit-rule:hover,
+.city-doc .city-kit-rule:focus-visible {
+    outline: none;
+    background: var(--city-hover);
+}
+
+.city-doc .city-kit-question__letter {
+    flex: 0 0 1.1rem;
+    font-weight: 700;
+    font-family: var(--city-font-display);
+    text-align: center;
+}
+
+.city-doc .city-kit-question__body {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    gap: 0.08rem;
+}
+
+/* The examples are a prompt, not part of the question, so the books set them a
+   size down and in italic under the line rather than beside it. */
+.city-doc .city-kit-question__examples {
+    color: var(--city-ink-faint);
+    font-style: italic;
+    font-size: calc(0.78rem * var(--city-scale));
+    line-height: 1.25;
+}
+
+/* ---------- Selection rules ---------- */
+.city-doc .city-kit-rule,
+.city-doc .city-kit-rule-static {
+    display: block;
+    margin-top: 0.3rem;
+    border: 0;
+    border-radius: 2px;
+    background: transparent;
+    padding: 0.1rem 0.15rem;
+    width: 100%;
+    color: var(--city-ink-soft);
+    font-weight: 600;
+    font-size: calc(0.8rem * var(--city-scale));
+    line-height: 1.3;
+    font-family: var(--city-font-body);
+}
+
+/* ---------- Extra tags ---------- */
+.city-doc .city-kit-tag-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    margin: 0.25rem 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.city-doc .city-kit-tag-row li {
+    border: 1px solid var(--city-edge);
+    border-radius: 999px;
+    padding: 0.05rem 0.45rem;
+    font-size: calc(0.82rem * var(--city-scale));
+}
+
+/* ---------- Motivation ---------- */
+.city-doc .city-kit-motivation__body {
+    padding-top: 0.15rem;
+}
+
+.city-doc .city-kit-motivation__intro {
+    font-size: calc(0.92rem * var(--city-scale));
+    line-height: 1.35;
+}
+
+/* The blank line the player writes on. It is the zone's whole point when the
+   themebook offers no closed list. */
+.city-doc .city-kit-motivation__line {
+    margin-top: 0.5rem;
+    border-bottom: 1px solid var(--city-ink);
+    height: 0;
+}
+
+.city-doc .city-kit-motivation__options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.12rem;
+    margin: 0.3rem 0 0;
+    padding: 0;
+    font-size: calc(0.9rem * var(--city-scale));
+    list-style: none;
+}
+
+.city-doc .city-kit-motivation__box {
+    margin-right: 0.35rem;
+}
+
+.city-doc .city-kit-motivation__examples {
+    margin-top: 0.28rem;
+    color: var(--city-ink-faint);
+    font-style: italic;
+    font-size: calc(0.78rem * var(--city-scale));
+    line-height: 1.25;
+}
+
+/* ---------- Crew relationships ---------- */
+.city-doc .city-kit-crew-row__outcome {
+    color: var(--city-ink-soft);
+}
+
+/* ---------- Improvements ---------- */
+.city-doc .city-kit-improvement {
+    align-items: flex-start;
+}
+
+.city-doc .city-kit-improvement__name {
+    margin-right: 0.3rem;
+}
+
+.city-doc .city-kit-improvement__effect {
+    color: var(--city-ink-soft);
+}
+
+/* ---------- Placeholders and the meta footer ---------- */
+.city-doc .city-kit-add {
+    cursor: pointer;
+    border: 0;
+    background: transparent;
+    padding: 0.15rem 0;
+    color: var(--city-ink-faint);
+    font-size: calc(0.78rem * var(--city-scale));
+    font-family: var(--city-font-body);
+    text-decoration: underline;
+    text-decoration-style: dotted;
+    text-underline-offset: 0.12em;
+}
+
+.city-doc .city-kit-placeholder {
+    color: var(--city-ink-faint);
+    text-decoration: underline;
+    text-decoration-style: dotted;
+    text-underline-offset: 0.12em;
+}
+
+.city-doc .city-kit-meta {
+    margin-top: 0.2rem;
+    min-height: 1.4rem;
+    color: var(--city-ink-soft);
+    font-size: calc(0.74rem * var(--city-scale));
+    line-height: 1.25;
+}
+
+.city-doc .city-kit-meta__content {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.32rem;
+    padding: 0.12rem 0;
+}
+
+.city-doc .city-kit-meta__badge {
+    border: 1px solid var(--city-edge);
+    border-radius: 999px;
+    padding: 0.04rem 0.35rem;
+    font-weight: 600;
+    font-size: calc(0.66rem * var(--city-scale));
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.city-doc .city-kit-meta__source {
+    font-weight: 600;
+}
+
+.city-doc .city-kit-placeholder--meta {
+    font-size: calc(0.74rem * var(--city-scale));
+}
+
+.exporting .city-doc.city-kit-page {
+    box-shadow: none;
+}
