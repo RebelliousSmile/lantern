@@ -14,7 +14,13 @@ const TYPES: { value: PublicationType; label: string }[] = [
     { value: 'homebrew', label: 'Homebrew' },
 ]
 
-function AuthorsInput({ value, onChange }: { value: string[]; onChange: (next: string[]) => void }) {
+function AuthorsInput({
+    value,
+    onChange,
+}: {
+    value: string[]
+    onChange: (next: string[]) => void
+}) {
     const [draft, setDraft] = useState('')
     function commit() {
         const author = draft.trim()
@@ -25,9 +31,20 @@ function AuthorsInput({ value, onChange }: { value: string[]; onChange: (next: s
         <div className="rounded-md border px-2 py-1">
             <div className="flex flex-wrap gap-1">
                 {value.map((author) => (
-                    <span key={author} className="inline-flex items-center gap-1 rounded bg-muted px-2 py-0.5 text-xs">
+                    <span
+                        key={author}
+                        className="inline-flex items-center gap-1 rounded bg-muted px-2 py-0.5 text-xs"
+                    >
                         {author}
-                        <button type="button" aria-label={`Remove ${author}`} onClick={() => onChange(value.filter((item) => item !== author))}>
+                        <button
+                            type="button"
+                            aria-label={`Remove ${author}`}
+                            onClick={() =>
+                                onChange(
+                                    value.filter((item) => item !== author)
+                                )
+                            }
+                        >
                             <X className="h-3.5 w-3.5" />
                         </button>
                     </span>
@@ -38,8 +55,12 @@ function AuthorsInput({ value, onChange }: { value: string[]; onChange: (next: s
                     onChange={(event) => setDraft(event.target.value)}
                     onBlur={commit}
                     onKeyDown={(event) => {
-                        if (event.key === 'Enter' || event.key === ',') { event.preventDefault(); commit() }
-                        if (event.key === 'Backspace' && !draft && value.length) onChange(value.slice(0, -1))
+                        if (event.key === 'Enter' || event.key === ',') {
+                            event.preventDefault()
+                            commit()
+                        }
+                        if (event.key === 'Backspace' && !draft && value.length)
+                            onChange(value.slice(0, -1))
                     }}
                     placeholder={value.length ? '' : 'Add author...'}
                 />
@@ -53,9 +74,10 @@ export default function MetaForm() {
     const meta = cityOfMistThemeCard.meta
     const type = meta?.publication_type ?? 'homebrew'
     const authors = useMemo(() => meta?.authors ?? [], [meta?.authors])
-    const sources = type === 'official' || type === 'third_party'
-        ? getCatalogSources('city-of-mist', type)
-        : []
+    const sources =
+        type === 'official' || type === 'third_party'
+            ? getCatalogSources('city-of-mist', type)
+            : []
 
     return (
         <div className="space-y-4">
@@ -67,8 +89,17 @@ export default function MetaForm() {
                             key={item.value}
                             type="button"
                             variant={type === item.value ? 'default' : 'ghost'}
-                            className={cn('h-8 rounded-none border-none px-2 text-xs', type === item.value ? '' : 'bg-background')}
-                            onClick={() => updateMeta({ publication_type: item.value, source: '', authors: [] })}
+                            className={cn(
+                                'h-8 rounded-none border-none px-2 text-xs',
+                                type === item.value ? '' : 'bg-background'
+                            )}
+                            onClick={() =>
+                                updateMeta({
+                                    publication_type: item.value,
+                                    source: '',
+                                    authors: [],
+                                })
+                            }
                         >
                             {item.label}
                         </Button>
@@ -78,38 +109,92 @@ export default function MetaForm() {
 
             {sources.length ? (
                 <div className="grid gap-1">
-                    <Label htmlFor="theme-card-catalog-source">Catalog source</Label>
+                    <Label htmlFor="theme-card-catalog-source">
+                        Catalog source
+                    </Label>
                     <select
                         id="theme-card-catalog-source"
                         className="h-8 rounded-md border bg-background px-2 text-sm"
-                        value={sources.some((item) => item.title === meta?.source) ? meta?.source : ''}
+                        value={
+                            sources.some((item) => item.title === meta?.source)
+                                ? meta?.source
+                                : ''
+                        }
                         onChange={(event) => {
-                            const item = sources.find((source) => source.title === event.target.value)
-                            if (item) updateMeta({ source: item.title, authors: item.authors })
+                            const item = sources.find(
+                                (source) => source.title === event.target.value
+                            )
+                            if (item)
+                                updateMeta({
+                                    source: item.title,
+                                    authors: item.authors,
+                                })
                         }}
                     >
                         <option value="">Select a source...</option>
-                        {sources.map((item) => <option key={item.id} value={item.title}>{item.title}</option>)}
+                        {sources.map((item) => (
+                            <option key={item.id} value={item.title}>
+                                {item.title}
+                            </option>
+                        ))}
                     </select>
                 </div>
             ) : null}
 
             <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_110px] sm:items-end">
                 <div className="grid gap-1">
-                    <Label htmlFor="theme-card-meta-source">Source <span className="text-muted-foreground">(optional)</span></Label>
-                    <Input id="theme-card-meta-source" className="h-8 px-2 text-sm" value={meta?.source ?? ''} onChange={(event) => updateMeta({ source: event.target.value })} />
+                    <Label htmlFor="theme-card-meta-source">
+                        Source{' '}
+                        <span className="text-muted-foreground">
+                            (optional)
+                        </span>
+                    </Label>
+                    <Input
+                        id="theme-card-meta-source"
+                        className="h-8 px-2 text-sm"
+                        value={meta?.source ?? ''}
+                        onChange={(event) =>
+                            updateMeta({ source: event.target.value })
+                        }
+                    />
                 </div>
                 <div className="grid gap-1">
-                    <Label htmlFor="theme-card-meta-page">Page <span className="text-muted-foreground">(optional)</span></Label>
-                    <Input id="theme-card-meta-page" className="h-8 px-2 text-sm" type="number" min={1} value={meta?.page ?? ''} onChange={(event) => updateMeta({ page: event.target.value ? Math.max(1, Math.floor(Number(event.target.value))) : undefined })} />
+                    <Label htmlFor="theme-card-meta-page">
+                        Page{' '}
+                        <span className="text-muted-foreground">
+                            (optional)
+                        </span>
+                    </Label>
+                    <Input
+                        id="theme-card-meta-page"
+                        className="h-8 px-2 text-sm"
+                        type="number"
+                        min={1}
+                        value={meta?.page ?? ''}
+                        onChange={(event) =>
+                            updateMeta({
+                                page: event.target.value
+                                    ? Math.max(
+                                          1,
+                                          Math.floor(Number(event.target.value))
+                                      )
+                                    : undefined,
+                            })
+                        }
+                    />
                 </div>
             </div>
 
             <div className="grid gap-1">
                 <Label>Authors</Label>
-                <AuthorsInput value={authors} onChange={(next) => updateMeta({ authors: next })} />
+                <AuthorsInput
+                    value={authors}
+                    onChange={(next) => updateMeta({ authors: next })}
+                />
             </div>
-            <p className="text-xs text-muted-foreground">Attribution is preserved in TOML exports.</p>
+            <p className="text-xs text-muted-foreground">
+                Attribution is preserved in TOML exports.
+            </p>
         </div>
     )
 }

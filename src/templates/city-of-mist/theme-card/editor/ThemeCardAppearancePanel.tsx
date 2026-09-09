@@ -41,7 +41,10 @@ export function ThemeCardAppearancePanel() {
                 </p>
                 <div className="grid grid-cols-2 gap-x-3 gap-y-1.5">
                     {themeCardSections.map((section) => (
-                        <label key={section.id} className="flex cursor-pointer items-center gap-2">
+                        <label
+                            key={section.id}
+                            className="flex cursor-pointer items-center gap-2"
+                        >
                             <Checkbox
                                 checked={!hidden[section.id]}
                                 onCheckedChange={() => toggleHidden(section.id)}
@@ -54,10 +57,15 @@ export function ThemeCardAppearancePanel() {
 
             <div className="space-y-2">
                 <div className="flex items-center justify-between gap-2">
-                    <Label htmlFor="theme-card-preview-width" className="text-xs">
+                    <Label
+                        htmlFor="theme-card-preview-width"
+                        className="text-xs"
+                    >
                         Preview width
                     </Label>
-                    <span className="text-xs font-medium">{previewWidth}px</span>
+                    <span className="text-xs font-medium">
+                        {previewWidth}px
+                    </span>
                 </div>
                 <input
                     id="theme-card-preview-width"
@@ -66,7 +74,9 @@ export function ThemeCardAppearancePanel() {
                     max={PREVIEW_WIDTH_MAX}
                     step={10}
                     value={previewWidth}
-                    onChange={(event) => setPreviewWidth(Number(event.target.value))}
+                    onChange={(event) =>
+                        setPreviewWidth(Number(event.target.value))
+                    }
                     className="w-full accent-primary"
                     aria-label="Preview width"
                 />
@@ -83,7 +93,9 @@ export function ThemeCardAppearancePanel() {
                             type="button"
                             className={cn(
                                 'h-7 w-7 rounded-full border-2 transition-transform hover:scale-105',
-                                background === option.value ? 'border-foreground' : 'border-border'
+                                background === option.value
+                                    ? 'border-foreground'
+                                    : 'border-border'
                             )}
                             style={{ backgroundColor: option.color }}
                             onClick={() => setBackground(option.value)}
@@ -103,7 +115,11 @@ export function ThemeCardAppearancePanel() {
                         <Button
                             key={placement}
                             type="button"
-                            variant={titlePlacement === placement ? 'default' : 'ghost'}
+                            variant={
+                                titlePlacement === placement
+                                    ? 'default'
+                                    : 'ghost'
+                            }
                             className="h-8 rounded-none border-none px-2 text-xs capitalize"
                             onClick={() => setTitlePlacement(placement)}
                         >
@@ -113,7 +129,13 @@ export function ThemeCardAppearancePanel() {
                 </div>
             </div>
 
-            <Button type="button" variant="secondary" size="sm" className="h-8 w-full text-xs" onClick={resetViewPrefs}>
+            <Button
+                type="button"
+                variant="secondary"
+                size="sm"
+                className="h-8 w-full text-xs"
+                onClick={resetViewPrefs}
+            >
                 Reset view
             </Button>
         </div>

@@ -12,13 +12,11 @@ export const PublicationTypeEnum = z
         examples: ['official', 'cauldron'],
     })
 
-export const ThemeTypeEnum = z
-    .enum(['mythos', 'logos', 'extra', 'crew'])
-    .meta({
-        description:
-            "Which family the card belongs to, inherited from the themebook that produced it. `mythos` fades, `logos` cracks, `extra` and `crew` carry no erosion track. There is no Mist theme type here: that notion belongs to Legend in the Mist.",
-        examples: ['mythos', 'logos'],
-    })
+export const ThemeTypeEnum = z.enum(['mythos', 'logos', 'extra', 'crew']).meta({
+    description:
+        'Which family the card belongs to, inherited from the themebook that produced it. `mythos` fades, `logos` cracks, `extra` and `crew` carry no erosion track. There is no Mist theme type here: that notion belongs to Legend in the Mist.',
+    examples: ['mythos', 'logos'],
+})
 
 export const ErosionKindEnum = z.enum(['fade', 'crack']).meta({
     description:
@@ -203,7 +201,7 @@ export const MotivationSchema = z
     })
     .meta({
         description:
-            'The card\'s motivation zone, filled in. Left out entirely on a card that carries none.',
+            "The card's motivation zone, filled in. Left out entirely on a card that carries none.",
     })
 
 export const ImprovementSchema = z
@@ -279,8 +277,7 @@ export const MetaSchema = z
             }),
     })
     .meta({
-        description:
-            "Attribution and cataloging fields for the card's origin.",
+        description: "Attribution and cataloging fields for the card's origin.",
     })
 
 /** =========================
@@ -311,7 +308,8 @@ export const CityOfMistThemeCardSchema = z
             .min(1, 'Card title is required')
             .default('Untitled Theme')
             .meta({
-                description: 'The title the player wrote at the top of the card.',
+                description:
+                    'The title the player wrote at the top of the card.',
                 examples: ['The Reading I Cannot Stop', 'The Oath I Swore'],
             }),
 
@@ -331,11 +329,13 @@ export const CityOfMistThemeCardSchema = z
         }),
 
         power_tags: z.array(PowerTagSchema).optional().meta({
-            description: 'The power tags written on the card, in printed order.',
+            description:
+                'The power tags written on the card, in printed order.',
         }),
 
         weakness_tags: z.array(WeaknessTagSchema).optional().meta({
-            description: 'The weakness tags written on the card, in printed order.',
+            description:
+                'The weakness tags written on the card, in printed order.',
         }),
 
         improvements: z.array(ImprovementSchema).optional().meta({
@@ -344,7 +344,8 @@ export const CityOfMistThemeCardSchema = z
         }),
 
         meta: MetaSchema.optional().meta({
-            description: "Attribution and cataloging fields for the card's origin.",
+            description:
+                "Attribution and cataloging fields for the card's origin.",
         }),
     })
     .meta({

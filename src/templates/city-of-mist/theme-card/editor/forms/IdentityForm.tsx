@@ -23,7 +23,11 @@ export default function IdentityForm() {
                     id="theme-card-themebook"
                     className="h-8 px-2 text-sm"
                     value={cityOfMistThemeCard.themebook}
-                    onChange={(event) => setCityOfMistThemeCard({ themebook: event.target.value })}
+                    onChange={(event) =>
+                        setCityOfMistThemeCard({
+                            themebook: event.target.value,
+                        })
+                    }
                     placeholder="Divination"
                 />
             </div>
@@ -33,7 +37,9 @@ export default function IdentityForm() {
                     id="theme-card-title"
                     className="h-8 px-2 text-sm"
                     value={cityOfMistThemeCard.title}
-                    onChange={(event) => setCityOfMistThemeCard({ title: event.target.value })}
+                    onChange={(event) =>
+                        setCityOfMistThemeCard({ title: event.target.value })
+                    }
                     placeholder="The Reading I Cannot Stop"
                 />
             </div>
@@ -44,8 +50,17 @@ export default function IdentityForm() {
                         <Button
                             key={type.value}
                             type="button"
-                            variant={cityOfMistThemeCard.theme_type === type.value ? 'default' : 'ghost'}
-                            className={cn('h-8 rounded-none border-none px-1 text-xs', cityOfMistThemeCard.theme_type === type.value ? '' : 'bg-background')}
+                            variant={
+                                cityOfMistThemeCard.theme_type === type.value
+                                    ? 'default'
+                                    : 'ghost'
+                            }
+                            className={cn(
+                                'h-8 rounded-none border-none px-1 text-xs',
+                                cityOfMistThemeCard.theme_type === type.value
+                                    ? ''
+                                    : 'bg-background'
+                            )}
                             onClick={() => setThemeType(type.value)}
                         >
                             {type.label}
@@ -53,7 +68,8 @@ export default function IdentityForm() {
                     ))}
                 </div>
                 <p className="text-xs text-muted-foreground">
-                    Changing type updates the motivation and erosion labels without resetting their text or progress.
+                    Changing type updates the motivation and erosion labels
+                    without resetting their text or progress.
                 </p>
             </div>
         </div>

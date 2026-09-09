@@ -10,17 +10,21 @@ const LABEL = {
 } as const
 
 export default function MotivationForm() {
-    const { cityOfMistThemeCard, setCityOfMistThemeCard } = useCityOfMistThemeCardStore()
+    const { cityOfMistThemeCard, setCityOfMistThemeCard } =
+        useCityOfMistThemeCardStore()
     const label = LABEL[cityOfMistThemeCard.theme_type]
 
     function setText(text: string) {
         const trimmed = text.trim()
-        const kind = cityOfMistThemeCard.theme_type === 'mythos'
-            ? 'mystery'
-            : cityOfMistThemeCard.theme_type === 'logos'
-              ? 'identity'
-              : 'neutral'
-        setCityOfMistThemeCard({ motivation: trimmed ? { kind, text } : undefined })
+        const kind =
+            cityOfMistThemeCard.theme_type === 'mythos'
+                ? 'mystery'
+                : cityOfMistThemeCard.theme_type === 'logos'
+                  ? 'identity'
+                  : 'neutral'
+        setCityOfMistThemeCard({
+            motivation: trimmed ? { kind, text } : undefined,
+        })
     }
 
     return (
@@ -31,9 +35,15 @@ export default function MotivationForm() {
                 className="min-h-24 text-sm"
                 value={cityOfMistThemeCard.motivation?.text ?? ''}
                 onChange={(event) => setText(event.target.value)}
-                placeholder={cityOfMistThemeCard.theme_type === 'mythos' ? 'Who keeps answering when I ask?' : 'I am the one who stays.'}
+                placeholder={
+                    cityOfMistThemeCard.theme_type === 'mythos'
+                        ? 'Who keeps answering when I ask?'
+                        : 'I am the one who stays.'
+                }
             />
-            <p className="text-xs text-muted-foreground">Supports inline Markdown.</p>
+            <p className="text-xs text-muted-foreground">
+                Supports inline Markdown.
+            </p>
         </div>
     )
 }
