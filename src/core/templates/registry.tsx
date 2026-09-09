@@ -12,63 +12,13 @@ import otherscapeLoadoutItemTemplate from '@/templates/otherscape/loadout-item/d
 import otherscapePowerSetTemplate from '@/templates/otherscape/power-set/definition'
 import otherscapeThemeKitTemplate from '@/templates/otherscape/theme-kit/definition'
 import otherscapeThemeTemplate from '@/templates/otherscape/theme/definition'
-import {
-    DEFAULT_TEMPLATE_PREVIEW_WIDTH,
-    type AnyTemplateDefinition,
-    type GameId,
-} from './types'
-
-function createComingSoonTemplate(config: {
-    id: string
-    gameId: GameId
-    gameLabel: string
-    label: string
-}) {
-    const placeholder: AnyTemplateDefinition = {
-        ...config,
-        implemented: false,
-        comingSoonLabel: 'Coming soon',
-        createBlank: () => ({}),
-        createExample: () => ({}),
-        createInitialView: () => ({}),
-        createInitialSheet: () => ({ open: false, target: null }),
-        getTabTitle: () => config.label,
-        sections: [],
-        landing: {
-            description: `${config.label} support is not implemented yet.`,
-        },
-        io: {},
-        preview: {
-            getRootSelector: (tabId) => `[data-preview-root="${tabId}"]`,
-            render: () => null,
-        },
-        editor: {
-            emptyState: `${config.label} editing is not available yet.`,
-            renderPanel: () => null,
-        },
-        appearance: {
-            getPreviewWidth: () => DEFAULT_TEMPLATE_PREVIEW_WIDTH,
-            renderPanel: () => null,
-        },
-        export: {
-            actions: [],
-        },
-    }
-
-    return placeholder
-}
+import { type AnyTemplateDefinition } from './types'
 
 export const templateRegistry: AnyTemplateDefinition[] = [
     dangerTemplate,
     cityCustomMoveTemplate,
     cityThemeKitTemplate,
     cityThemeCardTemplate,
-    createComingSoonTemplate({
-        id: 'city.iceberg',
-        gameId: 'city',
-        gameLabel: 'City of Mist',
-        label: 'Iceberg',
-    }),
     challengeTemplate,
     journeyTemplate,
     storyThemeTemplate,
