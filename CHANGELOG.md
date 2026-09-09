@@ -5,6 +5,40 @@ All notable changes to this project are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.5.1] - 2026-09-10
+
+### Added
+
+- **Game packs.** The sidebar's game list is now filtered by a checkbox menu on the group: a pack
+  the table does not play is hidden from the launcher without touching its open tabs. Each pack's
+  collapsible also remembers whether it is unfolded. Both settings persist under their own storage
+  key, and the disabled set is what is stored, so a pack added later shows up on its own.
+- The welcome screen now explains the app in four steps — pick a pack, open a template, edit from
+  the sheet, export — where it used to spend its lower half on an early-development warning.
+- Four screenshots in the README, captured from the running app: the welcome screen, a City of Mist
+  Danger with its editor form open, a Legend in the Mist Challenge and an :Otherscape Power Set.
+
+### Changed
+
+- The package is named `lantern`. `index.html`, the sidebar brand row and the empty state already
+  said Lantern; `package.json` was the last place carrying `lantern-in-the-mist`.
+- `README.md`, `docs/codebase-architecture.md` and `docs/adding-a-template.md` rewritten against the
+  current code: the stale `src/templates/legend/challenge/` path is gone, and the game packs, the
+  per-game CSS scope roots and the schema-repo-first order are covered.
+
+### Removed
+
+- The project switcher and its three sibling logos. Those projects no longer exist upstream, so the
+  sidebar header is a static brand row and the app has no outbound navigation.
+- The City of Mist Iceberg placeholder and the `createComingSoonTemplate` factory. Every registry
+  entry is implemented; the `implemented` flag survives on the contract as an extension point.
+
+### Fixed
+
+- The City of Mist themebook title rule sat across the capitals instead of under them.
+- The themebook keyword sat off the baseline of the header's small caps.
+
+
 ## [v0.5.0] - 2026-09-09
 
 ### Added
