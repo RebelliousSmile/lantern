@@ -22,6 +22,7 @@ body[data-game-theme='otherscape'] {
     background-attachment: fixed;
 }
 
-body:not([data-game-theme]) {
+body:not([data-game-theme]),
+body[data-game-theme='neutral'] {
     background-image: none;
 }

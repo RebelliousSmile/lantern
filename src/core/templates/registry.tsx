@@ -13,7 +13,7 @@ import otherscapeLoadoutItemTemplate from '@/templates/otherscape/loadout-item/d
 import otherscapePowerSetTemplate from '@/templates/otherscape/power-set/definition'
 import otherscapeThemeKitTemplate from '@/templates/otherscape/theme-kit/definition'
 import otherscapeThemeTemplate from '@/templates/otherscape/theme/definition'
-import { type AnyTemplateDefinition } from './types'
+import { type AnyTemplateDefinition, type GameId } from './types'
 
 export const templateRegistry: AnyTemplateDefinition[] = [
     dangerTemplate,
@@ -46,26 +46,34 @@ export const templateById = new Map(
     templateRegistry.map((template) => [template.id, template] as const)
 )
 
-export const templatesByGame = [
-    {
-        gameId: 'city',
-        gameLabel: 'City of Mist',
-        templates: templateRegistry.filter(
-            (template) => template.gameId === 'city'
-        ),
-    },
-    {
-        gameId: 'legend',
-        gameLabel: 'Legend in the Mist',
-        templates: templateRegistry.filter(
-            (template) => template.gameId === 'legend'
-        ),
-    },
-    {
-        gameId: 'otherscape',
-        gameLabel: ':Otherscape',
-        templates: templateRegistry.filter(
-            (template) => template.gameId === 'otherscape'
-        ),
-    },
-] as const
+export type GameGroup = {
+    gameId: GameId
+    gameLabel: string
+    templates: AnyTemplateDefinition[]
+}
+
+/*
+ * Grouped by first occurrence in `templateRegistry`, which is itself
+ * ordered game by game, so the shipped city -> legend -> otherscape
+ * display order falls out of the fold with no extra bookkeeping.
+ */
+export const templatesByGame: GameGroup[] = (() => {
+    const groups: GameGroup[] = []
+    const groupByGameId = new Map<string, GameGroup>()
+
+    for (const template of templateRegistry) {
+        let group = groupByGameId.get(template.gameId)
+        if (!group) {
+            group = {
+                gameId: template.gameId,
+                gameLabel: template.gameLabel,
+                templates: [],
+            }
+            groupByGameId.set(template.gameId, group)
+            groups.push(group)
+        }
+        group.templates.push(template)
+    }
+
+    return groups
+})()

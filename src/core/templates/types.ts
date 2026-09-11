@@ -1,6 +1,10 @@
 import type { ReactNode } from 'react'
 
-export type GameId = 'city' | 'legend' | 'otherscape'
+export type GameId = string
+
+export const CITY_GAME_ID = 'city'
+export const LEGEND_GAME_ID = 'legend'
+export const OTHERSCAPE_GAME_ID = 'otherscape'
 
 export type TemplateMode = 'landing' | 'editing'
 
