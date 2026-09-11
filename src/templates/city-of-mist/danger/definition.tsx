@@ -15,7 +15,6 @@ import {
 } from './model'
 import { DangerPreview } from './preview/DangerPreview'
 import { getSampleCityOfMistDanger } from './sample'
-import { CityOfMistDangerSchema } from './schema'
 import { exportToTOML, importFromTOMLWithWarnings } from './toml'
 
 function cloneValue<T>(value: T): T {
@@ -79,7 +78,7 @@ const dangerTemplate: AnyTemplateDefinition = {
     gameLabel: 'City of Mist',
     label: 'Danger',
     implemented: true,
-    schema: CityOfMistDangerSchema,
+    contractKey: 'mist/city-of-mist/danger',
     createBlank: blankCityOfMistDanger,
     createExample: getSampleCityOfMistDanger,
     createInitialView: () => cloneValue(defaultCityOfMistDangerView),

@@ -15,7 +15,6 @@ import {
 } from './model'
 import { ThemePreview } from './preview/ThemePreview'
 import { getSampleOtherscapeTheme } from './sample'
-import { OtherscapeThemeSchema } from './schema'
 import { exportToTOML, importFromTOMLWithWarnings } from './toml'
 
 function cloneValue<T>(value: T): T {
@@ -82,7 +81,7 @@ const themeTemplate: AnyTemplateDefinition = {
     gameLabel: ':Otherscape',
     label: 'Theme',
     implemented: true,
-    schema: OtherscapeThemeSchema,
+    contractKey: 'mist/otherscape/theme',
     createBlank: blankOtherscapeTheme,
     createExample: getSampleOtherscapeTheme,
     createInitialView: () => cloneValue(defaultOtherscapeThemeView),

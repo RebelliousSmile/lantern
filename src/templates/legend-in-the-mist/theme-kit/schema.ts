@@ -1,8 +1,7 @@
-export { LegendInTheMistThemeKitSchema } from 'schema-in-the-mist'
-export type { LegendInTheMistThemeKit } from 'schema-in-the-mist'
 export type {
+    LegendInTheMistThemeKit,
+    LegendInTheMistThemeKit as LegendInTheMistThemeKitData,
     LitmKitPublicationType as PublicationType,
-    LitmThemeKitMeta as ThemeKitMeta,
     LitmKitImprovement as ThemeKitImprovement,
+    LitmThemeKitMeta as ThemeKitMeta,
 } from '@/contracts/mist-engine'
-export type { LegendInTheMistThemeKit as LegendInTheMistThemeKitData } from 'schema-in-the-mist'

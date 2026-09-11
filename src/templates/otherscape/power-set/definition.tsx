@@ -15,7 +15,6 @@ import {
 } from './model'
 import { PowerSetPreview } from './preview/PowerSetPreview'
 import { getSampleOtherscapePowerSet } from './sample'
-import { OtherscapePowerSetSchema } from './schema'
 import { exportToTOML, importFromTOMLWithWarnings } from './toml'
 
 function cloneValue<T>(value: T): T {
@@ -82,7 +81,7 @@ const powerSetTemplate: AnyTemplateDefinition = {
     gameLabel: ':Otherscape',
     label: 'Power Set',
     implemented: true,
-    schema: OtherscapePowerSetSchema,
+    contractKey: 'mist/otherscape/power-set',
     createBlank: blankOtherscapePowerSet,
     createExample: getSampleOtherscapePowerSet,
     createInitialView: () => cloneValue(defaultOtherscapePowerSetView),

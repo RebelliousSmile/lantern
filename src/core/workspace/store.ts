@@ -1,6 +1,7 @@
+import { documentContracts } from '@/contracts/registry'
 import { templateById } from '@/core/templates/registry'
 import { toLegendInTheMistChallengeDocument } from '@/templates/legend-in-the-mist/challenge/model'
-import { LegendInTheMistChallengeSchema } from '@/templates/legend-in-the-mist/challenge/schema'
+import type { LegendInTheMistChallengeData } from '@/templates/legend-in-the-mist/challenge/schema'
 import { create } from 'zustand'
 import type { TemplateMode } from '../templates/types'
 import type { AnyWorkspaceTab, WorkspaceSnapshot, WorkspaceTab } from './types'
@@ -121,7 +122,16 @@ function migrateLegacyChallenge(): WorkspaceSnapshot | null {
             data?: unknown
         }
         const legacyData = parsed?.data
-        const validated = LegendInTheMistChallengeSchema.safeParse(legacyData)
+        /*
+         * The one place `core/` validates a document itself. It reads the schema
+         * off the registry rather than off the template's own re-export, so the
+         * legacy migration and the Challenge module share a single contract.
+         */
+        const validated = documentContracts
+            .require<LegendInTheMistChallengeData>(
+                'mist/legend-in-the-mist/challenge'
+            )
+            .schema.safeParse(legacyData)
         if (!validated.success) return null
 
         const template = templateById.get('legend.challenge')

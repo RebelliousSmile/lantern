@@ -15,7 +15,6 @@ import {
 } from './model'
 import { ChallengePreview } from './preview/ChallengePreview'
 import { getSampleOtherscapeChallenge } from './sample'
-import { OtherscapeChallengeSchema } from './schema'
 import { exportToTOML, importFromTOMLWithWarnings } from './toml'
 
 function cloneValue<T>(value: T): T {
@@ -82,7 +81,7 @@ const challengeTemplate: AnyTemplateDefinition = {
     gameLabel: ':Otherscape',
     label: 'Challenge',
     implemented: true,
-    schema: OtherscapeChallengeSchema,
+    contractKey: 'mist/otherscape/challenge',
     createBlank: blankOtherscapeChallenge,
     createExample: getSampleOtherscapeChallenge,
     createInitialView: () => cloneValue(defaultOtherscapeChallengeView),

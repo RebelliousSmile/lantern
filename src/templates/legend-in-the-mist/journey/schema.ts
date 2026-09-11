@@ -1,9 +1,8 @@
-export { LegendInTheMistJourneySchema } from 'schema-in-the-mist'
-export type { LegendInTheMistJourney } from 'schema-in-the-mist'
 export type {
-    LitmJourneyType as JourneyType,
-    LitmJourneyPublicationType as PublicationType,
     LitmJourneyMeta as JourneyMeta,
+    LitmJourneyType as JourneyType,
+    LegendInTheMistJourney,
+    LegendInTheMistJourney as LegendInTheMistJourneyData,
+    LitmJourneyPublicationType as PublicationType,
     LitmVignette as Vignette,
 } from '@/contracts/mist-engine'
-export type { LegendInTheMistJourney as LegendInTheMistJourneyData } from 'schema-in-the-mist'

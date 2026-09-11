@@ -1,8 +1,7 @@
-export { CityOfMistDangerSchema } from 'schema-in-the-mist'
-export type { CityOfMistDanger } from 'schema-in-the-mist'
 export type {
-    CityDangerPublicationType as PublicationType,
-    CitySpectrum as Spectrum,
+    CityOfMistDanger,
     CityDangerCustomMove as CustomMove,
     CityDangerMeta as DangerMeta,
+    CityDangerPublicationType as PublicationType,
+    CitySpectrum as Spectrum,
 } from '@/contracts/mist-engine'

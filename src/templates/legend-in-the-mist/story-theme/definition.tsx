@@ -15,7 +15,6 @@ import {
 } from './model'
 import { StoryThemePreview } from './preview/StoryThemePreview'
 import { getSampleLegendInTheMistStoryTheme } from './sample'
-import { LegendInTheMistStoryThemeSchema } from './schema'
 import { exportToTOML, importFromTOMLWithWarnings } from './toml'
 
 function cloneValue<T>(value: T): T {
@@ -82,7 +81,7 @@ const storyThemeTemplate: AnyTemplateDefinition = {
     gameLabel: 'Legend in the Mist',
     label: 'Story Theme',
     implemented: true,
-    schema: LegendInTheMistStoryThemeSchema,
+    contractKey: 'mist/legend-in-the-mist/story-theme',
     createBlank: blankLegendInTheMistStoryTheme,
     createExample: getSampleLegendInTheMistStoryTheme,
     createInitialView: () => cloneValue(defaultLegendInTheMistStoryThemeView),

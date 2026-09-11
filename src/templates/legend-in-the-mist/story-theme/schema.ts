@@ -1,8 +1,7 @@
-export { LegendInTheMistStoryThemeSchema } from 'schema-in-the-mist'
-export type { LegendInTheMistStoryTheme } from 'schema-in-the-mist'
 export type {
-    LitmThemeLevel as ThemeLevel,
+    LegendInTheMistStoryTheme,
+    LegendInTheMistStoryTheme as LegendInTheMistStoryThemeData,
     LitmStoryPublicationType as PublicationType,
     LitmStoryThemeMeta as StoryThemeMeta,
+    LitmThemeLevel as ThemeLevel,
 } from '@/contracts/mist-engine'
-export type { LegendInTheMistStoryTheme as LegendInTheMistStoryThemeData } from 'schema-in-the-mist'

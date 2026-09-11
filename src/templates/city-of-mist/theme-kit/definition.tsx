@@ -15,7 +15,6 @@ import {
 } from './model'
 import { ThemeKitPreview } from './preview/ThemeKitPreview'
 import { getSampleThemeKit } from './sample'
-import { CityOfMistThemeKitSchema } from './schema'
 import { exportToTOML, importFromTOMLWithWarnings } from './toml'
 
 function cloneValue<T>(value: T): T {
@@ -81,7 +80,7 @@ const themeKitTemplate: AnyTemplateDefinition = {
     gameLabel: 'City of Mist',
     label: 'Theme Kit',
     implemented: true,
-    schema: CityOfMistThemeKitSchema,
+    contractKey: 'mist/city-of-mist/theme-kit',
     createBlank: blankThemeKit,
     createExample: getSampleThemeKit,
     createInitialView: () => cloneValue(defaultThemeKitView),

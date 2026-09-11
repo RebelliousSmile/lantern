@@ -15,7 +15,6 @@ import {
 } from './model'
 import { ChallengePreview } from './preview/ChallengePreview'
 import { getSampleLegendInTheMistChallenge } from './sample'
-import { LegendInTheMistChallengeSchema } from './schema'
 import { exportToTOML, importFromTOMLWithWarnings } from './toml'
 
 function cloneValue<T>(value: T): T {
@@ -82,7 +81,7 @@ const challengeTemplate: AnyTemplateDefinition = {
     gameLabel: 'Legend in the Mist',
     label: 'Challenge',
     implemented: true,
-    schema: LegendInTheMistChallengeSchema,
+    contractKey: 'mist/legend-in-the-mist/challenge',
     createBlank: blankLegendInTheMistChallenge,
     createExample: getSampleLegendInTheMistChallenge,
     createInitialView: () => cloneValue(defaultLegendInTheMistChallengeView),

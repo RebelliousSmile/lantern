@@ -15,7 +15,6 @@ import {
 } from './model'
 import { CustomMovePreview } from './preview/CustomMovePreview'
 import { getSampleCityOfMistCustomMove } from './sample'
-import { CityOfMistCustomMoveSchema } from './schema'
 import { exportToTOML, importFromTOMLWithWarnings } from './toml'
 
 function cloneValue<T>(value: T): T {
@@ -81,7 +80,7 @@ const customMoveTemplate: AnyTemplateDefinition = {
     gameLabel: 'City of Mist',
     label: 'Custom Move',
     implemented: true,
-    schema: CityOfMistCustomMoveSchema,
+    contractKey: 'mist/city-of-mist/custom-move',
     createBlank: blankCityOfMistCustomMove,
     createExample: getSampleCityOfMistCustomMove,
     createInitialView: () => cloneValue(defaultCityOfMistCustomMoveView),

@@ -1,3 +1,4 @@
+import { documentContracts } from '@/contracts/registry'
 import cityCustomMoveTemplate from '@/templates/city-of-mist/custom-move/definition'
 import dangerTemplate from '@/templates/city-of-mist/danger/definition'
 import cityThemeCardTemplate from '@/templates/city-of-mist/theme-card/definition'
@@ -30,6 +31,16 @@ export const templateRegistry: AnyTemplateDefinition[] = [
     otherscapeThemeTemplate,
     otherscapeLoadoutItemTemplate,
 ]
+
+/*
+ * Every template's contract key has to resolve, and it has to resolve here
+ * rather than at the first import or export: a fifteenth module pointing at
+ * nothing must fail the run with its key named, not ship and break on a user's
+ * document. `require` throws with the key and the known ones.
+ */
+for (const template of templateRegistry) {
+    documentContracts.require(template.contractKey)
+}
 
 export const templateById = new Map(
     templateRegistry.map((template) => [template.id, template] as const)

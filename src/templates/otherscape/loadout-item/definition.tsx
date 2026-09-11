@@ -15,7 +15,6 @@ import {
 } from './model'
 import { LoadoutItemPreview } from './preview/LoadoutItemPreview'
 import { getSampleOtherscapeLoadoutItem } from './sample'
-import { OtherscapeLoadoutItemSchema } from './schema'
 import { exportToTOML, importFromTOMLWithWarnings } from './toml'
 
 function cloneValue<T>(value: T): T {
@@ -82,7 +81,7 @@ const loadoutItemTemplate: AnyTemplateDefinition = {
     gameLabel: ':Otherscape',
     label: 'Loadout Item',
     implemented: true,
-    schema: OtherscapeLoadoutItemSchema,
+    contractKey: 'mist/otherscape/loadout-item',
     createBlank: blankOtherscapeLoadoutItem,
     createExample: getSampleOtherscapeLoadoutItem,
     createInitialView: () => cloneValue(defaultOtherscapeLoadoutItemView),

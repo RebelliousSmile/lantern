@@ -15,7 +15,6 @@ import {
 } from './model'
 import { JourneyPreview } from './preview/JourneyPreview'
 import { getSampleLegendInTheMistJourney } from './sample'
-import { LegendInTheMistJourneySchema } from './schema'
 import { exportToTOML, importFromTOMLWithWarnings } from './toml'
 
 function cloneValue<T>(value: T): T {
@@ -82,7 +81,7 @@ const journeyTemplate: AnyTemplateDefinition = {
     gameLabel: 'Legend in the Mist',
     label: 'Journey',
     implemented: true,
-    schema: LegendInTheMistJourneySchema,
+    contractKey: 'mist/legend-in-the-mist/journey',
     createBlank: blankLegendInTheMistJourney,
     createExample: getSampleLegendInTheMistJourney,
     createInitialView: () => cloneValue(defaultLegendInTheMistJourneyView),

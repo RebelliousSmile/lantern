@@ -15,7 +15,6 @@ import {
 } from './model'
 import { CharacterTropePreview } from './preview/CharacterTropePreview'
 import { getSampleOtherscapeCharacterTrope } from './sample'
-import { OtherscapeCharacterTropeSchema } from './schema'
 import { exportToTOML, importFromTOMLWithWarnings } from './toml'
 
 function cloneValue<T>(value: T): T {
@@ -82,7 +81,7 @@ const characterTropeTemplate: AnyTemplateDefinition = {
     gameLabel: ':Otherscape',
     label: 'Character Trope',
     implemented: true,
-    schema: OtherscapeCharacterTropeSchema,
+    contractKey: 'mist/otherscape/character-trope',
     createBlank: blankOtherscapeCharacterTrope,
     createExample: getSampleOtherscapeCharacterTrope,
     createInitialView: () => cloneValue(defaultOtherscapeCharacterTropeView),

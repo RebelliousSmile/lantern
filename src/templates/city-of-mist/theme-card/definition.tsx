@@ -15,7 +15,6 @@ import {
 } from './model'
 import { ThemeCardPreview } from './preview/ThemeCardPreview'
 import { getSampleThemeCard } from './sample'
-import { CityOfMistThemeCardSchema } from './schema'
 import { exportToTOML, importFromTOMLWithWarnings } from './toml'
 
 function cloneValue<T>(value: T): T {
@@ -78,7 +77,7 @@ const themeCardTemplate: AnyTemplateDefinition = {
     gameLabel: 'City of Mist',
     label: 'Theme Card',
     implemented: true,
-    schema: CityOfMistThemeCardSchema,
+    contractKey: 'mist/city-of-mist/theme-card',
     createBlank: blankThemeCard,
     createExample: getSampleThemeCard,
     createInitialView: () => cloneValue(defaultThemeCardView),

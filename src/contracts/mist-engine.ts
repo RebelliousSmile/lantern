@@ -1,4 +1,5 @@
 import {
+    CityOfMistDangerSchema,
     MIST_ENGINE_CODECS,
     type CityOfMistCustomMove,
     type CityOfMistDanger,
@@ -15,10 +16,33 @@ import {
     type OtherscapeTheme,
     type OtherscapeThemeKit,
 } from 'schema-in-the-mist'
+import type { z } from 'zod'
 import {
     toDocumentContracts,
     type AnyDocumentContract,
 } from './documentContract'
+
+/**
+ * The fourteen document types, re-exported so a template module names the
+ * contracts layer rather than the package. The dependency stays one import deep:
+ * swapping a package version, or a package, is an edit here and nowhere else.
+ */
+export type {
+    CityOfMistCustomMove,
+    CityOfMistDanger,
+    CityOfMistThemeCard,
+    CityOfMistThemeKit,
+    LegendInTheMistChallenge,
+    LegendInTheMistJourney,
+    LegendInTheMistStoryTheme,
+    LegendInTheMistThemeKit,
+    OtherscapeChallenge,
+    OtherscapeCharacterTrope,
+    OtherscapeLoadoutItem,
+    OtherscapePowerSet,
+    OtherscapeTheme,
+    OtherscapeThemeKit,
+}
 
 type Item<Value> =
     NonNullable<Value> extends readonly (infer Entry)[] ? Entry : never
@@ -36,10 +60,16 @@ export type CityCustomMoveMeta = Meta<CityOfMistCustomMove>
 
 export type CityDangerPublicationType =
     Meta<CityOfMistDanger>['publication_type']
-export type CitySpectrum = Omit<
-    Item<CityOfMistDanger['spectrums']>,
-    'is_countdown'
-> & { is_countdown?: boolean }
+/**
+ * The pre-parse shape, not the parsed one. Lantern's forms build a spectrum
+ * before the schema has applied its defaults, so `maximum`, `is_immune` and
+ * `is_countdown` are still absent there while the parsed document has them all.
+ * `z.input` takes that distinction from the contract instead of restating it:
+ * a default the package adds or drops lands here on its own.
+ */
+export type CitySpectrum = Item<
+    z.input<typeof CityOfMistDangerSchema>['spectrums']
+>
 export type CityDangerCustomMove = Item<CityOfMistDanger['custom_moves']>
 export type CityDangerMeta = Meta<CityOfMistDanger>
 

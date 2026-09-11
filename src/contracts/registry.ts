@@ -1,12 +1,21 @@
-import type { AnyDocumentContract } from './documentContract'
+import type { AnyDocumentContract, DocumentContract } from './documentContract'
 import { mistDocumentContracts } from './mist-engine'
 import { pbtaDocumentContracts } from './pbta'
 
 export type DocumentContractRegistry = {
     has: (key: string) => boolean
-    get: (key: string) => AnyDocumentContract | undefined
+    /**
+     * The document generic is a claim the caller makes, not a check the registry
+     * performs: a key is a string and the table is heterogeneous. It is here so a
+     * call site keeps the document type it had when it imported the codec by name,
+     * and so the unsoundness lives on this one line rather than in fourteen
+     * modules that would otherwise hand `any` to their model functions.
+     */
+    get: <TDocument = unknown>(
+        key: string
+    ) => DocumentContract<TDocument> | undefined
     /** Same as `get`, but names the key and the known ones when it resolves to nothing. */
-    require: (key: string) => AnyDocumentContract
+    require: <TDocument = unknown>(key: string) => DocumentContract<TDocument>
     keys: () => string[]
     all: () => AnyDocumentContract[]
     byContract: (contractId: string) => AnyDocumentContract[]

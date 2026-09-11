@@ -1,9 +1,19 @@
-import { cityOfMistCustomMoveCodec } from 'schema-in-the-mist'
 import {
     carryCanonicalSource,
     stringifyCanonical,
 } from '@/contracts/mist-engine'
-import { toCityOfMistCustomMoveDocument, toCityOfMistCustomMovePayload, type CityOfMistCustomMove } from './model'
+import { documentContracts } from '@/contracts/registry'
+import {
+    toCityOfMistCustomMoveDocument,
+    toCityOfMistCustomMovePayload,
+    type CityOfMistCustomMove,
+} from './model'
+import type { CityOfMistCustomMove as Published } from './schema'
+
+/* Resolved at module load: an unknown key fails here, not at the first import. */
+const contract = documentContracts.require<Published>(
+    'mist/city-of-mist/custom-move'
+)
 
 export const importFromTOML = (tomlText: string) =>
     importFromTOMLWithWarnings(tomlText)
@@ -12,13 +22,20 @@ export function importFromTOMLWithWarnings(tomlText: string): {
     cityOfMistCustomMove: CityOfMistCustomMove
     warnings: string[]
 } {
-    const parsed = cityOfMistCustomMoveCodec.parseToml(tomlText)
+    const parsed = contract.parseToml(tomlText)
     return {
-        cityOfMistCustomMove: carryCanonicalSource(toCityOfMistCustomMoveDocument(parsed), parsed),
+        cityOfMistCustomMove: carryCanonicalSource(
+            toCityOfMistCustomMoveDocument(parsed),
+            parsed
+        ),
         warnings: [],
     }
 }
 
 export function exportToTOML(document: CityOfMistCustomMove): string {
-    return stringifyCanonical(cityOfMistCustomMoveCodec, document, toCityOfMistCustomMovePayload(document))
+    return stringifyCanonical(
+        contract,
+        document,
+        toCityOfMistCustomMovePayload(document)
+    )
 }

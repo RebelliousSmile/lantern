@@ -1,9 +1,19 @@
-import { otherscapeThemeKitCodec } from 'schema-in-the-mist'
 import {
     carryCanonicalSource,
     stringifyCanonical,
 } from '@/contracts/mist-engine'
-import { toOtherscapeThemeKitDocument, toOtherscapeThemeKitPayload, type OtherscapeThemeKit } from './model'
+import { documentContracts } from '@/contracts/registry'
+import {
+    toOtherscapeThemeKitDocument,
+    toOtherscapeThemeKitPayload,
+    type OtherscapeThemeKit,
+} from './model'
+import type { OtherscapeThemeKit as Published } from './schema'
+
+/* Resolved at module load: an unknown key fails here, not at the first import. */
+const contract = documentContracts.require<Published>(
+    'mist/otherscape/theme-kit'
+)
 
 export const importFromTOML = (tomlText: string) =>
     importFromTOMLWithWarnings(tomlText)
@@ -12,13 +22,20 @@ export function importFromTOMLWithWarnings(tomlText: string): {
     otherscapeThemeKit: OtherscapeThemeKit
     warnings: string[]
 } {
-    const parsed = otherscapeThemeKitCodec.parseToml(tomlText)
+    const parsed = contract.parseToml(tomlText)
     return {
-        otherscapeThemeKit: carryCanonicalSource(toOtherscapeThemeKitDocument(parsed), parsed),
+        otherscapeThemeKit: carryCanonicalSource(
+            toOtherscapeThemeKitDocument(parsed),
+            parsed
+        ),
         warnings: [],
     }
 }
 
 export function exportToTOML(document: OtherscapeThemeKit): string {
-    return stringifyCanonical(otherscapeThemeKitCodec, document, toOtherscapeThemeKitPayload(document))
+    return stringifyCanonical(
+        contract,
+        document,
+        toOtherscapeThemeKitPayload(document)
+    )
 }
