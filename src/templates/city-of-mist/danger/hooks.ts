@@ -142,7 +142,10 @@ export function useCityOfMistDangerStore() {
                 arr[index] = {
                     ...prev,
                     ...update,
-                    name: strOrFallback(update.name ?? prev.name, prev.name),
+                    name: strOrFallback(
+                        update.name ?? prev.name ?? '',
+                        prev.name ?? 'Untitled custom move'
+                    ),
                     maximum: clamp(update.maximum ?? prev.maximum, 1, 6),
                     is_immune: !!(update.is_immune ?? prev.is_immune),
                 }
@@ -177,7 +180,7 @@ export function useCityOfMistDangerStore() {
                 custom_moves: [
                     ...current.custom_moves,
                     {
-                        name: customMove.name.trim(),
+                        name: customMove.name?.trim() || 'Untitled custom move',
                         description: strOrFallback(
                             customMove.description,
                             'Describe the custom move.'
@@ -194,7 +197,10 @@ export function useCityOfMistDangerStore() {
                 arr[index] = {
                     ...prev,
                     ...update,
-                    name: strOrFallback(update.name ?? prev.name, prev.name),
+                    name: strOrFallback(
+                        update.name ?? prev.name ?? '',
+                        prev.name ?? 'Untitled custom move'
+                    ),
                     description: strOrFallback(
                         update.description ?? prev.description,
                         prev.description

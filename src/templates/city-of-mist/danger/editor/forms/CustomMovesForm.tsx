@@ -98,7 +98,7 @@ export default function CustomMovesForm({
         const customMove = cityOfMistDanger.custom_moves[index]
         if (!customMove) return
         setEditingIndex(index)
-        setName(customMove.name)
+        setName(customMove.name ?? '')
         setDescription(customMove.description)
         setError(null)
     }
@@ -147,7 +147,7 @@ export default function CustomMovesForm({
                                 <SortableCustomMoveRow
                                     key={itemIds[index]}
                                     id={itemIds[index]}
-                                    name={customMove.name}
+                                    name={customMove.name ?? 'Untitled custom move'}
                                     description={customMove.description}
                                     dragDisabled={editingIndex !== null}
                                     onEdit={() => startEdit(index)}

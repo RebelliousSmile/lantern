@@ -1,52 +1,24 @@
-import { parse as tomlParse, stringify as tomlStringify } from 'smol-toml'
+import { otherscapePowerSetCodec } from 'schema-in-the-mist'
 import {
-    toOtherscapePowerSetDocument,
-    toOtherscapePowerSetPayload,
-    type OtherscapePowerSet,
-} from './model'
-import { OtherscapePowerSetSchema } from './schema'
-import { computeOtherscapePowerSetWarnings } from './warnings'
+    carryCanonicalSource,
+    stringifyCanonical,
+} from '@/contracts/mist-engine'
+import { toOtherscapePowerSetDocument, toOtherscapePowerSetPayload, type OtherscapePowerSet } from './model'
 
-function formatIssues(error: {
-    issues: { path: PropertyKey[]; message: string }[]
-}) {
-    return error.issues
-        .map((issue) => `${issue.path.join('.') || 'root'}: ${issue.message}`)
-        .join('\n')
-}
-
-/** Import and validate. Throws with a readable message on errors. */
-export const importFromTOML = (t: string) => importFromTOMLWithWarnings(t)
+export const importFromTOML = (tomlText: string) =>
+    importFromTOMLWithWarnings(tomlText)
 
 export function importFromTOMLWithWarnings(tomlText: string): {
     otherscapePowerSet: OtherscapePowerSet
     warnings: string[]
 } {
-    const raw = tomlParse(tomlText) // may throw if not TOML
-    const parsed = OtherscapePowerSetSchema.safeParse(raw)
-
-    if (!parsed.success) {
-        throw new Error(formatIssues(parsed.error))
+    const parsed = otherscapePowerSetCodec.parseToml(tomlText)
+    return {
+        otherscapePowerSet: carryCanonicalSource(toOtherscapePowerSetDocument(parsed), parsed),
+        warnings: [],
     }
-
-    const otherscapePowerSet = toOtherscapePowerSetDocument(parsed.data)
-    const warnings = computeOtherscapePowerSetWarnings(otherscapePowerSet)
-    return { otherscapePowerSet, warnings }
 }
 
-/**
- * Ensure we only export validated data, and only the fields that carry
- * something: an untouched optional field would otherwise be written out as an
- * empty value and read back as deliberate.
- */
-export function exportToTOML(otherscapePowerSet: OtherscapePowerSet): string {
-    const payload = toOtherscapePowerSetPayload(otherscapePowerSet)
-    const parsed = OtherscapePowerSetSchema.safeParse(payload)
-    if (!parsed.success) {
-        throw new Error(
-            `Cannot export: data is invalid.\n${formatIssues(parsed.error)}`
-        )
-    }
-
-    return tomlStringify(payload as any)
+export function exportToTOML(document: OtherscapePowerSet): string {
+    return stringifyCanonical(otherscapePowerSetCodec, document, toOtherscapePowerSetPayload(document))
 }
