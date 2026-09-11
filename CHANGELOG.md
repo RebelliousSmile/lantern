@@ -5,6 +5,27 @@ All notable changes to this project are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.6.0] - 2026-09-11
+
+### Added
+
+- **The document schemas and codecs now come from a published package.** `schema-in-the-mist@v1.0.0`
+  is a real dependency; the fourteen `src/templates/<game>/<object>/schema.ts` are re-exports of the
+  published symbols, and every `toml.ts` reads and writes through the canonical codecs wrapped by
+  `src/contracts/mist-engine.ts`. A format is authored and released in the schema repository, then
+  consumed here.
+- **A round-trip guard over Lantern's own template modules.** `npm run assert:mist-contract` no
+  longer stops at the package's codecs: it imports the seventeen `accept` witnesses of the shipped
+  contract corpus through the fourteen template modules and asserts that each one exports back
+  without losing a field, the second export byte-identical to the first. A published target with no
+  module in this repo fails the run instead of passing unnoticed.
+
+### Fixed
+
+- The import dialog no longer claims a template detection it never performed. It announces the
+  document that was read — `Imported "The Reading I Cannot Stop"` — and falls back to a plain
+  `Imported.` when the file carries no name, instead of borrowing the active template's label.
+
 ## [v0.5.1] - 2026-09-10
 
 ### Added
