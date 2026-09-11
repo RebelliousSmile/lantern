@@ -4,7 +4,7 @@ Every template is a self-contained module, registered once. Nothing in the shell
 
 ## Before writing any code
 
-**The schema comes first, and it comes from the other repository.** Document formats are authored in [schema-in-the-mist](https://github.com/RebelliousSmile/schema-in-the-mist) and then vendored by hand into `src/templates/<game>/<object>/schema.ts`. There is no package dependency and no sync script. Writing the schema here first inverts the order and leaves the published format behind.
+**The schema comes first, and it comes from the other repository.** Document formats are authored and released in one of three published packages — `schema-in-the-mist`, `schema-pbta`, `schema-adrenaline` (a dev-only dependency, see the memory bank's `architecture.md`) — pinned as an archive dependency in `package.json`. A template's own `schema.ts` is a **type-only re-export** of the published symbol, kept for callers' sake; it carries no runtime Zod object. Writing the schema here first, or editing a `schema.ts` expecting a shape change, inverts the order and does nothing: the shape a document is checked against at runtime comes from the contract registry (`documentContracts` / `nodeDocumentContracts`), keyed by `<contract>/<target>`, not from the file's own export.
 
 ## Folder layout
 
@@ -17,7 +17,7 @@ src/templates/<game>/<object>/
 ```text
 definition.tsx   registry entry, landing copy, export actions
 model.ts         doc / view / sheet types and factories
-schema.ts        Zod validation, vendored from the schema repo
+schema.ts        type-only re-export of the published package's schema
 metadata.ts      section list, zoom and background options
 sample.ts        the worked example the landing screen offers
 toml.ts          TOML import and export
@@ -42,11 +42,11 @@ Keep `view` to appearance and export concerns and `sheet` to editor selection. *
 
 ### 2. Validation and sample data
 
-`schema.ts` carries the vendored Zod schema and normalises loose input. `sample.ts` exports one rich example — it is what the landing screen offers, so make it show the template off.
+`schema.ts` re-exports the published package's schema type; it does no normalisation of its own. `sample.ts` exports one rich example — it is what the landing screen offers, so make it show the template off.
 
 ### 3. Import and export helpers
 
-In `toml.ts`, implement import and export, validate through the schema, and return warnings for soft issues that should not block an import. `warnings.ts` holds the warning logic when there is more than a line of it.
+In `toml.ts`, implement import and export against the contract's codec, resolved with `documentContracts.require('<contract>/<target>')` (or `nodeDocumentContracts` if the contract is Node-only) — that call is what actually validates, not the local `schema.ts`. Return warnings for soft issues that should not block an import. `warnings.ts` holds the warning logic when there is more than a line of it.
 
 Watch the passthrough trap: an import that spreads `payload.meta` (or any sub-object) straight into the document carries fields the schema never declared into the store. Pick the fields you mean.
 
@@ -62,35 +62,36 @@ Selectors hand out **live references** into the store, so never mutate what one 
 
 In `preview/`, build the renderer and split it into `preview/blocks/`, one block per region of the printed sheet. Route every section's click through the template's sheet hook.
 
-The stylesheet lives beside it and **must be scoped**: every depth-0 selector descends from the game's root class (`.city-doc`, `.litm-doc`, `.os-card`), the sheet's own root selector *compounds* with that class, and every class of your own carries a per-document prefix (`city-card-`, `city-kit-`, …). Preview stylesheets are bundled globally and inactive tabs stay mounted, so an unscoped generic name like `.section-title` will repaint another game's card.
+The stylesheet lives beside it and **must be scoped**: every depth-0 selector descends from the game's root class (`.city-doc`, `.litm-doc`, `.os-card`), the sheet's own root selector _compounds_ with that class, and every class of your own carries a per-document prefix (`city-card-`, `city-kit-`, …). Preview stylesheets are bundled globally and inactive tabs stay mounted, so an unscoped generic name like `.section-title` will repaint another game's card.
 
 In `editor/`, build the panel that resolves `sheet.target`, the forms it needs, and the appearance panel for template-specific settings.
 
-Two vocabularies that are easy to conflate: `sheet.target.kind` decides *which form opens* and is per template; the `SectionId` list in `metadata.ts` drives the appearance panel's show/hide toggles and the definition's `sections`. They are different lists.
+Two vocabularies that are easy to conflate: `sheet.target.kind` decides _which form opens_ and is per template; the `SectionId` list in `metadata.ts` drives the appearance panel's show/hide toggles and the definition's `sections`. They are different lists.
 
 Every clickable preview region needs a matching editor target — a field with no way to open its form is unreachable.
 
 ### 6. Register it
 
-`definition.tsx` exports a `TemplateDefinition` wiring identity and labels, schema, blank/example creators, initial view and sheet, tab title logic, landing copy, the section list, the preview renderer, the editor panel, the appearance panel and the export actions.
+`definition.tsx` exports a `TemplateDefinition` wiring identity and labels, schema, blank/example creators, initial view and sheet, tab title logic, landing copy, the section list, the preview renderer, the editor panel, the appearance panel, the export actions, and a `contractKey: string` (`<contract>/<target>`, e.g. `pbta/playbook`) naming the registry entry `toml.ts` resolves against.
 
-Then add the module to `src/core/templates/registry.tsx`. Adding a template to a game that already exists needs no other edit — `templatesByGame` derives its entries with a `filter` on `gameId`.
+Then add the module to `src/core/templates/registry.tsx`. Adding a template to a game that already exists needs no other edit — `templatesByGame` is a fold over `templateRegistry` that groups by `gameId` on first occurrence. A load-time loop (`registry.tsx:45-47`) calls `documentContracts.require(template.contractKey)` for every template, so a typo'd `contractKey` fails immediately at load rather than at the first export.
 
 ## Export actions
 
 Export actions are the extension point beyond the shell's own chrome. Each declares `id`, `label`, `description`, an optional `renderSettings`, and `run(context)`, and uses the given context rather than reaching back into global state.
 
-Every module ships a TOML action and a local `createImageExportAction`, which captures the live preview node with `@zumer/snapdom`. That helper is currently **duplicated in each definition** rather than shared — copy the neighbouring module's version and keep the duplication consistent rather than inventing a variant.
+Every module ships a TOML action and the shared `createImageExportAction` (`src/core/templates/shell/imageExportAction.ts`), imported by every game's `definition.tsx` rather than reimplemented. Call it with `{ description, renderSettings }`; it captures the live preview node with `@zumer/snapdom` at the view's `exportPrefs.scale`, handles the missing-node and capture-failure toasts, and downloads `<fileStem>@<scale>x.png`. Write a new export action only for a genuinely different format — do not fork this one.
 
 ## Adding a whole game
 
-Much more expensive than adding a template, and it touches the shell:
+No longer the expensive step it once was. `GameId` is a bare `string`, `gameThemeRegistry` is a
+`Partial` map that falls back to a `neutralGameTheme` constant for any game with no entry, and
+`templatesByGame` derives itself from `templateRegistry` — none of the three needs an edit, and a
+themeless game degrades to no page background in `game-themes.css` instead of needing a new rule.
+The one real cost that remains:
 
-- a new `GameId` in `src/core/templates/types.ts`
-- an entry in the exhaustive `gameThemeRegistry` in `src/core/gameThemes.ts`
-- an entry in the `templatesByGame` literal in `src/core/templates/registry.tsx`
-- a background rule in `src/styles/game-themes.css`
-- a new scope root class, applied to every preview wrapper of that game
+- a new scope root class, applied to every preview wrapper of that game (see the memory bank's
+  `design.md`, "One scope root per game")
 
 ## Verification checklist
 
