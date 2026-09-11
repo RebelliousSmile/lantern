@@ -1,0 +1,116 @@
+/* The Playbook card. Ground, ink, type stack and the section-header
+   primitives come from `shared/tokens.css`; every rule below is scoped
+   under `.pbta-card` and named `pbta-pb-`, so this card cannot reach a
+   game definition sheet and neither can reach it. */
+
+@import '../../shared/tokens.css';
+
+.pbta-card.pbta-playbook-sheet {
+    padding: 1rem 1.15rem;
+    width: 100%;
+}
+
+/* ---------- Header ---------- */
+
+.pbta-card .pbta-pb-header {
+    margin-bottom: 0.6rem;
+    border-bottom: 3px solid var(--pbta-ink);
+    padding-bottom: 0.5rem;
+}
+
+.pbta-card .pbta-pb-title {
+    margin: 0;
+    font-size: 2rem;
+    line-height: 0.95;
+}
+
+.pbta-card .pbta-pb-header-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.35rem;
+}
+
+.pbta-card .pbta-pb-badge {
+    border: 1px solid var(--pbta-edge);
+    border-radius: 999px;
+    padding: 0.05rem 0.45rem;
+    font-weight: 700;
+    font-size: 0.65rem;
+    font-family: var(--pbta-font-label);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.pbta-card .pbta-pb-description {
+    margin: 0.4rem 0 0;
+    font-size: 0.9rem;
+}
+
+/* ---------- Flow ---------- */
+
+.pbta-card .pbta-pb-flow {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.pbta-card .pbta-pb-separator {
+    margin: 0.3rem 0;
+    border: 0;
+    border-top: 1px solid var(--pbta-line);
+}
+
+.pbta-card .pbta-pb-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    font-size: 0.92rem;
+    line-height: 1.3;
+    font-family: var(--pbta-font-body);
+}
+
+.pbta-card .pbta-pb-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+}
+
+/* ---------- Lists (stats, attributes, moves, gear...) ---------- */
+
+.pbta-card .pbta-pb-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.pbta-card .pbta-pb-list-item {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.4rem;
+}
+
+.pbta-card .pbta-pb-list-item__key {
+    color: var(--pbta-ink-soft);
+    font-weight: 700;
+    font-size: 0.7rem;
+    font-family: var(--pbta-font-label);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.pbta-card .pbta-pb-empty-row {
+    color: var(--pbta-ink-faint);
+    font-style: italic;
+}
+
+/* The drop shadow is a screen affordance; a PNG of the card should not
+   carry it. */
+.exporting .pbta-card.pbta-playbook-sheet {
+    box-shadow: none;
+}

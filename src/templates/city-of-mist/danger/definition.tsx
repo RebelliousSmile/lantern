@@ -1,5 +1,5 @@
+import { createImageExportAction } from '@/core/templates/shell/imageExportAction'
 import type { AnyTemplateDefinition } from '@/core/templates/types'
-import { snapdom, type CaptureResult } from '@zumer/snapdom'
 import { toast } from 'sonner'
 import { DangerAppearancePanel } from './editor/DangerAppearancePanel'
 import { DangerEditorPanel } from './editor/DangerEditorPanel'
@@ -23,53 +23,6 @@ function cloneValue<T>(value: T): T {
     }
 
     return JSON.parse(JSON.stringify(value)) as T
-}
-
-function createImageExportAction() {
-    return {
-        id: 'png',
-        label: 'PNG',
-        buttonLabel: 'Export PNG',
-        description: 'Export the current danger preview as PNG.',
-        renderSettings: () => <DangerImageExportSettings />,
-        run: async ({
-            fileStem,
-            getPreviewNode,
-            view,
-        }: {
-            fileStem: string
-            getPreviewNode: () => HTMLElement | null
-            view: CityOfMistDangerViewState
-        }) => {
-            const node = getPreviewNode()
-            if (!node) {
-                toast.error(
-                    'Preview not found. Make sure the preview is visible.'
-                )
-                return
-            }
-
-            node.classList.add('exporting')
-            try {
-                const pixelRatio = Number(view.exportPrefs.scale) || 1
-                const snap: CaptureResult = await snapdom(node, {
-                    scale: pixelRatio,
-                    embedFonts: true,
-                })
-
-                await snap.download({
-                    type: 'png',
-                    filename: `${fileStem}@${pixelRatio}x.png`,
-                })
-
-                toast.success('Exported PNG.')
-            } catch (errorAny: any) {
-                toast.error(errorAny?.message || 'Failed to export PNG.')
-            } finally {
-                node.classList.remove('exporting')
-            }
-        },
-    }
 }
 
 const dangerTemplate: AnyTemplateDefinition = {
@@ -152,7 +105,10 @@ const dangerTemplate: AnyTemplateDefinition = {
                     }
                 },
             },
-            createImageExportAction(),
+            createImageExportAction({
+                description: 'Export the current danger preview as PNG.',
+                renderSettings: () => <DangerImageExportSettings />,
+            }),
         ],
     },
 }

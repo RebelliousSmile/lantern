@@ -18,9 +18,16 @@ import {
 } from 'schema-in-the-mist'
 import type { z } from 'zod'
 import {
+    carryCanonicalSource,
+    overlayCanonicalSource,
+    stringifyCanonical,
+} from './canonicalSource'
+import {
     toDocumentContracts,
     type AnyDocumentContract,
 } from './documentContract'
+
+export { carryCanonicalSource, overlayCanonicalSource, stringifyCanonical }
 
 /**
  * The fourteen document types, re-exported so a template module names the
@@ -169,42 +176,15 @@ export type OsKitThemeType = OtherscapeThemeKit['theme_type']
 export type OsKitPublicationType = Meta<OtherscapeThemeKit>['publication_type']
 export type OsThemeKitMeta = Meta<OtherscapeThemeKit>
 
-const SOURCE = '__canonicalSource'
-
-export function carryCanonicalSource<
-    Form extends object,
-    Canonical extends object,
->(form: Form, source: Canonical): Form {
-    return Object.assign(form, { [SOURCE]: source })
-}
-
-export function overlayCanonicalSource<
-    Form extends object,
-    Owned extends object = Form,
->(form: Form, owned: Owned = form as unknown as Owned): Owned {
-    const carrier = form as Form & { [SOURCE]?: object }
-    const { [SOURCE]: source } = carrier
-    const clean = { ...owned } as Owned & { [SOURCE]?: object }
-    delete clean[SOURCE]
-    return { ...source, ...clean } as Owned
-}
-
 export { MIST_ENGINE_CODECS }
 
 /**
  * The fourteen Mist targets as registry entries, keyed `mist/<game>/<object>`.
- * The codecs are the package's own; the canonical-source carry below stays where
- * it is, since it wraps a module's call site, not the codec.
+ * The codecs are the package's own; the canonical-source carry lives in
+ * `./canonicalSource`, game-agnostic, and is re-exported here for the fourteen
+ * `toml.ts` modules that already import it from this path.
  */
 export const mistDocumentContracts: AnyDocumentContract[] = toDocumentContracts(
     'mist',
     MIST_ENGINE_CODECS
 )
-
-export function stringifyCanonical(
-    codec: { stringifyToml(value: any): string },
-    form: object,
-    owned: object = form
-): string {
-    return codec.stringifyToml(overlayCanonicalSource(form, owned))
-}

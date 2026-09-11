@@ -1,0 +1,107 @@
+/* Shared vocabulary for every Powered by the Apocalypse card: ground, ink,
+   accent and type. Independent from the Mist games on purpose - PbtA is not
+   a Mist Engine game, so this file must not reuse a Mist class name
+   (`section-title`, `section-line`, ...) or a Mist palette. Every selector
+   here is scoped under `.pbta-card`; a card's own root compounds
+   (`.pbta-card.pbta-playbook-sheet`) rather than nesting, because the sheet
+   class sits on the `.pbta-card` element itself. Fonts are the three
+   `@fontsource` faces already bundled and loaded eagerly in `main.tsx`, so a
+   PbtA export carries no runtime font dependency. */
+
+.pbta-card {
+    /* Ground. A duplicated-zine paper: warm cream stock, not Mist's parchment
+       brown or :Otherscape's near-black navy. */
+    --pbta-paper: #f2ead9;
+    --pbta-paper-deep: #e7dcc3;
+    --pbta-surface: #faf6ec;
+    --pbta-edge: rgba(28, 26, 23, 0.16);
+
+    /* Ink. Near-black, never pure black, so a large fill does not read as UI
+       chrome. */
+    --pbta-ink: #211d18;
+    --pbta-ink-soft: #5c5548;
+    --pbta-ink-faint: rgba(33, 29, 24, 0.45);
+    --pbta-ink-inverse: #faf6ec;
+
+    /* Accent. One hot mimeograph red carries emphasis and danger; ochre
+       carries progress (clocks, xp, resources). */
+    --pbta-accent: #c23b22;
+    --pbta-accent-ink: #faf6ec;
+    --pbta-progress: #c98a2c;
+    --pbta-progress-ink: #211d18;
+
+    --pbta-line: rgba(33, 29, 24, 0.28);
+    --pbta-radius: 3px;
+
+    --pbta-font-display: 'Bebas Neue', 'Arial Narrow', sans-serif;
+    --pbta-font-label: 'Fira Sans Extra Condensed', 'Arial Narrow', sans-serif;
+    --pbta-font-body: 'PT Serif', Georgia, serif;
+}
+
+.pbta-card {
+    box-shadow:
+        0 10px 24px rgba(0, 0, 0, 0.28),
+        0 0 0 1px var(--pbta-edge);
+    border-radius: var(--pbta-radius);
+    background: var(--pbta-paper);
+    overflow: hidden;
+    color: var(--pbta-ink);
+    font-family: var(--pbta-font-body);
+}
+
+.pbta-card .pbta-display {
+    font-weight: 400;
+    font-family: var(--pbta-font-display);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.pbta-card .pbta-label {
+    color: var(--pbta-ink-soft);
+    font-weight: 900;
+    font-size: 0.6rem;
+    font-family: var(--pbta-font-label);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+}
+
+.pbta-card .pbta-placeholder {
+    opacity: 0.8;
+    font-style: italic;
+    text-decoration: underline dotted;
+    text-transform: none;
+}
+
+/* ---------- Section header ---------- */
+.pbta-card .pbta-section-title {
+    color: var(--pbta-ink-soft);
+    font-weight: 900;
+    font-size: 0.58rem;
+    font-family: var(--pbta-font-label);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.pbta-card .pbta-section-line {
+    background: linear-gradient(
+        90deg,
+        var(--pbta-accent) 0%,
+        var(--pbta-line) 100%
+    );
+    height: 2px;
+}
+
+.pbta-card .pbta-section--left {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: 8px;
+}
+
+.pbta-card .pbta-section--center {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 6px;
+}

@@ -1,5 +1,5 @@
+import { createImageExportAction } from '@/core/templates/shell/imageExportAction'
 import type { AnyTemplateDefinition } from '@/core/templates/types'
-import { snapdom, type CaptureResult } from '@zumer/snapdom'
 import { toast } from 'sonner'
 import { CustomMoveAppearancePanel } from './editor/CustomMoveAppearancePanel'
 import { CustomMoveEditorPanel } from './editor/CustomMoveEditorPanel'
@@ -23,55 +23,6 @@ function cloneValue<T>(value: T): T {
     }
 
     return JSON.parse(JSON.stringify(value)) as T
-}
-
-/* PNG is the only image the card exports, so the format is written in rather
-   than passed in. */
-function createImageExportAction() {
-    return {
-        id: 'png',
-        label: 'PNG',
-        buttonLabel: 'Export PNG',
-        description: 'Export the current custom move card as PNG.',
-        renderSettings: () => <CustomMoveImageExportSettings />,
-        run: async ({
-            fileStem,
-            getPreviewNode,
-            view,
-        }: {
-            fileStem: string
-            getPreviewNode: () => HTMLElement | null
-            view: CityOfMistCustomMoveViewState
-        }) => {
-            const node = getPreviewNode()
-            if (!node) {
-                toast.error(
-                    'Preview not found. Make sure the preview is visible.'
-                )
-                return
-            }
-
-            node.classList.add('exporting')
-            try {
-                const pixelRatio = Number(view.exportPrefs.scale) || 1
-                const snap: CaptureResult = await snapdom(node, {
-                    scale: pixelRatio,
-                    embedFonts: true,
-                })
-
-                await snap.download({
-                    type: 'png',
-                    filename: `${fileStem}@${pixelRatio}x.png`,
-                })
-
-                toast.success('Exported PNG.')
-            } catch (errorAny: any) {
-                toast.error(errorAny?.message || 'Failed to export PNG.')
-            } finally {
-                node.classList.remove('exporting')
-            }
-        },
-    }
 }
 
 const customMoveTemplate: AnyTemplateDefinition = {
@@ -156,7 +107,10 @@ const customMoveTemplate: AnyTemplateDefinition = {
                     }
                 },
             },
-            createImageExportAction(),
+            createImageExportAction({
+                description: 'Export the current custom move card as PNG.',
+                renderSettings: () => <CustomMoveImageExportSettings />,
+            }),
         ],
     },
 }

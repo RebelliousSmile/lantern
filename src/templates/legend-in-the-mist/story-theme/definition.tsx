@@ -1,5 +1,5 @@
+import { createImageExportAction } from '@/core/templates/shell/imageExportAction'
 import type { AnyTemplateDefinition } from '@/core/templates/types'
-import { snapdom, type CaptureResult } from '@zumer/snapdom'
 import { toast } from 'sonner'
 import { StoryThemeAppearancePanel } from './editor/StoryThemeAppearancePanel'
 import { StoryThemeEditorPanel } from './editor/StoryThemeEditorPanel'
@@ -23,56 +23,6 @@ function cloneValue<T>(value: T): T {
     }
 
     return JSON.parse(JSON.stringify(value)) as T
-}
-
-function createImageExportAction(format: 'png') {
-    return {
-        id: format,
-        label: format.toUpperCase(),
-        buttonLabel: `Export ${format.toUpperCase()}`,
-        description: `Export the current story theme preview as ${format.toUpperCase()}.`,
-        renderSettings: () => <StoryThemeImageExportSettings />,
-        run: async ({
-            fileStem,
-            getPreviewNode,
-            view,
-        }: {
-            fileStem: string
-            getPreviewNode: () => HTMLElement | null
-            view: LegendInTheMistStoryThemeViewState
-        }) => {
-            const node = getPreviewNode()
-            if (!node) {
-                toast.error(
-                    'Preview not found. Make sure the preview is visible.'
-                )
-                return
-            }
-
-            node.classList.add('exporting')
-            try {
-                const pixelRatio = Number(view.exportPrefs.scale) || 1
-                const snap: CaptureResult = await snapdom(node, {
-                    scale: pixelRatio,
-                    embedFonts: true,
-                })
-
-                await snap.download({
-                    type: format,
-                    filename: `${fileStem}@${pixelRatio}x.${format}`,
-                })
-
-                toast.success(`Exported ${format.toUpperCase()}.`)
-            } catch (errorAny: any) {
-                toast.error(
-                    errorAny?.message ||
-                        `Failed to export ${format.toUpperCase()}.`
-                )
-            } finally {
-                node.classList.remove('exporting')
-            }
-        },
-    }
 }
 
 const storyThemeTemplate: AnyTemplateDefinition = {
@@ -159,7 +109,10 @@ const storyThemeTemplate: AnyTemplateDefinition = {
                     }
                 },
             },
-            createImageExportAction('png'),
+            createImageExportAction({
+                description: 'Export the current story theme preview as PNG.',
+                renderSettings: () => <StoryThemeImageExportSettings />,
+            }),
         ],
     },
 }

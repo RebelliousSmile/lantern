@@ -13,6 +13,8 @@ import otherscapeLoadoutItemTemplate from '@/templates/otherscape/loadout-item/d
 import otherscapePowerSetTemplate from '@/templates/otherscape/power-set/definition'
 import otherscapeThemeKitTemplate from '@/templates/otherscape/theme-kit/definition'
 import otherscapeThemeTemplate from '@/templates/otherscape/theme/definition'
+import gameDefinitionTemplate from '@/templates/pbta/game-definition/definition'
+import playbookTemplate from '@/templates/pbta/playbook/definition'
 import { type AnyTemplateDefinition, type GameId } from './types'
 
 export const templateRegistry: AnyTemplateDefinition[] = [
@@ -30,6 +32,8 @@ export const templateRegistry: AnyTemplateDefinition[] = [
     otherscapeThemeKitTemplate,
     otherscapeThemeTemplate,
     otherscapeLoadoutItemTemplate,
+    gameDefinitionTemplate,
+    playbookTemplate,
 ]
 
 /*

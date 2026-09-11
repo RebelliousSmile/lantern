@@ -1,5 +1,5 @@
+import { createImageExportAction } from '@/core/templates/shell/imageExportAction'
 import type { AnyTemplateDefinition } from '@/core/templates/types'
-import { snapdom, type CaptureResult } from '@zumer/snapdom'
 import { toast } from 'sonner'
 import { ThemeKitAppearancePanel } from './editor/ThemeKitAppearancePanel'
 import { ThemeKitEditorPanel } from './editor/ThemeKitEditorPanel'
@@ -23,55 +23,6 @@ function cloneValue<T>(value: T): T {
     }
 
     return JSON.parse(JSON.stringify(value)) as T
-}
-
-/* PNG is the only image the page exports, so the format is written in rather
-   than passed in. */
-function createImageExportAction() {
-    return {
-        id: 'png',
-        label: 'PNG',
-        buttonLabel: 'Export PNG',
-        description: 'Export the current themebook page as PNG.',
-        renderSettings: () => <ThemeKitImageExportSettings />,
-        run: async ({
-            fileStem,
-            getPreviewNode,
-            view,
-        }: {
-            fileStem: string
-            getPreviewNode: () => HTMLElement | null
-            view: ThemeKitViewState
-        }) => {
-            const node = getPreviewNode()
-            if (!node) {
-                toast.error(
-                    'Preview not found. Make sure the preview is visible.'
-                )
-                return
-            }
-
-            node.classList.add('exporting')
-            try {
-                const pixelRatio = Number(view.exportPrefs.scale) || 1
-                const snap: CaptureResult = await snapdom(node, {
-                    scale: pixelRatio,
-                    embedFonts: true,
-                })
-
-                await snap.download({
-                    type: 'png',
-                    filename: `${fileStem}@${pixelRatio}x.png`,
-                })
-
-                toast.success('Exported PNG.')
-            } catch (errorAny: any) {
-                toast.error(errorAny?.message || 'Failed to export PNG.')
-            } finally {
-                node.classList.remove('exporting')
-            }
-        },
-    }
 }
 
 const themeKitTemplate: AnyTemplateDefinition = {
@@ -154,7 +105,10 @@ const themeKitTemplate: AnyTemplateDefinition = {
                     }
                 },
             },
-            createImageExportAction(),
+            createImageExportAction({
+                description: 'Export the current themebook page as PNG.',
+                renderSettings: () => <ThemeKitImageExportSettings />,
+            }),
         ],
     },
 }
