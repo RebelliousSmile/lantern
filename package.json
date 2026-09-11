@@ -9,7 +9,7 @@
         "lint": "eslint .",
         "format": "prettier --write ./src",
         "preview": "vite preview",
-        "assert:mist-contract": "node tools/assert-mist-contract.mjs"
+        "assert:contracts": "node tools/assert-contracts.mjs"
     },
     "dependencies": {
         "@dnd-kit/core": "^6.3.1",
