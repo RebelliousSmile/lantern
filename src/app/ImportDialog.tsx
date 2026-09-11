@@ -21,6 +21,13 @@ import { AlertTriangle, FileText, Upload } from 'lucide-react'
 
 type Props = { open: boolean; onOpenChange: (open: boolean) => void }
 
+/*
+ * The name comes from the document that was read. A template label would be a name the file never
+ * carried, so an unnamed document is announced without one rather than under a made-up title.
+ */
+const importedMessage = (name?: string) =>
+    name ? `Imported “${name}”.` : 'Imported.'
+
 export default function ImportDialog({ open, onOpenChange }: Props) {
     const activeTab = useActiveTab()
     const activeTemplate = useActiveTemplate()
@@ -59,10 +66,7 @@ export default function ImportDialog({ open, onOpenChange }: Props) {
         }
 
         const parsed = importToml(content)
-        setPreviewName(
-            parsed.previewName ||
-                `${activeTemplate?.label || 'Template'} import`
-        )
+        setPreviewName(parsed.previewName || null)
         setWarnings(parsed.warnings || [])
         setError(null)
         return parsed
@@ -104,9 +108,7 @@ export default function ImportDialog({ open, onOpenChange }: Props) {
             const parsed = importToml(fileRawToml)
             replaceTabDoc(activeTab.id, parsed.doc)
             setTabMode(activeTab.id, 'editing')
-            toast.success(
-                `Imported “${parsed.previewName || activeTemplate?.label || 'template'}”.`
-            )
+            toast.success(importedMessage(parsed.previewName))
             if (parsed.warnings?.length) {
                 toast.warning(
                     `Imported with ${parsed.warnings.length} warning(s).`
@@ -143,9 +145,7 @@ export default function ImportDialog({ open, onOpenChange }: Props) {
             const parsed = importToml(rawToml)
             replaceTabDoc(activeTab.id, parsed.doc)
             setTabMode(activeTab.id, 'editing')
-            toast.success(
-                `Imported “${parsed.previewName || activeTemplate?.label || 'template'}”.`
-            )
+            toast.success(importedMessage(parsed.previewName))
             if (parsed.warnings?.length) {
                 toast.warning(
                     `Imported with ${parsed.warnings.length} warning(s).`
@@ -327,8 +327,7 @@ function PreviewPane({
         <div className="space-y-2 rounded-md border p-3">
             {name && (
                 <div className="text-sm">
-                    <span className="font-medium">Detected template:</span>{' '}
-                    {name}
+                    <span className="font-medium">Document:</span> {name}
                 </div>
             )}
             {warnings.length > 0 && (
