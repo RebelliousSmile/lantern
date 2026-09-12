@@ -5,6 +5,30 @@ All notable changes to this project are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.7.0] - 2026-09-12
+
+### Added
+
+- **A contract-driven document registry.** Every document type now resolves to its parser,
+  serializer and label through a `<contract>/<target>` key spanning three published packages —
+  Mist, PbtA and Adrenaline — instead of a per-template hand-rolled schema lookup.
+- **One conformance corpus across three contract dialects.** `npm run assert:contracts` folds each
+  package's own manifest shape (Mist, PbtA, Adrenaline) into one generic runner, replacing the
+  Mist-only `assert-mist-contract` script.
+- **PbtA templates driven by their game definition.** A Playbook's editor form is generated from
+  the active Game Definition's attribute dictionary — eleven discriminated renderers — instead of
+  being hand-written per game, so a brand-new PbtA game needs no Lantern code change.
+- **A guard against a Handbook checkout drifting from the corpus.** `npm run assert:cross-repo`
+  chains schema, Lantern export, Handbook read/write and schema re-parse, and reports a documented
+  baseline against the sibling Obsidian plugin checkout.
+
+### Changed
+
+- **Every Mist document now resolves through the generic contract registry** instead of a direct
+  import; the write-only `schema` field on `TemplateDefinition` is replaced by `contractKey`.
+- **`GameId` opened from a closed union to a declared string**, with a neutral theme fallback and a
+  registry-derived game grouping, so adding a game no longer means editing four files.
+
 ## [v0.6.0] - 2026-09-11
 
 ### Added
