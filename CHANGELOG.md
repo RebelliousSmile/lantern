@@ -5,6 +5,15 @@ All notable changes to this project are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.7.1] - 2026-09-12
+
+### Removed
+
+- **The fourteen Mist templates' local `schema.ts` type-only re-exports.** Every `model.ts` and
+  `toml.ts` under Legend in the Mist, City of Mist and :Otherscape now imports its types directly
+  from `@/contracts/mist-engine`, aliased to the same local names. PbtA's two `schema.ts` files are
+  unaffected.
+
 ## [v0.7.0] - 2026-09-12
 
 ### Added
