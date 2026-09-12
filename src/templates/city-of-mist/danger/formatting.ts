@@ -5,5 +5,6 @@ export function formatSpectrumLabel(
         is_immune?: boolean
     }
 ) {
-    return `${spectrum.name} ${spectrum.is_immune ? '-' : spectrum.maximum}`
+    /* `maximum` is optional before the schema applies its default of 1. */
+    return `${spectrum.name} ${spectrum.is_immune ? '-' : (spectrum.maximum ?? 1)}`
 }

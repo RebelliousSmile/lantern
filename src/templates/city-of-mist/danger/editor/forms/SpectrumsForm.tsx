@@ -96,7 +96,7 @@ export default function SpectrumsForm({ focusIndex }: { focusIndex?: number }) {
         if (!spectrum) return
         setEditingIndex(index)
         setName(spectrum.name)
-        setMaximum(spectrum.maximum)
+        setMaximum(spectrum.maximum ?? DEFAULT_SPECTRUM.maximum)
         setIsImmune(!!spectrum.is_immune)
         setError(null)
     }

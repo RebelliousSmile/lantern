@@ -1,5 +1,5 @@
+import { createImageExportAction } from '@/core/templates/shell/imageExportAction'
 import type { AnyTemplateDefinition } from '@/core/templates/types'
-import { snapdom, type CaptureResult } from '@zumer/snapdom'
 import { toast } from 'sonner'
 import { PowerSetAppearancePanel } from './editor/PowerSetAppearancePanel'
 import { PowerSetEditorPanel } from './editor/PowerSetEditorPanel'
@@ -15,7 +15,6 @@ import {
 } from './model'
 import { PowerSetPreview } from './preview/PowerSetPreview'
 import { getSampleOtherscapePowerSet } from './sample'
-import { OtherscapePowerSetSchema } from './schema'
 import { exportToTOML, importFromTOMLWithWarnings } from './toml'
 
 function cloneValue<T>(value: T): T {
@@ -26,63 +25,13 @@ function cloneValue<T>(value: T): T {
     return JSON.parse(JSON.stringify(value)) as T
 }
 
-function createImageExportAction(format: 'png') {
-    return {
-        id: format,
-        label: format.toUpperCase(),
-        buttonLabel: `Export ${format.toUpperCase()}`,
-        description: `Export the current power set preview as ${format.toUpperCase()}.`,
-        renderSettings: () => <PowerSetImageExportSettings />,
-        run: async ({
-            fileStem,
-            getPreviewNode,
-            view,
-        }: {
-            fileStem: string
-            getPreviewNode: () => HTMLElement | null
-            view: OtherscapePowerSetViewState
-        }) => {
-            const node = getPreviewNode()
-            if (!node) {
-                toast.error(
-                    'Preview not found. Make sure the preview is visible.'
-                )
-                return
-            }
-
-            node.classList.add('exporting')
-            try {
-                const pixelRatio = Number(view.exportPrefs.scale) || 1
-                const snap: CaptureResult = await snapdom(node, {
-                    scale: pixelRatio,
-                    embedFonts: true,
-                })
-
-                await snap.download({
-                    type: format,
-                    filename: `${fileStem}@${pixelRatio}x.${format}`,
-                })
-
-                toast.success(`Exported ${format.toUpperCase()}.`)
-            } catch (errorAny: any) {
-                toast.error(
-                    errorAny?.message ||
-                        `Failed to export ${format.toUpperCase()}.`
-                )
-            } finally {
-                node.classList.remove('exporting')
-            }
-        },
-    }
-}
-
 const powerSetTemplate: AnyTemplateDefinition = {
     id: 'otherscape.powerSet',
     gameId: 'otherscape',
     gameLabel: ':Otherscape',
     label: 'Power Set',
     implemented: true,
-    schema: OtherscapePowerSetSchema,
+    contractKey: 'mist/otherscape/power-set',
     createBlank: blankOtherscapePowerSet,
     createExample: getSampleOtherscapePowerSet,
     createInitialView: () => cloneValue(defaultOtherscapePowerSetView),
@@ -156,7 +105,10 @@ const powerSetTemplate: AnyTemplateDefinition = {
                     }
                 },
             },
-            createImageExportAction('png'),
+            createImageExportAction({
+                description: 'Export the current power set preview as PNG.',
+                renderSettings: () => <PowerSetImageExportSettings />,
+            }),
         ],
     },
 }

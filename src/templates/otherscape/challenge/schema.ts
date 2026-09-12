@@ -1,10 +1,9 @@
-export { OtherscapeChallengeSchema } from 'schema-in-the-mist'
-export type { OtherscapeChallenge } from 'schema-in-the-mist'
 export type {
-    OsChallengePublicationType as PublicationType,
+    OsChallengeMeta as ChallengeMeta,
     OsLimit as Limit,
+    OtherscapeChallenge,
+    OtherscapeChallenge as OtherscapeChallengeData,
+    OsChallengePublicationType as PublicationType,
     OsSpecial as Special,
     OsThreat as Threat,
-    OsChallengeMeta as ChallengeMeta,
 } from '@/contracts/mist-engine'
-export type { OtherscapeChallenge as OtherscapeChallengeData } from 'schema-in-the-mist'

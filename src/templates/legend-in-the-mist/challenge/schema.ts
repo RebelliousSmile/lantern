@@ -1,13 +1,12 @@
-export { LegendInTheMistChallengeSchema } from 'schema-in-the-mist'
-export type { LegendInTheMistChallenge } from 'schema-in-the-mist'
 export type {
+    LitmChallengeMeta as ChallengeMeta,
+    LegendInTheMistChallenge,
+    LegendInTheMistChallenge as LegendInTheMistChallengeData,
+    LitmLimit as Limit,
+    LitmMight as Might,
     LitmMightLevel as MightLevel,
     LitmChallengePublicationType as PublicationType,
-    LitmMight as Might,
-    LitmLimit as Limit,
-    LitmThreat as Threat,
-    LitmSpecialFeature as SpecialFeature,
     LitmSecret as Secret,
-    LitmChallengeMeta as ChallengeMeta,
+    LitmSpecialFeature as SpecialFeature,
+    LitmThreat as Threat,
 } from '@/contracts/mist-engine'
-export type { LegendInTheMistChallenge as LegendInTheMistChallengeData } from 'schema-in-the-mist'

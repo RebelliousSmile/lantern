@@ -1,9 +1,19 @@
-import { otherscapePowerSetCodec } from 'schema-in-the-mist'
 import {
     carryCanonicalSource,
     stringifyCanonical,
 } from '@/contracts/mist-engine'
-import { toOtherscapePowerSetDocument, toOtherscapePowerSetPayload, type OtherscapePowerSet } from './model'
+import { documentContracts } from '@/contracts/registry'
+import {
+    toOtherscapePowerSetDocument,
+    toOtherscapePowerSetPayload,
+    type OtherscapePowerSet,
+} from './model'
+import type { OtherscapePowerSet as Published } from './schema'
+
+/* Resolved at module load: an unknown key fails here, not at the first import. */
+const contract = documentContracts.require<Published>(
+    'mist/otherscape/power-set'
+)
 
 export const importFromTOML = (tomlText: string) =>
     importFromTOMLWithWarnings(tomlText)
@@ -12,13 +22,20 @@ export function importFromTOMLWithWarnings(tomlText: string): {
     otherscapePowerSet: OtherscapePowerSet
     warnings: string[]
 } {
-    const parsed = otherscapePowerSetCodec.parseToml(tomlText)
+    const parsed = contract.parseToml(tomlText)
     return {
-        otherscapePowerSet: carryCanonicalSource(toOtherscapePowerSetDocument(parsed), parsed),
+        otherscapePowerSet: carryCanonicalSource(
+            toOtherscapePowerSetDocument(parsed),
+            parsed
+        ),
         warnings: [],
     }
 }
 
 export function exportToTOML(document: OtherscapePowerSet): string {
-    return stringifyCanonical(otherscapePowerSetCodec, document, toOtherscapePowerSetPayload(document))
+    return stringifyCanonical(
+        contract,
+        document,
+        toOtherscapePowerSetPayload(document)
+    )
 }

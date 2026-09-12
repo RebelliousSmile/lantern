@@ -1,8 +1,7 @@
-export { OtherscapeThemeSchema } from 'schema-in-the-mist'
-export type { OtherscapeTheme } from 'schema-in-the-mist'
 export type {
-    OsThemeType as ThemeType,
+    OtherscapeTheme,
+    OtherscapeTheme as OtherscapeThemeData,
     OsThemePublicationType as PublicationType,
     OsThemeMeta as ThemeMeta,
+    OsThemeType as ThemeType,
 } from '@/contracts/mist-engine'
-export type { OtherscapeTheme as OtherscapeThemeData } from 'schema-in-the-mist'

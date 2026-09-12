@@ -1,7 +1,10 @@
 import type { ReactNode } from 'react'
-import type { ZodType } from 'zod'
 
-export type GameId = 'city' | 'legend' | 'otherscape'
+export type GameId = string
+
+export const CITY_GAME_ID = 'city'
+export const LEGEND_GAME_ID = 'legend'
+export const OTHERSCAPE_GAME_ID = 'otherscape'
 
 export type TemplateMode = 'landing' | 'editing'
 
@@ -53,7 +56,12 @@ export type TemplateDefinition<
     implemented: boolean
     comingSoonLabel?: string
 
-    schema?: ZodType<TDoc>
+    /**
+     * The document contract this template edits, as `<contract>/<target>`.
+     * Resolved through `documentContracts`, which is what the template's own
+     * `toml.ts` reads too, so a typo fails at load rather than at the first export.
+     */
+    contractKey: string
     createBlank: () => TDoc
     createExample: () => TDoc
     createInitialView: () => TView

@@ -1,5 +1,5 @@
+import { createImageExportAction } from '@/core/templates/shell/imageExportAction'
 import type { AnyTemplateDefinition } from '@/core/templates/types'
-import { snapdom, type CaptureResult } from '@zumer/snapdom'
 import { toast } from 'sonner'
 import { ChallengeAppearancePanel } from './editor/ChallengeAppearancePanel'
 import { ChallengeEditorPanel } from './editor/ChallengeEditorPanel'
@@ -15,7 +15,6 @@ import {
 } from './model'
 import { ChallengePreview } from './preview/ChallengePreview'
 import { getSampleOtherscapeChallenge } from './sample'
-import { OtherscapeChallengeSchema } from './schema'
 import { exportToTOML, importFromTOMLWithWarnings } from './toml'
 
 function cloneValue<T>(value: T): T {
@@ -26,63 +25,13 @@ function cloneValue<T>(value: T): T {
     return JSON.parse(JSON.stringify(value)) as T
 }
 
-function createImageExportAction(format: 'png') {
-    return {
-        id: format,
-        label: format.toUpperCase(),
-        buttonLabel: `Export ${format.toUpperCase()}`,
-        description: `Export the current challenge preview as ${format.toUpperCase()}.`,
-        renderSettings: () => <ChallengeImageExportSettings />,
-        run: async ({
-            fileStem,
-            getPreviewNode,
-            view,
-        }: {
-            fileStem: string
-            getPreviewNode: () => HTMLElement | null
-            view: OtherscapeChallengeViewState
-        }) => {
-            const node = getPreviewNode()
-            if (!node) {
-                toast.error(
-                    'Preview not found. Make sure the preview is visible.'
-                )
-                return
-            }
-
-            node.classList.add('exporting')
-            try {
-                const pixelRatio = Number(view.exportPrefs.scale) || 1
-                const snap: CaptureResult = await snapdom(node, {
-                    scale: pixelRatio,
-                    embedFonts: true,
-                })
-
-                await snap.download({
-                    type: format,
-                    filename: `${fileStem}@${pixelRatio}x.${format}`,
-                })
-
-                toast.success(`Exported ${format.toUpperCase()}.`)
-            } catch (errorAny: any) {
-                toast.error(
-                    errorAny?.message ||
-                        `Failed to export ${format.toUpperCase()}.`
-                )
-            } finally {
-                node.classList.remove('exporting')
-            }
-        },
-    }
-}
-
 const challengeTemplate: AnyTemplateDefinition = {
     id: 'otherscape.challenge',
     gameId: 'otherscape',
     gameLabel: ':Otherscape',
     label: 'Challenge',
     implemented: true,
-    schema: OtherscapeChallengeSchema,
+    contractKey: 'mist/otherscape/challenge',
     createBlank: blankOtherscapeChallenge,
     createExample: getSampleOtherscapeChallenge,
     createInitialView: () => cloneValue(defaultOtherscapeChallengeView),
@@ -156,7 +105,10 @@ const challengeTemplate: AnyTemplateDefinition = {
                     }
                 },
             },
-            createImageExportAction('png'),
+            createImageExportAction({
+                description: 'Export the current challenge preview as PNG.',
+                renderSettings: () => <ChallengeImageExportSettings />,
+            }),
         ],
     },
 }

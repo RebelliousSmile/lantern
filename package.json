@@ -9,7 +9,8 @@
         "lint": "eslint .",
         "format": "prettier --write ./src",
         "preview": "vite preview",
-        "assert:mist-contract": "node tools/assert-mist-contract.mjs"
+        "assert:contracts": "node tools/assert-contracts.mjs",
+        "assert:cross-repo": "node tools/assert-cross-repo.mjs"
     },
     "dependencies": {
         "@dnd-kit/core": "^6.3.1",
@@ -47,6 +48,7 @@
         "react-resizable-panels": "^4.7.1",
         "react-router-dom": "^6.30.1",
         "schema-in-the-mist": "https://github.com/RebelliousSmile/schema-in-the-mist/releases/download/v1.0.0/schema-in-the-mist-1.0.0.tgz",
+        "schema-pbta": "https://github.com/RebelliousSmile/schema-pbta/releases/download/v1.0.0/schema-pbta-1.0.0.tgz",
         "sonner": "^2.0.7",
         "tailwind-merge": "^3.3.1",
         "tailwindcss": "^4.1.12",
@@ -72,6 +74,7 @@
         "prettier-plugin-css-order": "^2.1.2",
         "prettier-plugin-organize-imports": "^4.3.0",
         "prettier-plugin-tailwindcss": "^0.6.14",
+        "schema-adrenaline": "https://github.com/RebelliousSmile/schema-adrenaline/releases/download/v1.0.0/schema-adrenaline-1.0.0.tgz",
         "shadcn": "^3.8.5",
         "tw-animate-css": "^1.3.8",
         "typescript": "~5.8.3",

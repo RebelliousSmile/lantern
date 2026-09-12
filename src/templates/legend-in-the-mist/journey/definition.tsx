@@ -1,5 +1,5 @@
+import { createImageExportAction } from '@/core/templates/shell/imageExportAction'
 import type { AnyTemplateDefinition } from '@/core/templates/types'
-import { snapdom, type CaptureResult } from '@zumer/snapdom'
 import { toast } from 'sonner'
 import { JourneyAppearancePanel } from './editor/JourneyAppearancePanel'
 import { JourneyEditorPanel } from './editor/JourneyEditorPanel'
@@ -15,7 +15,6 @@ import {
 } from './model'
 import { JourneyPreview } from './preview/JourneyPreview'
 import { getSampleLegendInTheMistJourney } from './sample'
-import { LegendInTheMistJourneySchema } from './schema'
 import { exportToTOML, importFromTOMLWithWarnings } from './toml'
 
 function cloneValue<T>(value: T): T {
@@ -26,63 +25,13 @@ function cloneValue<T>(value: T): T {
     return JSON.parse(JSON.stringify(value)) as T
 }
 
-function createImageExportAction(format: 'png') {
-    return {
-        id: format,
-        label: format.toUpperCase(),
-        buttonLabel: `Export ${format.toUpperCase()}`,
-        description: `Export the current journey spread as ${format.toUpperCase()}.`,
-        renderSettings: () => <JourneyImageExportSettings />,
-        run: async ({
-            fileStem,
-            getPreviewNode,
-            view,
-        }: {
-            fileStem: string
-            getPreviewNode: () => HTMLElement | null
-            view: LegendInTheMistJourneyViewState
-        }) => {
-            const node = getPreviewNode()
-            if (!node) {
-                toast.error(
-                    'Preview not found. Make sure the preview is visible.'
-                )
-                return
-            }
-
-            node.classList.add('exporting')
-            try {
-                const pixelRatio = Number(view.exportPrefs.scale) || 1
-                const snap: CaptureResult = await snapdom(node, {
-                    scale: pixelRatio,
-                    embedFonts: true,
-                })
-
-                await snap.download({
-                    type: format,
-                    filename: `${fileStem}@${pixelRatio}x.${format}`,
-                })
-
-                toast.success(`Exported ${format.toUpperCase()}.`)
-            } catch (errorAny: any) {
-                toast.error(
-                    errorAny?.message ||
-                        `Failed to export ${format.toUpperCase()}.`
-                )
-            } finally {
-                node.classList.remove('exporting')
-            }
-        },
-    }
-}
-
 const journeyTemplate: AnyTemplateDefinition = {
     id: 'legend.journey',
     gameId: 'legend',
     gameLabel: 'Legend in the Mist',
     label: 'Journey',
     implemented: true,
-    schema: LegendInTheMistJourneySchema,
+    contractKey: 'mist/legend-in-the-mist/journey',
     createBlank: blankLegendInTheMistJourney,
     createExample: getSampleLegendInTheMistJourney,
     createInitialView: () => cloneValue(defaultLegendInTheMistJourneyView),
@@ -157,7 +106,10 @@ const journeyTemplate: AnyTemplateDefinition = {
                     }
                 },
             },
-            createImageExportAction('png'),
+            createImageExportAction({
+                description: 'Export the current journey spread as PNG.',
+                renderSettings: () => <JourneyImageExportSettings />,
+            }),
         ],
     },
 }

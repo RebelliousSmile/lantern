@@ -1,9 +1,19 @@
-import { legendInTheMistStoryThemeCodec } from 'schema-in-the-mist'
 import {
     carryCanonicalSource,
     stringifyCanonical,
 } from '@/contracts/mist-engine'
-import { toLegendInTheMistStoryThemeDocument, toLegendInTheMistStoryThemePayload, type LegendInTheMistStoryTheme } from './model'
+import { documentContracts } from '@/contracts/registry'
+import {
+    toLegendInTheMistStoryThemeDocument,
+    toLegendInTheMistStoryThemePayload,
+    type LegendInTheMistStoryTheme,
+} from './model'
+import type { LegendInTheMistStoryTheme as Published } from './schema'
+
+/* Resolved at module load: an unknown key fails here, not at the first import. */
+const contract = documentContracts.require<Published>(
+    'mist/legend-in-the-mist/story-theme'
+)
 
 export const importFromTOML = (tomlText: string) =>
     importFromTOMLWithWarnings(tomlText)
@@ -12,13 +22,20 @@ export function importFromTOMLWithWarnings(tomlText: string): {
     legendInTheMistStoryTheme: LegendInTheMistStoryTheme
     warnings: string[]
 } {
-    const parsed = legendInTheMistStoryThemeCodec.parseToml(tomlText)
+    const parsed = contract.parseToml(tomlText)
     return {
-        legendInTheMistStoryTheme: carryCanonicalSource(toLegendInTheMistStoryThemeDocument(parsed), parsed),
+        legendInTheMistStoryTheme: carryCanonicalSource(
+            toLegendInTheMistStoryThemeDocument(parsed),
+            parsed
+        ),
         warnings: [],
     }
 }
 
 export function exportToTOML(document: LegendInTheMistStoryTheme): string {
-    return stringifyCanonical(legendInTheMistStoryThemeCodec, document, toLegendInTheMistStoryThemePayload(document))
+    return stringifyCanonical(
+        contract,
+        document,
+        toLegendInTheMistStoryThemePayload(document)
+    )
 }

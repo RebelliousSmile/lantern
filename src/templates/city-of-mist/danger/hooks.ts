@@ -128,7 +128,7 @@ export function useCityOfMistDangerStore() {
                     ...current.spectrums,
                     {
                         name: spectrum.name.trim(),
-                        maximum: clamp(spectrum.maximum, 1, 6),
+                        maximum: clamp(spectrum.maximum ?? 1, 1, 6),
                         is_immune: !!spectrum.is_immune,
                     },
                 ],
@@ -146,7 +146,7 @@ export function useCityOfMistDangerStore() {
                         update.name ?? prev.name ?? '',
                         prev.name ?? 'Untitled custom move'
                     ),
-                    maximum: clamp(update.maximum ?? prev.maximum, 1, 6),
+                    maximum: clamp(update.maximum ?? prev.maximum ?? 1, 1, 6),
                     is_immune: !!(update.is_immune ?? prev.is_immune),
                 }
 
