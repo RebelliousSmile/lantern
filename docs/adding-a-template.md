@@ -72,7 +72,7 @@ Every clickable preview region needs a matching editor target — a field with n
 
 ### 6. Register it
 
-`definition.tsx` exports a `TemplateDefinition` wiring identity and labels, schema, blank/example creators, initial view and sheet, tab title logic, landing copy, the section list, the preview renderer, the editor panel, the appearance panel, the export actions, and a `contractKey: string` (`<contract>/<target>`, e.g. `pbta/playbook`) naming the registry entry `toml.ts` resolves against.
+`definition.tsx` exports a `TemplateDefinition` wiring identity and labels, blank/example creators, initial view and sheet, tab title logic, landing copy, the section list, the preview renderer, the editor panel, the appearance panel, the export actions, and a `contractKey: string` (`<contract>/<target>`, e.g. `pbta/playbook`) naming the registry entry `toml.ts` resolves against.
 
 Then add the module to `src/core/templates/registry.tsx`. Adding a template to a game that already exists needs no other edit — `templatesByGame` is a fold over `templateRegistry` that groups by `gameId` on first occurrence. A load-time loop (`registry.tsx:45-47`) calls `documentContracts.require(template.contractKey)` for every template, so a typo'd `contractKey` fails immediately at load rather than at the first export.
 
