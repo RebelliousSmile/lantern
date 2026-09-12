@@ -1,7 +1,7 @@
+import type { LegendInTheMistChallenge as LegendInTheMistChallengeData } from '@/contracts/mist-engine'
 import { documentContracts } from '@/contracts/registry'
 import { templateById } from '@/core/templates/registry'
 import { toLegendInTheMistChallengeDocument } from '@/templates/legend-in-the-mist/challenge/model'
-import type { LegendInTheMistChallengeData } from '@/templates/legend-in-the-mist/challenge/schema'
 import { create } from 'zustand'
 import type { TemplateMode } from '../templates/types'
 import type { AnyWorkspaceTab, WorkspaceSnapshot, WorkspaceTab } from './types'

@@ -1,13 +1,13 @@
 import type {
-    ChallengeMeta,
-    LegendInTheMistChallengeData,
-    Limit,
-    Might,
-    MightLevel,
-    PublicationType,
-    SpecialFeature,
-    Threat,
-} from './schema'
+    LitmChallengeMeta as ChallengeMeta,
+    LegendInTheMistChallenge as LegendInTheMistChallengeData,
+    LitmLimit as Limit,
+    LitmMight as Might,
+    LitmMightLevel as MightLevel,
+    LitmChallengePublicationType as PublicationType,
+    LitmSpecialFeature as SpecialFeature,
+    LitmThreat as Threat,
+} from '@/contracts/mist-engine'
 
 export type {
     ChallengeMeta,

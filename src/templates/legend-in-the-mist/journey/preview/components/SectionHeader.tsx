@@ -10,7 +10,9 @@ type Props = {
 export function SectionHeader({ title, align = 'left', onClick }: Props) {
     const className = [
         'journey-heading',
-        align === 'center' ? 'journey-heading--center' : 'journey-heading--left',
+        align === 'center'
+            ? 'journey-heading--center'
+            : 'journey-heading--left',
     ].join(' ')
 
     if (onClick) {

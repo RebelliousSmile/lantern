@@ -31,7 +31,8 @@ import {
 const PLACEHOLDERS: JourneyVignette[] = [
     {
         name: 'The drowned mile',
-        trigger: 'The road disappears under standing water for as far as anyone can see.',
+        trigger:
+            'The road disappears under standing water for as far as anyone can see.',
         consequences: ['Someone loses their footing and takes {soaked-2}.'],
     },
     {
@@ -279,9 +280,7 @@ export default function VignettesForm({
 
                                         <VignetteConsequences
                                             vignetteIndex={index}
-                                            consequences={
-                                                vignette.consequences
-                                            }
+                                            consequences={vignette.consequences}
                                             onAdd={addVignetteConsequence}
                                             onReplace={
                                                 replaceVignetteConsequenceAt
@@ -485,7 +484,10 @@ function VignetteConsequences({
                                 className="mt-1 h-7 w-full justify-center gap-1.5 border-dashed px-2.5 text-xs"
                                 onClick={() => {
                                     const index = consequences.length
-                                    onAdd(vignetteIndex, CONSEQUENCE_PLACEHOLDER)
+                                    onAdd(
+                                        vignetteIndex,
+                                        CONSEQUENCE_PLACEHOLDER
+                                    )
                                     setEditingIndex(index)
                                     setRaw(CONSEQUENCE_PLACEHOLDER)
                                 }}
@@ -569,9 +571,7 @@ function SortableVignetteItem({
                             {count === 1
                                 ? '1 consequence'
                                 : `${count} consequences`}
-                            {vignette.trigger.trim()
-                                ? ''
-                                : ' · no trigger'}
+                            {vignette.trigger.trim() ? '' : ' · no trigger'}
                         </span>
                     </div>
                 </div>

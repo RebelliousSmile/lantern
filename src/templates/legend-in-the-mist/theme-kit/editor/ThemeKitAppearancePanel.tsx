@@ -23,10 +23,7 @@ export function ThemeKitAppearancePanel() {
     return (
         <div className="space-y-4">
             <div className="flex items-center justify-between gap-4">
-                <Label
-                    htmlFor="theme-kit-auto-hide-empty"
-                    className="text-xs"
-                >
+                <Label htmlFor="theme-kit-auto-hide-empty" className="text-xs">
                     Auto-hide empty sections
                 </Label>
                 <Switch

@@ -1,8 +1,8 @@
-import { journeyTypeLabel } from '../../metadata'
 import {
     useLegendInTheMistJourneySheetStore,
     useLegendInTheMistJourneyStore,
 } from '../../hooks'
+import { journeyTypeLabel } from '../../metadata'
 import { ClickableSection } from '../components/Clickable'
 
 /* The book gives the top half of the spread to a full-bleed illustration, with

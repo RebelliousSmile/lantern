@@ -1,9 +1,9 @@
 import type {
-    LegendInTheMistStoryThemeData,
-    PublicationType,
-    StoryThemeMeta,
-    ThemeLevel,
-} from './schema'
+    LegendInTheMistStoryTheme as LegendInTheMistStoryThemeData,
+    LitmStoryPublicationType as PublicationType,
+    LitmStoryThemeMeta as StoryThemeMeta,
+    LitmThemeLevel as ThemeLevel,
+} from '@/contracts/mist-engine'
 
 export type { PublicationType, StoryThemeMeta, ThemeLevel }
 

@@ -1,3 +1,4 @@
+import type { LegendInTheMistStoryTheme as Published } from '@/contracts/mist-engine'
 import {
     carryCanonicalSource,
     stringifyCanonical,
@@ -8,7 +9,6 @@ import {
     toLegendInTheMistStoryThemePayload,
     type LegendInTheMistStoryTheme,
 } from './model'
-import type { LegendInTheMistStoryTheme as Published } from './schema'
 
 /* Resolved at module load: an unknown key fails here, not at the first import. */
 const contract = documentContracts.require<Published>(

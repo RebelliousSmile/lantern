@@ -60,10 +60,7 @@ export default function HeaderBlock() {
                 </div>
             </ClickableSection>
 
-            <ClickableSection
-                onClick={openBasic}
-                ariaLabel="Edit the kit name"
-            >
+            <ClickableSection onClick={openBasic} ariaLabel="Edit the kit name">
                 <div className="theme-kit-name-box">
                     {/* A printed label, not a tag: no braces, no token
                         renderer, only the wash that follows the words. */}
