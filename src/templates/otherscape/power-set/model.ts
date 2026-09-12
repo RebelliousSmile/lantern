@@ -1,11 +1,11 @@
 import type {
-    OtherscapePowerSetData,
-    PowerSetMeta,
-    PowerSetType,
-    PublicationType,
-    Special,
-    Threat,
-} from './schema'
+    OtherscapePowerSet as OtherscapePowerSetData,
+    OsPowerSetMeta as PowerSetMeta,
+    OsPowerSetType as PowerSetType,
+    OsPowerPublicationType as PublicationType,
+    OsPowerSpecial as Special,
+    OsPowerThreat as Threat,
+} from '@/contracts/mist-engine'
 
 export type { PowerSetMeta, PowerSetType, PublicationType, Special, Threat }
 

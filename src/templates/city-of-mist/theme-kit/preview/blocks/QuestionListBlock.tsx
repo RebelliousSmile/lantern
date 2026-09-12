@@ -1,7 +1,10 @@
+import type {
+    CityQuestion as Question,
+    CitySelectionRule as SelectionRule,
+} from '@/contracts/mist-engine'
 import { renderLitmInline } from '@/utils/markdown'
 import { ClickableInline } from '../../../shared/preview/components/Clickable'
 import { SectionHeader } from '../../../shared/preview/components/SectionHeader'
-import type { Question, SelectionRule } from '../../schema'
 
 type Props = {
     title: string

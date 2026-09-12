@@ -1,11 +1,11 @@
 import type {
-    ChallengeMeta,
-    Limit,
-    OtherscapeChallengeData,
-    PublicationType,
-    Special,
-    Threat,
-} from './schema'
+    OsChallengeMeta as ChallengeMeta,
+    OsLimit as Limit,
+    OtherscapeChallenge as OtherscapeChallengeData,
+    OsChallengePublicationType as PublicationType,
+    OsSpecial as Special,
+    OsThreat as Threat,
+} from '@/contracts/mist-engine'
 
 export type { ChallengeMeta, Limit, PublicationType, Special, Threat }
 

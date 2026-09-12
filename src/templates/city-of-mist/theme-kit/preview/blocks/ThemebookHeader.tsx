@@ -1,5 +1,5 @@
+import type { CityKitThemeType as ThemeType } from '@/contracts/mist-engine'
 import { ClickableSection } from '../../../shared/preview/components/Clickable'
-import type { ThemeType } from '../../schema'
 
 /* The banner is the first thing the page says, and it says the family rather
    than the name: a player picks a themebook by its type before reading a word

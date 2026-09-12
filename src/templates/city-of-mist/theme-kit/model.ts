@@ -1,26 +1,26 @@
 import type {
     CityOfMistThemeKit,
-    CrewRelationship,
-    Improvement,
-    Motivation,
-    Question,
-    SelectionRule,
-    ThemeKitMeta,
-    ThemeType,
-} from './schema'
+    CityCrewRelationship as CrewRelationship,
+    CityKitImprovement as Improvement,
+    CityKitMotivation as Motivation,
+    CityQuestion as Question,
+    CitySelectionRule as SelectionRule,
+    CityThemeKitMeta as ThemeKitMeta,
+    CityKitThemeType as ThemeType,
+} from '@/contracts/mist-engine'
 
 export type {
-    CrewOutcome,
-    CrewRelationship,
-    Improvement,
-    Motivation,
-    MotivationKind,
-    PublicationType,
-    Question,
-    SelectionRule,
-    ThemeKitMeta,
-    ThemeType,
-} from './schema'
+    CityCrewOutcome as CrewOutcome,
+    CityCrewRelationship as CrewRelationship,
+    CityKitImprovement as Improvement,
+    CityKitMotivation as Motivation,
+    CityKitMotivationKind as MotivationKind,
+    CityKitPublicationType as PublicationType,
+    CityQuestion as Question,
+    CitySelectionRule as SelectionRule,
+    CityThemeKitMeta as ThemeKitMeta,
+    CityKitThemeType as ThemeType,
+} from '@/contracts/mist-engine'
 
 /* The editable document. Every optional the schema allows is filled in here so
    a form never has to guard against `undefined`: a string becomes '', a list

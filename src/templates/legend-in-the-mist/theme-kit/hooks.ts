@@ -183,10 +183,7 @@ export function useLegendInTheMistThemeKitStore() {
                 if (!name) return null
 
                 const effect = improvement.effect?.trim()
-                return [
-                    ...improvements,
-                    effect ? { name, effect } : { name },
-                ]
+                return [...improvements, effect ? { name, effect } : { name }]
             }),
         replaceImprovementAt: (
             index: number,

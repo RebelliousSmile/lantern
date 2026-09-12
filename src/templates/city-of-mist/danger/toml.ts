@@ -1,10 +1,10 @@
+import type { CityOfMistDanger as Published } from '@/contracts/mist-engine'
 import {
     carryCanonicalSource,
     stringifyCanonical,
 } from '@/contracts/mist-engine'
 import { documentContracts } from '@/contracts/registry'
 import { toCityOfMistDangerDocument, type CityOfMistDanger } from './model'
-import type { CityOfMistDanger as Published } from './schema'
 
 /* Resolved at module load: an unknown key fails here, not at the first import. */
 const contract = documentContracts.require<Published>(

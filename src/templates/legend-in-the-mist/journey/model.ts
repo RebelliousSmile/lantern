@@ -1,10 +1,10 @@
 import type {
-    JourneyMeta,
-    JourneyType,
-    LegendInTheMistJourneyData,
-    PublicationType,
-    Vignette,
-} from './schema'
+    LitmJourneyMeta as JourneyMeta,
+    LitmJourneyType as JourneyType,
+    LegendInTheMistJourney as LegendInTheMistJourneyData,
+    LitmJourneyPublicationType as PublicationType,
+    LitmVignette as Vignette,
+} from '@/contracts/mist-engine'
 
 export type { JourneyMeta, JourneyType, PublicationType, Vignette }
 

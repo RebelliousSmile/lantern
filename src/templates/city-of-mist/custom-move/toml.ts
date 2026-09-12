@@ -1,3 +1,4 @@
+import type { CityOfMistCustomMove as Published } from '@/contracts/mist-engine'
 import {
     carryCanonicalSource,
     stringifyCanonical,
@@ -8,7 +9,6 @@ import {
     toCityOfMistCustomMovePayload,
     type CityOfMistCustomMove,
 } from './model'
-import type { CityOfMistCustomMove as Published } from './schema'
 
 /* Resolved at module load: an unknown key fails here, not at the first import. */
 const contract = documentContracts.require<Published>(

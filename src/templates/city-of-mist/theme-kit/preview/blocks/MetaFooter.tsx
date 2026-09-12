@@ -1,5 +1,8 @@
+import type {
+    CityKitPublicationType as PublicationType,
+    CityThemeKitMeta as ThemeKitMeta,
+} from '@/contracts/mist-engine'
 import { ClickableSection } from '../../../shared/preview/components/Clickable'
-import type { PublicationType, ThemeKitMeta } from '../../schema'
 
 const TYPE_LABEL: Record<PublicationType, string> = {
     official: 'Official',

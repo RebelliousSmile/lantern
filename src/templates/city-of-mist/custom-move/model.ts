@@ -1,14 +1,14 @@
 import type {
     CityOfMistCustomMove as CityOfMistCustomMoveData,
-    CustomMoveKind,
-    CustomMoveMeta,
-    MoveTemplate,
-    Outcome,
-    OutcomeTier,
-    PublicationType,
-    Roll,
-    RollStat,
-} from './schema'
+    CityCustomMoveKind as CustomMoveKind,
+    CityCustomMoveMeta as CustomMoveMeta,
+    CityMoveTemplate as MoveTemplate,
+    CityOutcome as Outcome,
+    CityOutcomeTier as OutcomeTier,
+    CityCustomMovePublicationType as PublicationType,
+    CityRoll as Roll,
+    CityRollStat as RollStat,
+} from '@/contracts/mist-engine'
 
 export type {
     CustomMoveKind,

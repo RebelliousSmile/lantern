@@ -147,7 +147,10 @@ export default function CustomMovesForm({
                                 <SortableCustomMoveRow
                                     key={itemIds[index]}
                                     id={itemIds[index]}
-                                    name={customMove.name ?? 'Untitled custom move'}
+                                    name={
+                                        customMove.name ??
+                                        'Untitled custom move'
+                                    }
                                     description={customMove.description}
                                     dragDisabled={editingIndex !== null}
                                     onEdit={() => startEdit(index)}

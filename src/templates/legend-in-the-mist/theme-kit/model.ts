@@ -1,9 +1,9 @@
 import type {
-    LegendInTheMistThemeKitData,
-    PublicationType,
-    ThemeKitImprovement,
-    ThemeKitMeta,
-} from './schema'
+    LegendInTheMistThemeKit as LegendInTheMistThemeKitData,
+    LitmKitPublicationType as PublicationType,
+    LitmKitImprovement as ThemeKitImprovement,
+    LitmThemeKitMeta as ThemeKitMeta,
+} from '@/contracts/mist-engine'
 
 export type { PublicationType, ThemeKitImprovement, ThemeKitMeta }
 

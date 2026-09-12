@@ -1,7 +1,10 @@
+import type {
+    CityPowerTag as PowerTag,
+    CityWeaknessTag as WeaknessTag,
+} from '@/contracts/mist-engine'
 import { renderLitmInline } from '@/utils/markdown'
 import { ClickableInline } from '../../../shared/preview/components/Clickable'
 import { SectionHeader } from '../../../shared/preview/components/SectionHeader'
-import type { PowerTag, WeaknessTag } from '../../schema'
 
 type TagKind = 'power' | 'weakness'
 

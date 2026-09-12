@@ -1,8 +1,8 @@
 import type {
-    LoadoutItemMeta,
-    OtherscapeLoadoutItemData,
-    PublicationType,
-} from './schema'
+    OsLoadoutItemMeta as LoadoutItemMeta,
+    OtherscapeLoadoutItem as OtherscapeLoadoutItemData,
+    OsLoadoutPublicationType as PublicationType,
+} from '@/contracts/mist-engine'
 
 export type { LoadoutItemMeta, PublicationType }
 

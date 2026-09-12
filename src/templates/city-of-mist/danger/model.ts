@@ -1,10 +1,10 @@
 import type {
     CityOfMistDanger as CityOfMistDangerData,
-    CustomMove,
-    DangerMeta,
-    PublicationType,
-    Spectrum,
-} from './schema'
+    CityDangerCustomMove as CustomMove,
+    CityDangerMeta as DangerMeta,
+    CityDangerPublicationType as PublicationType,
+    CitySpectrum as Spectrum,
+} from '@/contracts/mist-engine'
 
 export type { CustomMove, DangerMeta, PublicationType, Spectrum }
 
