@@ -1,9 +1,9 @@
 import type {
-    OtherscapeThemeKitData,
-    PublicationType,
-    ThemeKitMeta,
-    ThemeType,
-} from './schema'
+    OtherscapeThemeKit as OtherscapeThemeKitData,
+    OsKitPublicationType as PublicationType,
+    OsThemeKitMeta as ThemeKitMeta,
+    OsKitThemeType as ThemeType,
+} from '@/contracts/mist-engine'
 
 export type { PublicationType, ThemeKitMeta, ThemeType }
 

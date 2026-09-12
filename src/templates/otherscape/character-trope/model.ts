@@ -1,9 +1,9 @@
 import type {
-    CharacterTropeMeta,
-    OtherscapeCharacterTropeData,
-    PublicationType,
-    ThemeKitRef,
-} from './schema'
+    OsCharacterTropeMeta as CharacterTropeMeta,
+    OtherscapeCharacterTrope as OtherscapeCharacterTropeData,
+    OsTropePublicationType as PublicationType,
+    OsThemeKitReference as ThemeKitRef,
+} from '@/contracts/mist-engine'
 
 export type { CharacterTropeMeta, PublicationType, ThemeKitRef }
 
