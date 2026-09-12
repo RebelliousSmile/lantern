@@ -1,7 +1,10 @@
+import type {
+    CityCardMotivation as Motivation,
+    CityCardThemeType as ThemeType,
+} from '@/contracts/mist-engine'
 import { renderLitmInline } from '@/utils/markdown'
 import { ClickableSection } from '../../../shared/preview/components/Clickable'
 import { SectionHeader } from '../../../shared/preview/components/SectionHeader'
-import type { Motivation, ThemeType } from '../../schema'
 
 const MOTIVATION_LABEL: Record<ThemeType, string> = {
     mythos: 'Mystery',

@@ -1,3 +1,4 @@
+import type { CityOfMistThemeKit as Published } from '@/contracts/mist-engine'
 import {
     carryCanonicalSource,
     stringifyCanonical,
@@ -8,7 +9,6 @@ import {
     toThemeKitPayload,
     type ThemeKitDocument,
 } from './model'
-import type { CityOfMistThemeKit as Published } from './schema'
 
 /* Resolved at module load: an unknown key fails here, not at the first import. */
 const contract = documentContracts.require<Published>(

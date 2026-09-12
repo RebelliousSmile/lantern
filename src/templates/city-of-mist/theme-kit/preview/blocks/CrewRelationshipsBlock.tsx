@@ -1,7 +1,10 @@
+import type {
+    CityCrewOutcome as CrewOutcome,
+    CityCrewRelationship as CrewRelationship,
+} from '@/contracts/mist-engine'
 import { renderLitmInline } from '@/utils/markdown'
 import { ClickableInline } from '../../../shared/preview/components/Clickable'
 import { SectionHeader } from '../../../shared/preview/components/SectionHeader'
-import type { CrewOutcome, CrewRelationship } from '../../schema'
 
 /* What the scenario does to the crew, printed as the books print it: the
    sentence the themebook starts is finished by the outcome, so the two read as

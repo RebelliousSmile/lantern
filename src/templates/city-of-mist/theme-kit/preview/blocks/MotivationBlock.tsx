@@ -1,7 +1,10 @@
+import type {
+    CityKitMotivation as Motivation,
+    CityKitThemeType as ThemeType,
+} from '@/contracts/mist-engine'
 import { renderLitmInline } from '@/utils/markdown'
 import { ClickableSection } from '../../../shared/preview/components/Clickable'
 import { SectionHeader } from '../../../shared/preview/components/SectionHeader'
-import type { Motivation, ThemeType } from '../../schema'
 
 /* The heading is the theme type's, not the zone's: a Mythos asks a Mystery and
    a Logos states an Identity, so switching the type renames the heading without

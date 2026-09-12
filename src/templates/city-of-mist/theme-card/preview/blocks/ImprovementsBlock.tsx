@@ -1,7 +1,7 @@
+import type { CityCardImprovement as Improvement } from '@/contracts/mist-engine'
 import { renderLitmInline } from '@/utils/markdown'
 import { ClickableInline } from '../../../shared/preview/components/Clickable'
 import { SectionHeader } from '../../../shared/preview/components/SectionHeader'
-import type { Improvement } from '../../schema'
 
 type Props = {
     improvements: Improvement[]

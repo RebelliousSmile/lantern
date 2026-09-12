@@ -1,28 +1,28 @@
 import type {
     CityOfMistThemeCard,
-    Erosion,
-    Improvement,
-    Motivation,
-    PowerTag,
-    ThemeCardMeta,
-    ThemeType,
-    Track,
-    WeaknessTag,
-} from './schema'
+    CityErosion as Erosion,
+    CityCardImprovement as Improvement,
+    CityCardMotivation as Motivation,
+    CityPowerTag as PowerTag,
+    CityThemeCardMeta as ThemeCardMeta,
+    CityCardThemeType as ThemeType,
+    CityTrack as Track,
+    CityWeaknessTag as WeaknessTag,
+} from '@/contracts/mist-engine'
 
 export type {
-    Erosion,
-    ErosionKind,
-    Improvement,
-    Motivation,
-    MotivationKind,
-    PowerTag,
-    PublicationType,
-    ThemeCardMeta,
-    ThemeType,
-    Track,
-    WeaknessTag,
-} from './schema'
+    CityErosion as Erosion,
+    CityErosionKind as ErosionKind,
+    CityCardImprovement as Improvement,
+    CityCardMotivation as Motivation,
+    CityMotivationKind as MotivationKind,
+    CityPowerTag as PowerTag,
+    CityCardPublicationType as PublicationType,
+    CityThemeCardMeta as ThemeCardMeta,
+    CityCardThemeType as ThemeType,
+    CityTrack as Track,
+    CityWeaknessTag as WeaknessTag,
+} from '@/contracts/mist-engine'
 
 export type ThemeCardDocument = {
     themebook: string

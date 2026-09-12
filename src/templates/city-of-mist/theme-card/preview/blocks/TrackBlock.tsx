@@ -1,5 +1,5 @@
+import type { CityTrack as Track } from '@/contracts/mist-engine'
 import { ClickableSection } from '../../../shared/preview/components/Clickable'
-import type { Track } from '../../schema'
 
 type Props = {
     label: string
