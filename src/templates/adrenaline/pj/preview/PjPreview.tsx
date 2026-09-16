@@ -24,12 +24,18 @@ export function PjPreview() {
     const possessions = ((
         (document.equipement ?? {}) as Record<string, unknown>
     ).possessions ?? []) as string[]
+    const parameters = (document.parametresDuJeu ?? {}) as Record<string, unknown>
+    const protections = (document.protections ?? {}) as Record<string, unknown>
+    const equipment = (document.equipement ?? {}) as Record<string, unknown>
+    const formations = Array.isArray(document.formations) ? document.formations as Record<string, unknown>[] : []
+    const meta = (document.meta ?? {}) as Record<string, unknown>
     return (
         <article className="adr-doc adr-sheet mx-auto w-full max-w-[820px] overflow-hidden">
             <AdrenalineHeader
                 eyebrow="Système Adrenaline · Personnage joueur"
                 title={String(document.nom ?? 'Personnage sans nom')}
             />
+            <button className="block w-full text-left" type="button" onClick={() => openSection('parameters')}><AdrenalineSection title="Paramètres de jeu"><p className="m-0">{[parameters.joueur, parameters.typeDeCreation, parameters.typeDeScenario, parameters.declinaisonDeCampagne, parameters.px].filter((value) => value !== undefined && value !== '').join(' · ') || 'À compléter'}</p></AdrenalineSection></button>
             <div className="grid md:grid-cols-[1fr_1.2fr]">
                 <button
                     className="text-left"
@@ -85,6 +91,8 @@ export function PjPreview() {
                     </div>
                 </AdrenalineSection>
             </button>
+            <button className="block w-full text-left" type="button" onClick={() => openSection('protections')}><AdrenalineSection title="Protections"><p className="m-0">Physique {String((protections.physiques as Record<string, unknown> | undefined)?.solidite ?? '—')} · Mentale {String((protections.mentales as Record<string, unknown> | undefined)?.solidite ?? '—')}</p></AdrenalineSection></button>
+            <button className="block w-full text-left" type="button" onClick={() => openSection('formations')}><AdrenalineSection title="Formations et compétences"><p className="m-0">{formations.map((formation) => `${String(formation.nom ?? 'Formation')} ${String(formation.pourcentage ?? '')}%`).join(' · ') || 'Aucune formation'}</p></AdrenalineSection></button>
             <button
                 className="block w-full text-left"
                 type="button"
@@ -95,8 +103,10 @@ export function PjPreview() {
                         {possessions.filter(Boolean).join(' · ') ||
                             'Aucune possession'}
                     </p>
+                    <p className="mb-0">{String(equipment.equipementFavori ?? '')}</p>
                 </AdrenalineSection>
             </button>
+            <button className="block w-full text-left" type="button" onClick={() => openSection('meta')}><AdrenalineSection title="Provenance"><p className="m-0">{[meta.typeDePublication, meta.source, meta.page, meta.licence].filter((value) => value !== undefined && value !== '').join(' · ') || 'Non renseignée'}</p></AdrenalineSection></button>
             <div className="adr-block grid grid-cols-4 gap-2 text-center text-xs text-[var(--adr-burgundy)]">
                 <span>Adrénaline</span>
                 <span>Panique</span>
