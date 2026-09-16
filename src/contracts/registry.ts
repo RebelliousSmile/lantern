@@ -1,3 +1,4 @@
+import { adrenalineDocumentContracts } from './adrenaline'
 import type { AnyDocumentContract, DocumentContract } from './documentContract'
 import { mistDocumentContracts } from './mist-engine'
 import { pbtaDocumentContracts } from './pbta'
@@ -57,6 +58,7 @@ export function createDocumentContractRegistry(
  * would drag a dev dependency into the client bundle.
  */
 export const CLIENT_DOCUMENT_CONTRACTS: readonly AnyDocumentContract[] = [
+    ...adrenalineDocumentContracts,
     ...mistDocumentContracts,
     ...pbtaDocumentContracts,
 ]
