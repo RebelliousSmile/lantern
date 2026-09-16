@@ -38,12 +38,50 @@ export function AdrenalinePreview({
         number
     >
     const narrative = (doc.narratif ?? {}) as Record<string, unknown>
+    const identity = (doc.identite ?? {}) as Record<string, unknown>
+    const health = (doc.sante ?? {}) as Record<string, Record<string, unknown>>
+    const protections = (doc.protections ?? {}) as Record<
+        string,
+        Record<string, unknown>
+    >
     const description = text(doc.description)
     const items = [
         ...(Array.isArray(doc.comportement) ? doc.comportement : []),
         ...(Array.isArray(doc.traitsSpeciaux) ? doc.traitsSpeciaux : []),
         ...(Array.isArray(doc.equipement) ? doc.equipement : []),
     ].filter((item): item is string => typeof item === 'string')
+    const identityLine = Object.values(identity)
+        .flatMap((value) => (Array.isArray(value) ? value : [value]))
+        .filter((value): value is string | number =>
+            ['string', 'number'].includes(typeof value)
+        )
+        .join(' · ')
+    const thresholds = ['superficiel', 'leger', 'grave', 'profond'].map(
+        (level) => {
+            const physical = health.physique?.[level] as
+                | Record<string, unknown>
+                | undefined
+            const mental = health.mental?.[level] as
+                | Record<string, unknown>
+                | undefined
+            return {
+                label: level,
+                value: [physical?.base, mental?.base]
+                    .filter((value) => typeof value === 'number')
+                    .join(' / '),
+            }
+        }
+    )
+    const formations = Array.isArray(doc.formations)
+        ? doc.formations
+              .map((entry) => text((entry as Record<string, unknown>).nom))
+              .filter((entry): entry is string => Boolean(entry))
+        : []
+    const competences = Array.isArray(doc.competences)
+        ? doc.competences
+              .map((entry) => text((entry as Record<string, unknown>).nom))
+              .filter((entry): entry is string => Boolean(entry))
+        : []
 
     return (
         <article className="adr-doc adr-card mx-auto w-full max-w-[680px] overflow-hidden">
@@ -63,6 +101,11 @@ export function AdrenalinePreview({
                     <p className="m-0 leading-relaxed">{description}</p>
                 </AdrenalineSection>
             ) : null}
+            {identityLine ? (
+                <AdrenalineSection title="Identité">
+                    <p className="m-0 text-sm">{identityLine}</p>
+                </AdrenalineSection>
+            ) : null}
             {Object.keys(characteristics).length ? (
                 <AdrenalineSection title="Caractéristiques">
                     <AdrenalineStatGrid
@@ -75,6 +118,29 @@ export function AdrenalinePreview({
                     />
                 </AdrenalineSection>
             ) : null}
+            {thresholds.some((threshold) => threshold.value) ? (
+                <AdrenalineSection title="Santé et protections">
+                    <div className="grid grid-cols-2 gap-2 text-sm sm:grid-cols-4">
+                        {thresholds.map((threshold) => (
+                            <div key={threshold.label}>
+                                <strong className="block capitalize text-[0.7rem] text-[var(--adr-burgundy)]">
+                                    {threshold.label}
+                                </strong>
+                                {threshold.value || '—'}
+                            </div>
+                        ))}
+                    </div>
+                    {Object.keys(protections).length ? (
+                        <p className="mt-3 mb-0 text-sm">
+                            Solidité :{' '}
+                            {String(protections.physiques?.solidite ?? '—')}{' '}
+                            physique ·{' '}
+                            {String(protections.mentales?.solidite ?? '—')}{' '}
+                            mentale
+                        </p>
+                    ) : null}
+                </AdrenalineSection>
+            ) : null}
             {items.length ? (
                 <AdrenalineSection title="Actions et ressources">
                     <ul className="adr-list">
@@ -82,6 +148,13 @@ export function AdrenalinePreview({
                             <li key={`${item}-${index}`}>{item}</li>
                         ))}
                     </ul>
+                </AdrenalineSection>
+            ) : null}
+            {formations.length || competences.length ? (
+                <AdrenalineSection title="Formations et compétences">
+                    <p className="m-0 text-sm">
+                        {[...formations, ...competences].join(' · ')}
+                    </p>
                 </AdrenalineSection>
             ) : null}
             {kind === 'Monstre' && doc.etatAlternatif ? (

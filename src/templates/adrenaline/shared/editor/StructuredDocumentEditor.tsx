@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { documentContracts } from '@/contracts/registry'
@@ -42,13 +43,91 @@ export function StructuredDocumentEditor({
         }
     }
 
+    const patchSource = (
+        patch: (document: Record<string, unknown>) => void
+    ) => {
+        try {
+            const document = JSON.parse(source) as Record<string, unknown>
+            patch(document)
+            setSource(JSON.stringify(document, null, 2))
+        } catch {
+            toast.error('Fix the JSON document before using the quick fields.')
+        }
+    }
+
+    const document = (() => {
+        try {
+            return JSON.parse(source) as Record<string, unknown>
+        } catch {
+            return {}
+        }
+    })()
+    const characteristics = (document.caracteristiques ?? {}) as Record<
+        string,
+        number
+    >
+
     return (
         <div className="space-y-3 p-1">
+            <div className="grid gap-2">
+                <Label htmlFor={`${templateId}-name`}>Name</Label>
+                <Input
+                    id={`${templateId}-name`}
+                    onChange={(event) =>
+                        patchSource((next) => {
+                            next.nom = event.target.value
+                        })
+                    }
+                    value={typeof document.nom === 'string' ? document.nom : ''}
+                />
+            </div>
+            {'description' in document ? (
+                <div className="grid gap-2">
+                    <Label htmlFor={`${templateId}-description`}>
+                        Description
+                    </Label>
+                    <Textarea
+                        id={`${templateId}-description`}
+                        onChange={(event) =>
+                            patchSource((next) => {
+                                next.description = event.target.value
+                            })
+                        }
+                        value={
+                            typeof document.description === 'string'
+                                ? document.description
+                                : ''
+                        }
+                    />
+                </div>
+            ) : null}
+            <div className="grid grid-cols-2 gap-2">
+                {Object.keys(characteristics).map((key) => (
+                    <label className="grid gap-1 text-xs font-medium" key={key}>
+                        {key.toUpperCase()}
+                        <Input
+                            min={0}
+                            onChange={(event) =>
+                                patchSource((next) => {
+                                    const nextCharacteristics = {
+                                        ...((next.caracteristiques ??
+                                            {}) as Record<string, number>),
+                                        [key]: Number(event.target.value) || 0,
+                                    }
+                                    next.caracteristiques = nextCharacteristics
+                                })
+                            }
+                            type="number"
+                            value={characteristics[key]}
+                        />
+                    </label>
+                ))}
+            </div>
             <div>
                 <Label htmlFor={`${templateId}-document`}>Document data</Label>
                 <p className="mt-1 text-xs text-muted-foreground">
-                    Edit every schema field as structured JSON. Validation runs
-                    before the preview is replaced.
+                    Quick fields cover the header and characteristics. Edit the
+                    full structured JSON for every other schema field.
                 </p>
             </div>
             <Textarea
