@@ -117,16 +117,42 @@ There is no test suite. `npm run build` and `npm run lint` are the automated gat
 Lantern is a static, local-first application: publishing an instance makes the editor available to
 everyone, but never shares anyone's workspace or documents. Anyone can run an independent mirror.
 
-On a Node.js host that provides `IP` and `PORT` (such as Alwaysdata), clone the repository, then
-run once from the project directory:
+### Create Your Own Instance
+
+On a Node.js host that provides `IP` and `PORT` (such as Alwaysdata), clone the repository into
+the directory that will host the application:
 
 ```bash
+git clone https://github.com/RebelliousSmile/lantern.git lantern
+cd lantern
 npm ci --include=dev
 npm run build
 ```
 
-Configure the site with `node server.mjs` as its command and the project directory as its working
-directory. `server.mjs` serves `dist/` and rewrites tab URLs to the app entry point.
+Configure the site with these values:
+
+| Field             | Value                                          |
+| ----------------- | ---------------------------------------------- |
+| Type              | `Node.js`                                      |
+| Command           | `node server.mjs`                              |
+| Working directory | the `lantern` directory cloned above           |
+| Environment       | leave empty: the host supplies `IP` and `PORT` |
+
+`server.mjs` serves `dist/` and rewrites tab URLs to the app entry point. Attach the domain in
+your host's control panel, then start or restart the site.
+
+### Update an Existing Instance
+
+From the same `lantern` directory, fetch the latest release and rebuild it:
+
+```bash
+git pull --ff-only
+npm ci --include=dev
+npm run build
+```
+
+Restart the Node.js site after the update. Visitors keep their own local work: updating an instance
+does not read, move, or delete browser `localStorage` data.
 
 ## Project Notes
 
