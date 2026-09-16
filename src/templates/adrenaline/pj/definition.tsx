@@ -1,14 +1,14 @@
 import { createImageExportAction } from '@/core/templates/shell/imageExportAction'
 import type { AnyTemplateDefinition } from '@/core/templates/types'
 import { AdrenalineAppearancePanel } from '../shared/editor/AdrenalineAppearancePanel'
-import { StructuredDocumentEditor } from '../shared/editor/StructuredDocumentEditor'
 import { downloadToml } from '../shared/export'
 import {
     cloneValue,
     defaultAdrenalineView,
     emptyAdrenalineSheetState,
 } from '../shared/model'
-import { AdrenalinePreview } from '../shared/preview/GenericPreview'
+import { PjEditorPanel } from './editor/PjEditorPanel'
+import { PjPreview } from './preview/PjPreview'
 import { blankPj, samplePj } from './sample'
 import { exportToTOML, importFromTOMLWithWarnings } from './toml'
 
@@ -41,19 +41,11 @@ const template: AnyTemplateDefinition = {
     },
     preview: {
         getRootSelector: (tabId) => `[data-preview-root="${tabId}"]`,
-        render: () => (
-            <AdrenalinePreview kind="PJ" templateId="adrenaline.pj" />
-        ),
+        render: () => <PjPreview />,
     },
     editor: {
-        emptyState: 'Open the structured document editor.',
-        renderPanel: () => (
-            <StructuredDocumentEditor
-                contractKey="adrenaline/pj"
-                templateId="adrenaline.pj"
-                title="PJ"
-            />
-        ),
+        emptyState: 'Click a region of the sheet to edit it.',
+        renderPanel: () => <PjEditorPanel />,
     },
     appearance: {
         getPreviewWidth: () => 680,
