@@ -5,6 +5,15 @@ All notable changes to this project are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.8.0] - 2026-09-16
+
+### Added
+
+- **Direct TOML copying from the Export panel.** TOML is now the primary action: Lantern copies
+  the current document, shows the exact generated text in a scrollable, selectable block, and
+  keeps file download as a secondary action. The Obsidian-compatible fallback copies through a
+  temporary selected textarea when its Clipboard API denies access.
+
 ## [v0.7.1] - 2026-09-12
 
 ### Removed
