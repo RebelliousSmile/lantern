@@ -74,6 +74,7 @@ Where TOML gives a stable structured layer, **PNG export** makes sure the result
 - **City of Mist**: Danger Profiles, Custom Moves, Theme Kits, Theme Cards
 - **Legend in the Mist**: Challenges, Story Themes, Journeys, Theme Kits
 - **:Otherscape**: Challenges, Power Sets, Theme Kits, Themes, Loadout Items, Character Tropes
+- **Adrenaline System**: Player Characters, NPCs, Monsters
 
 Every template listed in the app is implemented; there are no roadmap placeholders in the sidebar.
 

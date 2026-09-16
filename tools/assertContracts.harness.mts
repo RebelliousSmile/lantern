@@ -47,8 +47,8 @@ type TemplateCodec = {
 
 /*
  * Where a contract's Lantern modules live, when it has any. The Mist specifier stays an inline
- * template literal so esbuild expands it into a glob and bundles the fourteen modules; it needs the
- * `.ts` extension, since the glob matches file names on disk and does not replay the resolver's
+ * template literal so esbuild expands it into a glob and bundles the template modules; it needs
+ * the `.ts` extension, since the glob matches file names on disk and does not replay the resolver's
  * extension list.
  */
 const LANTERN_MODULES: Record<
@@ -58,7 +58,10 @@ const LANTERN_MODULES: Record<
     mist: (target) =>
         import(`../src/templates/${target}/toml.ts`) as Promise<TemplateCodec>,
     pbta: null,
-    adrenaline: null,
+    adrenaline: (target) =>
+        import(
+            `../src/templates/adrenaline/${target}/toml.ts`
+        ) as Promise<TemplateCodec>,
 }
 
 /* `city-of-mist/theme-kit` -> `cityOfMistThemeKit`, the key a Lantern module returns. */
