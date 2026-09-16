@@ -1,0 +1,100 @@
+.adr-doc {
+    --adr-paper: #f4eee2;
+    --adr-ink: #2c2624;
+    --adr-burgundy: #6a2434;
+    --adr-grey: #d6d1c9;
+    --adr-line: #8e827b;
+    color: var(--adr-ink);
+    font-family: 'PT Serif', Georgia, serif;
+}
+
+.adr-doc .adr-sheet,
+.adr-doc .adr-card {
+    box-sizing: border-box;
+    box-shadow: 0 10px 24px rgb(62 42 32 / 16%);
+    border: 1px solid #c8b9aa;
+    background: var(--adr-paper);
+}
+
+.adr-doc .adr-section-title {
+    margin: 0;
+    border-block: 1px solid var(--adr-line);
+    background: var(--adr-grey);
+    padding: 0.35rem 0.65rem;
+    color: var(--adr-burgundy);
+    font-size: 1.05rem;
+    font-family: 'Bebas Neue', Impact, sans-serif;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+}
+
+.adr-doc .adr-header {
+    background: var(--adr-burgundy);
+    padding: 0.85rem 1rem;
+    color: #fff9ef;
+}
+
+.adr-doc .adr-header__eyebrow {
+    margin: 0;
+    font-weight: 700;
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.adr-doc .adr-header__title {
+    margin: 0.15rem 0 0;
+    font-weight: 400;
+    font-size: clamp(1.7rem, 5vw, 2.5rem);
+    font-family: 'Bebas Neue', Impact, sans-serif;
+    letter-spacing: 0.04em;
+}
+
+.adr-doc .adr-stat-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.35rem;
+    padding: 0.65rem;
+}
+
+.adr-doc .adr-stat {
+    display: grid;
+    gap: 0.1rem;
+    border: 1px solid var(--adr-line);
+    padding: 0.3rem;
+    text-align: center;
+}
+
+.adr-doc .adr-stat__label {
+    color: var(--adr-burgundy);
+    font-weight: 700;
+    font-size: 0.67rem;
+    letter-spacing: 0.06em;
+}
+
+.adr-doc .adr-stat__value {
+    font-weight: 700;
+    font-size: 1.05rem;
+}
+
+.adr-doc .adr-block {
+    padding: 0.7rem;
+}
+
+.adr-doc .adr-list {
+    display: grid;
+    gap: 0.35rem;
+    margin: 0;
+    padding-left: 1.15rem;
+}
+
+.adr-doc .adr-muted {
+    color: #716864;
+    font-style: italic;
+}
+
+@media (max-width: 520px) {
+    .adr-doc .adr-stat-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}

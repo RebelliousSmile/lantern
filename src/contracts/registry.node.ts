@@ -1,4 +1,3 @@
-import { adrenalineDocumentContracts } from './adrenaline'
 import type { AnyDocumentContract } from './documentContract'
 import {
     CLIENT_DOCUMENT_CONTRACTS,
@@ -6,14 +5,11 @@ import {
 } from './registry'
 
 /**
- * The client table plus Adrenaline, for the Node conformance harness.
- *
- * Nothing under `src/` outside this file may import it: `schema-adrenaline` is a
- * dev dependency and this is the single edge that reaches it.
+ * The client table, reused by the Node conformance harness. Adrenaline now
+ * belongs to it because its templates parse TOML in the browser too.
  */
 export const NODE_DOCUMENT_CONTRACTS: readonly AnyDocumentContract[] = [
     ...CLIENT_DOCUMENT_CONTRACTS,
-    ...adrenalineDocumentContracts,
 ]
 
 export const nodeDocumentContracts = createDocumentContractRegistry(

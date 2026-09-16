@@ -47,6 +47,12 @@ export const gameThemeRegistry: Partial<Record<GameId, GameThemeDefinition>> = {
         backgroundImage: '/assets/images/otherscape-bg.webp',
         tokenScopeClassName: EDITOR_TOKEN_SCOPE_CLASS,
     },
+    adrenaline: {
+        id: 'adrenaline',
+        backgroundMode: 'neutral',
+        backgroundImage: null,
+        tokenScopeClassName: EDITOR_TOKEN_SCOPE_CLASS,
+    },
 }
 
 export function getGameTheme(gameId: GameId): GameThemeDefinition {
