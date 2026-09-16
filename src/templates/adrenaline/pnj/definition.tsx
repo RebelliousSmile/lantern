@@ -1,14 +1,14 @@
 import { createImageExportAction } from '@/core/templates/shell/imageExportAction'
 import type { AnyTemplateDefinition } from '@/core/templates/types'
 import { AdrenalineAppearancePanel } from '../shared/editor/AdrenalineAppearancePanel'
-import { StructuredDocumentEditor } from '../shared/editor/StructuredDocumentEditor'
 import { downloadToml } from '../shared/export'
 import {
     cloneValue,
     defaultAdrenalineView,
     emptyAdrenalineSheetState,
 } from '../shared/model'
-import { AdrenalinePreview } from '../shared/preview/GenericPreview'
+import { PnjEditorPanel } from './editor/PnjEditorPanel'
+import { PnjPreview } from './preview/PnjPreview'
 import { blankPnj, samplePnj } from './sample'
 import { exportToTOML, importFromTOMLWithWarnings } from './toml'
 
@@ -41,19 +41,11 @@ const template: AnyTemplateDefinition = {
     },
     preview: {
         getRootSelector: (tabId) => `[data-preview-root="${tabId}"]`,
-        render: () => (
-            <AdrenalinePreview kind="PNJ" templateId="adrenaline.pnj" />
-        ),
+        render: () => <PnjPreview />,
     },
     editor: {
-        emptyState: 'Open the structured document editor.',
-        renderPanel: () => (
-            <StructuredDocumentEditor
-                contractKey="adrenaline/pnj"
-                templateId="adrenaline.pnj"
-                title="PNJ"
-            />
-        ),
+        emptyState: 'Click a card region to edit it.',
+        renderPanel: () => <PnjEditorPanel />,
     },
     appearance: {
         getPreviewWidth: () => 680,
