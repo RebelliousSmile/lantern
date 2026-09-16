@@ -1,4 +1,5 @@
 import { documentContracts } from '@/contracts/registry'
+import adrenalinePjTemplate from '@/templates/adrenaline/pj/definition'
 import cityCustomMoveTemplate from '@/templates/city-of-mist/custom-move/definition'
 import dangerTemplate from '@/templates/city-of-mist/danger/definition'
 import cityThemeCardTemplate from '@/templates/city-of-mist/theme-card/definition'
@@ -18,6 +19,7 @@ import playbookTemplate from '@/templates/pbta/playbook/definition'
 import { type AnyTemplateDefinition, type GameId } from './types'
 
 export const templateRegistry: AnyTemplateDefinition[] = [
+    adrenalinePjTemplate,
     dangerTemplate,
     cityCustomMoveTemplate,
     cityThemeKitTemplate,
