@@ -42,9 +42,9 @@ Editing is preview-driven - clicking a region of the rendered sheet opens its fo
 
 | Game               | Document  | Screenshot                                                                                              |
 | ------------------ | --------- | ------------------------------------------------------------------------------------------------------- |
-| City of Mist       | Danger    | [![City of Mist danger](docs/assets/screenshot-com.jpg)](docs/assets/screenshot-com.jpg)                 |
-| Legend in the Mist | Challenge | [![Legend in the Mist challenge](docs/assets/screenshot-litm.jpg)](docs/assets/screenshot-litm.jpg)      |
-| :Otherscape        | Power Set | [![Otherscape power set](docs/assets/screenshot-otherscape.jpg)](docs/assets/screenshot-otherscape.jpg)  |
+| City of Mist       | Danger    | [![City of Mist danger](docs/assets/screenshot-com.jpg)](docs/assets/screenshot-com.jpg)                |
+| Legend in the Mist | Challenge | [![Legend in the Mist challenge](docs/assets/screenshot-litm.jpg)](docs/assets/screenshot-litm.jpg)     |
+| :Otherscape        | Power Set | [![Otherscape power set](docs/assets/screenshot-otherscape.jpg)](docs/assets/screenshot-otherscape.jpg) |
 
 ## Why TOML
 
@@ -111,6 +111,22 @@ npm run format   # prettier over ./src
 ```
 
 There is no test suite. `npm run build` and `npm run lint` are the automated gates; anything visual is verified by hand against a real build.
+
+## Deploy a Public Instance
+
+Lantern is a static, local-first application: publishing an instance makes the editor available to
+everyone, but never shares anyone's workspace or documents. Anyone can run an independent mirror.
+
+On a Node.js host that provides `IP` and `PORT` (such as Alwaysdata), clone the repository, then
+run once from the project directory:
+
+```bash
+npm ci --include=dev
+npm run build
+```
+
+Configure the site with `node server.mjs` as its command and the project directory as its working
+directory. `server.mjs` serves `dist/` and rewrites tab URLs to the app entry point.
 
 ## Project Notes
 
