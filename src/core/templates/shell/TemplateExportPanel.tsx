@@ -3,6 +3,25 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useActiveTab, useActiveTemplate } from '@/core/workspace/selectors'
 import { slugify } from '@/utils/strings'
 import { useEffect, useMemo, useState } from 'react'
+import { toast } from 'sonner'
+
+function copyWithLegacyClipboard(text: string) {
+    const textarea = document.createElement('textarea')
+    textarea.value = text
+    textarea.setAttribute('readonly', '')
+    textarea.style.position = 'fixed'
+    textarea.style.opacity = '0'
+    textarea.style.pointerEvents = 'none'
+    document.body.appendChild(textarea)
+    textarea.select()
+    textarea.setSelectionRange(0, textarea.value.length)
+
+    try {
+        return document.execCommand('copy')
+    } finally {
+        textarea.remove()
+    }
+}
 
 export function TemplateExportPanel() {
     const activeTab = useActiveTab()
@@ -18,10 +37,16 @@ export function TemplateExportPanel() {
         actions.find((action) => action.id === activeActionId) ??
         actions[0] ??
         null
+    const [tomlText, setTomlText] = useState<string | null>(null)
+    const [isCopyingToml, setIsCopyingToml] = useState(false)
 
     useEffect(() => {
         setActiveActionId(actions[0]?.id ?? null)
     }, [activeTab?.id, actions])
+
+    useEffect(() => {
+        setTomlText(null)
+    }, [activeTab?.id, activeAction?.id])
 
     if (!activeTab || !activeTemplate || !activeAction) {
         return (
@@ -33,6 +58,8 @@ export function TemplateExportPanel() {
 
     const tab = activeTab
     const template = activeTemplate
+    const exportToml = template.io.exportToml
+    const isTomlAction = activeAction.id === 'toml' && exportToml != null
 
     const getPreviewNode = () => {
         const selector = template.preview.getRootSelector(tab.id)
@@ -55,6 +82,35 @@ export function TemplateExportPanel() {
             })
         } finally {
             setBusyActionId(null)
+        }
+    }
+
+    async function copyToml() {
+        if (!exportToml) return
+
+        let toml: string
+        try {
+            toml = exportToml(tab.doc)
+        } catch (errorAny: any) {
+            toast.error(errorAny?.message || 'Failed to generate TOML.')
+            return
+        }
+
+        setTomlText(toml)
+        setIsCopyingToml(true)
+        try {
+            await navigator.clipboard.writeText(toml)
+            toast.success('Copied TOML.')
+        } catch {
+            if (copyWithLegacyClipboard(toml)) {
+                toast.success('Copied TOML.')
+            } else {
+                toast.error(
+                    'Could not copy TOML. Select the text below and copy it manually.'
+                )
+            }
+        } finally {
+            setIsCopyingToml(false)
         }
     }
 
@@ -86,15 +142,61 @@ export function TemplateExportPanel() {
                 {activeAction.renderSettings?.()}
             </div>
 
-            <Button
-                type="button"
-                size="sm"
-                className="h-8 w-full text-xs"
-                onClick={runExportAction}
-                disabled={busyActionId !== null}
-            >
-                {activeAction.buttonLabel ?? `Export ${activeAction.label}`}
-            </Button>
+            {isTomlAction ? (
+                <div className="space-y-2">
+                    <Button
+                        type="button"
+                        size="sm"
+                        className="h-8 w-full text-xs"
+                        onClick={copyToml}
+                        disabled={busyActionId !== null || isCopyingToml}
+                    >
+                        Copy TOML
+                    </Button>
+                    <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="h-8 w-full text-xs"
+                        onClick={runExportAction}
+                        disabled={busyActionId !== null || isCopyingToml}
+                    >
+                        Export TOML
+                    </Button>
+
+                    {tomlText !== null && (
+                        <div className="space-y-2 rounded-md border bg-muted/30 p-2">
+                            <div className="flex items-center justify-between gap-2">
+                                <p className="text-xs font-medium">TOML</p>
+                                <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="xs"
+                                    onClick={() => setTomlText(null)}
+                                >
+                                    Hide
+                                </Button>
+                            </div>
+                            <textarea
+                                readOnly
+                                value={tomlText}
+                                aria-label="Generated TOML"
+                                className="h-48 max-h-64 w-full resize-y overflow-auto rounded-md border bg-background px-3 py-2 font-mono text-xs leading-5 text-foreground"
+                            />
+                        </div>
+                    )}
+                </div>
+            ) : (
+                <Button
+                    type="button"
+                    size="sm"
+                    className="h-8 w-full text-xs"
+                    onClick={runExportAction}
+                    disabled={busyActionId !== null}
+                >
+                    {activeAction.buttonLabel ?? `Export ${activeAction.label}`}
+                </Button>
+            )}
         </div>
     )
 }
