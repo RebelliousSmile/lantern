@@ -1,6 +1,6 @@
 ---
 objective: "Lantern opens, edits, previews, persists, exports, and round-trips every schema-pbta v4 specialized playbook as its own canonical TOML target while preserving generic PbtA workflows."
-status: in-progress
+status: implemented
 ---
 
 # Plan: schema-pbta v4 specialized playbooks
