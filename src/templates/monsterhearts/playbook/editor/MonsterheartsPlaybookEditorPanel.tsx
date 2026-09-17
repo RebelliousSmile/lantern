@@ -1,0 +1,5 @@
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
+import { useMonsterheartsSheet,useMonsterheartsStore } from '../hooks'
+export function MonsterheartsPlaybookEditorPanel(){const {sheet}=useMonsterheartsSheet();const {playbook,setPlaybook}=useMonsterheartsStore();if(!sheet.open||!sheet.target)return <p className="text-sm text-muted-foreground">Click a skin section to edit it.</p>;if(sheet.target==='basic')return <div className="space-y-3"><Label>Name<Input value={playbook.name} onChange={e=>setPlaybook({name:e.target.value})}/></Label><Label>Description<Textarea value={playbook.description} onChange={e=>setPlaybook({description:e.target.value})}/></Label></div>;const key=sheet.target;return <div className="space-y-2"><Label>{key}</Label><Textarea rows={12} value={JSON.stringify((playbook as Record<string,unknown>)[key],null,2)} onChange={e=>{try{setPlaybook({[key]:JSON.parse(e.target.value)} as Partial<typeof playbook>)}catch{void e.target.value}}}/><p className="text-xs text-muted-foreground">Changes apply when the structured value is valid JSON.</p></div>}

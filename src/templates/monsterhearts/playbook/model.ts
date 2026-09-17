@@ -1,0 +1,8 @@
+export type MonsterheartsPlaybook = { slug:string; name:string; game:string; description:string; stats:Record<string,number>; moves:{name:string;moveType:string;description:string}[]; strings?:{max:number;starting?:number}; conditions?:{name:string;description?:string}[]; sexMove:string; darkestSelf:string; backstory?:string[]; advances:string[]; harm?:number }
+export const blankPlaybook=():MonsterheartsPlaybook=>({slug:'untitled-skin',name:'Untitled Skin',game:'monsterhearts',description:'An original Monsterhearts skin.',stats:{hot:0,cold:0,volatile:0,dark:0},moves:[],strings:{max:4,starting:0},conditions:[],sexMove:'When you share an intimate moment, choose an original consequence.',darkestSelf:'When your darkest self takes over, describe its original demands.',backstory:[],advances:['Take an original advance.'],harm:0})
+export type SectionId='strings'|'conditions'|'sexMove'|'darkestSelf'|'backstory'|'moves'|'advances'|'harm'
+export type ViewState={zoom:number;previewWidth:number;hidden:Record<SectionId,boolean>;exportPrefs:{scale:1|2|3}}
+export type SheetState={open:boolean;target:SectionId|'basic'|null}
+export const sections:Array<{id:SectionId;label:string}>=[{id:'strings',label:'Strings'},{id:'conditions',label:'Conditions'},{id:'sexMove',label:'Sex Move'},{id:'darkestSelf',label:'Darkest Self'},{id:'backstory',label:'Backstory'},{id:'moves',label:'Moves'},{id:'advances',label:'Advances'},{id:'harm',label:'Harm'}]
+export const defaultView:ViewState={zoom:1,previewWidth:600,hidden:Object.fromEntries(sections.map(({id})=>[id,false])) as Record<SectionId,boolean>,exportPrefs:{scale:2}}
+export const defaultSheet:SheetState={open:false,target:null}
