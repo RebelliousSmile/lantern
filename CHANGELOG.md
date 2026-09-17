@@ -5,6 +5,14 @@ All notable changes to this project are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.11.0] - 2026-09-17
+
+### Added
+
+- **Monsterhearts specialized skins.** Dedicated schema-backed Monsterhearts playbooks now support
+  strings, conditions, sex moves, darkest selves, backstories, advances and harm through the
+  local-first TOML and PNG workflow.
+
 ## [v0.10.0] - 2026-09-17
 
 ### Added
