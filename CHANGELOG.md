@@ -5,6 +5,19 @@ All notable changes to this project are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.12.0] - 2026-09-17
+
+### Added
+
+- **schema-pbta v4 specialized playbooks.** Masks, Monster of the Week and The Sprawl now open,
+  edit, preview and export as their own canonical TOML targets. Monsterhearts and Urban Shadows
+  now include the v4 editorial regions.
+
+### Changed
+
+- **PbtA contract conformance.** Lantern consumes the immutable `schema-pbta v4.0.0` release and
+  asserts every canonical specialized playbook witness through its matching template module.
+
 ## [v0.11.1] - 2026-09-17
 
 ### Changed
