@@ -1,6 +1,6 @@
 ---
 objective: "Monsterhearts skins import, edit, persist, export as one valid TOML document, and render to PNG through a dedicated template without changing generic or Urban Shadows playbooks."
-status: in-progress
+status: implemented
 ---
 
 # Plan: Specialized Monsterhearts playbook
