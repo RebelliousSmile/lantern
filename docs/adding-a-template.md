@@ -12,7 +12,7 @@ Every template is a self-contained module, registered once. Nothing in the shell
 src/templates/<game>/<object>/
 ```
 
-`<game>` is `city-of-mist`, `legend-in-the-mist` or `otherscape`. Files:
+`<game>` is the template's game id (for example `city-of-mist`, `legend-in-the-mist`, `otherscape`, `adrenaline`, `urban-shadows`, or `monsterhearts`). Files:
 
 ```text
 definition.tsx   registry entry, landing copy, export actions
