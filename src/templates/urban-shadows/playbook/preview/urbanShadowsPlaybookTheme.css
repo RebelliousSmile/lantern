@@ -1,0 +1,6 @@
+.urban-shadows-doc { color: #221d22; font-family: Georgia, serif; }
+.urban-shadows-doc .urban-shadows-sheet { width: 100%; background: #f8f3ec; border: 2px solid #4a1622; padding: 1.25rem; }
+.urban-shadows-doc .urban-shadows-header, .urban-shadows-doc section > button { width: 100%; color: inherit; text-align: left; background: transparent; border: 0; cursor: pointer; }
+.urban-shadows-doc h1, .urban-shadows-doc section > button { font-family: Impact, sans-serif; letter-spacing: .06em; text-transform: uppercase; }
+.urban-shadows-doc section { border-top: 1px solid #7c3541; margin-top: .75rem; padding-top: .5rem; }
+.urban-shadows-doc section p { margin: .3rem 0; }
