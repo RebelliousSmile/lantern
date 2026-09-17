@@ -57,7 +57,36 @@ const LANTERN_MODULES: Record<
 > = {
     mist: (target) =>
         import(`../src/templates/${target}/toml.ts`) as Promise<TemplateCodec>,
-    pbta: null,
+    pbta: (target) => {
+        const modules: Record<string, () => Promise<TemplateCodec>> = {
+            'monsterhearts-playbook': () =>
+                import(
+                    '../src/templates/monsterhearts/playbook/toml.ts'
+                ) as Promise<TemplateCodec>,
+            'urban-shadows-playbook': () =>
+                import(
+                    '../src/templates/urban-shadows/playbook/toml.ts'
+                ) as Promise<TemplateCodec>,
+            'masks-playbook': () =>
+                import(
+                    '../src/templates/masks/playbook/toml.ts'
+                ) as Promise<TemplateCodec>,
+            'monster-of-the-week-playbook': () =>
+                import(
+                    '../src/templates/monster-of-the-week/playbook/toml.ts'
+                ) as Promise<TemplateCodec>,
+            'the-sprawl-playbook': () =>
+                import(
+                    '../src/templates/the-sprawl/playbook/toml.ts'
+                ) as Promise<TemplateCodec>,
+        }
+        const resolve = modules[target]
+        if (!resolve)
+            return Promise.reject(
+                new Error(`no specialized Lantern module for pbta/${target}`)
+            )
+        return resolve()
+    },
     adrenaline: (target) =>
         import(
             `../src/templates/adrenaline/${target}/toml.ts`
@@ -224,7 +253,9 @@ async function assertLanternModules(cases: NormalizedCase[]) {
                     .byContract(contractId)
                     .map((contract) => contract.target)
             ),
-        ]
+        ].filter(
+            (target) => contractId !== 'pbta' || target.endsWith('-playbook')
+        )
         if (!resolve) {
             uncovered.push(`${contractId} (${targets.length} targets)`)
             continue
@@ -234,7 +265,8 @@ async function assertLanternModules(cases: NormalizedCase[]) {
             (entry) =>
                 entry.contractId === contractId &&
                 entry.expect === 'accept' &&
-                entry.format === 'toml'
+                entry.format === 'toml' &&
+                (contractId !== 'pbta' || entry.target.endsWith('-playbook'))
         )
 
         /* A published target with no Lantern module must not slip through unasserted. */

@@ -10,7 +10,8 @@ const contract = documentContracts.require<Published>(
 )
 export function importFromTOMLWithWarnings(text: string) {
     const parsed = contract.parseToml(text) as unknown as UrbanShadowsPlaybook
-    return { playbook: carryCanonicalSource(parsed, parsed), warnings: [] }
+    const playbook = carryCanonicalSource(parsed, structuredClone(parsed))
+    return { playbook, urbanShadowsPlaybook: playbook, warnings: [] }
 }
 export const exportToTOML = (document: UrbanShadowsPlaybook) =>
     stringifyCanonical(

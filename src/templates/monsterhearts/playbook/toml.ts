@@ -12,7 +12,12 @@ export const importFromTOMLWithWarnings = (text: string) => {
     const playbook = contract.parseToml(
         text
     ) as unknown as MonsterheartsPlaybook
-    return { playbook: carryCanonicalSource(playbook, playbook), warnings: [] }
+    const canonical = carryCanonicalSource(playbook, structuredClone(playbook))
+    return {
+        playbook: canonical,
+        monsterheartsPlaybook: canonical,
+        warnings: [],
+    }
 }
 export const exportToTOML = (doc: MonsterheartsPlaybook) =>
     stringifyCanonical(contract, doc, doc as unknown as Record<string, unknown>)

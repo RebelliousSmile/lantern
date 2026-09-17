@@ -16,7 +16,7 @@ The app is a shared shell plus self-contained template modules.
 
 - `src/core/` — the template contract and registry, the workspace store and its selectors, the per-game theme registry, and the game-pack settings.
 - `src/core/templates/shell/` — chrome every template reuses: the landing launcher, the inspector shell, the export panel.
-- `src/templates/<game>/<object>/` — one template module. `<game>` is any registry-derived game id; current modules cover City of Mist, Legend in the Mist, :Otherscape, PbtA, Adrenaline, Urban Shadows, and Monsterhearts.
+- `src/templates/<game>/<object>/` — one template module. `<game>` is any registry-derived game id; current modules cover City of Mist, Legend in the Mist, :Otherscape, PbtA, Adrenaline, Urban Shadows, Monsterhearts, Masks, Monster of the Week, and The Sprawl. PbtA's generic `playbook` remains an interchange workflow; each published specialized `*-playbook` target owns its canonical template.
 - `src/app/` — the shell's own pieces: top bar, main content, landing and editing views, inspectors, dialogs, and the hooks holding shell state.
 - `src/components/ui/` — generated shadcn/Radix primitives; `src/components/sidebar/` and `markdown/` hold app-specific composites.
 - `src/utils/`, `src/hooks/`, `src/styles/` — cross-cutting helpers, the viewport hook, and the four aggregated stylesheets.

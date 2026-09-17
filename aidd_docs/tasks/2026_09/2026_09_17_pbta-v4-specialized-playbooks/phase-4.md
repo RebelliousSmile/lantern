@@ -1,5 +1,5 @@
 ---
-status: pending
+status: done
 ---
 
 # Instruction: Prove canonical routing, round trips, and generic-workflow compatibility
