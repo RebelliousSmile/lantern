@@ -10,6 +10,9 @@ import challengeTemplate from '@/templates/legend-in-the-mist/challenge/definiti
 import journeyTemplate from '@/templates/legend-in-the-mist/journey/definition'
 import storyThemeTemplate from '@/templates/legend-in-the-mist/story-theme/definition'
 import themeKitTemplate from '@/templates/legend-in-the-mist/theme-kit/definition'
+import masksPlaybookTemplate from '@/templates/masks/playbook/definition'
+import monsterOfTheWeekPlaybookTemplate from '@/templates/monster-of-the-week/playbook/definition'
+import monsterheartsPlaybookTemplate from '@/templates/monsterhearts/playbook/definition'
 import otherscapeChallengeTemplate from '@/templates/otherscape/challenge/definition'
 import otherscapeCharacterTropeTemplate from '@/templates/otherscape/character-trope/definition'
 import otherscapeLoadoutItemTemplate from '@/templates/otherscape/loadout-item/definition'
@@ -18,8 +21,8 @@ import otherscapeThemeKitTemplate from '@/templates/otherscape/theme-kit/definit
 import otherscapeThemeTemplate from '@/templates/otherscape/theme/definition'
 import gameDefinitionTemplate from '@/templates/pbta/game-definition/definition'
 import playbookTemplate from '@/templates/pbta/playbook/definition'
+import theSprawlPlaybookTemplate from '@/templates/the-sprawl/playbook/definition'
 import urbanShadowsPlaybookTemplate from '@/templates/urban-shadows/playbook/definition'
-import monsterheartsPlaybookTemplate from '@/templates/monsterhearts/playbook/definition'
 import { type AnyTemplateDefinition, type GameId } from './types'
 
 export const templateRegistry: AnyTemplateDefinition[] = [
@@ -44,6 +47,9 @@ export const templateRegistry: AnyTemplateDefinition[] = [
     playbookTemplate,
     urbanShadowsPlaybookTemplate,
     monsterheartsPlaybookTemplate,
+    masksPlaybookTemplate,
+    monsterOfTheWeekPlaybookTemplate,
+    theSprawlPlaybookTemplate,
 ]
 
 /*
