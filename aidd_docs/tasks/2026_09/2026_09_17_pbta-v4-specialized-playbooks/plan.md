@@ -1,6 +1,6 @@
 ---
 objective: "Lantern opens, edits, previews, persists, exports, and round-trips every schema-pbta v4 specialized playbook as its own canonical TOML target while preserving generic PbtA workflows."
-status: blocked
+status: in-progress
 ---
 
 # Plan: schema-pbta v4 specialized playbooks
@@ -26,7 +26,7 @@ status: blocked
 | Source | Verified |
 | --- | --- |
 | [Issue #5](https://github.com/RebelliousSmile/lantern/issues/5) | Scope, the five canonical targets, and the requirement to preserve generic PbtA workflows. |
-| [schema-pbta releases](https://github.com/RebelliousSmile/schema-pbta/releases) | v2.0.0 is currently the latest published release; v4 is not yet consumable. |
+| [schema-pbta v4.0.0 release](https://github.com/RebelliousSmile/schema-pbta/releases/tag/v4.0.0) | The immutable archive, SHA-256 digest, exported codecs, and v4 corpus are available for consumption. |
 
 ## Decisions
 
