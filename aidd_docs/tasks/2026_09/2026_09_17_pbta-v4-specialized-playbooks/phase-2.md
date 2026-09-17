@@ -1,5 +1,5 @@
 ---
-status: pending
+status: done
 ---
 
 # Instruction: Migrate the existing Monsterhearts and Urban Shadows canonical sheets

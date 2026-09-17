@@ -1,1 +1,34 @@
-.monsterhearts-doc{color:#2b162a;font-family:Georgia,serif}.monsterhearts-doc .monsterhearts-sheet{width:100%;background:#fff4fb;border:2px solid #71285d;padding:1.25rem}.monsterhearts-doc button{width:100%;border:0;background:transparent;color:inherit;text-align:left;cursor:pointer}.monsterhearts-doc h1,.monsterhearts-doc section>button{font-family:Impact,sans-serif;letter-spacing:.06em;text-transform:uppercase}.monsterhearts-doc section{border-top:1px solid #a9528b;margin-top:.75rem;padding-top:.5rem}.monsterhearts-doc pre{white-space:pre-wrap;font:inherit;margin:.35rem 0}
+.monsterhearts-doc {
+    color: #2b162a;
+    font-family: Georgia, serif;
+}
+.monsterhearts-doc .monsterhearts-sheet {
+    border: 2px solid #71285d;
+    background: #fff4fb;
+    padding: 1.25rem;
+    width: 100%;
+}
+.monsterhearts-doc button {
+    cursor: pointer;
+    border: 0;
+    background: transparent;
+    width: 100%;
+    color: inherit;
+    text-align: left;
+}
+.monsterhearts-doc h1,
+.monsterhearts-doc section > button {
+    font-family: Impact, sans-serif;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+.monsterhearts-doc section {
+    margin-top: 0.75rem;
+    border-top: 1px solid #a9528b;
+    padding-top: 0.5rem;
+}
+.monsterhearts-doc pre {
+    margin: 0.35rem 0;
+    font: inherit;
+    white-space: pre-wrap;
+}
