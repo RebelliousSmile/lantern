@@ -1,8 +1,8 @@
-# Cross-repository PbtA contract flow
+# Cross-repository document contract flow
 
 ## Ownership
 
-- Version document contracts in schema-pbta.
+- Version document contracts in schema packages.
 - Version presentation semantics beside contracts.
 - Keep user data separate from metadata.
 - Publish blocks, regions, and section order.
@@ -13,7 +13,7 @@
 ## Delivery
 
 - Extend schema before consumer work.
-- Release schema before consumer adoption.
+- Release schema packages before consumer adoption.
 - Drive Handbook menus from published metadata.
 - Drive Lantern forms from published metadata.
 - Reject consumer-local semantic fallbacks.
