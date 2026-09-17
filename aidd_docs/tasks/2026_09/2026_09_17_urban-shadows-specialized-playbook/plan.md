@@ -1,6 +1,6 @@
 ---
 objective: "Urban Shadows playbooks import, edit, persist, export as one valid TOML document, and render to PNG through a dedicated Lantern template without changing the generic PbtA playbook."
-status: in-progress
+status: implemented
 ---
 
 # Plan: Specialized Urban Shadows playbook
