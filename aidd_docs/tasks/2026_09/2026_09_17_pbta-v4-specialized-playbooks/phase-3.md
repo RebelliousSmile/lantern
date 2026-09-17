@@ -1,5 +1,5 @@
 ---
-status: pending
+status: done
 ---
 
 # Instruction: Add Masks, Monster of the Week, and The Sprawl canonical sheets
