@@ -5,6 +5,14 @@ All notable changes to this project are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.10.0] - 2026-09-17
+
+### Added
+
+- **Urban Shadows specialized Playbooks.** A dedicated, schema-backed Urban Shadows sheet now
+  supports Circles and statuses, mortal relationships, harm, scars, corruption, end moves, moves,
+  creation, gear and advancement through local-first TOML and PNG workflows.
+
 ## [v0.9.0] - 2026-09-16
 
 ### Added
