@@ -5,6 +5,19 @@ All notable changes to this project are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.11.1] - 2026-09-17
+
+### Changed
+
+- **Editor and workspace maintenance.** Legacy challenge migration now stays behind a
+  workspace-owned adapter, while the Legend in the Mist threats editor is split into focused,
+  sortable panels without changing its routes or deep links.
+
+### Fixed
+
+- **Structured playbook JSON feedback.** Monsterhearts and Urban Shadows editors retain invalid
+  drafts and display their parse error instead of silently discarding the attempted update.
+
 ## [v0.11.0] - 2026-09-17
 
 ### Added
