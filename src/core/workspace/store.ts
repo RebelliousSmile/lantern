@@ -1,7 +1,7 @@
 import type { LegendInTheMistChallenge as LegendInTheMistChallengeData } from '@/contracts/mist-engine'
 import { documentContracts } from '@/contracts/registry'
 import { templateById } from '@/core/templates/registry'
-import { toLegendInTheMistChallengeDocument } from '@/templates/legend-in-the-mist/challenge/model'
+import { normalizeLegacyChallenge } from './legacyMigration'
 import { create } from 'zustand'
 import type { TemplateMode } from '../templates/types'
 import type { AnyWorkspaceTab, WorkspaceSnapshot, WorkspaceTab } from './types'
@@ -139,9 +139,7 @@ function migrateLegacyChallenge(): WorkspaceSnapshot | null {
 
         const now = Date.now()
         const tabId = createTabId()
-        const doc = cloneValue(
-            toLegendInTheMistChallengeDocument(validated.data)
-        )
+        const doc = cloneValue(normalizeLegacyChallenge(validated.data))
 
         const migratedTab: AnyWorkspaceTab = {
             id: tabId,
