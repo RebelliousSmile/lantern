@@ -19,6 +19,7 @@ import otherscapeThemeTemplate from '@/templates/otherscape/theme/definition'
 import gameDefinitionTemplate from '@/templates/pbta/game-definition/definition'
 import playbookTemplate from '@/templates/pbta/playbook/definition'
 import urbanShadowsPlaybookTemplate from '@/templates/urban-shadows/playbook/definition'
+import monsterheartsPlaybookTemplate from '@/templates/monsterhearts/playbook/definition'
 import { type AnyTemplateDefinition, type GameId } from './types'
 
 export const templateRegistry: AnyTemplateDefinition[] = [
@@ -42,6 +43,7 @@ export const templateRegistry: AnyTemplateDefinition[] = [
     gameDefinitionTemplate,
     playbookTemplate,
     urbanShadowsPlaybookTemplate,
+    monsterheartsPlaybookTemplate,
 ]
 
 /*
