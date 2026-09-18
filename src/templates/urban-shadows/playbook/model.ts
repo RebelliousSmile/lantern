@@ -1,5 +1,12 @@
+import type { UrbanShadowsPlaybook as PublishedUrbanShadowsPlaybook } from './schema'
+
 export type Move = { name: string; moveType: string; description: string; checked?: boolean }
-export type Relationship = { name: string; description: string }
+export type Relationship = NonNullable<
+    PublishedUrbanShadowsPlaybook['mortalRelationships']
+>[number]
+export type CreationQuestion = NonNullable<
+    PublishedUrbanShadowsPlaybook['creation']
+>[number]
 export type Scar = { name: string; stat: string; modifier: number | null }
 export type Harm = {
     armor: number | null
@@ -34,7 +41,7 @@ export type UrbanShadowsPlaybook = {
     corruption: Corruption
     endMove: string
     editorial: Editorial
-    creation: { label: string; options: string[] }[]
+    creation: CreationQuestion[]
     gear: { name: string; description: string }[]
     advancement: { label: string; checked?: boolean }[]
 }
