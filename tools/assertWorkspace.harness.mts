@@ -56,4 +56,53 @@ assert.ok(
 
 storage.set(GAME_PACKS_STORAGE_KEY, '{not-json')
 assert.deepEqual(readGamePacks(), { disabled: [], open: [] })
+
+const { assertTemplateRegistryIntegrity, templateRegistry, templatesByGame } =
+    await import('../src/core/templates/registry')
+assert.doesNotThrow(() =>
+    assertTemplateRegistryIntegrity(templateRegistry, templatesByGame)
+)
+const firstTemplate = templateRegistry[0]
+assert.throws(
+    () =>
+        assertTemplateRegistryIntegrity(
+            [firstTemplate, { ...firstTemplate }],
+            templatesByGame
+        ),
+    /duplicate id/
+)
+assert.throws(
+    () =>
+        assertTemplateRegistryIntegrity(templateRegistry, [
+            ...templatesByGame,
+            { ...templatesByGame[0], gameId: 'empty-pack', templates: [] },
+        ]),
+    /empty game group/
+)
+const otherTemplate = templateRegistry.find(
+    (template) => template.gameId !== templatesByGame[0].gameId
+)
+assert.ok(otherTemplate, 'a second game pack exists for mismatch coverage')
+assert.throws(
+    () =>
+        assertTemplateRegistryIntegrity(templateRegistry, [
+            {
+                ...templatesByGame[0],
+                templates: [otherTemplate],
+            },
+            ...templatesByGame.slice(1),
+        ]),
+    /is grouped under/
+)
+assert.throws(
+    () =>
+        assertTemplateRegistryIntegrity(
+            templateRegistry,
+            templatesByGame,
+            () => {
+                throw new Error('unresolved contract')
+            }
+        ),
+    /unresolved contract/
+)
 console.log('Workspace migrations and game-pack preferences covered.')

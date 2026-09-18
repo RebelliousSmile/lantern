@@ -69,10 +69,6 @@ for (const template of templateRegistry) {
     }
 }
 
-export const templateById = new Map(
-    templateRegistry.map((template) => [template.id, template] as const)
-)
-
 export type GameGroup = {
     gameId: GameId
     gameLabel: string
@@ -104,3 +100,61 @@ export const templatesByGame: GameGroup[] = (() => {
 
     return groups
 })()
+
+export function assertTemplateRegistryIntegrity(
+    templates: readonly AnyTemplateDefinition[],
+    groups: readonly GameGroup[],
+    requireContract: (key: string) => unknown = (key) =>
+        documentContracts.require(key)
+) {
+    const ids = new Set<string>()
+    for (const template of templates) {
+        if (!template.id)
+            throw new Error('template registry contains an empty id')
+        if (ids.has(template.id))
+            throw new Error(
+                `template registry contains duplicate id: ${template.id}`
+            )
+        ids.add(template.id)
+        if (!template.gameId || !template.gameLabel)
+            throw new Error(
+                `template ${template.id} has an incomplete game identity`
+            )
+        requireContract(template.contractKey)
+    }
+
+    const grouped = new Set<string>()
+    for (const group of groups) {
+        if (!group.gameId || !group.gameLabel)
+            throw new Error(
+                'template registry contains an incomplete game group'
+            )
+        if (!group.templates.length)
+            throw new Error(
+                `template registry contains an empty game group: ${group.gameId}`
+            )
+        for (const template of group.templates) {
+            if (template.gameId !== group.gameId)
+                throw new Error(
+                    `template ${template.id} is grouped under ${group.gameId}, not ${template.gameId}`
+                )
+            if (!ids.has(template.id))
+                throw new Error(
+                    `game group ${group.gameId} contains an unregistered template: ${template.id}`
+                )
+            grouped.add(template.id)
+        }
+    }
+    for (const template of templates) {
+        if (!grouped.has(template.id))
+            throw new Error(
+                `template ${template.id} is missing from its game group`
+            )
+    }
+}
+
+assertTemplateRegistryIntegrity(templateRegistry, templatesByGame)
+
+export const templateById = new Map(
+    templateRegistry.map((template) => [template.id, template] as const)
+)
