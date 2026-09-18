@@ -21,6 +21,8 @@ import type { GameId } from './templates/types'
    keep working — the setting is about what can be started, not about what is
    already on the workbench. */
 export const GAME_PACKS_STORAGE_KEY = 'mist:game-packs:v1'
+const LEGACY_PBTA_PACK_ID = 'pbta'
+const APOCALYPSE_WORLD_PACK_ID = 'apocalypse-world'
 
 type StoredGamePacks = {
     disabled: string[]
@@ -32,6 +34,12 @@ function readStringArray(value: unknown): string[] {
     return value.filter((id): id is string => typeof id === 'string')
 }
 
+function migratePackIds(ids: string[]): string[] {
+    return [...new Set(ids.map((id) =>
+        id === LEGACY_PBTA_PACK_ID ? APOCALYPSE_WORLD_PACK_ID : id
+    ))]
+}
+
 function readGamePacks(): StoredGamePacks {
     try {
         const raw = window.localStorage.getItem(GAME_PACKS_STORAGE_KEY)
@@ -41,10 +49,22 @@ function readGamePacks(): StoredGamePacks {
             return { disabled: [], open: [] }
         }
         const record = parsed as Record<string, unknown>
-        return {
-            disabled: readStringArray(record.disabled),
-            open: readStringArray(record.open),
+        const disabled = migratePackIds(readStringArray(record.disabled))
+        const open = migratePackIds(readStringArray(record.open))
+        const migrated = { disabled, open }
+        if (
+            JSON.stringify(migrated) !==
+            JSON.stringify({
+                disabled: readStringArray(record.disabled),
+                open: readStringArray(record.open),
+            })
+        ) {
+            window.localStorage.setItem(
+                GAME_PACKS_STORAGE_KEY,
+                JSON.stringify(migrated)
+            )
         }
+        return migrated
     } catch {
         return { disabled: [], open: [] }
     }

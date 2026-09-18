@@ -26,8 +26,8 @@ function cloneValue<T>(value: T): T {
 
 const playbookTemplate: AnyTemplateDefinition = {
     id: 'pbta.playbook',
-    gameId: 'pbta',
-    gameLabel: 'Powered by the Apocalypse',
+    gameId: 'apocalypse-world',
+    gameLabel: 'Apocalypse World',
     label: 'Playbook',
     implemented: true,
     contractKey: 'pbta/playbook',
@@ -39,7 +39,7 @@ const playbookTemplate: AnyTemplateDefinition = {
     sections: playbookSections,
     landing: {
         description:
-            'A Playbook is a PbtA character type: its stats, its moves, the choices made at creation, and the gear it starts with. Start blank, open the example, or import a TOML file.',
+            'A Playbook is an Apocalypse World character type: its stats, its moves, the choices made at creation, and the gear it starts with. Start blank, open the example, or import a TOML file.',
         exampleLabel: 'Start with example',
         blankLabel: 'Start blank',
         importLabel: 'Import TOML',

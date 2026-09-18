@@ -1,7 +1,7 @@
 import type { PbtaPlaybook } from './model'
 
-/* An original playbook for the same invented 'salvage-run' hack as
-   game-definition/sample.ts, so the two samples can be opened together.
+/* An original Salvage Run playbook for the Apocalypse World pack, paired
+   with game-definition/sample.ts so the two samples can be opened together.
    Exercises every section: a stat block, one attribute, a ref move and an
    inline move, a choice set mixing a ref and an inline choice, advancement,
    creation and gear. */
