@@ -34,13 +34,17 @@ function readStringArray(value: unknown): string[] {
     return value.filter((id): id is string => typeof id === 'string')
 }
 
-function migratePackIds(ids: string[]): string[] {
-    return [...new Set(ids.map((id) =>
-        id === LEGACY_PBTA_PACK_ID ? APOCALYPSE_WORLD_PACK_ID : id
-    ))]
+export function migratePackIds(ids: string[]): string[] {
+    return [
+        ...new Set(
+            ids.map((id) =>
+                id === LEGACY_PBTA_PACK_ID ? APOCALYPSE_WORLD_PACK_ID : id
+            )
+        ),
+    ]
 }
 
-function readGamePacks(): StoredGamePacks {
+export function readGamePacks(): StoredGamePacks {
     try {
         const raw = window.localStorage.getItem(GAME_PACKS_STORAGE_KEY)
         if (!raw) return { disabled: [], open: [] }
@@ -50,18 +54,17 @@ function readGamePacks(): StoredGamePacks {
         }
         const record = parsed as Record<string, unknown>
         const disabled = migratePackIds(readStringArray(record.disabled))
-        const open = migratePackIds(readStringArray(record.open))
+        /* Opening a pack is a transient navigation choice. Older installs
+           persisted it, but every new launch now starts with all packs folded. */
+        const open: string[] = []
         const migrated = { disabled, open }
         if (
-            JSON.stringify(migrated) !==
-            JSON.stringify({
-                disabled: readStringArray(record.disabled),
-                open: readStringArray(record.open),
-            })
+            JSON.stringify(disabled) !==
+            JSON.stringify(readStringArray(record.disabled))
         ) {
             window.localStorage.setItem(
                 GAME_PACKS_STORAGE_KEY,
-                JSON.stringify(migrated)
+                JSON.stringify({ disabled })
             )
         }
         return migrated
@@ -74,7 +77,7 @@ function persistGamePacks(packs: StoredGamePacks) {
     try {
         window.localStorage.setItem(
             GAME_PACKS_STORAGE_KEY,
-            JSON.stringify(packs)
+            JSON.stringify({ disabled: packs.disabled })
         )
     } catch {
         /* Same contract as the workspace store: a full or blocked storage does
