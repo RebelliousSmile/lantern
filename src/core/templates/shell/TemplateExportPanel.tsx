@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useActiveTab, useActiveTemplate } from '@/core/workspace/selectors'
 import { formatError } from '@/i18n/formatError'
+import { translateEnglish, useUiText } from '@/i18n/text'
 import { slugify } from '@/utils/strings'
 import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -27,6 +28,7 @@ function copyWithLegacyClipboard(text: string) {
 
 export function TemplateExportPanel() {
     const { t } = useTranslation()
+    const text = useUiText()
     const activeTab = useActiveTab()
     const activeTemplate = useActiveTemplate()
     const [activeActionId, setActiveActionId] = useState<string | null>(null)
@@ -81,7 +83,10 @@ export function TemplateExportPanel() {
                 view: tab.view,
                 sheet: tab.sheet,
                 getPreviewNode,
-                fileStem: slugify(tab.title || template.label),
+                // English whatever the UI language: a file name must not depend on it.
+                fileStem: slugify(
+                    tab.title || translateEnglish(template.label)
+                ),
             })
         } finally {
             setBusyActionId(null)
@@ -130,7 +135,7 @@ export function TemplateExportPanel() {
                 >
                     {actions.map((action) => (
                         <TabsTrigger key={action.id} value={action.id}>
-                            {action.label}
+                            {text(action.label)}
                         </TabsTrigger>
                     ))}
                 </TabsList>
@@ -138,7 +143,7 @@ export function TemplateExportPanel() {
 
             <div className="space-y-4">
                 <p className="text-sm text-muted-foreground">
-                    {activeAction.description}
+                    {text(activeAction.description)}
                 </p>
                 {activeAction.renderSettings?.()}
             </div>
@@ -197,10 +202,11 @@ export function TemplateExportPanel() {
                     onClick={runExportAction}
                     disabled={busyActionId !== null}
                 >
-                    {activeAction.buttonLabel ??
-                        t('export.exportAction', {
-                            label: activeAction.label,
-                        })}
+                    {activeAction.buttonLabel
+                        ? text(activeAction.buttonLabel)
+                        : t('export.exportAction', {
+                              label: text(activeAction.label),
+                          })}
                 </Button>
             )}
         </div>

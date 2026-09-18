@@ -1,3 +1,4 @@
+import type { ImportWarning } from '@/core/templates/types'
 import { parseToken } from '@/utils/tags'
 import type { OtherscapePowerSet } from './model'
 
@@ -6,8 +7,8 @@ import type { OtherscapePowerSet } from './model'
    Consequence, and a sheet that grants nothing. */
 export function computeOtherscapePowerSetWarnings(
     otherscapePowerSet: OtherscapePowerSet
-): string[] {
-    const warnings: string[] = []
+): ImportWarning[] {
+    const warnings: ImportWarning[] = []
 
     const consequences = [
         ...otherscapePowerSet.general_consequences,
@@ -26,18 +27,17 @@ export function computeOtherscapePowerSetWarnings(
     }
 
     if (invalidTokens.length > 0) {
-        warnings.push(
-            `Some tokens aren't recognized as {!weakness}, {status-<n>} or {tag}: ${invalidTokens.join(', ')}.`
-        )
+        warnings.push({
+            key: 'otherscape:warnings.invalidTokens',
+            values: { tokens: invalidTokens.join(', ') },
+        })
     }
 
     if (
         !otherscapePowerSet.specials.length &&
         !otherscapePowerSet.threats.length
     ) {
-        warnings.push(
-            'This Power Set grants no Specials and no Threats, so grafting it onto a Challenge changes nothing.'
-        )
+        warnings.push({ key: 'otherscape:powerSet.warnings.grantsNothing' })
     }
 
     return warnings

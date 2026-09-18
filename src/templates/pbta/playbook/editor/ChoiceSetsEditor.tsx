@@ -142,36 +142,42 @@ function ChoiceEntriesEditor({
                             placeholder="advancement"
                         />
                         <div className="flex-1" />
-                        {allowReorder && <Button
-                            type="button"
-                            variant="ghost"
-                            size="icon-sm"
-                            className="shrink-0"
-                            aria-label="Move up"
-                            onClick={() => moveAt(index, -1)}
-                        >
-                            <ChevronUp className="h-3.5 w-3.5" />
-                        </Button>}
-                        {allowReorder && <Button
-                            type="button"
-                            variant="ghost"
-                            size="icon-sm"
-                            className="shrink-0"
-                            aria-label="Move down"
-                            onClick={() => moveAt(index, 1)}
-                        >
-                            <ChevronDown className="h-3.5 w-3.5" />
-                        </Button>}
-                        {allowAddRemove && <Button
-                            type="button"
-                            variant="ghost"
-                            size="icon-sm"
-                            className="shrink-0"
-                            aria-label="Remove choice"
-                            onClick={() => removeAt(index)}
-                        >
-                            <X className="h-3.5 w-3.5" />
-                        </Button>}
+                        {allowReorder && (
+                            <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon-sm"
+                                className="shrink-0"
+                                aria-label="Move up"
+                                onClick={() => moveAt(index, -1)}
+                            >
+                                <ChevronUp className="h-3.5 w-3.5" />
+                            </Button>
+                        )}
+                        {allowReorder && (
+                            <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon-sm"
+                                className="shrink-0"
+                                aria-label="Move down"
+                                onClick={() => moveAt(index, 1)}
+                            >
+                                <ChevronDown className="h-3.5 w-3.5" />
+                            </Button>
+                        )}
+                        {allowAddRemove && (
+                            <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon-sm"
+                                className="shrink-0"
+                                aria-label="Remove choice"
+                                onClick={() => removeAt(index)}
+                            >
+                                <X className="h-3.5 w-3.5" />
+                            </Button>
+                        )}
                     </div>
 
                     {entry.kind === 'ref' ? (
@@ -196,25 +202,27 @@ function ChoiceEntriesEditor({
                     )}
                 </div>
             ))}
-            {allowAddRemove && <Button
-                type="button"
-                variant="secondary"
-                size="sm"
-                className="text-xs"
-                onClick={() =>
-                    onChange([
-                        ...value,
-                        {
-                            kind: 'ref',
-                            ref: 'new-move',
-                            granted: 1,
-                            advancement: 0,
-                        },
-                    ])
-                }
-            >
-                Add choice
-            </Button>}
+            {allowAddRemove && (
+                <Button
+                    type="button"
+                    variant="secondary"
+                    size="sm"
+                    className="text-xs"
+                    onClick={() =>
+                        onChange([
+                            ...value,
+                            {
+                                kind: 'ref',
+                                ref: 'new-move',
+                                granted: 1,
+                                advancement: 0,
+                            },
+                        ])
+                    }
+                >
+                    Add choice
+                </Button>
+            )}
         </div>
     )
 }
@@ -309,36 +317,42 @@ export function ChoiceSetsEditor({
                                 Multi
                             </button>
                         </div>
-                        {allowReorder && <Button
-                            type="button"
-                            variant="ghost"
-                            size="icon-sm"
-                            className="shrink-0"
-                            aria-label="Move up"
-                            onClick={() => moveAt(index, -1)}
-                        >
-                            <ChevronUp className="h-3.5 w-3.5" />
-                        </Button>}
-                        {allowReorder && <Button
-                            type="button"
-                            variant="ghost"
-                            size="icon-sm"
-                            className="shrink-0"
-                            aria-label="Move down"
-                            onClick={() => moveAt(index, 1)}
-                        >
-                            <ChevronDown className="h-3.5 w-3.5" />
-                        </Button>}
-                        {allowAddRemove && <Button
-                            type="button"
-                            variant="ghost"
-                            size="icon-sm"
-                            className="shrink-0"
-                            aria-label={`Remove ${choiceSet.title || 'choice set'}`}
-                            onClick={() => removeAt(index)}
-                        >
-                            <X className="h-3.5 w-3.5" />
-                        </Button>}
+                        {allowReorder && (
+                            <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon-sm"
+                                className="shrink-0"
+                                aria-label="Move up"
+                                onClick={() => moveAt(index, -1)}
+                            >
+                                <ChevronUp className="h-3.5 w-3.5" />
+                            </Button>
+                        )}
+                        {allowReorder && (
+                            <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon-sm"
+                                className="shrink-0"
+                                aria-label="Move down"
+                                onClick={() => moveAt(index, 1)}
+                            >
+                                <ChevronDown className="h-3.5 w-3.5" />
+                            </Button>
+                        )}
+                        {allowAddRemove && (
+                            <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon-sm"
+                                className="shrink-0"
+                                aria-label={`Remove ${choiceSet.title || 'choice set'}`}
+                                onClick={() => removeAt(index)}
+                            >
+                                <X className="h-3.5 w-3.5" />
+                            </Button>
+                        )}
                     </div>
 
                     <Textarea
@@ -401,15 +415,17 @@ export function ChoiceSetsEditor({
                     </div>
                 </div>
             ))}
-            {allowAddRemove && <Button
-                type="button"
-                variant="secondary"
-                size="sm"
-                className="text-xs"
-                onClick={() => onChange([...value, blankChoiceSet()])}
-            >
-                Add choice set
-            </Button>}
+            {allowAddRemove && (
+                <Button
+                    type="button"
+                    variant="secondary"
+                    size="sm"
+                    className="text-xs"
+                    onClick={() => onChange([...value, blankChoiceSet()])}
+                >
+                    Add choice set
+                </Button>
+            )}
         </div>
     )
 }

@@ -1,7 +1,7 @@
 import { createImageExportAction } from '@/core/templates/shell/imageExportAction'
-import { cloneValue } from '@/utils/clone'
+import { createTomlExportAction } from '@/core/templates/shell/tomlExportAction'
 import type { AnyTemplateDefinition } from '@/core/templates/types'
-import { toast } from 'sonner'
+import { cloneValue } from '@/utils/clone'
 import { GameDefinitionAppearancePanel } from './editor/GameDefinitionAppearancePanel'
 import { GameDefinitionEditorPanel } from './editor/GameDefinitionEditorPanel'
 import { GameDefinitionImageExportSettings } from './editor/GameDefinitionImageExportSettings'
@@ -22,7 +22,7 @@ const gameDefinitionTemplate: AnyTemplateDefinition = {
     id: 'pbta.gameDefinition',
     gameId: 'apocalypse-world',
     gameLabel: 'Apocalypse World',
-    label: 'Game Definition',
+    label: 'pbta:gameDefinition.label',
     implemented: true,
     contractKey: 'pbta/game-definition',
     createBlank: blankGameDefinition,
@@ -33,11 +33,8 @@ const gameDefinitionTemplate: AnyTemplateDefinition = {
         doc.name.trim() || 'Game Definition',
     sections: gameDefinitionSections,
     landing: {
-        description:
-            'A Game Definition defines an Apocalypse World game such as Salvage Run: its stats, its move types, the results a roll can land on, and who gets a character sheet. Start blank, open the example, or import a TOML file.',
-        exampleLabel: 'Start with example',
-        blankLabel: 'Start blank',
-        importLabel: 'Import TOML',
+        newTitle: 'pbta:gameDefinition.newTitle',
+        description: 'pbta:gameDefinition.description',
     },
     io: {
         importToml: (tomlText: string) => {
@@ -56,7 +53,6 @@ const gameDefinitionTemplate: AnyTemplateDefinition = {
         render: () => <GameDefinitionPreview />,
     },
     editor: {
-        emptyState: 'Click on the preview to edit a specific section.',
         renderPanel: () => <GameDefinitionEditorPanel />,
     },
     appearance: {
@@ -66,41 +62,12 @@ const gameDefinitionTemplate: AnyTemplateDefinition = {
     },
     export: {
         actions: [
-            {
-                id: 'toml',
-                label: 'TOML',
-                buttonLabel: 'Export TOML',
-                description: 'Export the current game definition as TOML.',
-                run: ({
-                    doc,
-                    fileStem,
-                }: {
-                    doc: PbtaGameDefinition
-                    fileStem: string
-                }) => {
-                    try {
-                        const toml = exportToTOML(doc)
-                        const blob = new Blob([toml], {
-                            type: 'text/plain;charset=utf-8',
-                        })
-                        const url = URL.createObjectURL(blob)
-                        const anchor = document.createElement('a')
-                        anchor.href = url
-                        anchor.download = `${fileStem}.toml`
-                        document.body.appendChild(anchor)
-                        anchor.click()
-                        anchor.remove()
-                        URL.revokeObjectURL(url)
-                        toast.success('Exported TOML.')
-                    } catch (errorAny: any) {
-                        toast.error(
-                            errorAny?.message || 'Failed to export TOML.'
-                        )
-                    }
-                },
-            },
+            createTomlExportAction({
+                exportToml: exportToTOML,
+                description: 'pbta:gameDefinition.exportToml',
+            }),
             createImageExportAction({
-                description: 'Export the current game definition sheet as PNG.',
+                description: 'pbta:gameDefinition.exportPng',
                 renderSettings: () => <GameDefinitionImageExportSettings />,
             }),
         ],

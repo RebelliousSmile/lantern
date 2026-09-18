@@ -1,7 +1,7 @@
 import { createImageExportAction } from '@/core/templates/shell/imageExportAction'
-import { cloneValue } from '@/utils/clone'
+import { createTomlExportAction } from '@/core/templates/shell/tomlExportAction'
 import type { AnyTemplateDefinition } from '@/core/templates/types'
-import { toast } from 'sonner'
+import { cloneValue } from '@/utils/clone'
 import { ThemeKitAppearancePanel } from './editor/ThemeKitAppearancePanel'
 import { ThemeKitEditorPanel } from './editor/ThemeKitEditorPanel'
 import { ThemeKitImageExportSettings } from './editor/ThemeKitImageExportSettings'
@@ -22,7 +22,7 @@ const themeKitTemplate: AnyTemplateDefinition = {
     id: 'city.themeKit',
     gameId: 'city',
     gameLabel: 'City of Mist',
-    label: 'Theme Kit',
+    label: 'city:themeKit.label',
     implemented: true,
     contractKey: 'mist/city-of-mist/theme-kit',
     createBlank: blankThemeKit,
@@ -32,11 +32,8 @@ const themeKitTemplate: AnyTemplateDefinition = {
     getTabTitle: (doc: ThemeKitDocument) => doc.name.trim() || 'Themebook',
     sections: themeKitSections,
     landing: {
-        description:
-            'A Theme Kit is a themebook: the blank questionnaire a player fills in to build a theme, with its lettered questions, its selection rules and its five improvements. The filled card is the separate Theme Card. Start blank, open the example, or import a TOML file.',
-        exampleLabel: 'Start with example',
-        blankLabel: 'Start blank',
-        importLabel: 'Import TOML',
+        newTitle: 'city:themeKit.newTitle',
+        description: 'city:themeKit.description',
     },
     io: {
         importToml: (tomlText: string) => {
@@ -55,7 +52,6 @@ const themeKitTemplate: AnyTemplateDefinition = {
         render: () => <ThemeKitPreview />,
     },
     editor: {
-        emptyState: 'Click on the page to edit a specific section.',
         renderPanel: () => <ThemeKitEditorPanel />,
     },
     appearance: {
@@ -65,41 +61,12 @@ const themeKitTemplate: AnyTemplateDefinition = {
     },
     export: {
         actions: [
-            {
-                id: 'toml',
-                label: 'TOML',
-                buttonLabel: 'Export TOML',
-                description: 'Export the current themebook data as TOML.',
-                run: ({
-                    doc,
-                    fileStem,
-                }: {
-                    doc: ThemeKitDocument
-                    fileStem: string
-                }) => {
-                    try {
-                        const toml = exportToTOML(doc)
-                        const blob = new Blob([toml], {
-                            type: 'text/plain;charset=utf-8',
-                        })
-                        const url = URL.createObjectURL(blob)
-                        const anchor = document.createElement('a')
-                        anchor.href = url
-                        anchor.download = `${fileStem}.toml`
-                        document.body.appendChild(anchor)
-                        anchor.click()
-                        anchor.remove()
-                        URL.revokeObjectURL(url)
-                        toast.success('Exported TOML.')
-                    } catch (errorAny: any) {
-                        toast.error(
-                            errorAny?.message || 'Failed to export TOML.'
-                        )
-                    }
-                },
-            },
+            createTomlExportAction({
+                exportToml: exportToTOML,
+                description: 'city:themeKit.exportToml',
+            }),
             createImageExportAction({
-                description: 'Export the current themebook page as PNG.',
+                description: 'city:themeKit.exportPng',
                 renderSettings: () => <ThemeKitImageExportSettings />,
             }),
         ],

@@ -1,7 +1,7 @@
 import { createImageExportAction } from '@/core/templates/shell/imageExportAction'
-import { cloneValue } from '@/utils/clone'
+import { createTomlExportAction } from '@/core/templates/shell/tomlExportAction'
 import type { AnyTemplateDefinition } from '@/core/templates/types'
-import { toast } from 'sonner'
+import { cloneValue } from '@/utils/clone'
 import { ThemeCardAppearancePanel } from './editor/ThemeCardAppearancePanel'
 import { ThemeCardEditorPanel } from './editor/ThemeCardEditorPanel'
 import { ThemeCardImageExportSettings } from './editor/ThemeCardImageExportSettings'
@@ -22,7 +22,7 @@ const themeCardTemplate: AnyTemplateDefinition = {
     id: 'city.themeCard',
     gameId: 'city',
     gameLabel: 'City of Mist',
-    label: 'Theme Card',
+    label: 'city:themeCard.label',
     implemented: true,
     contractKey: 'mist/city-of-mist/theme-card',
     createBlank: blankThemeCard,
@@ -32,11 +32,8 @@ const themeCardTemplate: AnyTemplateDefinition = {
     getTabTitle: (doc: ThemeCardDocument) => doc.title.trim() || 'Theme Card',
     sections: themeCardSections,
     landing: {
-        description:
-            'Choose how to start this theme card: blank, example, or import from TOML.',
-        exampleLabel: 'Start with example',
-        blankLabel: 'Start blank',
-        importLabel: 'Import TOML',
+        newTitle: 'city:themeCard.newTitle',
+        description: 'city:themeCard.description',
     },
     io: {
         importToml: (tomlText: string) => {
@@ -55,7 +52,6 @@ const themeCardTemplate: AnyTemplateDefinition = {
         render: () => <ThemeCardPreview />,
     },
     editor: {
-        emptyState: 'Click on the card to edit a specific section.',
         renderPanel: () => <ThemeCardEditorPanel />,
     },
     appearance: {
@@ -65,41 +61,12 @@ const themeCardTemplate: AnyTemplateDefinition = {
     },
     export: {
         actions: [
-            {
-                id: 'toml',
-                label: 'TOML',
-                buttonLabel: 'Export TOML',
-                description: 'Export the current theme card data as TOML.',
-                run: ({
-                    doc,
-                    fileStem,
-                }: {
-                    doc: ThemeCardDocument
-                    fileStem: string
-                }) => {
-                    try {
-                        const toml = exportToTOML(doc)
-                        const blob = new Blob([toml], {
-                            type: 'text/plain;charset=utf-8',
-                        })
-                        const url = URL.createObjectURL(blob)
-                        const anchor = document.createElement('a')
-                        anchor.href = url
-                        anchor.download = `${fileStem}.toml`
-                        document.body.appendChild(anchor)
-                        anchor.click()
-                        anchor.remove()
-                        URL.revokeObjectURL(url)
-                        toast.success('Exported TOML.')
-                    } catch (errorAny: any) {
-                        toast.error(
-                            errorAny?.message || 'Failed to export TOML.'
-                        )
-                    }
-                },
-            },
+            createTomlExportAction({
+                exportToml: exportToTOML,
+                description: 'city:themeCard.exportToml',
+            }),
             createImageExportAction({
-                description: 'Export the current theme card preview as PNG.',
+                description: 'city:themeCard.exportPng',
                 renderSettings: () => <ThemeCardImageExportSettings />,
             }),
         ],

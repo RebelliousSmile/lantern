@@ -1,14 +1,14 @@
 import {
-    getPbtaCollectionPresentation,
-    type PbtaCollectionPresentation,
-} from 'schema-pbta'
-import {
     getAtPath,
     moveAtPath,
     removeAtPath,
     setAtPath,
 } from '@/core/editor-schema/path'
 import type { EditorPath } from '@/core/editor-schema/types'
+import {
+    getPbtaCollectionPresentation,
+    type PbtaCollectionPresentation,
+} from 'schema-pbta'
 
 export function collectionPath(path: string): EditorPath | null {
     if (!path || path.includes('[]')) return null

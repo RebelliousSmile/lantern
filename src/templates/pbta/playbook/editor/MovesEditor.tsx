@@ -72,18 +72,20 @@ export function MovesEditor({
                         className="space-y-1.5 rounded-md border p-2"
                     >
                         <div className="flex items-center gap-1.5">
-                            {allowChecked && <Checkbox
-                                checked={entry.checked === true}
-                                aria-label="Move acquired"
-                                onCheckedChange={(checked) =>
-                                    updateAt(index, {
-                                        ...entry,
-                                        ...(checked === true
-                                            ? { checked: true }
-                                            : { checked: undefined }),
-                                    })
-                                }
-                            />}
+                            {allowChecked && (
+                                <Checkbox
+                                    checked={entry.checked === true}
+                                    aria-label="Move acquired"
+                                    onCheckedChange={(checked) =>
+                                        updateAt(index, {
+                                            ...entry,
+                                            ...(checked === true
+                                                ? { checked: true }
+                                                : { checked: undefined }),
+                                        })
+                                    }
+                                />
+                            )}
                             <div className="flex overflow-hidden rounded-md border">
                                 <button
                                     type="button"
@@ -120,36 +122,42 @@ export function MovesEditor({
                                 </button>
                             </div>
                             <div className="flex-1" />
-                            {allowReorder && <Button
-                                type="button"
-                                variant="ghost"
-                                size="icon-sm"
-                                className="shrink-0"
-                                aria-label="Move up"
-                                onClick={() => moveAt(index, -1)}
-                            >
-                                <ChevronUp className="h-3.5 w-3.5" />
-                            </Button>}
-                            {allowReorder && <Button
-                                type="button"
-                                variant="ghost"
-                                size="icon-sm"
-                                className="shrink-0"
-                                aria-label="Move down"
-                                onClick={() => moveAt(index, 1)}
-                            >
-                                <ChevronDown className="h-3.5 w-3.5" />
-                            </Button>}
-                            {allowAddRemove && <Button
-                                type="button"
-                                variant="ghost"
-                                size="icon-sm"
-                                className="shrink-0"
-                                aria-label="Remove move"
-                                onClick={() => removeAt(index)}
-                            >
-                                <X className="h-3.5 w-3.5" />
-                            </Button>}
+                            {allowReorder && (
+                                <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="icon-sm"
+                                    className="shrink-0"
+                                    aria-label="Move up"
+                                    onClick={() => moveAt(index, -1)}
+                                >
+                                    <ChevronUp className="h-3.5 w-3.5" />
+                                </Button>
+                            )}
+                            {allowReorder && (
+                                <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="icon-sm"
+                                    className="shrink-0"
+                                    aria-label="Move down"
+                                    onClick={() => moveAt(index, 1)}
+                                >
+                                    <ChevronDown className="h-3.5 w-3.5" />
+                                </Button>
+                            )}
+                            {allowAddRemove && (
+                                <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="icon-sm"
+                                    className="shrink-0"
+                                    aria-label="Remove move"
+                                    onClick={() => removeAt(index)}
+                                >
+                                    <X className="h-3.5 w-3.5" />
+                                </Button>
+                            )}
                         </div>
 
                         {entry.kind === 'ref' ? (
@@ -176,15 +184,17 @@ export function MovesEditor({
                 )
             })}
             <div className="flex items-center gap-1.5">
-            {allowAddRemove && <Button
-                    type="button"
-                    variant="secondary"
-                    size="sm"
-                    className="text-xs"
-                    onClick={() => onChange([...value, blankInlineMove()])}
-                >
-                    Add move
-            </Button>}
+                {allowAddRemove && (
+                    <Button
+                        type="button"
+                        variant="secondary"
+                        size="sm"
+                        className="text-xs"
+                        onClick={() => onChange([...value, blankInlineMove()])}
+                    >
+                        Add move
+                    </Button>
+                )}
             </div>
         </div>
     )

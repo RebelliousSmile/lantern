@@ -70,7 +70,8 @@ const common = {
         export: 'Export',
     },
     landing: {
-        newTitle: 'New {{label}}',
+        chooseStart:
+            'Choose how to start this template: blank, example, or import from TOML.',
         startExample: 'Start with example',
         startBlank: 'Start blank',
         importToml: 'Import TOML',
@@ -118,6 +119,9 @@ const common = {
             'Could not copy TOML. Select the text below and copy it manually.',
         previewNotFound: 'Preview not found. Make sure the preview is visible.',
         exportedPng: 'Exported PNG.',
+        exportedToml: 'Exported TOML.',
+        png: 'PNG',
+        exportPng: 'Export PNG',
     },
     feedback: {
         title: 'Send feedback on Discord',
@@ -145,6 +149,7 @@ const common = {
         exportFailed: 'Failed to export.',
         generateTomlFailed: 'Failed to generate TOML.',
         exportPngFailed: 'Failed to export PNG.',
+        exportTomlFailed: 'Failed to export TOML.',
     },
 }
 

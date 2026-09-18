@@ -1,7 +1,7 @@
 import { createImageExportAction } from '@/core/templates/shell/imageExportAction'
-import { cloneValue } from '@/utils/clone'
+import { createTomlExportAction } from '@/core/templates/shell/tomlExportAction'
 import type { AnyTemplateDefinition } from '@/core/templates/types'
-import { toast } from 'sonner'
+import { cloneValue } from '@/utils/clone'
 import { PowerSetAppearancePanel } from './editor/PowerSetAppearancePanel'
 import { PowerSetEditorPanel } from './editor/PowerSetEditorPanel'
 import { PowerSetImageExportSettings } from './editor/PowerSetImageExportSettings'
@@ -22,7 +22,7 @@ const powerSetTemplate: AnyTemplateDefinition = {
     id: 'otherscape.powerSet',
     gameId: 'otherscape',
     gameLabel: ':Otherscape',
-    label: 'Power Set',
+    label: 'otherscape:powerSet.label',
     implemented: true,
     contractKey: 'mist/otherscape/power-set',
     createBlank: blankOtherscapePowerSet,
@@ -32,11 +32,8 @@ const powerSetTemplate: AnyTemplateDefinition = {
     getTabTitle: (doc: OtherscapePowerSet) => doc.name.trim() || 'Power Set',
     sections: powerSetSections,
     landing: {
-        description:
-            'A Power Set is a bundle of Specials, Threats and Consequences drawn from the Self, the Mythos or the Noise, published on its own and grafted onto any Challenge. Start blank, open the example, or import a TOML file.',
-        exampleLabel: 'Start with example',
-        blankLabel: 'Start blank',
-        importLabel: 'Import TOML',
+        newTitle: 'otherscape:powerSet.newTitle',
+        description: 'otherscape:powerSet.description',
     },
     io: {
         importToml: (tomlText: string) => {
@@ -55,7 +52,6 @@ const powerSetTemplate: AnyTemplateDefinition = {
         render: () => <PowerSetPreview />,
     },
     editor: {
-        emptyState: 'Click on the card to edit a specific section.',
         renderPanel: () => <PowerSetEditorPanel />,
     },
     appearance: {
@@ -65,41 +61,12 @@ const powerSetTemplate: AnyTemplateDefinition = {
     },
     export: {
         actions: [
-            {
-                id: 'toml',
-                label: 'TOML',
-                buttonLabel: 'Export TOML',
-                description: 'Export the current power set data as TOML.',
-                run: ({
-                    doc,
-                    fileStem,
-                }: {
-                    doc: OtherscapePowerSet
-                    fileStem: string
-                }) => {
-                    try {
-                        const toml = exportToTOML(doc)
-                        const blob = new Blob([toml], {
-                            type: 'text/plain;charset=utf-8',
-                        })
-                        const url = URL.createObjectURL(blob)
-                        const anchor = document.createElement('a')
-                        anchor.href = url
-                        anchor.download = `${fileStem}.toml`
-                        document.body.appendChild(anchor)
-                        anchor.click()
-                        anchor.remove()
-                        URL.revokeObjectURL(url)
-                        toast.success('Exported TOML.')
-                    } catch (errorAny: any) {
-                        toast.error(
-                            errorAny?.message || 'Failed to export TOML.'
-                        )
-                    }
-                },
-            },
+            createTomlExportAction({
+                exportToml: exportToTOML,
+                description: 'otherscape:powerSet.exportToml',
+            }),
             createImageExportAction({
-                description: 'Export the current power set preview as PNG.',
+                description: 'otherscape:powerSet.exportPng',
                 renderSettings: () => <PowerSetImageExportSettings />,
             }),
         ],

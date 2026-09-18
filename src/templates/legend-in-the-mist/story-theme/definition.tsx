@@ -1,7 +1,7 @@
 import { createImageExportAction } from '@/core/templates/shell/imageExportAction'
-import { cloneValue } from '@/utils/clone'
+import { createTomlExportAction } from '@/core/templates/shell/tomlExportAction'
 import type { AnyTemplateDefinition } from '@/core/templates/types'
-import { toast } from 'sonner'
+import { cloneValue } from '@/utils/clone'
 import { StoryThemeAppearancePanel } from './editor/StoryThemeAppearancePanel'
 import { StoryThemeEditorPanel } from './editor/StoryThemeEditorPanel'
 import { StoryThemeImageExportSettings } from './editor/StoryThemeImageExportSettings'
@@ -22,7 +22,7 @@ const storyThemeTemplate: AnyTemplateDefinition = {
     id: 'legend.storyTheme',
     gameId: 'legend',
     gameLabel: 'Legend in the Mist',
-    label: 'Story Theme',
+    label: 'legend:storyTheme.label',
     implemented: true,
     contractKey: 'mist/legend-in-the-mist/story-theme',
     createBlank: blankLegendInTheMistStoryTheme,
@@ -34,11 +34,8 @@ const storyThemeTemplate: AnyTemplateDefinition = {
         doc.title_tag.trim() || 'Story Theme',
     sections: storyThemeSections,
     landing: {
-        description:
-            'Choose how to start this template: blank, example, or import from TOML.',
-        exampleLabel: 'Start with example',
-        blankLabel: 'Start blank',
-        importLabel: 'Import TOML',
+        newTitle: 'legend:storyTheme.newTitle',
+        description: 'landing.chooseStart',
     },
     io: {
         importToml: (tomlText: string) => {
@@ -59,7 +56,6 @@ const storyThemeTemplate: AnyTemplateDefinition = {
         render: () => <StoryThemePreview />,
     },
     editor: {
-        emptyState: 'Click on the preview to edit a specific section.',
         renderPanel: () => <StoryThemeEditorPanel />,
     },
     appearance: {
@@ -69,41 +65,12 @@ const storyThemeTemplate: AnyTemplateDefinition = {
     },
     export: {
         actions: [
-            {
-                id: 'toml',
-                label: 'TOML',
-                buttonLabel: 'Export TOML',
-                description: 'Export the current story theme data as TOML.',
-                run: ({
-                    doc,
-                    fileStem,
-                }: {
-                    doc: LegendInTheMistStoryTheme
-                    fileStem: string
-                }) => {
-                    try {
-                        const toml = exportToTOML(doc)
-                        const blob = new Blob([toml], {
-                            type: 'text/plain;charset=utf-8',
-                        })
-                        const url = URL.createObjectURL(blob)
-                        const anchor = document.createElement('a')
-                        anchor.href = url
-                        anchor.download = `${fileStem}.toml`
-                        document.body.appendChild(anchor)
-                        anchor.click()
-                        anchor.remove()
-                        URL.revokeObjectURL(url)
-                        toast.success('Exported TOML.')
-                    } catch (errorAny: any) {
-                        toast.error(
-                            errorAny?.message || 'Failed to export TOML.'
-                        )
-                    }
-                },
-            },
+            createTomlExportAction({
+                exportToml: exportToTOML,
+                description: 'legend:storyTheme.exportToml',
+            }),
             createImageExportAction({
-                description: 'Export the current story theme preview as PNG.',
+                description: 'legend:storyTheme.exportPng',
                 renderSettings: () => <StoryThemeImageExportSettings />,
             }),
         ],

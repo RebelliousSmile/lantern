@@ -1,7 +1,9 @@
+import type { ImportWarning } from '@/core/templates/types'
 import { useActiveTab, useActiveTemplate } from '@/core/workspace/selectors'
 import { useWorkspaceStore } from '@/core/workspace/store'
 import i18n from '@/i18n'
 import { formatError } from '@/i18n/formatError'
+import { translate } from '@/i18n/text'
 import * as React from 'react'
 import { useRef, useState } from 'react'
 import { Trans, useTranslation } from 'react-i18next'
@@ -42,7 +44,7 @@ export default function ImportDialog({ open, onOpenChange }: Props) {
     const importToml = activeTemplate?.io.importToml
 
     const [previewName, setPreviewName] = useState<string | null>(null)
-    const [warnings, setWarnings] = useState<string[]>([])
+    const [warnings, setWarnings] = useState<ImportWarning[]>([])
     const [error, setError] = useState<string | null>(null)
 
     const fileRef = useRef<HTMLInputElement>(null)
@@ -165,7 +167,9 @@ export default function ImportDialog({ open, onOpenChange }: Props) {
         }
     }
 
-    const templateLabel = activeTemplate?.label || t('import.templateFallback')
+    const templateLabel = activeTemplate
+        ? translate(activeTemplate.label)
+        : t('import.templateFallback')
 
     return (
         <Dialog
@@ -312,7 +316,7 @@ function PreviewPane({
     error,
 }: {
     name: string | null
-    warnings: string[]
+    warnings: ImportWarning[]
     error: string | null
 }) {
     const { t } = useTranslation()
@@ -350,7 +354,9 @@ function PreviewPane({
                     <ScrollArea className="mt-2 h-24">
                         <ul className="ml-5 list-disc space-y-1 text-sm text-amber-900">
                             {warnings.map((warning, index) => (
-                                <li key={index}>{warning}</li>
+                                <li key={index}>
+                                    {translate(warning.key, warning.values)}
+                                </li>
                             ))}
                         </ul>
                     </ScrollArea>

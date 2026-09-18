@@ -1,7 +1,7 @@
 import { createImageExportAction } from '@/core/templates/shell/imageExportAction'
-import { cloneValue } from '@/utils/clone'
+import { createTomlExportAction } from '@/core/templates/shell/tomlExportAction'
 import type { AnyTemplateDefinition } from '@/core/templates/types'
-import { toast } from 'sonner'
+import { cloneValue } from '@/utils/clone'
 import { DangerAppearancePanel } from './editor/DangerAppearancePanel'
 import { DangerEditorPanel } from './editor/DangerEditorPanel'
 import { DangerImageExportSettings } from './editor/DangerImageExportSettings'
@@ -22,7 +22,7 @@ const dangerTemplate: AnyTemplateDefinition = {
     id: 'city.danger',
     gameId: 'city',
     gameLabel: 'City of Mist',
-    label: 'Danger',
+    label: 'city:danger.label',
     implemented: true,
     contractKey: 'mist/city-of-mist/danger',
     createBlank: blankCityOfMistDanger,
@@ -32,11 +32,8 @@ const dangerTemplate: AnyTemplateDefinition = {
     getTabTitle: (doc: CityOfMistDanger) => doc.name.trim() || 'Danger',
     sections: dangerSections,
     landing: {
-        description:
-            'Choose how to start this template: blank, example, or import from TOML.',
-        exampleLabel: 'Start with example',
-        blankLabel: 'Start blank',
-        importLabel: 'Import TOML',
+        newTitle: 'city:danger.newTitle',
+        description: 'landing.chooseStart',
     },
     io: {
         importToml: (tomlText: string) => {
@@ -55,7 +52,6 @@ const dangerTemplate: AnyTemplateDefinition = {
         render: () => <DangerPreview />,
     },
     editor: {
-        emptyState: 'Click on the preview to edit a specific section.',
         renderPanel: () => <DangerEditorPanel />,
     },
     appearance: {
@@ -65,41 +61,12 @@ const dangerTemplate: AnyTemplateDefinition = {
     },
     export: {
         actions: [
-            {
-                id: 'toml',
-                label: 'TOML',
-                buttonLabel: 'Export TOML',
-                description: 'Export the current danger data as TOML.',
-                run: ({
-                    doc,
-                    fileStem,
-                }: {
-                    doc: CityOfMistDanger
-                    fileStem: string
-                }) => {
-                    try {
-                        const toml = exportToTOML(doc)
-                        const blob = new Blob([toml], {
-                            type: 'text/plain;charset=utf-8',
-                        })
-                        const url = URL.createObjectURL(blob)
-                        const anchor = document.createElement('a')
-                        anchor.href = url
-                        anchor.download = `${fileStem}.toml`
-                        document.body.appendChild(anchor)
-                        anchor.click()
-                        anchor.remove()
-                        URL.revokeObjectURL(url)
-                        toast.success('Exported TOML.')
-                    } catch (errorAny: any) {
-                        toast.error(
-                            errorAny?.message || 'Failed to export TOML.'
-                        )
-                    }
-                },
-            },
+            createTomlExportAction({
+                exportToml: exportToTOML,
+                description: 'city:danger.exportToml',
+            }),
             createImageExportAction({
-                description: 'Export the current danger preview as PNG.',
+                description: 'city:danger.exportPng',
                 renderSettings: () => <DangerImageExportSettings />,
             }),
         ],

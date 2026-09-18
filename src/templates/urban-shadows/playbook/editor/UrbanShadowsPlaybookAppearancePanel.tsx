@@ -1,8 +1,10 @@
 import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
+import { useUiText } from '@/i18n/text'
 import { useUrbanShadowsViewStore } from '../hooks'
 import { urbanShadowsSections } from '../metadata'
 export function UrbanShadowsPlaybookAppearancePanel() {
+    const text = useUiText()
     const { hidden, setHidden, previewWidth, setPreviewWidth } =
         useUrbanShadowsViewStore()
     return (
@@ -26,7 +28,7 @@ export function UrbanShadowsPlaybookAppearancePanel() {
                             setHidden(section.id, !value)
                         }
                     />
-                    {section.label}
+                    {text(section.label)}
                 </label>
             ))}
         </div>

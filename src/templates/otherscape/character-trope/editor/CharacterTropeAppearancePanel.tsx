@@ -3,6 +3,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Switch } from '@/components/ui/switch'
+import { useUiText } from '@/i18n/text'
 import { useOtherscapeCharacterTropeViewStore } from '../hooks'
 import {
     characterTropeBackgroundOptions,
@@ -11,6 +12,7 @@ import {
 import { PREVIEW_WIDTH_MAX, PREVIEW_WIDTH_MIN } from '../model'
 
 export function CharacterTropeAppearancePanel() {
+    const text = useUiText()
     const {
         hidden,
         toggleHidden,
@@ -53,7 +55,9 @@ export function CharacterTropeAppearancePanel() {
                                 checked={!hidden[section.id]}
                                 onCheckedChange={() => toggleHidden(section.id)}
                             />
-                            <span className="text-xs">{section.label}</span>
+                            <span className="text-xs">
+                                {text(section.label)}
+                            </span>
                         </label>
                     ))}
                 </div>

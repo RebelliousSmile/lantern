@@ -1,14 +1,18 @@
+import type { TranslationKey } from '@/i18n/text'
 import type { JourneyType, SectionId } from './model'
 
 /* The title band is not listed here: it carries the type tint that tells a
    landscape from an occasion, so it always renders and has no toggle. */
-export const journeySections: Array<{ id: SectionId; label: string }> = [
-    { id: 'description', label: 'Description' },
-    { id: 'tags', label: 'Tags' },
-    { id: 'benefits', label: 'Benefits' },
-    { id: 'consequences', label: 'General consequences' },
-    { id: 'vignettes', label: 'Vignettes' },
-    { id: 'meta', label: 'Meta footer' },
+export const journeySections: Array<{
+    id: SectionId
+    label: TranslationKey
+}> = [
+    { id: 'description', label: 'legend:journey.sections.description' },
+    { id: 'tags', label: 'legend:journey.sections.tags' },
+    { id: 'benefits', label: 'legend:journey.sections.benefits' },
+    { id: 'consequences', label: 'legend:journey.sections.consequences' },
+    { id: 'vignettes', label: 'legend:journey.sections.vignettes' },
+    { id: 'meta', label: 'legend:journey.sections.meta' },
 ]
 
 // The spread is wide, so the zoom range reaches further down than on the cards:

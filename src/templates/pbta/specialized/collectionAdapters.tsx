@@ -31,9 +31,7 @@ function blankItem(
                 presentation.target === 'monsterhearts-playbook' ||
                 items.some(
                     (item) =>
-                        item &&
-                        typeof item === 'object' &&
-                        !('kind' in item)
+                        item && typeof item === 'object' && !('kind' in item)
                 )
             )
                 return {
@@ -41,7 +39,12 @@ function blankItem(
                     moveType: 'move',
                     description: 'Describe this move.',
                 }
-            return { kind: 'inline', name: 'New Move', moveType: 'move', description: 'Describe this move.' }
+            return {
+                kind: 'inline',
+                name: 'New Move',
+                moveType: 'move',
+                description: 'Describe this move.',
+            }
         case 'pbta-choice-set':
             return { title: 'New Choice Set', type: 'single', choices: [] }
         case 'pbta-advancement':
@@ -67,35 +70,137 @@ function blankItem(
     }
 }
 
-function GenericCollectionAdapter({ presentation, items, onChange }: CollectionAdapterProps) {
+function GenericCollectionAdapter({
+    presentation,
+    items,
+    onChange,
+}: CollectionAdapterProps) {
     const mutable = presentation.cardinality === 'mutable'
     const checked = presentation.itemCapabilities?.includes('checked') === true
-    const update = (index: number, item: unknown) => onChange(items.map((current, currentIndex) => currentIndex === index ? item : current))
+    const update = (index: number, item: unknown) =>
+        onChange(
+            items.map((current, currentIndex) =>
+                currentIndex === index ? item : current
+            )
+        )
     const move = (index: number, offset: number) => {
         const target = index + offset
-        if (!presentation.reorder || target < 0 || target >= items.length) return
+        if (!presentation.reorder || target < 0 || target >= items.length)
+            return
         const next = [...items]
         const [item] = next.splice(index, 1)
         next.splice(target, 0, item)
         onChange(next)
     }
-    return <div className="space-y-2">
-        {items.map((item, index) => <div key={index} className="space-y-2 rounded-md border p-2">
-            <div className="flex items-center gap-1">
-                {checked && typeof item === 'object' && item !== null && !Array.isArray(item) && <Checkbox checked={(item as { checked?: boolean }).checked === true} aria-label={`${presentation.label} acquired`} onCheckedChange={(value) => {
-                    const next = { ...(item as Record<string, unknown>) }
-                    if (value === true) next.checked = true
-                    else delete next.checked
-                    update(index, next)
-                }} />}
-                <div className="flex-1" />
-                {presentation.reorder && <><Button type="button" variant="ghost" size="icon-sm" aria-label="Move up" onClick={() => move(index, -1)}><ChevronUp className="h-3.5 w-3.5" /></Button><Button type="button" variant="ghost" size="icon-sm" aria-label="Move down" onClick={() => move(index, 1)}><ChevronDown className="h-3.5 w-3.5" /></Button></>}
-                {mutable && <Button type="button" variant="ghost" size="icon-sm" aria-label={`Remove ${presentation.label}`} onClick={() => onChange(items.filter((_, currentIndex) => currentIndex !== index))}><X className="h-3.5 w-3.5" /></Button>}
-            </div>
-            {typeof item === 'string' ? <Input value={item} onChange={(event) => update(index, event.target.value)} /> : item && typeof item === 'object' && !Array.isArray(item) ? <SchemaEditor schema={inferObject(presentation.label, item as Record<string, unknown>)} value={item as Record<string, unknown>} onChange={(next) => update(index, next)} /> : <p className="text-sm text-destructive">Unsupported published collection item.</p>}
-        </div>)}
-        {mutable && <Button type="button" variant="secondary" size="sm" onClick={() => onChange([...items, blankItem(presentation, items)])}>Add {presentation.label}</Button>}
-    </div>
+    return (
+        <div className="space-y-2">
+            {items.map((item, index) => (
+                <div key={index} className="space-y-2 rounded-md border p-2">
+                    <div className="flex items-center gap-1">
+                        {checked &&
+                            typeof item === 'object' &&
+                            item !== null &&
+                            !Array.isArray(item) && (
+                                <Checkbox
+                                    checked={
+                                        (item as { checked?: boolean })
+                                            .checked === true
+                                    }
+                                    aria-label={`${presentation.label} acquired`}
+                                    onCheckedChange={(value) => {
+                                        const next = {
+                                            ...(item as Record<
+                                                string,
+                                                unknown
+                                            >),
+                                        }
+                                        if (value === true) next.checked = true
+                                        else delete next.checked
+                                        update(index, next)
+                                    }}
+                                />
+                            )}
+                        <div className="flex-1" />
+                        {presentation.reorder && (
+                            <>
+                                <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="icon-sm"
+                                    aria-label="Move up"
+                                    onClick={() => move(index, -1)}
+                                >
+                                    <ChevronUp className="h-3.5 w-3.5" />
+                                </Button>
+                                <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="icon-sm"
+                                    aria-label="Move down"
+                                    onClick={() => move(index, 1)}
+                                >
+                                    <ChevronDown className="h-3.5 w-3.5" />
+                                </Button>
+                            </>
+                        )}
+                        {mutable && (
+                            <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon-sm"
+                                aria-label={`Remove ${presentation.label}`}
+                                onClick={() =>
+                                    onChange(
+                                        items.filter(
+                                            (_, currentIndex) =>
+                                                currentIndex !== index
+                                        )
+                                    )
+                                }
+                            >
+                                <X className="h-3.5 w-3.5" />
+                            </Button>
+                        )}
+                    </div>
+                    {typeof item === 'string' ? (
+                        <Input
+                            value={item}
+                            onChange={(event) =>
+                                update(index, event.target.value)
+                            }
+                        />
+                    ) : item &&
+                      typeof item === 'object' &&
+                      !Array.isArray(item) ? (
+                        <SchemaEditor
+                            schema={inferObject(
+                                presentation.label,
+                                item as Record<string, unknown>
+                            )}
+                            value={item as Record<string, unknown>}
+                            onChange={(next) => update(index, next)}
+                        />
+                    ) : (
+                        <p className="text-sm text-destructive">
+                            Unsupported published collection item.
+                        </p>
+                    )}
+                </div>
+            ))}
+            {mutable && (
+                <Button
+                    type="button"
+                    variant="secondary"
+                    size="sm"
+                    onClick={() =>
+                        onChange([...items, blankItem(presentation, items)])
+                    }
+                >
+                    Add {presentation.label}
+                </Button>
+            )}
+        </div>
+    )
 }
 
 function MovesAdapter(props: CollectionAdapterProps) {
@@ -106,7 +211,18 @@ function MovesAdapter(props: CollectionAdapterProps) {
         )
     )
         return <GenericCollectionAdapter {...props} />
-    return <MovesEditor value={props.items as MoveEntry[]} onChange={(items) => props.onChange(items)} allowAddRemove={props.presentation.cardinality === 'mutable'} allowReorder={props.presentation.reorder} allowChecked={props.presentation.itemCapabilities?.includes('checked') === true} />
+    return (
+        <MovesEditor
+            value={props.items as MoveEntry[]}
+            onChange={(items) => props.onChange(items)}
+            allowAddRemove={props.presentation.cardinality === 'mutable'}
+            allowReorder={props.presentation.reorder}
+            allowChecked={
+                props.presentation.itemCapabilities?.includes('checked') ===
+                true
+            }
+        />
+    )
 }
 
 function ChoiceSetsAdapter(props: CollectionAdapterProps) {
@@ -115,11 +231,26 @@ function ChoiceSetsAdapter(props: CollectionAdapterProps) {
         'choiceSets[].choices'
     )
     if (!choices)
-        return <p className="text-sm text-destructive">Missing published choice collection configuration.</p>
-    return <ChoiceSetsEditor value={props.items as ChoiceSet[]} onChange={(items) => props.onChange(items)} allowAddRemove={props.presentation.cardinality === 'mutable'} allowReorder={props.presentation.reorder} allowChoiceAddRemove={choices.cardinality === 'mutable'} allowChoiceReorder={choices.reorder} />
+        return (
+            <p className="text-sm text-destructive">
+                Missing published choice collection configuration.
+            </p>
+        )
+    return (
+        <ChoiceSetsEditor
+            value={props.items as ChoiceSet[]}
+            onChange={(items) => props.onChange(items)}
+            allowAddRemove={props.presentation.cardinality === 'mutable'}
+            allowReorder={props.presentation.reorder}
+            allowChoiceAddRemove={choices.cardinality === 'mutable'}
+            allowChoiceReorder={choices.reorder}
+        />
+    )
 }
 
-const generic = (props: CollectionAdapterProps) => <GenericCollectionAdapter {...props} />
+const generic = (props: CollectionAdapterProps) => (
+    <GenericCollectionAdapter {...props} />
+)
 
 export const PBTA_COLLECTION_ADAPTERS = {
     'pbta-ascendant': generic,
@@ -135,16 +266,29 @@ export const PBTA_COLLECTION_ADAPTERS = {
     'pbta-scar': generic,
     'pbta-stat-profile': generic,
     'pbta-text': generic,
-} satisfies Record<PbtaCollectionItemEditor, (props: CollectionAdapterProps) => React.JSX.Element>
+} satisfies Record<
+    PbtaCollectionItemEditor,
+    (props: CollectionAdapterProps) => React.JSX.Element
+>
 
 export function collectionAdapterFor(itemEditor: string) {
-    if (!(PBTA_COLLECTION_ITEM_EDITORS as readonly string[]).includes(itemEditor)) return null
+    if (
+        !(PBTA_COLLECTION_ITEM_EDITORS as readonly string[]).includes(
+            itemEditor
+        )
+    )
+        return null
     return PBTA_COLLECTION_ADAPTERS[itemEditor as PbtaCollectionItemEditor]
 }
 
 export function PublishedCollectionEditor(props: CollectionAdapterProps) {
     const Adapter = collectionAdapterFor(props.presentation.itemEditor)
     if (!Adapter)
-        return <p className="text-sm text-destructive">Unknown published collection adapter: {props.presentation.itemEditor}.</p>
+        return (
+            <p className="text-sm text-destructive">
+                Unknown published collection adapter:{' '}
+                {props.presentation.itemEditor}.
+            </p>
+        )
     return <Adapter {...props} />
 }

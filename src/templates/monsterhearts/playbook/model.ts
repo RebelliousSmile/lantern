@@ -1,3 +1,4 @@
+import type { TranslationKey } from '@/i18n/text'
 import type { MonsterheartsPlaybook as Published } from 'schema-pbta'
 
 export type EditorialBlock = { heading: string; paragraphs: string[] }
@@ -35,14 +36,14 @@ export type ViewState = {
     exportPrefs: { scale: 1 | 2 | 3 }
 }
 export type SheetState = { open: boolean; target: SectionId | 'basic' | null }
-export const sections: Array<{ id: SectionId; label: string }> = [
-    { id: 'strings', label: 'Strings' },
-    { id: 'conditions', label: 'Conditions' },
-    { id: 'editorial', label: 'Editorial' },
-    { id: 'moves', label: 'Moves' },
-    { id: 'advancement', label: 'Advancement' },
-    { id: 'advances', label: 'Advances' },
-    { id: 'harm', label: 'Harm' },
+export const sections: Array<{ id: SectionId; label: TranslationKey }> = [
+    { id: 'strings', label: 'pbta:monsterhearts.sections.strings' },
+    { id: 'conditions', label: 'pbta:monsterhearts.sections.conditions' },
+    { id: 'editorial', label: 'pbta:monsterhearts.sections.editorial' },
+    { id: 'moves', label: 'pbta:monsterhearts.sections.moves' },
+    { id: 'advancement', label: 'pbta:monsterhearts.sections.advancement' },
+    { id: 'advances', label: 'pbta:monsterhearts.sections.advances' },
+    { id: 'harm', label: 'pbta:monsterhearts.sections.harm' },
 ]
 export const defaultView: ViewState = {
     zoom: 1,

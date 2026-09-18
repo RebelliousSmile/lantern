@@ -3,8 +3,7 @@ export const getSampleUrbanShadowsPlaybook = () => ({
     ...blankPlaybook(),
     slug: 'the-aware',
     name: 'The Aware',
-    description:
-        'A mortal who has learned the city has monsters.',
+    description: 'A mortal who has learned the city has monsters.',
     stats: {
         blood: 0,
         heart: 1,
@@ -20,8 +19,7 @@ export const getSampleUrbanShadowsPlaybook = () => ({
         {
             name: 'I Know a Guy',
             moveType: 'playbook',
-            description:
-                'Find help through your Circle.',
+            description: 'Find help through your Circle.',
         },
     ],
     mortalRelationships: [
@@ -33,7 +31,8 @@ export const getSampleUrbanShadowsPlaybook = () => ({
         {
             key: 'loyal-significant-other',
             label: 'Loyal significant other',
-            description: 'Keeps choosing you when the city makes that dangerous.',
+            description:
+                'Keeps choosing you when the city makes that dangerous.',
         },
         {
             key: 'struggling-best-friend',

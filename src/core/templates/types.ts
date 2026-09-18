@@ -1,4 +1,5 @@
 import type { TemplateEditorSchema } from '@/core/editor-schema/types'
+import type { TranslationKey, TranslationValues, UiText } from '@/i18n/text'
 import type { ReactNode } from 'react'
 
 export type GameId = string
@@ -11,15 +12,21 @@ export type TemplateMode = 'landing' | 'editing'
 
 export const DEFAULT_TEMPLATE_PREVIEW_WIDTH = 1152
 
+/** A lossy-import notice as data: the codec names what happened, the UI words it. */
+export type ImportWarning = {
+    key: TranslationKey
+    values?: TranslationValues
+}
+
 export type TemplateImportResult<TDoc> = {
     doc: TDoc
-    warnings: string[]
+    warnings: ImportWarning[]
     previewName?: string
 }
 
 export type TemplateSectionDefinition = {
     id: string
-    label: string
+    label: UiText
 }
 
 export type LegacyWorkspaceMigration<TDoc = unknown> = {
@@ -33,9 +40,9 @@ export type TemplateExportAction<
     TSheet = unknown,
 > = {
     id: string
-    label: string
-    buttonLabel?: string
-    description: string
+    label: UiText
+    buttonLabel?: UiText
+    description: UiText
     renderSettings?: () => ReactNode
     run: (context: {
         tabId: string
@@ -58,9 +65,10 @@ export type TemplateDefinition<
     id: string
     gameId: GameId
     gameLabel: string
-    label: string
+    /** The template's name, translated; `gameLabel` stays a proper noun. */
+    label: UiText
     implemented: boolean
-    comingSoonLabel?: string
+    comingSoonLabel?: UiText
 
     /**
      * The document contract this template edits, as `<contract>/<target>`.
@@ -77,10 +85,12 @@ export type TemplateDefinition<
 
     sections: TemplateSectionDefinition[]
     landing: {
-        description: string
-        exampleLabel?: string
-        blankLabel?: string
-        importLabel?: string
+        /** A whole sentence per template: French agreement differs per noun. */
+        newTitle: UiText
+        description: UiText
+        exampleLabel?: UiText
+        blankLabel?: UiText
+        importLabel?: UiText
     }
 
     io: {
@@ -94,7 +104,6 @@ export type TemplateDefinition<
     }
 
     editor: {
-        emptyState: string
         renderPanel: () => ReactNode
         schema?: TemplateEditorSchema
     }

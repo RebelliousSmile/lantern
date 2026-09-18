@@ -1,14 +1,18 @@
+import type { UiText } from '@/i18n/text'
 import type { SectionId } from './model'
 
 /* The header bar is not listed here: the name and the type are the card's top
    edge rather than a section, so they have no visibility toggle and always
    render. The order is the order the regions are printed in. */
-export const powerSetSections: Array<{ id: SectionId; label: string }> = [
-    { id: 'description', label: 'Description' },
-    { id: 'specials', label: 'Specials' },
-    { id: 'threats', label: 'Threats' },
-    { id: 'generalConsequences', label: 'General Consequences' },
-    { id: 'meta', label: 'Meta footer' },
+export const powerSetSections: Array<{ id: SectionId; label: UiText }> = [
+    { id: 'description', label: 'otherscape:powerSet.sections.description' },
+    { id: 'specials', label: 'otherscape:powerSet.sections.specials' },
+    { id: 'threats', label: 'otherscape:powerSet.sections.threats' },
+    {
+        id: 'generalConsequences',
+        label: 'otherscape:powerSet.sections.generalConsequences',
+    },
+    { id: 'meta', label: 'otherscape:powerSet.sections.meta' },
 ]
 
 export const powerSetZoomOptions = [0.75, 1, 1.25, 1.5]

@@ -1,6 +1,7 @@
 import type { TemplateExportAction } from '@/core/templates/types'
 import i18n from '@/i18n'
 import { formatError } from '@/i18n/formatError'
+import type { UiText } from '@/i18n/text'
 import { snapdom, type CaptureResult } from '@zumer/snapdom'
 import type { ReactNode } from 'react'
 import { toast } from 'sonner'
@@ -17,13 +18,13 @@ type ExportableView = {
  * scaling and download logic is otherwise identical across all fourteen.
  */
 export function createImageExportAction<TView extends ExportableView>(options: {
-    description: string
+    description: UiText
     renderSettings: () => ReactNode
 }): TemplateExportAction<unknown, TView, unknown> {
     return {
         id: 'png',
-        label: 'PNG',
-        buttonLabel: 'Export PNG',
+        label: 'export.png',
+        buttonLabel: 'export.exportPng',
         description: options.description,
         renderSettings: options.renderSettings,
         run: async ({

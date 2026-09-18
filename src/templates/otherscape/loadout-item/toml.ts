@@ -4,6 +4,7 @@ import {
     stringifyCanonical,
 } from '@/contracts/mist-engine'
 import { documentContracts } from '@/contracts/registry'
+import type { ImportWarning } from '@/core/templates/types'
 import {
     toOtherscapeLoadoutItemDocument,
     toOtherscapeLoadoutItemPayload,
@@ -20,7 +21,7 @@ export const importFromTOML = (tomlText: string) =>
 
 export function importFromTOMLWithWarnings(tomlText: string): {
     otherscapeLoadoutItem: OtherscapeLoadoutItem
-    warnings: string[]
+    warnings: ImportWarning[]
 } {
     const parsed = contract.parseToml(tomlText)
     return {

@@ -3,11 +3,13 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Switch } from '@/components/ui/switch'
+import { useUiText } from '@/i18n/text'
 import { useLegendInTheMistStoryThemeViewStore } from '../hooks'
 import { storyThemeBackgroundOptions, storyThemeSections } from '../metadata'
 import { PREVIEW_WIDTH_MAX, PREVIEW_WIDTH_MIN } from '../model'
 
 export function StoryThemeAppearancePanel() {
+    const text = useUiText()
     const {
         hidden,
         toggleHidden,
@@ -50,7 +52,9 @@ export function StoryThemeAppearancePanel() {
                                 checked={!hidden[section.id]}
                                 onCheckedChange={() => toggleHidden(section.id)}
                             />
-                            <span className="text-xs">{section.label}</span>
+                            <span className="text-xs">
+                                {text(section.label)}
+                            </span>
                         </label>
                     ))}
                 </div>

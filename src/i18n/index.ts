@@ -7,12 +7,37 @@ import {
     LANGUAGE_STORAGE_KEY,
     type LanguageCode,
 } from './languages'
+import enAdrenaline from './locales/en/adrenaline'
+import enCity from './locales/en/city'
 import enCommon from './locales/en/common'
+import enLegend from './locales/en/legend'
+import enOtherscape from './locales/en/otherscape'
+import enPbta from './locales/en/pbta'
+import frAdrenaline from './locales/fr/adrenaline'
+import frCity from './locales/fr/city'
 import frCommon from './locales/fr/common'
+import frLegend from './locales/fr/legend'
+import frOtherscape from './locales/fr/otherscape'
+import frPbta from './locales/fr/pbta'
+import { NAMESPACES } from './namespaces'
 
 export const resources = {
-    en: { common: enCommon },
-    fr: { common: frCommon },
+    en: {
+        common: enCommon,
+        legend: enLegend,
+        city: enCity,
+        otherscape: enOtherscape,
+        pbta: enPbta,
+        adrenaline: enAdrenaline,
+    },
+    fr: {
+        common: frCommon,
+        legend: frLegend,
+        city: frCity,
+        otherscape: frOtherscape,
+        pbta: frPbta,
+        adrenaline: frAdrenaline,
+    },
 } as const
 
 function readStoredLanguage(): LanguageCode | null {
@@ -68,7 +93,7 @@ void i18n.use(initReactI18next).init({
     fallbackLng: DEFAULT_LANGUAGE,
     supportedLngs: ['en', 'fr'],
     defaultNS: 'common',
-    ns: ['common'],
+    ns: [...NAMESPACES],
     interpolation: { escapeValue: false },
     // Resources are bundled: initialise synchronously so the first render never suspends.
     initAsync: false,

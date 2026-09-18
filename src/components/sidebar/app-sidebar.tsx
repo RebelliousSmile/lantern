@@ -16,6 +16,7 @@ import {
 import { useGamePackStore } from '@/core/gamePacks'
 import { templatesByGame } from '@/core/templates/registry'
 import { useWorkspaceStore } from '@/core/workspace/store'
+import { useUiText } from '@/i18n/text'
 
 import FeedbackDialog from '@/app/FeedbackDialog'
 import {
@@ -40,6 +41,7 @@ import { NavSecondary } from './nav-secondary'
 
 export function AppSidebar() {
     const { t } = useTranslation()
+    const text = useUiText()
     const navigate = useNavigate()
     const createTab = useWorkspaceStore((s) => s.createTab)
     const activeTabId = useWorkspaceStore((s) => s.activeTabId)
@@ -192,16 +194,16 @@ export function AppSidebar() {
                                                                     }}
                                                                 >
                                                                     <span>
-                                                                        {
+                                                                        {text(
                                                                             template.label
-                                                                        }
+                                                                        )}
                                                                     </span>
                                                                     {!template.implemented && (
                                                                         <span className="text-[8px] opacity-65 uppercase tracking-wide">
-                                                                            {template.comingSoonLabel ||
-                                                                                t(
+                                                                            {text(
+                                                                                template.comingSoonLabel ??
                                                                                     'sidebar.comingSoon'
-                                                                                )}
+                                                                            )}
                                                                         </span>
                                                                     )}
                                                                 </button>

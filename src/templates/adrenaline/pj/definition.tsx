@@ -1,12 +1,12 @@
 import { createImageExportAction } from '@/core/templates/shell/imageExportAction'
+import { createTomlExportAction } from '@/core/templates/shell/tomlExportAction'
 import type { AnyTemplateDefinition } from '@/core/templates/types'
+import { cloneValue } from '@/utils/clone'
 import { AdrenalineAppearancePanel } from '../shared/editor/AdrenalineAppearancePanel'
-import { downloadToml } from '../shared/export'
 import {
     defaultAdrenalineView,
     emptyAdrenalineSheetState,
 } from '../shared/model'
-import { cloneValue } from '@/utils/clone'
 import { PjEditorPanel } from './editor/PjEditorPanel'
 import { PjPreview } from './preview/PjPreview'
 import { blankPj, samplePj } from './sample'
@@ -16,7 +16,7 @@ const template: AnyTemplateDefinition = {
     id: 'adrenaline.pj',
     gameId: 'adrenaline',
     gameLabel: 'Adrenaline',
-    label: 'PJ',
+    label: 'adrenaline:pj.label',
     implemented: true,
     contractKey: 'adrenaline/pj',
     createBlank: blankPj,
@@ -24,13 +24,10 @@ const template: AnyTemplateDefinition = {
     createInitialView: () => cloneValue(defaultAdrenalineView),
     createInitialSheet: () => cloneValue(emptyAdrenalineSheetState),
     getTabTitle: (doc) => (doc as { nom?: string }).nom?.trim() || 'PJ',
-    sections: [{ id: 'document', label: 'Document' }],
+    sections: [{ id: 'document', label: 'adrenaline:sections.document' }],
     landing: {
-        description:
-            'Create a page-one Adrenaline player-character sheet, then exchange it as validated TOML.',
-        exampleLabel: 'Start with example',
-        blankLabel: 'Start blank',
-        importLabel: 'Import TOML',
+        newTitle: 'adrenaline:pj.newTitle',
+        description: 'adrenaline:pj.description',
     },
     io: {
         importToml: (source) => {
@@ -44,7 +41,6 @@ const template: AnyTemplateDefinition = {
         render: () => <PjPreview />,
     },
     editor: {
-        emptyState: 'Click a region of the sheet to edit it.',
         renderPanel: () => <PjEditorPanel />,
     },
     appearance: {
@@ -53,16 +49,12 @@ const template: AnyTemplateDefinition = {
     },
     export: {
         actions: [
-            {
-                id: 'toml',
-                label: 'TOML',
-                buttonLabel: 'Export TOML',
-                description: 'Export the current PJ data as TOML.',
-                run: ({ doc, fileStem }) =>
-                    downloadToml(exportToTOML(doc), fileStem),
-            },
+            createTomlExportAction({
+                exportToml: exportToTOML,
+                description: 'adrenaline:pj.exportToml',
+            }),
             createImageExportAction({
-                description: 'Export the current PJ preview as PNG.',
+                description: 'adrenaline:pj.exportPng',
                 renderSettings: () => null,
             }),
         ],

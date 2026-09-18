@@ -1,7 +1,7 @@
 import { createImageExportAction } from '@/core/templates/shell/imageExportAction'
-import { cloneValue } from '@/utils/clone'
+import { createTomlExportAction } from '@/core/templates/shell/tomlExportAction'
 import type { AnyTemplateDefinition } from '@/core/templates/types'
-import { toast } from 'sonner'
+import { cloneValue } from '@/utils/clone'
 import { CustomMoveAppearancePanel } from './editor/CustomMoveAppearancePanel'
 import { CustomMoveEditorPanel } from './editor/CustomMoveEditorPanel'
 import { CustomMoveImageExportSettings } from './editor/CustomMoveImageExportSettings'
@@ -22,7 +22,7 @@ const customMoveTemplate: AnyTemplateDefinition = {
     id: 'city.customMove',
     gameId: 'city',
     gameLabel: 'City of Mist',
-    label: 'Custom Move',
+    label: 'city:customMove.label',
     implemented: true,
     contractKey: 'mist/city-of-mist/custom-move',
     createBlank: blankCityOfMistCustomMove,
@@ -33,11 +33,8 @@ const customMoveTemplate: AnyTemplateDefinition = {
         doc.name.trim() || 'Custom Move',
     sections: customMoveSections,
     landing: {
-        description:
-            'A Custom Move is a rule the MC writes for one situation: what triggers it, what the players roll if they roll at all, and what each outcome does. Start blank, open the example, or import a TOML file.',
-        exampleLabel: 'Start with example',
-        blankLabel: 'Start blank',
-        importLabel: 'Import TOML',
+        newTitle: 'city:customMove.newTitle',
+        description: 'city:customMove.description',
     },
     io: {
         importToml: (tomlText: string) => {
@@ -57,7 +54,6 @@ const customMoveTemplate: AnyTemplateDefinition = {
         render: () => <CustomMovePreview />,
     },
     editor: {
-        emptyState: 'Click on the card to edit a specific section.',
         renderPanel: () => <CustomMoveEditorPanel />,
     },
     appearance: {
@@ -67,41 +63,12 @@ const customMoveTemplate: AnyTemplateDefinition = {
     },
     export: {
         actions: [
-            {
-                id: 'toml',
-                label: 'TOML',
-                buttonLabel: 'Export TOML',
-                description: 'Export the current custom move data as TOML.',
-                run: ({
-                    doc,
-                    fileStem,
-                }: {
-                    doc: CityOfMistCustomMove
-                    fileStem: string
-                }) => {
-                    try {
-                        const toml = exportToTOML(doc)
-                        const blob = new Blob([toml], {
-                            type: 'text/plain;charset=utf-8',
-                        })
-                        const url = URL.createObjectURL(blob)
-                        const anchor = document.createElement('a')
-                        anchor.href = url
-                        anchor.download = `${fileStem}.toml`
-                        document.body.appendChild(anchor)
-                        anchor.click()
-                        anchor.remove()
-                        URL.revokeObjectURL(url)
-                        toast.success('Exported TOML.')
-                    } catch (errorAny: any) {
-                        toast.error(
-                            errorAny?.message || 'Failed to export TOML.'
-                        )
-                    }
-                },
-            },
+            createTomlExportAction({
+                exportToml: exportToTOML,
+                description: 'city:customMove.exportToml',
+            }),
             createImageExportAction({
-                description: 'Export the current custom move card as PNG.',
+                description: 'city:customMove.exportPng',
                 renderSettings: () => <CustomMoveImageExportSettings />,
             }),
         ],

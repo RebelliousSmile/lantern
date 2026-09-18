@@ -1,3 +1,5 @@
+import type { ImportWarning } from '@/core/templates/types'
+import { translate } from '@/i18n/text'
 import { parseToken } from '@/utils/tags'
 import type { LegendInTheMistJourney } from './model'
 
@@ -5,12 +7,13 @@ import type { LegendInTheMistJourney } from './model'
 // rendered, so they should not reach the document. None of this blocks an
 // import; it only flags content that will not render the way its author
 // expects.
-function collectTagWarnings(tags: string[], warnings: string[]) {
+function collectTagWarnings(tags: string[], warnings: ImportWarning[]) {
     const braced = tags.filter((tag) => /^\{[\s\S]*\}$/.test(tag.trim()))
     if (braced.length > 0) {
-        warnings.push(
-            `Tags written with braces: ${braced.join(', ')}. They are added when the sheet is rendered, so the braces will show up twice.`
-        )
+        warnings.push({
+            key: 'legend:journey.warnings.bracedTags',
+            values: { tags: braced.join(', ') },
+        })
     }
 
     const statusLike = tags.filter((tag) => {
@@ -18,16 +21,17 @@ function collectTagWarnings(tags: string[], warnings: string[]) {
         return parsed?.kind === 'status' || parsed?.kind === 'limit'
     })
     if (statusLike.length > 0) {
-        warnings.push(
-            `Tags that read as a status or a limit: ${statusLike.join(', ')}. A trailing "-<n>" or ":<n>" makes a tag render as a tracker rather than as a tag. A status the Journey hands out belongs in its Consequences.`
-        )
+        warnings.push({
+            key: 'legend:journey.warnings.statusLikeTags',
+            values: { tags: statusLike.join(', ') },
+        })
     }
 }
 
 export function computeLegendInTheMistJourneyWarnings(
     legendInTheMistJourney: LegendInTheMistJourney
-): string[] {
-    const warnings: string[] = []
+): ImportWarning[] {
+    const warnings: ImportWarning[] = []
 
     collectTagWarnings(legendInTheMistJourney.tags, warnings)
 
@@ -36,28 +40,31 @@ export function computeLegendInTheMistJourneyWarnings(
     // surprise: name the vignette here, while the author can still see which
     // one it is, instead of letting the export throw a path like
     // "vignettes.1.consequences".
+    // The placeholder for a nameless vignette is worded in the language active
+    // when the warnings are computed, since values are plain strings.
     const emptyVignettes = legendInTheMistJourney.vignettes
         .filter((vignette) => !vignette.consequences.length)
-        .map((vignette) => vignette.name.trim() || 'an unnamed vignette')
-    if (emptyVignettes.length > 0) {
-        warnings.push(
-            `Vignettes with no Consequence: ${emptyVignettes.join(', ')}. A vignette carries at least one, and the file cannot be exported until each of these does.`
+        .map(
+            (vignette) =>
+                vignette.name.trim() ||
+                translate('legend:journey.warnings.unnamedVignette')
         )
+    if (emptyVignettes.length > 0) {
+        warnings.push({
+            key: 'legend:journey.warnings.vignettesWithoutConsequence',
+            values: { vignettes: emptyVignettes.join(', ') },
+        })
     }
 
     if (
         !legendInTheMistJourney.consequences.length &&
         !legendInTheMistJourney.vignettes.length
     ) {
-        warnings.push(
-            'This Journey costs nothing anywhere along it: no general Consequence and no vignette to draw one from.'
-        )
+        warnings.push({ key: 'legend:journey.warnings.noConsequence' })
     }
 
     if (!legendInTheMistJourney.tags.length) {
-        warnings.push(
-            'This Journey offers no tag, so there is nothing for a Hero to invoke while crossing it.'
-        )
+        warnings.push({ key: 'legend:journey.warnings.noTags' })
     }
 
     return warnings

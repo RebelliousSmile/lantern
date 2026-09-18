@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
+import { useUiText } from '@/i18n/text'
 import { cn } from '@/utils/cn'
 import { useCityOfMistDangerViewStore } from '../hooks'
 import { dangerBackgroundOptions, dangerSections } from '../metadata'
@@ -13,6 +14,7 @@ import {
 } from '../model'
 
 export function DangerAppearancePanel() {
+    const text = useUiText()
     const {
         hidden,
         toggleHidden,
@@ -71,7 +73,9 @@ export function DangerAppearancePanel() {
                                 checked={!hidden[section.id]}
                                 onCheckedChange={() => toggleHidden(section.id)}
                             />
-                            <span className="text-xs">{section.label}</span>
+                            <span className="text-xs">
+                                {text(section.label)}
+                            </span>
                         </label>
                     ))}
                 </div>

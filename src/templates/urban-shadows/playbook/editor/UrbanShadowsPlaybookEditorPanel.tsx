@@ -8,13 +8,13 @@ import { SchemaEditor } from '@/core/editor-schema/SchemaEditor'
 import { inferObject } from '@/core/editor-schema/inferSchema'
 import { AttributeField } from '@/templates/pbta/shared/attributeField'
 import { useGameDefinitionForGame } from '@/templates/pbta/shared/gameDefinition'
-import { useState } from 'react'
-import { getPbtaCollectionPresentation } from 'schema-pbta'
 import { PublishedCollectionEditor } from '@/templates/pbta/specialized/collectionAdapters'
 import {
     collectionItems,
     replaceCollectionItems,
 } from '@/templates/pbta/specialized/collectionPolicy'
+import { useState } from 'react'
+import { getPbtaCollectionPresentation } from 'schema-pbta'
 import {
     useUrbanShadowsPlaybookStore,
     useUrbanShadowsSheetStore,
@@ -62,12 +62,10 @@ export function UrbanShadowsPlaybookEditorPanel() {
                 </Label>
             </div>
         )
-    if (target.kind === 'moves')
-        return <UrbanCollection path="moves" />
+    if (target.kind === 'moves') return <UrbanCollection path="moves" />
     if (target.kind === 'advancement')
         return <UrbanCollection path="advancement" />
-    if (target.kind === 'corruption')
-        return <UrbanCorruptionCollections />
+    if (target.kind === 'corruption') return <UrbanCorruptionCollections />
     if (target.kind === 'creation') return <UrbanShadowsCreationForm />
     if (target.kind === 'relationships') {
         const attribute = game.character.attributes?.mortalRelationships
@@ -121,8 +119,26 @@ function UrbanCollection({ path }: { path: string }) {
     const document = playbook as Record<string, unknown>
     const items = presentation && collectionItems(document, presentation)
     if (!presentation || !items)
-        return <p className="text-sm text-destructive">Invalid published collection configuration.</p>
-    return <PublishedCollectionEditor presentation={presentation} items={items} onChange={(next) => setPlaybook(replaceCollectionItems(document, presentation, next) as Partial<typeof playbook>)} />
+        return (
+            <p className="text-sm text-destructive">
+                Invalid published collection configuration.
+            </p>
+        )
+    return (
+        <PublishedCollectionEditor
+            presentation={presentation}
+            items={items}
+            onChange={(next) =>
+                setPlaybook(
+                    replaceCollectionItems(
+                        document,
+                        presentation,
+                        next
+                    ) as Partial<typeof playbook>
+                )
+            }
+        />
+    )
 }
 
 function UrbanCorruptionCollections() {

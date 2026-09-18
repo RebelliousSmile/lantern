@@ -4,9 +4,15 @@ import { documentContracts } from '@/contracts/registry'
 import { SchemaEditor } from '@/core/editor-schema/SchemaEditor'
 import { inferObject } from '@/core/editor-schema/inferSchema'
 import { getAtPath } from '@/core/editor-schema/path'
-import type { AnyTemplateDefinition } from '@/core/templates/types'
+import { createTomlExportAction } from '@/core/templates/shell/tomlExportAction'
+import type {
+    AnyTemplateDefinition,
+    TemplateSectionDefinition,
+} from '@/core/templates/types'
 import { useActiveTemplateTab } from '@/core/workspace/selectors'
 import { useWorkspaceStore } from '@/core/workspace/store'
+import { translateEnglish, useUiText, type UiText } from '@/i18n/text'
+import { PBTA_COLLECTION_PRESENTATIONS } from 'schema-pbta'
 import {
     collectionAdapterFor,
     PublishedCollectionEditor,
@@ -16,7 +22,6 @@ import {
     collectionItems,
     replaceCollectionItems,
 } from './collectionPolicy'
-import { PBTA_COLLECTION_PRESENTATIONS } from 'schema-pbta'
 import './specializedPlaybookTheme.css'
 
 type Document = Record<string, unknown>
@@ -26,9 +31,10 @@ type Config = {
     id: string
     gameId: string
     gameLabel: string
-    label: string
+    label: UiText
+    newTitle: UiText
     contractKey: string
-    sections: Array<{ id: string; label: string }>
+    sections: Array<{ id: string; label: UiText }>
     blank: Document
 }
 
@@ -140,22 +146,24 @@ export function createSpecializedPlaybookTemplate(
     config: Config
 ): AnyTemplateDefinition {
     const clone = <T,>(value: T): T => structuredClone(value)
-    const target = config.contractKey.replace(
-        /^pbta\//,
-        ''
-    ) as Parameters<typeof collectionFor>[0]
+    const target = config.contractKey.replace(/^pbta\//, '') as Parameters<
+        typeof collectionFor
+    >[0]
     const collectionSections = PBTA_COLLECTION_PRESENTATIONS.filter(
         (presentation) =>
             presentation.target === target &&
             !presentation.path.includes('[]') &&
             !config.sections.some(({ id }) => id === presentation.path)
-    ).map(({ path, label }) => ({ id: path, label }))
-    const sections = [...config.sections, ...collectionSections]
+    ).map(({ path, label }) => ({ id: path, label: { text: label } }))
+    const sections: TemplateSectionDefinition[] = [
+        ...config.sections,
+        ...collectionSections,
+    ]
+    /* The sheet is document output: it prints English whatever the UI language. */
+    const printedLabel = () => translateEnglish(config.label)
     const defaultView = (): View => ({
         previewWidth: 1123,
-        hidden: Object.fromEntries(
-            sections.map(({ id }) => [id, false])
-        ),
+        hidden: Object.fromEntries(sections.map(({ id }) => [id, false])),
     })
     const defaultSheet = (): Sheet => ({ open: false, target: null })
     function useTab() {
@@ -198,7 +206,7 @@ export function createSpecializedPlaybookTemplate(
                         className="pbta-specialized-header"
                         onClick={() => open('basic')}
                     >
-                        <h1>{String(doc.name ?? config.label)}</h1>
+                        <h1>{String(doc.name ?? printedLabel())}</h1>
                         <p>{String(doc.description ?? '')}</p>
                     </button>
                     {sections.map(
@@ -213,7 +221,7 @@ export function createSpecializedPlaybookTemplate(
                                         className="pbta-specialized-section-title"
                                         onClick={() => open(section.id)}
                                     >
-                                        {section.label}
+                                        {translateEnglish(section.label)}
                                     </button>
                                     <div className="pbta-specialized-content">
                                         <PlaybookValue
@@ -280,9 +288,7 @@ export function createSpecializedPlaybookTemplate(
                     presentation={presentation}
                     items={items}
                     onChange={(next) =>
-                        setDoc(
-                            replaceCollectionItems(doc, presentation, next)
-                        )
+                        setDoc(replaceCollectionItems(doc, presentation, next))
                     }
                 />
             )
@@ -318,6 +324,7 @@ export function createSpecializedPlaybookTemplate(
         const tab = useTab()
         const patch = useWorkspaceStore((state) => state.patchTabView)
         const view = { ...defaultView(), ...(tab?.view ?? {}) }
+        const text = useUiText()
         return (
             <div className="space-y-2">
                 {sections.map((section) => (
@@ -335,7 +342,7 @@ export function createSpecializedPlaybookTemplate(
                                 })
                             }
                         />
-                        {section.label}
+                        {text(section.label)}
                     </label>
                 ))}
             </div>
@@ -353,13 +360,14 @@ export function createSpecializedPlaybookTemplate(
         createExample: () => clone(config.blank),
         createInitialView: defaultView,
         createInitialSheet: defaultSheet,
-        getTabTitle: (doc) => String(doc.name || config.label),
+        getTabTitle: (doc) => String(doc.name || printedLabel()),
         sections,
         landing: {
-            description: `Create an original ${config.gameLabel} playbook as one TOML document.`,
-            exampleLabel: 'Start with example',
-            blankLabel: 'Start blank',
-            importLabel: 'Import TOML',
+            newTitle: config.newTitle,
+            description: {
+                key: 'pbta:specialized.description',
+                values: { game: config.gameLabel },
+            },
         },
         io: {
             importToml: (text) => ({
@@ -373,7 +381,6 @@ export function createSpecializedPlaybookTemplate(
             render: () => <Preview />,
         },
         editor: {
-            emptyState: 'Click a sheet section to edit it.',
             renderPanel: () => <Editor />,
         },
         appearance: {
@@ -382,23 +389,10 @@ export function createSpecializedPlaybookTemplate(
         },
         export: {
             actions: [
-                {
-                    id: 'toml',
-                    label: 'TOML',
-                    buttonLabel: 'Export TOML',
-                    description: 'Export this playbook as TOML.',
-                    run: ({ doc, fileStem }) => {
-                        const link = document.createElement('a')
-                        link.href = URL.createObjectURL(
-                            new Blob([contract.stringifyToml(doc)], {
-                                type: 'text/plain',
-                            })
-                        )
-                        link.download = `${fileStem}.toml`
-                        link.click()
-                        URL.revokeObjectURL(link.href)
-                    },
-                },
+                createTomlExportAction({
+                    exportToml: (doc: Document) => contract.stringifyToml(doc),
+                    description: 'pbta:playbook.exportToml',
+                }),
             ],
         },
     }

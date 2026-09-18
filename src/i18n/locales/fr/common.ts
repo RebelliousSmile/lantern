@@ -69,7 +69,8 @@ const common: ResourceShape<typeof en> = {
         export: 'Export',
     },
     landing: {
-        newTitle: 'Nouveau : {{label}}',
+        chooseStart:
+            'Choisissez comment démarrer ce modèle : fiche vierge, exemple ou import TOML.',
         startExample: 'Partir de l’exemple',
         startBlank: 'Partir d’une fiche vierge',
         importToml: 'Importer un TOML',
@@ -119,6 +120,9 @@ const common: ResourceShape<typeof en> = {
         previewNotFound:
             'Aperçu introuvable. Vérifiez que l’aperçu est affiché.',
         exportedPng: 'PNG exporté.',
+        exportedToml: 'TOML exporté.',
+        png: 'PNG',
+        exportPng: 'Exporter le PNG',
     },
     feedback: {
         title: 'Envoyer un retour sur Discord',
@@ -147,6 +151,7 @@ const common: ResourceShape<typeof en> = {
         exportFailed: 'Échec de l’export.',
         generateTomlFailed: 'Échec de la génération du TOML.',
         exportPngFailed: 'Échec de l’export PNG.',
+        exportTomlFailed: 'Échec de l’export TOML.',
     },
 }
 

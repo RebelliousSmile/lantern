@@ -1,6 +1,11 @@
 import type { UrbanShadowsPlaybook as PublishedUrbanShadowsPlaybook } from './schema'
 
-export type Move = { name: string; moveType: string; description: string; checked?: boolean }
+export type Move = {
+    name: string
+    moveType: string
+    description: string
+    checked?: boolean
+}
 export type Relationship = NonNullable<
     PublishedUrbanShadowsPlaybook['mortalRelationships']
 >[number]
