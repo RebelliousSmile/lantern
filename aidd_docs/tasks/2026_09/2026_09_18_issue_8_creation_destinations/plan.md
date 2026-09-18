@@ -1,6 +1,6 @@
 ---
 objective: "Lantern applies PbtA creation answers to their declared scalar or free-list destinations, then leaves only the resulting character value freely editable."
-status: in-progress
+status: implemented
 ---
 
 # Plan: Issue #8 creation destinations
