@@ -1,6 +1,6 @@
 ---
 objective: "Lantern consumes schema-pbta v5 and applies its complete breaking playbook contract: acquisitions, creation destinations, and stat profiles all initialize editable character state without retaining editorial setup data."
-status: in-progress
+status: implemented
 ---
 
 # Plan: schema-pbta v5 playbook migration
