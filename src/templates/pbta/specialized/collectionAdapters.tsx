@@ -20,10 +20,15 @@ export type CollectionAdapterProps = {
     onChange: (items: unknown[]) => void
 }
 
-function blankItem(editor: PbtaCollectionItemEditor, items: unknown[]): unknown {
+function blankItem(
+    presentation: PbtaCollectionPresentation,
+    items: unknown[]
+): unknown {
+    const { itemEditor: editor } = presentation
     switch (editor) {
         case 'pbta-move':
             if (
+                presentation.target === 'monsterhearts-playbook' ||
                 items.some(
                     (item) =>
                         item &&
@@ -89,12 +94,17 @@ function GenericCollectionAdapter({ presentation, items, onChange }: CollectionA
             </div>
             {typeof item === 'string' ? <Input value={item} onChange={(event) => update(index, event.target.value)} /> : item && typeof item === 'object' && !Array.isArray(item) ? <SchemaEditor schema={inferObject(presentation.label, item as Record<string, unknown>)} value={item as Record<string, unknown>} onChange={(next) => update(index, next)} /> : <p className="text-sm text-destructive">Unsupported published collection item.</p>}
         </div>)}
-        {mutable && <Button type="button" variant="secondary" size="sm" onClick={() => onChange([...items, blankItem(presentation.itemEditor, items)])}>Add {presentation.label}</Button>}
+        {mutable && <Button type="button" variant="secondary" size="sm" onClick={() => onChange([...items, blankItem(presentation, items)])}>Add {presentation.label}</Button>}
     </div>
 }
 
 function MovesAdapter(props: CollectionAdapterProps) {
-    if (props.items.some((item) => !item || typeof item !== 'object' || !('kind' in item)))
+    if (
+        props.presentation.target === 'monsterhearts-playbook' ||
+        props.items.some(
+            (item) => !item || typeof item !== 'object' || !('kind' in item)
+        )
+    )
         return <GenericCollectionAdapter {...props} />
     return <MovesEditor value={props.items as MoveEntry[]} onChange={(items) => props.onChange(items)} allowAddRemove={props.presentation.cardinality === 'mutable'} allowReorder={props.presentation.reorder} allowChecked={props.presentation.itemCapabilities?.includes('checked') === true} />
 }
