@@ -5,6 +5,7 @@ import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Textarea } from '@/components/ui/textarea'
 import type { GameDefinition } from 'schema-pbta'
+import { StringListEditor } from './StringListEditor'
 
 type AttributesRecord = NonNullable<GameDefinition['character']['attributes']>
 export type Attribute = AttributesRecord[string]
@@ -281,8 +282,17 @@ function renderControl(
             )
         }
         case 'ListMany': {
-            const options = attribute.options ?? []
+            const options = attribute.options
             const current = Array.isArray(value) ? value : []
+            if (options === undefined)
+                return (
+                    <StringListEditor
+                        value={current}
+                        onChange={onChange}
+                        readOnly={readOnly}
+                        placeholder="Add value and press Enter"
+                    />
+                )
             return (
                 <div className="flex flex-col gap-2">
                     {options.map((option, index) => {

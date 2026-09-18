@@ -168,12 +168,7 @@ export function UrbanShadowsPlaybookEditorPanel() {
         return (
             <AttributeField
                 id="urban-shadows-mortal-relationships"
-                attribute={{
-                    ...attribute,
-                    options: playbook.mortalRelationships.map(
-                        (relationship) => relationship.key
-                    ),
-                }}
+                attribute={attribute}
                 value={playbook.attributes.mortalRelationships}
                 onChange={(value) =>
                     setPlaybook({

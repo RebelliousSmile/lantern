@@ -5,6 +5,7 @@ export type StringListEditorProps = {
     value: string[]
     onChange: (next: string[]) => void
     placeholder?: string
+    readOnly?: boolean
 }
 
 /* Chip-list editor shared by game-definition (ListOne/ListMany attribute
@@ -14,6 +15,7 @@ export function StringListEditor({
     value,
     onChange,
     placeholder = 'Add option and press Enter',
+    readOnly = false,
 }: StringListEditorProps) {
     const [draft, setDraft] = useState('')
 
@@ -37,6 +39,7 @@ export function StringListEditor({
                             type="button"
                             className="opacity-70 hover:opacity-100"
                             aria-label={`Remove ${entry}`}
+                            disabled={readOnly}
                             onClick={() =>
                                 onChange(value.filter((_, i) => i !== index))
                             }
@@ -48,6 +51,7 @@ export function StringListEditor({
                 <input
                     className="min-w-[10ch] flex-1 bg-transparent px-1 py-0.5 text-sm outline-none"
                     value={draft}
+                    disabled={readOnly}
                     onChange={(event) => setDraft(event.target.value)}
                     onKeyDown={(event) => {
                         if (event.key === 'Enter' || event.key === ',') {
