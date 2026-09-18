@@ -1,4 +1,5 @@
 import { useActiveTemplateTab } from '@/core/workspace/selectors'
+import { cloneValue } from '@/utils/clone'
 import { getActiveTab, useWorkspaceStore } from '@/core/workspace/store'
 import type { WorkspaceTab } from '@/core/workspace/types'
 import type {
@@ -25,14 +26,6 @@ type LegendInTheMistJourneyTab = WorkspaceTab<
 >
 
 const TEMPLATE_ID = 'legend.journey'
-
-function cloneValue<T>(value: T): T {
-    if (typeof structuredClone === 'function') {
-        return structuredClone(value)
-    }
-
-    return JSON.parse(JSON.stringify(value)) as T
-}
 
 const fallbackLegendInTheMistJourney = blankLegendInTheMistJourney()
 const fallbackView = cloneValue(defaultLegendInTheMistJourneyView)

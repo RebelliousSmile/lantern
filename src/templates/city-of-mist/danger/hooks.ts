@@ -1,4 +1,5 @@
 import { useActiveTemplateTab } from '@/core/workspace/selectors'
+import { cloneValue } from '@/utils/clone'
 import { getActiveTab, useWorkspaceStore } from '@/core/workspace/store'
 import type { WorkspaceTab } from '@/core/workspace/types'
 import type {
@@ -47,14 +48,6 @@ function strOrNull(v?: string | null) {
 function strOrFallback(v: string | undefined, fallback: string) {
     const s = (v ?? '').trim()
     return s || fallback
-}
-
-function cloneValue<T>(value: T): T {
-    if (typeof structuredClone === 'function') {
-        return structuredClone(value)
-    }
-
-    return JSON.parse(JSON.stringify(value)) as T
 }
 
 function useCityOfMistDangerTab() {

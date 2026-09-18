@@ -1,4 +1,5 @@
 import { useActiveTemplateTab } from '@/core/workspace/selectors'
+import { cloneValue } from '@/utils/clone'
 import { getActiveTab, useWorkspaceStore } from '@/core/workspace/store'
 import type { WorkspaceTab } from '@/core/workspace/types'
 import type {
@@ -32,14 +33,6 @@ const TEMPLATE_ID = 'otherscape.theme'
 const TAG_KEY: Record<TagField, 'power_tags' | 'weakness_tags'> = {
     power: 'power_tags',
     weakness: 'weakness_tags',
-}
-
-function cloneValue<T>(value: T): T {
-    if (typeof structuredClone === 'function') {
-        return structuredClone(value)
-    }
-
-    return JSON.parse(JSON.stringify(value)) as T
 }
 
 const fallbackOtherscapeTheme = blankOtherscapeTheme()

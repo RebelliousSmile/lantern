@@ -1,6 +1,6 @@
 import { useActiveTemplateTab } from '@/core/workspace/selectors'
 import { useWorkspaceStore } from '@/core/workspace/store'
-import { cloneValue } from './model'
+import { cloneValue } from '@/utils/clone'
 
 export function useAdrenalineDocument<
     TDocument extends Record<string, unknown>,

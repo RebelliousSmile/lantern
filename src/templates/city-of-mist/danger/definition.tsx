@@ -1,4 +1,5 @@
 import { createImageExportAction } from '@/core/templates/shell/imageExportAction'
+import { cloneValue } from '@/utils/clone'
 import type { AnyTemplateDefinition } from '@/core/templates/types'
 import { toast } from 'sonner'
 import { DangerAppearancePanel } from './editor/DangerAppearancePanel'
@@ -16,14 +17,6 @@ import {
 import { DangerPreview } from './preview/DangerPreview'
 import { getSampleCityOfMistDanger } from './sample'
 import { exportToTOML, importFromTOMLWithWarnings } from './toml'
-
-function cloneValue<T>(value: T): T {
-    if (typeof structuredClone === 'function') {
-        return structuredClone(value)
-    }
-
-    return JSON.parse(JSON.stringify(value)) as T
-}
 
 const dangerTemplate: AnyTemplateDefinition = {
     id: 'city.danger',

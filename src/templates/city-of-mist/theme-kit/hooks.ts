@@ -1,4 +1,5 @@
 import { useActiveTemplateTab } from '@/core/workspace/selectors'
+import { cloneValue } from '@/utils/clone'
 import { getActiveTab, useWorkspaceStore } from '@/core/workspace/store'
 import type { WorkspaceTab } from '@/core/workspace/types'
 import type {
@@ -55,14 +56,6 @@ type ThemeKitTab = WorkspaceTab<
 >
 
 const TEMPLATE_ID = 'city.themeKit'
-
-function cloneValue<T>(value: T): T {
-    if (typeof structuredClone === 'function') {
-        return structuredClone(value)
-    }
-
-    return JSON.parse(JSON.stringify(value)) as T
-}
 
 const fallbackThemeKit = blankThemeKit()
 const fallbackView = cloneValue(defaultThemeKitView)

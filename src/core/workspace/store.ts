@@ -1,4 +1,5 @@
 import { templateById, templateRegistry } from '@/core/templates/registry'
+import { cloneValue } from '@/utils/clone'
 import { create } from 'zustand'
 import type { TemplateMode } from '../templates/types'
 import type { AnyWorkspaceTab, WorkspaceSnapshot, WorkspaceTab } from './types'
@@ -36,14 +37,6 @@ function createTabId() {
     }
 
     return `tab-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
-}
-
-function cloneValue<T>(value: T): T {
-    if (typeof structuredClone === 'function') {
-        return structuredClone(value)
-    }
-
-    return JSON.parse(JSON.stringify(value)) as T
 }
 
 function toSnapshot(
