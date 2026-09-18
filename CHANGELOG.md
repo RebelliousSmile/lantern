@@ -5,6 +5,17 @@ All notable changes to this project are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.14.0] - 2026-09-18
+
+### Added
+
+- **Linked PbtA creation text destinations.** A creation choice can now initialize a matching
+  Text or LongText character attribute with its stable value; the field remains freely editable
+  afterwards, and invalid targets show a diagnostic instead of changing character state.
+- **Creation metadata contract assertion.** The compatibility suite explicitly preserves linked
+  structured option values, labels, selection bounds and destination attributes through a
+  Lantern TOML round trip.
+
 ## [v0.13.0] - 2026-09-18
 
 ### Added
