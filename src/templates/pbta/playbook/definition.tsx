@@ -1,10 +1,11 @@
 import { createImageExportAction } from '@/core/templates/shell/imageExportAction'
-import { cloneValue } from '@/utils/clone'
 import type { AnyTemplateDefinition } from '@/core/templates/types'
+import { cloneValue } from '@/utils/clone'
 import { toast } from 'sonner'
 import { PlaybookAppearancePanel } from './editor/PlaybookAppearancePanel'
 import { PlaybookEditorPanel } from './editor/PlaybookEditorPanel'
 import { PlaybookImageExportSettings } from './editor/PlaybookImageExportSettings'
+import { playbookEditorSchema } from './editorSchema'
 import { getPlaybookPreviewWidth } from './hooks'
 import { playbookSections } from './metadata'
 import {
@@ -56,6 +57,7 @@ const playbookTemplate: AnyTemplateDefinition = {
     editor: {
         emptyState: 'Click on the preview to edit a specific section.',
         renderPanel: () => <PlaybookEditorPanel />,
+        schema: playbookEditorSchema,
     },
     appearance: {
         getPreviewWidth: (view: PlaybookViewState) =>

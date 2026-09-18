@@ -15,7 +15,11 @@ export default function AdvancementBlock({ onClick }: { onClick: () => void }) {
                             </li>
                         ))}
                     </ul>
-                ) : <p className="pbta-pb-empty-row">No advancement options defined.</p>}
+                ) : (
+                    <p className="pbta-pb-empty-row">
+                        No advancement options defined.
+                    </p>
+                )}
             </div>
         </ClickableSection>
     )

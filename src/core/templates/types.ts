@@ -1,3 +1,4 @@
+import type { TemplateEditorSchema } from '@/core/editor-schema/types'
 import type { ReactNode } from 'react'
 
 export type GameId = string
@@ -95,6 +96,7 @@ export type TemplateDefinition<
     editor: {
         emptyState: string
         renderPanel: () => ReactNode
+        schema?: TemplateEditorSchema
     }
 
     appearance: {

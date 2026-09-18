@@ -1,10 +1,11 @@
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { documentContracts } from '@/contracts/registry'
+import { SchemaEditor } from '@/core/editor-schema/SchemaEditor'
+import { inferObject } from '@/core/editor-schema/inferSchema'
 import type { AnyTemplateDefinition } from '@/core/templates/types'
 import { useActiveTemplateTab } from '@/core/workspace/selectors'
 import { useWorkspaceStore } from '@/core/workspace/store'
-import { StructuredJsonEditor } from '@/templates/shared/StructuredJsonEditor'
 
 type Document = Record<string, unknown>
 type View = { hidden: Record<string, boolean>; previewWidth: number }
@@ -131,13 +132,31 @@ export function createSpecializedPlaybookTemplate(
                     </Label>
                 </div>
             )
+        const key = sheet.target as string
+        const section = doc[key]
+        const schema = inferObject(
+            key,
+            section && typeof section === 'object' && !Array.isArray(section)
+                ? (section as Record<string, unknown>)
+                : { value: section }
+        )
         return (
-            <StructuredJsonEditor
-                id={`${config.id}-${sheet.target}`}
-                label={sheet.target}
-                value={doc[sheet.target]}
-                onValidValue={(value) =>
-                    setDoc({ [sheet.target as string]: value })
+            <SchemaEditor
+                schema={schema}
+                value={
+                    section &&
+                    typeof section === 'object' &&
+                    !Array.isArray(section)
+                        ? (section as Record<string, unknown>)
+                        : { value: section }
+                }
+                onChange={(value) =>
+                    setDoc({
+                        [key]:
+                            section && typeof section !== 'object'
+                                ? value.value
+                                : value,
+                    })
                 }
             />
         )

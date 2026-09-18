@@ -99,7 +99,7 @@ Two worlds that must not mix:
 
 App tokens leaking into a preview would land in the exported PNG.
 
-**Every preview stylesheet is bundled globally and inactive tabs stay mounted**, so two games' cards are in the DOM at the same time and share generic class names. Each game therefore has a scope root that every depth-0 selector descends from: `.litm-doc`, `.os-card`, `.city-doc`. A card's own root selector *compounds* with it (`.city-doc.city-kit-page`) because both classes sit on the same element. The City of Mist Danger predates the convention and stands outside it, protected by its own `city-danger-` prefix.
+**Every preview stylesheet is bundled globally and inactive tabs stay mounted**, so two games' cards are in the DOM at the same time and share generic class names. Each game therefore has a scope root that every depth-0 selector descends from: `.litm-doc`, `.os-card`, `.city-doc`. A card's own root selector _compounds_ with it (`.city-doc.city-kit-page`) because both classes sit on the same element. The City of Mist Danger predates the convention and stands outside it, protected by its own `city-danger-` prefix.
 
 `data-game-theme` carries the active game on the body (page background), on the sidebar provider, and on the preview wrapper (inline Mist tokens).
 
@@ -115,6 +115,10 @@ Editing is preview-driven: there is no form tree to navigate.
 4. Form edits write the tab's `doc`; the preview re-renders from the same state.
 
 A field is unreachable until something in the preview opens its form, and `openSheet` no-ops unless the tab is in `editing` mode.
+
+### Schema-driven form runtime
+
+`src/core/editor-schema/` owns reusable widgets and immutable path updates. A template may declare a `TemplateEditorSchema` in its definition; the declaration maps document fields and collection items to editor widgets, conditions, and collection constraints. It supplements—not replaces—the published document codec: the codec validates import/export, while the editor schema controls interaction. Editor-only descriptor identifiers and array locators belong in `sheet`, never in `doc`, so they cannot leak into TOML.
 
 ### Import / export
 

@@ -1,4 +1,5 @@
 import { documentContracts } from '@/contracts/registry'
+import { inferObject } from '@/core/editor-schema/inferSchema'
 import adrenalineMonstreTemplate from '@/templates/adrenaline/monstre/definition'
 import adrenalinePjTemplate from '@/templates/adrenaline/pj/definition'
 import adrenalinePnjTemplate from '@/templates/adrenaline/pnj/definition'
@@ -60,6 +61,12 @@ export const templateRegistry: AnyTemplateDefinition[] = [
  */
 for (const template of templateRegistry) {
     documentContracts.require(template.contractKey)
+    if (!template.editor.schema) {
+        template.editor.schema = inferObject(
+            template.id,
+            template.createBlank() as Record<string, unknown>
+        )
+    }
 }
 
 export const templateById = new Map(

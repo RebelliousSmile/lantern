@@ -9,16 +9,38 @@ export default function AdvancementForm() {
         <div className="space-y-2">
             {playbook.advancement.map((entry, index) => (
                 <div key={index} className="flex items-center gap-2">
-                    <Checkbox checked={entry.checked === true} onCheckedChange={(checked) =>
-                        setAdvancement(playbook.advancement.map((current, i) =>
-                            i === index ? { ...current, ...(checked === true ? { checked: true } : {}) } : current
-                        ))
-                    } />
-                    <Input value={entry.label} onChange={(event) =>
-                        setAdvancement(playbook.advancement.map((current, i) =>
-                            i === index ? { ...current, label: event.target.value } : current
-                        ))
-                    } />
+                    <Checkbox
+                        checked={entry.checked === true}
+                        onCheckedChange={(checked) =>
+                            setAdvancement(
+                                playbook.advancement.map((current, i) =>
+                                    i === index
+                                        ? {
+                                              ...current,
+                                              ...(checked === true
+                                                  ? { checked: true }
+                                                  : {}),
+                                          }
+                                        : current
+                                )
+                            )
+                        }
+                    />
+                    <Input
+                        value={entry.label}
+                        onChange={(event) =>
+                            setAdvancement(
+                                playbook.advancement.map((current, i) =>
+                                    i === index
+                                        ? {
+                                              ...current,
+                                              label: event.target.value,
+                                          }
+                                        : current
+                                )
+                            )
+                        }
+                    />
                 </div>
             ))}
         </div>

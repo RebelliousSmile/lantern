@@ -1,6 +1,6 @@
 import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+import { Textarea } from '@/components/ui/textarea'
 import { AttributeField } from '../../../shared/attributeField'
 import { useGameDefinitionForGame } from '../../../shared/gameDefinition'
 import { usePlaybookStore } from '../../hooks'
@@ -24,14 +24,28 @@ export default function StatsForm() {
                 {playbook.statProfiles.length ? (
                     <div className="grid gap-1">
                         <Label>Starting stat profile</Label>
-                        <RadioGroup onValueChange={(key) => {
-                            const profile = playbook.statProfiles.find((item) => item.key === key)
-                            if (profile) setStats({ ...profile.stats })
-                        }}>
+                        <RadioGroup
+                            onValueChange={(key) => {
+                                const profile = playbook.statProfiles.find(
+                                    (item) => item.key === key
+                                )
+                                if (profile) setStats({ ...profile.stats })
+                            }}
+                        >
                             {playbook.statProfiles.map((profile) => (
-                                <div key={profile.key} className="flex items-center gap-2">
-                                    <RadioGroupItem value={profile.key} id={`pbta-profile-${profile.key}`} />
-                                    <Label htmlFor={`pbta-profile-${profile.key}`}>{profile.label}</Label>
+                                <div
+                                    key={profile.key}
+                                    className="flex items-center gap-2"
+                                >
+                                    <RadioGroupItem
+                                        value={profile.key}
+                                        id={`pbta-profile-${profile.key}`}
+                                    />
+                                    <Label
+                                        htmlFor={`pbta-profile-${profile.key}`}
+                                    >
+                                        {profile.label}
+                                    </Label>
                                 </div>
                             ))}
                         </RadioGroup>
