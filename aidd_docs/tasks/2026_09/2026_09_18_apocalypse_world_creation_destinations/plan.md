@@ -1,6 +1,6 @@
 ---
 objective: "The Apocalypse World pack exposes Salvage Run as a document game, and PbtA creation questions initialize schema-defined scalar or ListMany destinations without constraining later edits."
-status: blocked
+status: implemented
 ---
 
 # Plan: Apocalypse World creation destinations
