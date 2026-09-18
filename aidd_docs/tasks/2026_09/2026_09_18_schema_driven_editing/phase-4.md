@@ -1,5 +1,5 @@
 ---
-status: pending
+status: done
 ---
 
 # Instruction: Migrate the remaining template families and prove the contract
@@ -70,11 +70,11 @@ journey
 
 ## Test acceptance criteria
 
-| Task | Acceptance criteria |
-| --- | --- |
-| 1 | All registered templates use typed form controls for normal editing; no raw JSON fallback remains. |
-| 1 | Every preview-visible collection distinguishes a collection create target from its individual element edit targets. |
-| 1 | Each migrated collection supports only the declared add, remove, and reorder behaviors. |
-| 1 | The migration inventory accounts for every registered template and every preview region declared editable before that family is marked complete. |
-| 2 | The automated contract assertion fails on a broken schema/path/target/form linkage. |
-| 2 | `npm run build`, `npm run lint`, and `npm run assert:contracts` pass for the completed migration. |
+| Task | Acceptance criteria                                                                                                                              |
+| ---- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 1    | All registered templates use typed form controls for normal editing; no raw JSON fallback remains.                                               |
+| 1    | Every preview-visible collection distinguishes a collection create target from its individual element edit targets.                              |
+| 1    | Each migrated collection supports only the declared add, remove, and reorder behaviors.                                                          |
+| 1    | The migration inventory accounts for every registered template and every preview region declared editable before that family is marked complete. |
+| 2    | The automated contract assertion fails on a broken schema/path/target/form linkage.                                                              |
+| 2    | `npm run build`, `npm run lint`, and `npm run assert:contracts` pass for the completed migration.                                                |

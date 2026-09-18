@@ -64,11 +64,11 @@ In `preview/`, build the renderer and split it into `preview/blocks/`, one block
 
 The stylesheet lives beside it and **must be scoped**: every depth-0 selector descends from the game's root class (`.city-doc`, `.litm-doc`, `.os-card`), the sheet's own root selector _compounds_ with that class, and every class of your own carries a per-document prefix (`city-card-`, `city-kit-`, …). Preview stylesheets are bundled globally and inactive tabs stay mounted, so an unscoped generic name like `.section-title` will repaint another game's card.
 
-In `editor/`, build the panel that resolves `sheet.target`, the forms it needs, and the appearance panel for template-specific settings.
+In `editor/`, build the panel that resolves `sheet.target`, the forms it needs, and the appearance panel for template-specific settings. Prefer a `TemplateEditorSchema` declaration for fields and collections: it is the explicit bridge from a document path to a widget, an empty collection item, conditions, and deletion/reordering constraints. Published codecs remain the validity boundary; the editor schema must never be persisted into `doc` or TOML.
 
 Two vocabularies that are easy to conflate: `sheet.target.kind` decides _which form opens_ and is per template; the `SectionId` list in `metadata.ts` drives the appearance panel's show/hide toggles and the definition's `sections`. They are different lists.
 
-Every clickable preview region needs a matching editor target — a field with no way to open its form is unreachable.
+Every clickable preview region needs a matching editor target — a field with no way to open its form is unreachable. A collection heading/add affordance targets the collection; a rendered row targets its current array index. Keep those targets distinct so users can add an item without losing the ability to edit one exact item.
 
 ### 6. Register it
 
