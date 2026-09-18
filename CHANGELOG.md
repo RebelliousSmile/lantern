@@ -5,6 +5,19 @@ All notable changes to this project are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.15.0] - 2026-09-18
+
+### Added
+
+- **Apocalypse World pack identity.** The generic Playbook and Game Definition launchers now live
+  under Apocalypse World while existing `pbta` visibility and expansion preferences migrate safely;
+  Salvage Run remains the document game identifier.
+- **List creation destinations.** PbtA creation questions can initialize matching `ListMany`
+  attributes with selected stable values, validating setup bounds without constraining later edits.
+- **Urban Shadows relationship creation.** The Aware consumes the immutable `schema-pbta v5.1.0`
+  witness to present relationship labels and descriptions, store their keys, and preserve the
+  complete metadata through contract round trips.
+
 ## [v0.14.0] - 2026-09-18
 
 ### Added
