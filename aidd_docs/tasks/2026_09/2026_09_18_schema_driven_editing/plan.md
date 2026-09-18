@@ -1,6 +1,6 @@
 ---
 objective: "Lantern derives element and collection editing from declared document schemas, keeping every rendered datum traceable to the form that edits it."
-status: in-progress
+status: implemented
 ---
 
 # Plan: Schema-driven editing
