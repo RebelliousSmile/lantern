@@ -3,6 +3,7 @@ import { getActiveTab, useWorkspaceStore } from '@/core/workspace/store'
 import type { WorkspaceTab } from '@/core/workspace/types'
 import type {
     ChoiceSet,
+    AdvancementEntry,
     CreationEntry,
     GearEntry,
     MoveEntry,
@@ -119,7 +120,7 @@ export function usePlaybookStore() {
             apply((current) => ({ ...current, startingMoves })),
         setChoiceSets: (choiceSets: ChoiceSet[]) =>
             apply((current) => ({ ...current, choiceSets })),
-        setAdvancement: (advancement: string[]) =>
+        setAdvancement: (advancement: AdvancementEntry[]) =>
             apply((current) => ({ ...current, advancement })),
         setCreation: (creation: CreationEntry[]) =>
             apply((current) => ({ ...current, creation })),

@@ -22,6 +22,7 @@ export function getSamplePbtaPlaybook(): PbtaPlaybook {
             sway: -1,
         },
         statsDetail: 'Choose one stat at +1 and lower another by 1 to taste.',
+        statProfiles: [],
         attributes: {
             fuel: 3,
         },
@@ -96,9 +97,9 @@ export function getSamplePbtaPlaybook(): PbtaPlaybook {
             },
         ],
         advancement: [
-            'Get +1 to a stat (max +3)',
-            'Get a new rig move',
-            'Get a move from another playbook',
+            { label: 'Get +1 to a stat (max +3)' },
+            { label: 'Get a new rig move' },
+            { label: 'Get a move from another playbook' },
         ],
         creation: [
             { label: 'Name', options: ['Bram', 'Kessa', 'Oren'] },

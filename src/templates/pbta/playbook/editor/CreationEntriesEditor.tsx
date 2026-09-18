@@ -52,7 +52,9 @@ export function CreationEntriesEditor({
                         </Button>
                     </div>
                     <StringListEditor
-                        value={entry.options}
+                        value={entry.options.map((option) =>
+                            typeof option === 'string' ? option : option.label
+                        )}
                         onChange={(options) =>
                             updateAt(index, { ...entry, options })
                         }

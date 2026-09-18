@@ -46,7 +46,7 @@ export const blankPlaybook = (): MonsterheartsPlaybook => ({
     moves: [],
     strings: { max: 4, starting: 0 },
     conditions: [],
-    advances: ['Take an original advance.'],
+    advances: [{ label: 'Take an original advance.' }],
     harm: 0,
     editorial: {
         opening: section('Opening', ['Introduce this skin.']),

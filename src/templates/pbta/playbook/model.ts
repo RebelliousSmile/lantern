@@ -1,6 +1,6 @@
 import type { Playbook as PlaybookData } from './schema'
 
-export type MoveRef = { ref: string }
+export type MoveRef = { ref: string; checked?: boolean }
 export type MoveRollConfig = {
     rollType: string
     rollFormula: string
@@ -9,6 +9,7 @@ export type MoveRollConfig = {
 export type MoveResult = { label: string; text: string }
 
 export type MoveInline = {
+    checked?: boolean
     description: string
     name: string
     moveType: string
@@ -23,7 +24,7 @@ export type MoveInline = {
 }
 
 export type MoveEntry =
-    | { kind: 'ref'; ref: string }
+    | ({ kind: 'ref' } & MoveRef)
     | ({ kind: 'inline' } & MoveInline)
 
 export type ChoiceEntry =
@@ -39,7 +40,10 @@ export type ChoiceSet = {
     choices: ChoiceEntry[]
 }
 
-export type CreationEntry = { label: string; options: string[] }
+export type AdvancementEntry = { label: string; checked?: boolean }
+export type CreationOption = string | { value: string; label: string }
+export type CreationEntry = { label: string; options: CreationOption[]; selection?: { min: number; max: number }; attribute?: string }
+export type StatProfile = { key: string; label: string; stats: Record<string, number> }
 
 export type GearEntry = {
     name: string
@@ -64,11 +68,12 @@ export type PbtaPlaybook = {
     playbookImage: string
     stats: Record<string, number>
     statsDetail: string
+    statProfiles: StatProfile[]
     attributes: Record<string, PlaybookAttributeValue>
     moves: MoveEntry[]
     startingMoves: string[]
     choiceSets: ChoiceSet[]
-    advancement: string[]
+    advancement: AdvancementEntry[]
     creation: CreationEntry[]
     gear: GearEntry[]
 }
@@ -85,6 +90,7 @@ function toMoveInline(raw: {
     uses?: number
     choices?: string
     tags?: string[]
+    checked?: boolean
 }): MoveInline {
     return {
         description: raw.description,
@@ -104,6 +110,7 @@ function toMoveInline(raw: {
         uses: raw.uses ?? null,
         choices: raw.choices ?? '',
         tags: raw.tags ?? [],
+        checked: raw.checked,
     }
 }
 
@@ -129,6 +136,7 @@ function toMoveInlinePayload(move: MoveInline): Record<string, unknown> {
     if (move.uses != null) payload.uses = move.uses
     if (move.choices.trim()) payload.choices = move.choices.trim()
     if (move.tags.length) payload.tags = move.tags
+    if (move.checked) payload.checked = true
     return payload
 }
 
@@ -142,10 +150,14 @@ export function toPlaybookDocument(raw: PlaybookData): PbtaPlaybook {
         playbookImage: raw.playbookImage ?? '',
         stats: raw.stats ?? {},
         statsDetail: raw.statsDetail ?? '',
+        statProfiles: (raw.statProfiles ?? []).map((profile) => ({
+            ...profile,
+            stats: { ...profile.stats },
+        })),
         attributes: raw.attributes ?? {},
         moves: (raw.moves ?? []).map((move) =>
             'ref' in move
-                ? { kind: 'ref', ref: move.ref }
+                ? { kind: 'ref', ref: move.ref, checked: move.checked }
                 : { kind: 'inline', ...toMoveInline(move) }
         ),
         startingMoves: raw.startingMoves ?? [],
@@ -175,6 +187,8 @@ export function toPlaybookDocument(raw: PlaybookData): PbtaPlaybook {
         creation: (raw.creation ?? []).map((entry) => ({
             label: entry.label,
             options: [...entry.options],
+            selection: entry.selection,
+            attribute: entry.attribute,
         })),
         gear: (raw.gear ?? []).map((entry) => ({
             name: entry.name,
@@ -197,7 +211,9 @@ export function toPlaybookPayload(doc: PbtaPlaybook): Record<string, unknown> {
         description: doc.description,
         stats: doc.stats,
         moves: doc.moves.map((move) =>
-            move.kind === 'ref' ? { ref: move.ref } : toMoveInlinePayload(move)
+            move.kind === 'ref'
+                ? move.checked ? { ref: move.ref, checked: true } : { ref: move.ref }
+                : toMoveInlinePayload(move)
         ),
     }
 
@@ -205,6 +221,7 @@ export function toPlaybookPayload(doc: PbtaPlaybook): Record<string, unknown> {
     if (doc.playbookImage.trim())
         payload.playbookImage = doc.playbookImage.trim()
     if (doc.statsDetail.trim()) payload.statsDetail = doc.statsDetail.trim()
+    if (doc.statProfiles.length) payload.statProfiles = doc.statProfiles
     if (Object.keys(doc.attributes).length) payload.attributes = doc.attributes
     if (doc.startingMoves.length) payload.startingMoves = doc.startingMoves
 
@@ -239,12 +256,19 @@ export function toPlaybookPayload(doc: PbtaPlaybook): Record<string, unknown> {
         })
     }
 
-    if (doc.advancement.length) payload.advancement = doc.advancement
+    if (doc.advancement.length)
+        payload.advancement = doc.advancement.map(({ label, checked }) =>
+            checked ? { label, checked: true } : { label }
+        )
 
     if (doc.creation.length) {
         payload.creation = doc.creation.map((entry) => ({
             label: entry.label,
             options: entry.options,
+            ...(entry.selection ? { selection: entry.selection } : {}),
+            ...(entry.attribute?.trim()
+                ? { attribute: entry.attribute.trim() }
+                : {}),
         }))
     }
 
@@ -342,6 +366,7 @@ export const blankPlaybook = (): PbtaPlaybook => ({
     playbookImage: '',
     stats: {},
     statsDetail: '',
+    statProfiles: [],
     attributes: {},
     moves: [],
     startingMoves: [],

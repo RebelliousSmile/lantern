@@ -50,7 +50,7 @@
         "react-router-dom": "^6.30.1",
         "schema-adrenaline": "https://github.com/RebelliousSmile/schema-adrenaline/releases/download/v1.0.0/schema-adrenaline-1.0.0.tgz",
         "schema-in-the-mist": "https://github.com/RebelliousSmile/schema-in-the-mist/releases/download/v1.0.0/schema-in-the-mist-1.0.0.tgz",
-        "schema-pbta": "https://github.com/RebelliousSmile/schema-pbta/releases/download/v4.0.0/schema-pbta-4.0.0.tgz",
+        "schema-pbta": "https://github.com/RebelliousSmile/schema-pbta/releases/download/v5.0.0/schema-pbta-5.0.0.tgz",
         "sonner": "^2.0.7",
         "tailwind-merge": "^3.3.1",
         "tailwindcss": "^4.1.12",
