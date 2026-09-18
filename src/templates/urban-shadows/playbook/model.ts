@@ -1,4 +1,4 @@
-export type Move = { name: string; moveType: string; description: string }
+export type Move = { name: string; moveType: string; description: string; checked?: boolean }
 export type Relationship = { name: string; description: string }
 export type Scar = { name: string; stat: string; modifier: number | null }
 export type Harm = {
@@ -9,7 +9,7 @@ export type Harm = {
 }
 export type Corruption = {
     trigger: string
-    advances: string[]
+    advances: { label: string; checked?: boolean }[]
     moves: string[]
 }
 export type Editorial = {
@@ -36,7 +36,7 @@ export type UrbanShadowsPlaybook = {
     editorial: Editorial
     creation: { label: string; options: string[] }[]
     gear: { name: string; description: string }[]
-    advancement: string[]
+    advancement: { label: string; checked?: boolean }[]
 }
 export type SectionId =
     | 'circles'
@@ -104,7 +104,7 @@ export const blankPlaybook = (): UrbanShadowsPlaybook => ({
     scars: [],
     corruption: {
         trigger: 'When you cross a line to survive the city.',
-        advances: ['Take an original corruption advance.'],
+        advances: [{ label: 'Take an original corruption advance.' }],
         moves: [],
     },
     endMove: 'When this story ends, choose what your character leaves behind.',

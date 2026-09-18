@@ -43,11 +43,11 @@ export const getSampleUrbanShadowsPlaybook = () => ({
             description: 'Fast, quiet, and repaired too often.',
         },
     ],
-    advancement: ['Take a new original courier move.'],
+    advancement: [{ label: 'Take a new original courier move.' }],
     corruption: {
         trigger:
             'When you abandon someone who trusted your route, mark corruption.',
-        advances: ['Take a corruption move.'],
+        advances: [{ label: 'Take a corruption move.' }],
         moves: ['No Safe Address'],
     },
 })

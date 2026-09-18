@@ -18,6 +18,7 @@ export default function MovesBlock({ onClick }: { onClick: () => void }) {
                             {moves.map((move, index) => (
                                 <li key={index} className="pbta-pb-list-item">
                                     <span className="pbta-pb-list-item__key">
+                                        {move.checked ? '☑ ' : '☐ '}
                                         {move.kind === 'ref'
                                             ? move.ref
                                             : move.name || 'Untitled move'}

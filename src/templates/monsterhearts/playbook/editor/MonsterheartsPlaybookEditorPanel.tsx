@@ -1,4 +1,5 @@
 import { Input } from '@/components/ui/input'
+import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { StructuredJsonEditor } from '@/templates/shared/StructuredJsonEditor'
@@ -36,6 +37,14 @@ export function MonsterheartsPlaybookEditorPanel() {
                 </Label>
             </div>
         )
+    if (sheet.target === 'moves')
+        return <div className="space-y-2">{playbook.moves.map((move, index) => (
+            <Label key={index} className="flex items-center gap-2"><Checkbox checked={move.checked === true} onCheckedChange={(checked) => setPlaybook({ moves: playbook.moves.map((item, i) => i === index ? { ...item, ...(checked === true ? { checked: true } : { checked: undefined }) } : item) })} />{'ref' in move ? move.ref : move.name}</Label>
+        ))}</div>
+    if (sheet.target === 'advances')
+        return <div className="space-y-2">{playbook.advances.map((entry, index) => (
+            <Label key={index} className="flex items-center gap-2"><Checkbox checked={entry.checked === true} onCheckedChange={(checked) => setPlaybook({ advances: playbook.advances.map((item, i) => i === index ? { ...item, ...(checked === true ? { checked: true } : { checked: undefined }) } : item) })} />{entry.label}</Label>
+        ))}</div>
     const key = sheet.target
     return (
         <StructuredJsonEditor

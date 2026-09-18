@@ -1,4 +1,5 @@
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
@@ -51,6 +52,18 @@ export function UrbanShadowsPlaybookEditorPanel() {
                 </Label>
             </div>
         )
+    if (target.kind === 'moves')
+        return <div className="space-y-2">{playbook.moves.map((move, index) => (
+            <Label key={index} className="flex items-center gap-2"><Checkbox checked={move.checked === true} onCheckedChange={(checked) => setPlaybook({ moves: playbook.moves.map((item, i) => i === index ? { ...item, ...(checked === true ? { checked: true } : { checked: undefined }) } : item) })} />{move.name}</Label>
+        ))}</div>
+    if (target.kind === 'advancement')
+        return <div className="space-y-2">{playbook.advancement.map((entry, index) => (
+            <Label key={index} className="flex items-center gap-2"><Checkbox checked={entry.checked === true} onCheckedChange={(checked) => setPlaybook({ advancement: playbook.advancement.map((item, i) => i === index ? { ...item, ...(checked === true ? { checked: true } : { checked: undefined }) } : item) })} />{entry.label}</Label>
+        ))}</div>
+    if (target.kind === 'corruption')
+        return <div className="space-y-2">{playbook.corruption.advances.map((entry, index) => (
+            <Label key={index} className="flex items-center gap-2"><Checkbox checked={entry.checked === true} onCheckedChange={(checked) => setPlaybook({ corruption: { ...playbook.corruption, advances: playbook.corruption.advances.map((item, i) => i === index ? { ...item, ...(checked === true ? { checked: true } : { checked: undefined }) } : item) } })} />{entry.label}</Label>
+        ))}</div>
     const key =
         target.kind === 'relationships' ? 'mortalRelationships' : target.kind
     return (
