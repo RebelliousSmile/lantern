@@ -1,6 +1,6 @@
 ---
 objective: "A linked PbtA creation answer initializes only a matching Text or LongText destination, persists no setup state, and remains freely editable."
-status: in-progress
+status: implemented
 ---
 
 # Plan: PbtA creation text destinations
