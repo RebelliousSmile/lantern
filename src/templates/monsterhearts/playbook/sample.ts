@@ -52,6 +52,6 @@ export const getSampleMonsterheartsPlaybook = () => ({
             description: 'When you repeat a rumour, ask what it changes.',
         },
     ],
-    advances: ['Take an original Echo move.'],
+    advances: [{ label: 'Take an original Echo move.' }],
     harm: 0,
 })

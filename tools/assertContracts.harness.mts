@@ -59,6 +59,10 @@ const LANTERN_MODULES: Record<
         import(`../src/templates/${target}/toml.ts`) as Promise<TemplateCodec>,
     pbta: (target) => {
         const modules: Record<string, () => Promise<TemplateCodec>> = {
+            playbook: () =>
+                import('../src/templates/pbta/playbook/toml.ts') as Promise<TemplateCodec>,
+            'salvage-run-playbook': () =>
+                import('../src/templates/pbta/playbook/toml.ts') as Promise<TemplateCodec>,
             'monsterhearts-playbook': () =>
                 import(
                     '../src/templates/monsterhearts/playbook/toml.ts'
@@ -279,7 +283,11 @@ async function assertLanternModules(cases: NormalizedCase[]) {
 
         for (const witness of witnesses) {
             const codec = await resolve(witness.target)
-            const key = keyFor(witness.target)
+            const key =
+                witness.target === 'playbook' ||
+                witness.target === 'salvage-run-playbook'
+                    ? 'playbook'
+                    : keyFor(witness.target)
             const source = fs.readFileSync(witness.file, 'utf8')
 
             const imported = codec.importFromTOMLWithWarnings(source)

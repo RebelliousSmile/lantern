@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { cn } from '@/utils/cn'
 import { ChevronDown, ChevronUp, X } from 'lucide-react'
@@ -54,6 +55,18 @@ export function MovesEditor({ value, onChange }: MovesEditorProps) {
             {value.map((entry, index) => (
                 <div key={index} className="space-y-1.5 rounded-md border p-2">
                     <div className="flex items-center gap-1.5">
+                        <Checkbox
+                            checked={entry.checked === true}
+                            aria-label="Move acquired"
+                            onCheckedChange={(checked) =>
+                                updateAt(index, {
+                                    ...entry,
+                                    ...(checked === true
+                                        ? { checked: true }
+                                        : { checked: undefined }),
+                                })
+                            }
+                        />
                         <div className="flex overflow-hidden rounded-md border">
                             <button
                                 type="button"

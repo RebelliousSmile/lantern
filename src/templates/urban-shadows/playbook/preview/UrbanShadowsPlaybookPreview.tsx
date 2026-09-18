@@ -40,7 +40,9 @@ export function UrbanShadowsPlaybookPreview() {
             <p>
                 {playbook.corruption.trigger}
                 <br />
-                {playbook.corruption.advances.join(' · ')}
+                {playbook.corruption.advances
+                    .map((advance) => `${advance.checked ? '☑' : '☐'} ${advance.label}`)
+                    .join(' · ')}
                 <br />
                 <b>End move:</b> {playbook.endMove}
             </p>
@@ -48,7 +50,7 @@ export function UrbanShadowsPlaybookPreview() {
         editorial: <pre>{JSON.stringify(playbook.editorial, null, 2)}</pre>,
         moves: playbook.moves.map((x) => (
             <p key={x.name}>
-                <b>{x.name}</b> — {x.description}
+                {x.checked ? '☑' : '☐'} <b>{x.name}</b> — {x.description}
             </p>
         )),
         creation: playbook.creation.map((x) => (
@@ -61,7 +63,9 @@ export function UrbanShadowsPlaybookPreview() {
                 <b>{x.name}</b> — {x.description}
             </p>
         )),
-        advancement: playbook.advancement.join(' · '),
+        advancement: playbook.advancement
+            .map((advance) => `${advance.checked ? '☑' : '☐'} ${advance.label}`)
+            .join(' · '),
     }
     return (
         <div className="urban-shadows-doc">
