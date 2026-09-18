@@ -2,6 +2,10 @@
 import assert from 'node:assert/strict'
 import fs from 'node:fs'
 import { ADRENALINE_DOCUMENT_CODECS } from 'schema-adrenaline'
+import {
+    PBTA_COLLECTION_PRESENTATIONS,
+    type PbtaCollectionPresentation,
+} from 'schema-pbta'
 import { parse as parseToml } from 'smol-toml'
 import {
     carryCanonicalSource,
@@ -16,6 +20,11 @@ import {
     setAtPath,
 } from '../src/core/editor-schema/path'
 import { normalizeContractManifests } from './contractManifests.mjs'
+import { collectionAdapterFor } from '../src/templates/pbta/specialized/collectionAdapters'
+import {
+    removeCollectionItem,
+    replaceCollectionItems,
+} from '../src/templates/pbta/specialized/collectionPolicy'
 
 /*
  * Two layers, run against every registered contract:
@@ -482,6 +491,41 @@ function assertEditorSchemaPaths() {
     assert.equal(getAtPath(removed, ['hidden', 'note']), 'retain me')
 }
 
+function assertPbtaCollectionAdapters() {
+    for (const descriptor of PBTA_COLLECTION_PRESENTATIONS) {
+        assert.ok(
+            collectionAdapterFor(descriptor.itemEditor),
+            `no Lantern adapter for ${descriptor.itemEditor}`
+        )
+    }
+    assert.equal(
+        collectionAdapterFor('not-a-published-adapter'),
+        null,
+        'unknown adapter keys must not select a fallback editor'
+    )
+
+    const fixed: PbtaCollectionPresentation = {
+        target: 'masks-playbook',
+        path: 'items',
+        label: 'Items',
+        itemEditor: 'pbta-text',
+        creationVariant: 'text',
+        cardinality: 'fixed',
+        reorder: true,
+    }
+    const source = { items: ['first', 'second'] }
+    assert.deepStrictEqual(
+        removeCollectionItem(source, fixed, 0),
+        source,
+        'fixed collections retain their items'
+    )
+    assert.deepStrictEqual(
+        replaceCollectionItems(source, fixed, ['edited', 'second']),
+        { items: ['edited', 'second'] },
+        'fixed collections still allow item edits'
+    )
+}
+
 async function main() {
     /* Handed down by the calling script: the bundle runs from a temp directory and resolves nothing. */
     const handed = process.env.LANTERN_CONTRACT_MANIFESTS
@@ -514,6 +558,7 @@ async function main() {
     await assertUrbanShadowsCreationRoundTrip(cases)
     assertOverlayIdentity()
     assertEditorSchemaPaths()
+    assertPbtaCollectionAdapters()
 
     const perContract = [...tally.entries()].map(([contractId, counts]) => {
         const targets = nodeDocumentContracts.byContract(contractId).length

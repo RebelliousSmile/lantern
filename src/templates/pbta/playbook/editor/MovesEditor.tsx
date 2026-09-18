@@ -10,6 +10,9 @@ export type MovesEditorProps = {
     value: MoveEntry[]
     onChange: (next: MoveEntry[]) => void
     focusIndex?: number
+    allowAddRemove?: boolean
+    allowReorder?: boolean
+    allowChecked?: boolean
 }
 
 function blankInlineMove(): MoveEntry {
@@ -33,7 +36,14 @@ function blankInlineMove(): MoveEntry {
    reasoning: the list is short-lived and a full drag wiring is not worth it.
    Each row toggles between the 'ref' and 'inline' MoveEntry branches - they
    share no fields, so switching kind resets to that branch's defaults. */
-export function MovesEditor({ value, onChange, focusIndex }: MovesEditorProps) {
+export function MovesEditor({
+    value,
+    onChange,
+    focusIndex,
+    allowAddRemove = true,
+    allowReorder = true,
+    allowChecked = true,
+}: MovesEditorProps) {
     function updateAt(index: number, entry: MoveEntry) {
         onChange(value.map((current, i) => (i === index ? entry : current)))
     }
@@ -62,7 +72,7 @@ export function MovesEditor({ value, onChange, focusIndex }: MovesEditorProps) {
                         className="space-y-1.5 rounded-md border p-2"
                     >
                         <div className="flex items-center gap-1.5">
-                            <Checkbox
+                            {allowChecked && <Checkbox
                                 checked={entry.checked === true}
                                 aria-label="Move acquired"
                                 onCheckedChange={(checked) =>
@@ -73,7 +83,7 @@ export function MovesEditor({ value, onChange, focusIndex }: MovesEditorProps) {
                                             : { checked: undefined }),
                                     })
                                 }
-                            />
+                            />}
                             <div className="flex overflow-hidden rounded-md border">
                                 <button
                                     type="button"
@@ -110,7 +120,7 @@ export function MovesEditor({ value, onChange, focusIndex }: MovesEditorProps) {
                                 </button>
                             </div>
                             <div className="flex-1" />
-                            <Button
+                            {allowReorder && <Button
                                 type="button"
                                 variant="ghost"
                                 size="icon-sm"
@@ -119,8 +129,8 @@ export function MovesEditor({ value, onChange, focusIndex }: MovesEditorProps) {
                                 onClick={() => moveAt(index, -1)}
                             >
                                 <ChevronUp className="h-3.5 w-3.5" />
-                            </Button>
-                            <Button
+                            </Button>}
+                            {allowReorder && <Button
                                 type="button"
                                 variant="ghost"
                                 size="icon-sm"
@@ -129,8 +139,8 @@ export function MovesEditor({ value, onChange, focusIndex }: MovesEditorProps) {
                                 onClick={() => moveAt(index, 1)}
                             >
                                 <ChevronDown className="h-3.5 w-3.5" />
-                            </Button>
-                            <Button
+                            </Button>}
+                            {allowAddRemove && <Button
                                 type="button"
                                 variant="ghost"
                                 size="icon-sm"
@@ -139,7 +149,7 @@ export function MovesEditor({ value, onChange, focusIndex }: MovesEditorProps) {
                                 onClick={() => removeAt(index)}
                             >
                                 <X className="h-3.5 w-3.5" />
-                            </Button>
+                            </Button>}
                         </div>
 
                         {entry.kind === 'ref' ? (
@@ -166,7 +176,7 @@ export function MovesEditor({ value, onChange, focusIndex }: MovesEditorProps) {
                 )
             })}
             <div className="flex items-center gap-1.5">
-                <Button
+            {allowAddRemove && <Button
                     type="button"
                     variant="secondary"
                     size="sm"
@@ -174,7 +184,7 @@ export function MovesEditor({ value, onChange, focusIndex }: MovesEditorProps) {
                     onClick={() => onChange([...value, blankInlineMove()])}
                 >
                     Add move
-                </Button>
+            </Button>}
             </div>
         </div>
     )

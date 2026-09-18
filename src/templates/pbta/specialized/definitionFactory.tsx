@@ -6,6 +6,15 @@ import { inferObject } from '@/core/editor-schema/inferSchema'
 import type { AnyTemplateDefinition } from '@/core/templates/types'
 import { useActiveTemplateTab } from '@/core/workspace/selectors'
 import { useWorkspaceStore } from '@/core/workspace/store'
+import {
+    collectionAdapterFor,
+    PublishedCollectionEditor,
+} from './collectionAdapters'
+import {
+    collectionFor,
+    collectionItems,
+    replaceCollectionItems,
+} from './collectionPolicy'
 import './specializedPlaybookTheme.css'
 
 type Document = Record<string, unknown>
@@ -239,6 +248,33 @@ export function createSpecializedPlaybookTemplate(
             )
         const key = sheet.target as string
         const section = doc[key]
+        const target = config.contractKey.replace(
+            /^pbta\//,
+            ''
+        ) as Parameters<typeof collectionFor>[0]
+        const presentation = collectionFor(target, key)
+        if (presentation) {
+            const items = collectionItems(doc, presentation)
+            const Adapter = collectionAdapterFor(presentation.itemEditor)
+            if (!Adapter || !items)
+                return (
+                    <p className="text-sm text-destructive">
+                        Invalid published collection configuration for{' '}
+                        {presentation.label}.
+                    </p>
+                )
+            return (
+                <PublishedCollectionEditor
+                    presentation={presentation}
+                    items={items}
+                    onChange={(next) =>
+                        setDoc(
+                            replaceCollectionItems(doc, presentation, next)
+                        )
+                    }
+                />
+            )
+        }
         const schema = inferObject(
             key,
             section && typeof section === 'object' && !Array.isArray(section)

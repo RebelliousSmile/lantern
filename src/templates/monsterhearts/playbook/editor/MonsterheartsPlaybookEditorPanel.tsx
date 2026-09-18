@@ -5,7 +5,13 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { SchemaEditor } from '@/core/editor-schema/SchemaEditor'
 import { inferObject } from '@/core/editor-schema/inferSchema'
+import { PublishedCollectionEditor } from '@/templates/pbta/specialized/collectionAdapters'
+import {
+    collectionItems,
+    replaceCollectionItems,
+} from '@/templates/pbta/specialized/collectionPolicy'
 import { ChevronDown, ChevronUp, X } from 'lucide-react'
+import { getPbtaCollectionPresentation } from 'schema-pbta'
 import { useMonsterheartsSheet, useMonsterheartsStore } from '../hooks'
 import type { MonsterheartsEditorial, MonsterheartsPlaybook } from '../model'
 
@@ -194,6 +200,8 @@ function MonsterheartsMovesEditor({
     )
 }
 
+void MonsterheartsMovesEditor
+
 export function MonsterheartsPlaybookEditorPanel() {
     const { sheet } = useMonsterheartsSheet()
     const { playbook, setPlaybook } = useMonsterheartsStore()
@@ -279,12 +287,7 @@ export function MonsterheartsPlaybookEditorPanel() {
         )
     }
     if (sheet.target === 'moves')
-        return (
-            <MonsterheartsMovesEditor
-                value={playbook.moves}
-                onChange={(moves) => setPlaybook({ moves })}
-            />
-        )
+        return <MonsterheartsCollection path="moves" />
     const key = sheet.target
     const value = (playbook as Record<string, unknown>)[key]
     return (
@@ -296,4 +299,17 @@ export function MonsterheartsPlaybookEditorPanel() {
             }
         />
     )
+}
+
+function MonsterheartsCollection({ path }: { path: string }) {
+    const { playbook, setPlaybook } = useMonsterheartsStore()
+    const presentation = getPbtaCollectionPresentation(
+        'monsterhearts-playbook',
+        path
+    )
+    const document = playbook as Record<string, unknown>
+    const items = presentation && collectionItems(document, presentation)
+    if (!presentation || !items)
+        return <p className="text-sm text-destructive">Invalid published collection configuration.</p>
+    return <PublishedCollectionEditor presentation={presentation} items={items} onChange={(next) => setPlaybook(replaceCollectionItems(document, presentation, next) as Partial<typeof playbook>)} />
 }
