@@ -360,6 +360,11 @@ async function assertLinkedCreationRoundTrip(cases: NormalizedCase[]) {
     const rendered = codec.exportToTOML(imported.playbook as never)
     const parsed = parseToml(rendered) as Record<string, unknown>
 
+    assert.deepStrictEqual(parsed.attributes, {
+        ready: false,
+        potential: 0,
+        'quoted key': ['alpha', 'beta'],
+    })
     assert.deepStrictEqual(parsed.creation, [
         {
             label: 'Which tool exported this document?',
