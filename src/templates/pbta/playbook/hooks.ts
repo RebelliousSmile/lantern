@@ -1,4 +1,5 @@
 import { useActiveTemplateTab } from '@/core/workspace/selectors'
+import { cloneValue } from '@/utils/clone'
 import { getActiveTab, useWorkspaceStore } from '@/core/workspace/store'
 import type { WorkspaceTab } from '@/core/workspace/types'
 import type {
@@ -36,14 +37,6 @@ const fallbackView = cloneValue(defaultPlaybookView)
 function clamp(n: number, lo: number, hi: number) {
     const x = Math.floor(Number(n) || 0)
     return Math.max(lo, Math.min(hi, x))
-}
-
-function cloneValue<T>(value: T): T {
-    if (typeof structuredClone === 'function') {
-        return structuredClone(value)
-    }
-
-    return JSON.parse(JSON.stringify(value)) as T
 }
 
 function usePlaybookTab() {

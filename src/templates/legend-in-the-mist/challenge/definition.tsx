@@ -1,4 +1,5 @@
 import { createImageExportAction } from '@/core/templates/shell/imageExportAction'
+import { cloneValue } from '@/utils/clone'
 import type { AnyTemplateDefinition } from '@/core/templates/types'
 import { toast } from 'sonner'
 import { ChallengeAppearancePanel } from './editor/ChallengeAppearancePanel'
@@ -16,14 +17,7 @@ import {
 import { ChallengePreview } from './preview/ChallengePreview'
 import { getSampleLegendInTheMistChallenge } from './sample'
 import { exportToTOML, importFromTOMLWithWarnings } from './toml'
-
-function cloneValue<T>(value: T): T {
-    if (typeof structuredClone === 'function') {
-        return structuredClone(value)
-    }
-
-    return JSON.parse(JSON.stringify(value)) as T
-}
+import { migrateLegacyChallengeWorkspace } from './legacyWorkspaceMigration'
 
 const challengeTemplate: AnyTemplateDefinition = {
     id: 'legend.challenge',
@@ -39,6 +33,10 @@ const challengeTemplate: AnyTemplateDefinition = {
         cloneValue(defaultLegendInTheMistChallengeSheetState),
     getTabTitle: (doc: LegendInTheMistChallenge) =>
         doc.name.trim() || 'Challenge',
+    legacyWorkspaceMigration: {
+        storageKey: 'litm:challenge:v2',
+        migrate: migrateLegacyChallengeWorkspace,
+    },
     sections: challengeSections,
     landing: {
         description:

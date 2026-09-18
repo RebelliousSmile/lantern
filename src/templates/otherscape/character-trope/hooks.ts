@@ -1,4 +1,5 @@
 import { useActiveTemplateTab } from '@/core/workspace/selectors'
+import { cloneValue } from '@/utils/clone'
 import { getActiveTab, useWorkspaceStore } from '@/core/workspace/store'
 import type { WorkspaceTab } from '@/core/workspace/types'
 import type {
@@ -37,14 +38,6 @@ function normalizeThemeKitRef(kit: ThemeKitRef): ThemeKitRef {
         title_tag: strOrFallback(kit.title_tag, 'Untitled Theme Kit'),
         category: strOrFallback(kit.category, 'UNFILED'),
     }
-}
-
-function cloneValue<T>(value: T): T {
-    if (typeof structuredClone === 'function') {
-        return structuredClone(value)
-    }
-
-    return JSON.parse(JSON.stringify(value)) as T
 }
 
 function normalizeBackground(

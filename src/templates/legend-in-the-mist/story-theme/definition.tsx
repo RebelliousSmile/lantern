@@ -1,4 +1,5 @@
 import { createImageExportAction } from '@/core/templates/shell/imageExportAction'
+import { cloneValue } from '@/utils/clone'
 import type { AnyTemplateDefinition } from '@/core/templates/types'
 import { toast } from 'sonner'
 import { StoryThemeAppearancePanel } from './editor/StoryThemeAppearancePanel'
@@ -16,14 +17,6 @@ import {
 import { StoryThemePreview } from './preview/StoryThemePreview'
 import { getSampleLegendInTheMistStoryTheme } from './sample'
 import { exportToTOML, importFromTOMLWithWarnings } from './toml'
-
-function cloneValue<T>(value: T): T {
-    if (typeof structuredClone === 'function') {
-        return structuredClone(value)
-    }
-
-    return JSON.parse(JSON.stringify(value)) as T
-}
 
 const storyThemeTemplate: AnyTemplateDefinition = {
     id: 'legend.storyTheme',

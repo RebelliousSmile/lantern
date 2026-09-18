@@ -21,6 +21,11 @@ export type TemplateSectionDefinition = {
     label: string
 }
 
+export type LegacyWorkspaceMigration<TDoc = unknown> = {
+    storageKey: string
+    migrate: (raw: unknown) => TDoc | null
+}
+
 export type TemplateExportAction<
     TDoc = unknown,
     TView = unknown,
@@ -67,6 +72,7 @@ export type TemplateDefinition<
     createInitialView: () => TView
     createInitialSheet: () => TSheet
     getTabTitle: (doc: TDoc) => string
+    legacyWorkspaceMigration?: LegacyWorkspaceMigration<TDoc>
 
     sections: TemplateSectionDefinition[]
     landing: {

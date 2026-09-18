@@ -3,10 +3,10 @@ import type { AnyTemplateDefinition } from '@/core/templates/types'
 import { AdrenalineAppearancePanel } from '../shared/editor/AdrenalineAppearancePanel'
 import { downloadToml } from '../shared/export'
 import {
-    cloneValue,
     defaultAdrenalineView,
     emptyAdrenalineSheetState,
 } from '../shared/model'
+import { cloneValue } from '@/utils/clone'
 import { MonstreEditorPanel } from './editor/MonstreEditorPanel'
 import { MonstrePreview } from './preview/MonstrePreview'
 import { blankMonstre, sampleMonstre } from './sample'
