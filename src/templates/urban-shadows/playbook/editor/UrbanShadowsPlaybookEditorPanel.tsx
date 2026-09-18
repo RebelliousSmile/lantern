@@ -67,7 +67,7 @@ export function UrbanShadowsPlaybookEditorPanel() {
     if (target.kind === 'advancement')
         return <UrbanCollection path="advancement" />
     if (target.kind === 'corruption')
-        return <UrbanCollection path="corruption.advances" />
+        return <UrbanCorruptionCollections />
     if (target.kind === 'creation') return <UrbanShadowsCreationForm />
     if (target.kind === 'relationships') {
         const attribute = game.character.attributes?.mortalRelationships
@@ -123,6 +123,21 @@ function UrbanCollection({ path }: { path: string }) {
     if (!presentation || !items)
         return <p className="text-sm text-destructive">Invalid published collection configuration.</p>
     return <PublishedCollectionEditor presentation={presentation} items={items} onChange={(next) => setPlaybook(replaceCollectionItems(document, presentation, next) as Partial<typeof playbook>)} />
+}
+
+function UrbanCorruptionCollections() {
+    return (
+        <div className="space-y-5">
+            <section className="space-y-2">
+                <h3 className="text-sm font-semibold">Corruption advances</h3>
+                <UrbanCollection path="corruption.advances" />
+            </section>
+            <section className="space-y-2">
+                <h3 className="text-sm font-semibold">Corruption moves</h3>
+                <UrbanCollection path="corruption.moves" />
+            </section>
+        </div>
+    )
 }
 
 function UrbanShadowsCreationForm() {
