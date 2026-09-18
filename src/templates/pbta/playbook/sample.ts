@@ -102,7 +102,15 @@ export function getSamplePbtaPlaybook(): PbtaPlaybook {
             { label: 'Get a move from another playbook' },
         ],
         creation: [
-            { label: 'Name', options: ['Bram', 'Kessa', 'Oren'] },
+            {
+                label: 'Name',
+                attribute: 'name',
+                options: [
+                    { value: 'bram', label: 'Bram' },
+                    { value: 'kessa', label: 'Kessa' },
+                    { value: 'oren', label: 'Oren' },
+                ],
+            },
             { label: 'Look', options: ['grease-stained', 'patched coveralls'] },
         ],
         gear: [

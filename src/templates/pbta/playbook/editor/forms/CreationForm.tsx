@@ -18,16 +18,21 @@ export default function CreationForm() {
                     ? game?.character.attributes?.[question.attribute]
                     : undefined
                 const max = question.selection?.max ?? 1
-                const min = question.selection?.min ?? 1
+                const validTextTarget =
+                    max === 1 &&
+                    target !== undefined &&
+                    (target.type === 'Text' || target.type === 'LongText')
                 const choose = (next: string[]) => {
                     setAnswers({ ...answers, [index]: next })
                 }
                 const apply = () => {
-                    if (!question.attribute || !target) return
-                    if (max > 1 && target.type === 'ListMany')
-                        setAttributes({ ...playbook.attributes, [question.attribute]: selected })
-                    if (max === 1 && (target.type === 'Text' || target.type === 'LongText'))
-                        setAttributes({ ...playbook.attributes, [question.attribute]: selected[0] ?? '' })
+                    if (
+                        !question.attribute ||
+                        !target ||
+                        !validTextTarget ||
+                        selected.length !== 1
+                    ) return
+                    setAttributes({ ...playbook.attributes, [question.attribute]: selected[0] ?? '' })
                 }
                 return <fieldset key={index} className="space-y-2 rounded-md border p-3">
                     <legend className="px-1 text-sm font-medium">{question.label}</legend>
@@ -43,7 +48,12 @@ export default function CreationForm() {
                             <Label>{label}</Label>
                         </div>
                     })}
-                    {question.attribute ? <Button type="button" size="sm" disabled={selected.length < min || selected.length > max} onClick={apply}>Apply selection</Button> : null}
+                    {question.attribute && !validTextTarget ? (
+                        <p className="text-sm text-destructive">
+                            This question must target an available Text or LongText attribute in the matching game definition.
+                        </p>
+                    ) : null}
+                    {question.attribute ? <Button type="button" size="sm" disabled={!validTextTarget || selected.length !== 1} onClick={apply}>Apply selection</Button> : null}
                 </fieldset>
             })}
         </div>

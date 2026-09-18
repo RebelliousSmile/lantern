@@ -27,6 +27,12 @@ export function getSamplePbtaGameDefinition(): PbtaGameDefinition {
                 sway: 'Sway',
             },
             attributes: {
+                name: {
+                    type: 'Text',
+                    label: 'Name',
+                    description: 'The name used on salvage runs.',
+                    position: 'top',
+                },
                 fuel: {
                     type: 'Resource',
                     label: 'Fuel',
