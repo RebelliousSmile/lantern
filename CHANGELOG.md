@@ -5,132 +5,34 @@ All notable changes to this project are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [v0.16.1] - 2026-09-18
-
-### Changed
-
-- **Game-pack launcher behavior.** Every launch now starts with all game packs collapsed; only
-  the user’s disabled-pack filters persist between sessions.
+## [v0.7.2] - 2026-09-18
 
 ### Added
 
-- **Game-pack assertions.** The workspace harness now verifies pack preference migration,
-  persistence, open-tab safety, registry grouping, unique template identities and contract
-  resolution.
-
-## [v0.16.0] - 2026-09-18
-
-### Added
-
-- **Schema-driven editing runtime.** Templates can declare editor fields, collections,
-  conditional visibility, variants, empty-item factories, deletion limits and ordering without
-  placing template-specific logic in the application shell.
-- **Precise PbtA move editing.** Clicking a rendered move now opens that move’s form, while the
-  Moves section remains the collection-level editor; new moves begin as blank inline moves.
-- **Editor-schema guidance.** The architecture and template-authoring documentation now define
-  the boundary between published document codecs and Lantern’s editor metadata.
+- **PbtA and specialized playbooks.** Canonical Playbook targets now cover Apocalypse World,
+  Urban Shadows, Monsterhearts, Masks, Monster of the Week and The Sprawl, including creation
+  destinations, stat profiles, acquisition checklists and contract round trips.
+- **Adrenaline templates.** Player characters, NPCs and monsters provide schema-backed editing,
+  themed previews, TOML import/export and PNG export.
+- **Schema-driven editing and game-pack assertions.** The editor can declare typed fields and
+  collections; the workspace harness checks pack migration, persistence, open-tab safety,
+  registry grouping and contract resolution.
+- **Direct TOML copying.** TOML export is available as a selectable, copy-first action with a
+  download fallback.
 
 ### Changed
 
+- **Game-pack launcher behavior.** Every launch starts with all packs collapsed; only disabled
+  pack filters persist.
 - **Specialized playbook editing.** Monsterhearts, Urban Shadows and factory-backed playbooks no
-  longer expose raw JSON as their normal editor surface.
-
-## [v0.15.0] - 2026-09-18
-
-### Added
-
-- **Apocalypse World pack identity.** The generic Playbook and Game Definition launchers now live
-  under Apocalypse World while existing `pbta` visibility and expansion preferences migrate safely;
-  Salvage Run remains the document game identifier.
-- **List creation destinations.** PbtA creation questions can initialize matching `ListMany`
-  attributes with selected stable values, validating setup bounds without constraining later edits.
-- **Urban Shadows relationship creation.** The Aware consumes the immutable `schema-pbta v5.1.0`
-  witness to present relationship labels and descriptions, store their keys, and preserve the
-  complete metadata through contract round trips.
-
-## [v0.14.0] - 2026-09-18
-
-### Added
-
-- **Linked PbtA creation text destinations.** A creation choice can now initialize a matching
-  Text or LongText character attribute with its stable value; the field remains freely editable
-  afterwards, and invalid targets show a diagnostic instead of changing character state.
-- **Creation metadata contract assertion.** The compatibility suite explicitly preserves linked
-  structured option values, labels, selection bounds and destination attributes through a
-  Lantern TOML round trip.
-
-## [v0.13.0] - 2026-09-18
-
-### Added
-
-- **schema-pbta v5 playbook workflow.** Lantern now consumes the immutable v5 contract, applies
-  creation choices to editable attributes and stat profiles, and renders persistent acquisition
-  checklists for generic, Urban Shadows, and Monsterhearts playbooks.
-
-### Changed
-
-- **PbtA contract conformance.** Generic playbooks now cover the published Salvage Run witness,
-  preserving v5 acquisition, creation, and stat-profile data through TOML round trips.
-
-## [v0.12.0] - 2026-09-17
-
-### Added
-
-- **schema-pbta v4 specialized playbooks.** Masks, Monster of the Week and The Sprawl now open,
-  edit, preview and export as their own canonical TOML targets. Monsterhearts and Urban Shadows
-  now include the v4 editorial regions.
-
-### Changed
-
-- **PbtA contract conformance.** Lantern consumes the immutable `schema-pbta v4.0.0` release and
-  asserts every canonical specialized playbook witness through its matching template module.
-
-## [v0.11.1] - 2026-09-17
-
-### Changed
-
-- **Editor and workspace maintenance.** Legacy challenge migration now stays behind a
-  workspace-owned adapter, while the Legend in the Mist threats editor is split into focused,
-  sortable panels without changing its routes or deep links.
+  longer use raw JSON as their normal editor surface.
+- **Editor and workspace maintenance.** Legacy challenge migration stays behind the workspace
+  adapter, and the Legend in the Mist threats editor is decomposed into sortable focused panels.
 
 ### Fixed
 
-- **Structured playbook JSON feedback.** Monsterhearts and Urban Shadows editors retain invalid
-  drafts and display their parse error instead of silently discarding the attempted update.
-
-## [v0.11.0] - 2026-09-17
-
-### Added
-
-- **Monsterhearts specialized skins.** Dedicated schema-backed Monsterhearts playbooks now support
-  strings, conditions, sex moves, darkest selves, backstories, advances and harm through the
-  local-first TOML and PNG workflow.
-
-## [v0.10.0] - 2026-09-17
-
-### Added
-
-- **Urban Shadows specialized Playbooks.** A dedicated, schema-backed Urban Shadows sheet now
-  supports Circles and statuses, mortal relationships, harm, scars, corruption, end moves, moves,
-  creation, gear and advancement through local-first TOML and PNG workflows.
-
-## [v0.9.0] - 2026-09-16
-
-### Added
-
-- **Adrenaline System templates.** Player characters, NPCs and monsters now have dedicated,
-  schema-backed forms, themed printable previews, TOML import/export and PNG export. The monster
-  sheet includes alternate states plus contagion vectors and modulations; all three targets are
-  covered by Lantern's contract assertion harness.
-
-## [v0.8.0] - 2026-09-16
-
-### Added
-
-- **Direct TOML copying from the Export panel.** TOML is now the primary action: Lantern copies
-  the current document, shows the exact generated text in a scrollable, selectable block, and
-  keeps file download as a secondary action. The Obsidian-compatible fallback copies through a
-  temporary selected textarea when its Clipboard API denies access.
+- **Playbook JSON drafts.** Specialized playbook editors retain invalid drafts and show parse
+  feedback instead of silently discarding attempted edits.
 
 ## [v0.7.1] - 2026-09-12
 
