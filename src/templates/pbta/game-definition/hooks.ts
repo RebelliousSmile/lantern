@@ -2,7 +2,6 @@ import { useActiveTemplateTab } from '@/core/workspace/selectors'
 import { cloneValue } from '@/utils/clone'
 import { getActiveTab, useWorkspaceStore } from '@/core/workspace/store'
 import type { WorkspaceTab } from '@/core/workspace/types'
-import { PBTA_GAME_DEFINITION_TEMPLATE_ID } from '../shared/gameDefinition'
 import type {
     CharacterSection,
     FrontsSection,
@@ -29,7 +28,7 @@ type GameDefinitionTab = WorkspaceTab<
     GameDefinitionSheetState
 >
 
-const TEMPLATE_ID = PBTA_GAME_DEFINITION_TEMPLATE_ID
+const TEMPLATE_ID = 'pbta.gameDefinition'
 const fallbackGameDefinition = blankGameDefinition()
 const fallbackView = cloneValue(defaultGameDefinitionView)
 

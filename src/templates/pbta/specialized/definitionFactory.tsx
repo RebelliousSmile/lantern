@@ -6,6 +6,7 @@ import { inferObject } from '@/core/editor-schema/inferSchema'
 import type { AnyTemplateDefinition } from '@/core/templates/types'
 import { useActiveTemplateTab } from '@/core/workspace/selectors'
 import { useWorkspaceStore } from '@/core/workspace/store'
+import './specializedPlaybookTheme.css'
 
 type Document = Record<string, unknown>
 type View = { hidden: Record<string, boolean>; previewWidth: number }
@@ -20,12 +21,116 @@ type Config = {
     blank: Document
 }
 
+function humanize(label: string) {
+    return label.replace(/([a-z])([A-Z])/g, '$1 $2')
+}
+
+function EditorialSection({ value }: { value: Record<string, unknown> }) {
+    const heading = typeof value.heading === 'string' ? value.heading : null
+    const paragraphs = Array.isArray(value.paragraphs)
+        ? value.paragraphs.filter(
+              (paragraph): paragraph is string => typeof paragraph === 'string'
+          )
+        : []
+
+    if (!heading && !paragraphs.length) return null
+
+    return (
+        <div className="pbta-specialized-editorial-section">
+            {heading && <h3>{heading}</h3>}
+            {paragraphs.map((paragraph, index) => (
+                <p key={`${paragraph}-${index}`}>{paragraph}</p>
+            ))}
+        </div>
+    )
+}
+
+function PlaybookValue({ value }: { value: unknown }) {
+    if (value == null)
+        return <p className="pbta-specialized-empty">None yet.</p>
+    if (typeof value === 'string' || typeof value === 'number')
+        return <p>{value}</p>
+    if (typeof value === 'boolean') return <p>{value ? 'Yes' : 'No'}</p>
+
+    if (Array.isArray(value)) {
+        if (!value.length)
+            return <p className="pbta-specialized-empty">None yet.</p>
+        return (
+            <ul className="pbta-specialized-checklist">
+                {value.map((item, index) => (
+                    <li key={index}>
+                        <PlaybookValue value={item} />
+                    </li>
+                ))}
+            </ul>
+        )
+    }
+
+    if (typeof value === 'object') {
+        const entries = Object.entries(value as Record<string, unknown>)
+        if (!entries.length)
+            return <p className="pbta-specialized-empty">None yet.</p>
+        if ('heading' in value || 'paragraphs' in value)
+            return <EditorialSection value={value as Record<string, unknown>} />
+
+        const record = value as Record<string, unknown>
+        const name =
+            typeof record.name === 'string'
+                ? record.name
+                : typeof record.label === 'string'
+                  ? record.label
+                  : null
+        const description =
+            typeof record.description === 'string' ? record.description : null
+        if (name) {
+            const details = entries.filter(
+                ([key, item]) =>
+                    key !== 'name' &&
+                    key !== 'label' &&
+                    key !== 'description' &&
+                    item != null &&
+                    item !== '' &&
+                    (!Array.isArray(item) || item.length > 0)
+            )
+            return (
+                <div className="pbta-specialized-entry">
+                    <h3>{name}</h3>
+                    {description && <p>{description}</p>}
+                    {details.length > 0 && (
+                        <div className="pbta-specialized-details">
+                            {details.map(([key, item]) => (
+                                <div key={key}>
+                                    <h4>{humanize(key)}</h4>
+                                    <PlaybookValue value={item} />
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            )
+        }
+
+        return (
+            <div className="pbta-specialized-fields">
+                {entries.map(([key, item]) => (
+                    <div key={key}>
+                        <h3>{humanize(key)}</h3>
+                        <PlaybookValue value={item} />
+                    </div>
+                ))}
+            </div>
+        )
+    }
+
+    return null
+}
+
 export function createSpecializedPlaybookTemplate(
     config: Config
 ): AnyTemplateDefinition {
     const clone = <T,>(value: T): T => structuredClone(value)
     const defaultView = (): View => ({
-        previewWidth: 620,
+        previewWidth: 1123,
         hidden: Object.fromEntries(
             config.sections.map(({ id }) => [id, false])
         ),
@@ -64,12 +169,14 @@ export function createSpecializedPlaybookTemplate(
         const tab = useTab()
         const view = { ...defaultView(), ...(tab?.view ?? {}) }
         return (
-            <div className="pbta-card">
-                <article className="p-4 space-y-3">
-                    <button type="button" onClick={() => open('basic')}>
-                        <h1 className="text-xl font-bold">
-                            {String(doc.name ?? config.label)}
-                        </h1>
+            <div className="pbta-card pbta-specialized-playbook">
+                <article className="pbta-specialized-sheet">
+                    <button
+                        type="button"
+                        className="pbta-specialized-header"
+                        onClick={() => open('basic')}
+                    >
+                        <h1>{String(doc.name ?? config.label)}</h1>
                         <p>{String(doc.description ?? '')}</p>
                     </button>
                     {config.sections.map(
@@ -77,22 +184,20 @@ export function createSpecializedPlaybookTemplate(
                             !view.hidden[section.id] && (
                                 <section
                                     key={section.id}
-                                    className="border-t pt-2"
+                                    className={`pbta-specialized-section pbta-specialized-section--${section.id}`}
                                 >
                                     <button
                                         type="button"
-                                        className="font-semibold"
+                                        className="pbta-specialized-section-title"
                                         onClick={() => open(section.id)}
                                     >
                                         {section.label}
                                     </button>
-                                    <pre className="mt-1 whitespace-pre-wrap text-xs">
-                                        {JSON.stringify(
-                                            doc[section.id],
-                                            null,
-                                            2
-                                        )}
-                                    </pre>
+                                    <div className="pbta-specialized-content">
+                                        <PlaybookValue
+                                            value={doc[section.id]}
+                                        />
+                                    </div>
                                 </section>
                             )
                     )}

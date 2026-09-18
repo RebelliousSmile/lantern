@@ -10,7 +10,6 @@ import {
     defaultView,
     sections,
     type MonsterheartsPlaybook,
-    type ViewState,
 } from './model'
 import { MonsterheartsPlaybookPreview } from './preview/MonsterheartsPlaybookPreview'
 import { getSampleMonsterheartsPlaybook } from './sample'
@@ -51,7 +50,7 @@ const template: AnyTemplateDefinition = {
         renderPanel: () => <MonsterheartsPlaybookEditorPanel />,
     },
     appearance: {
-        getPreviewWidth: (v: ViewState) => v.previewWidth,
+        getPreviewWidth: () => 1123,
         renderPanel: () => <MonsterheartsPlaybookAppearancePanel />,
     },
     export: {

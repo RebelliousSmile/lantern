@@ -1,0 +1,167 @@
+@import '../shared/tokens.css';
+
+.pbta-card.pbta-specialized-playbook {
+    width: 1123px;
+    min-height: 794px;
+}
+
+.pbta-specialized-playbook .pbta-specialized-sheet {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.1rem 1.5rem;
+    padding: 1.5rem;
+}
+
+.pbta-specialized-playbook .pbta-specialized-header,
+.pbta-specialized-playbook .pbta-specialized-section-title {
+    cursor: pointer;
+    text-align: left;
+}
+
+.pbta-specialized-playbook .pbta-specialized-header {
+    grid-column: 1 / -1;
+    border-bottom: 3px solid var(--pbta-ink);
+    padding-bottom: 0.75rem;
+    text-align: center;
+}
+
+.pbta-specialized-playbook .pbta-specialized-header h1 {
+    margin: 0;
+    font-size: 2.6rem;
+    line-height: 0.9;
+    font-family: var(--pbta-font-display);
+    letter-spacing: 0.035em;
+    text-transform: uppercase;
+}
+
+.pbta-specialized-playbook .pbta-specialized-header p {
+    margin: 0.45rem 0 0;
+    font-size: 0.95rem;
+}
+
+.pbta-specialized-playbook .pbta-specialized-section {
+    border-top: 2px solid var(--pbta-accent);
+    padding-top: 0.35rem;
+    min-width: 0;
+}
+
+.pbta-specialized-playbook .pbta-specialized-section--editorial {
+    grid-column: 1 / -1;
+}
+
+.pbta-specialized-playbook .pbta-specialized-section-title {
+    width: 100%;
+    color: var(--pbta-ink-soft);
+    font-weight: 900;
+    font-size: 0.75rem;
+    font-family: var(--pbta-font-label);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+}
+
+.pbta-specialized-playbook .pbta-specialized-content {
+    margin-top: 0.45rem;
+    font-size: 0.9rem;
+    line-height: 1.35;
+}
+
+.pbta-specialized-playbook .pbta-specialized-content p {
+    margin: 0;
+}
+
+.pbta-specialized-playbook .pbta-specialized-empty {
+    color: var(--pbta-ink-faint);
+    font-style: italic;
+}
+
+.pbta-specialized-playbook .pbta-specialized-checklist {
+    display: grid;
+    gap: 0.42rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.pbta-specialized-playbook .pbta-specialized-checklist > li {
+    position: relative;
+    padding-left: 1.4rem;
+    min-height: 1.15rem;
+}
+
+.pbta-specialized-playbook .pbta-specialized-checklist > li::before {
+    position: absolute;
+    top: 0.18rem;
+    left: 0;
+    box-sizing: border-box;
+    border: 1px solid var(--pbta-ink-soft);
+    width: 0.75rem;
+    height: 0.75rem;
+    content: '';
+}
+
+.pbta-specialized-playbook .pbta-specialized-fields {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(5rem, 1fr));
+    gap: 0.55rem;
+}
+
+.pbta-specialized-playbook .pbta-specialized-fields h3,
+.pbta-specialized-playbook .pbta-specialized-details h4 {
+    margin: 0 0 0.1rem;
+    color: var(--pbta-ink-soft);
+    font-weight: 900;
+    font-size: 0.65rem;
+    font-family: var(--pbta-font-label);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.pbta-specialized-playbook .pbta-specialized-entry + .pbta-specialized-entry {
+    margin-top: 0.75rem;
+}
+
+.pbta-specialized-playbook .pbta-specialized-entry h3,
+.pbta-specialized-playbook .pbta-specialized-editorial-section h3 {
+    margin: 0 0 0.2rem;
+    font-weight: 900;
+    font-size: 1rem;
+    font-family: var(--pbta-font-label);
+}
+
+.pbta-specialized-playbook .pbta-specialized-details {
+    display: grid;
+    gap: 0.4rem;
+    margin-top: 0.45rem;
+}
+
+.pbta-specialized-playbook
+    .pbta-specialized-editorial-section
+    + .pbta-specialized-editorial-section {
+    margin-top: 0.8rem;
+}
+
+.pbta-specialized-playbook .pbta-specialized-editorial-section p + p {
+    margin-top: 0.3rem;
+}
+
+@media (max-width: 680px) {
+    .pbta-card.pbta-specialized-playbook {
+        width: 100%;
+        min-height: 0;
+    }
+
+    .pbta-specialized-playbook .pbta-specialized-sheet {
+        grid-template-columns: 1fr;
+        padding: 1rem;
+    }
+
+    .pbta-specialized-playbook .pbta-specialized-section--editorial {
+        grid-column: auto;
+    }
+}
+
+@media print {
+    .pbta-card.pbta-specialized-playbook {
+        box-shadow: none;
+    }
+}

@@ -1,34 +1,137 @@
 .monsterhearts-doc {
-    color: #2b162a;
-    font-family: Georgia, serif;
+    color: #221c20;
+    font-family: 'PT Serif', Georgia, serif;
 }
 .monsterhearts-doc .monsterhearts-sheet {
-    border: 2px solid #71285d;
-    background: #fff4fb;
-    padding: 1.25rem;
-    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.2rem 1.8rem;
+    box-sizing: border-box;
+    background: #fff;
+    padding: 1.5rem;
+    width: 1123px;
+    min-height: 794px;
 }
 .monsterhearts-doc button {
     cursor: pointer;
     border: 0;
     background: transparent;
+    padding: 0;
     width: 100%;
     color: inherit;
     text-align: left;
 }
-.monsterhearts-doc h1,
-.monsterhearts-doc section > button {
-    font-family: Impact, sans-serif;
-    letter-spacing: 0.06em;
+.monsterhearts-doc .mh-header {
+    grid-column: 1 / -1;
+    border-bottom: 1px solid currentColor;
+    padding-bottom: 0.7rem;
+    text-align: center;
+}
+.monsterhearts-doc .mh-header h1,
+.monsterhearts-doc h2 {
+    margin: 0;
+    font-weight: 400;
+}
+.monsterhearts-doc .mh-header h1 {
+    font-size: 2.2rem;
+    letter-spacing: 0.04em;
     text-transform: uppercase;
 }
-.monsterhearts-doc section {
-    margin-top: 0.75rem;
-    border-top: 1px solid #a9528b;
-    padding-top: 0.5rem;
+.monsterhearts-doc .mh-header p {
+    margin: 0.35rem 0 0;
+    font-style: italic;
 }
-.monsterhearts-doc pre {
-    margin: 0.35rem 0;
-    font: inherit;
-    white-space: pre-wrap;
+.monsterhearts-doc .mh-column {
+    min-width: 0;
+}
+.monsterhearts-doc .mh-section-title {
+    margin-bottom: 0.5rem;
+    font-size: 1.25rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+.monsterhearts-doc .mh-actions article + article,
+.monsterhearts-doc .mh-editorial + .mh-editorial,
+.monsterhearts-doc .mh-stat-block + .mh-stat-block {
+    margin-top: 0.95rem;
+}
+.monsterhearts-doc .mh-actions h2,
+.monsterhearts-doc .mh-editorial h2,
+.monsterhearts-doc .mh-stat-block h2 {
+    margin-bottom: 0.35rem;
+    font-size: 1.15rem;
+    line-height: 1.05;
+}
+.monsterhearts-doc p {
+    margin: 0.35rem 0 0;
+    font-size: 0.95rem;
+    line-height: 1.33;
+}
+.monsterhearts-doc .mh-editorial h2 {
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+}
+.monsterhearts-doc .mh-actions + .mh-editorial {
+    margin-top: 1.2rem;
+}
+.monsterhearts-doc .mh-stat-block {
+    border-top: 1px solid currentColor;
+    padding-top: 0.35rem;
+}
+.monsterhearts-doc .mh-checklist {
+    display: grid;
+    gap: 0.3rem;
+    margin: 0.35rem 0 0;
+    padding: 0;
+    list-style: none;
+}
+.monsterhearts-doc .mh-checklist li {
+    position: relative;
+    padding-left: 1.2rem;
+    line-height: 1.25;
+}
+.monsterhearts-doc .mh-checklist li::before,
+.monsterhearts-doc .mh-harm span {
+    box-sizing: border-box;
+    border: 1px solid currentColor;
+    width: 0.75rem;
+    height: 0.75rem;
+}
+.monsterhearts-doc .mh-checklist li::before {
+    position: absolute;
+    top: 0.25rem;
+    left: 0;
+    content: '';
+}
+.monsterhearts-doc .mh-checklist span {
+    display: block;
+    font-size: 0.85rem;
+}
+.monsterhearts-doc .mh-harm {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin-top: 1.2rem;
+    font-size: 1.1rem;
+    text-transform: uppercase;
+}
+.monsterhearts-doc .mh-harm span.is-marked {
+    background: currentColor;
+}
+.monsterhearts-doc .mh-empty {
+    color: #746b71;
+    font-style: italic;
+}
+@media (max-width: 680px) {
+    .monsterhearts-doc .monsterhearts-sheet {
+        grid-template-columns: 1fr;
+        padding: 1rem;
+        width: 100%;
+        min-height: 0;
+    }
+}
+@media print {
+    .monsterhearts-doc .monsterhearts-sheet {
+        box-shadow: none;
+    }
 }

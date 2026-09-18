@@ -1,6 +1,25 @@
 import type { MonsterheartsPlaybook as Published } from 'schema-pbta'
 
-export type MonsterheartsPlaybook = Published
+export type EditorialBlock = { heading: string; paragraphs: string[] }
+export type MonsterheartsEditorial = Record<
+    | 'opening'
+    | 'playAdvice'
+    | 'identity'
+    | 'progression'
+    | 'darkestSelf'
+    | 'sexMove'
+    | 'mcGuidance',
+    EditorialBlock
+>
+export type MonsterheartsPlaybook = Omit<
+    Published,
+    'strings' | 'conditions' | 'harm'
+> & {
+    strings: { max: number; starting: number }
+    conditions: Array<{ name: string; description?: string }>
+    harm: number
+    editorial: MonsterheartsEditorial
+}
 export type SectionId =
     | 'strings'
     | 'conditions'
@@ -27,7 +46,7 @@ export const sections: Array<{ id: SectionId; label: string }> = [
 ]
 export const defaultView: ViewState = {
     zoom: 1,
-    previewWidth: 600,
+    previewWidth: 1123,
     hidden: Object.fromEntries(sections.map(({ id }) => [id, false])) as Record<
         SectionId,
         boolean
