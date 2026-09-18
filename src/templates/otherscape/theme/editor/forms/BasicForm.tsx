@@ -1,6 +1,6 @@
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+import { SegmentedRadioGroup } from '@/components/ui/segmented-radio-group'
 import { useOtherscapeThemeStore, type ThemeType } from '../../hooks'
 import { QUEST_LABEL, THEME_TYPE_LABEL } from '../../model'
 
@@ -29,26 +29,16 @@ export default function BasicForm() {
 
             <div className="grid gap-1">
                 <Label>Theme type</Label>
-                <RadioGroup
+                <SegmentedRadioGroup
+                    id="os-theme-type"
                     value={otherscapeTheme.theme_type}
                     onValueChange={(value) => setThemeType(value as ThemeType)}
-                    className="flex flex-wrap items-center gap-3"
-                >
-                    {THEME_TYPES.map((themeType) => (
-                        <label
-                            key={themeType}
-                            className="flex cursor-pointer items-center gap-2"
-                        >
-                            <RadioGroupItem
-                                value={themeType}
-                                id={`os-theme-type-${themeType}`}
-                            />
-                            <span className="text-xs">
-                                {THEME_TYPE_LABEL[themeType]}
-                            </span>
-                        </label>
-                    ))}
-                </RadioGroup>
+                    options={THEME_TYPES.map((value) => ({
+                        value,
+                        label: THEME_TYPE_LABEL[value],
+                    }))}
+                    ariaLabel="Theme type"
+                />
                 <p className="text-xs text-muted-foreground">
                     Sets the card's colour and what its quest is called:{' '}
                     {QUEST_LABEL[otherscapeTheme.theme_type]} for a{' '}

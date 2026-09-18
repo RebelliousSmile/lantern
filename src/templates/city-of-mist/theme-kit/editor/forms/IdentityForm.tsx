@@ -1,7 +1,6 @@
-import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { cn } from '@/utils/cn'
+import { SegmentedRadioGroup } from '@/components/ui/segmented-radio-group'
 import { useCityOfMistThemeKitStore, type ThemeType } from '../../hooks'
 import StringListInput from './StringListInput'
 
@@ -38,28 +37,13 @@ export default function IdentityForm() {
             </div>
             <div className="grid gap-1">
                 <Label>Theme type</Label>
-                <div className="grid grid-cols-4 overflow-hidden rounded-md border">
-                    {TYPES.map((type) => (
-                        <Button
-                            key={type.value}
-                            type="button"
-                            variant={
-                                cityOfMistThemeKit.theme_type === type.value
-                                    ? 'default'
-                                    : 'ghost'
-                            }
-                            className={cn(
-                                'h-8 rounded-none border-none px-1 text-xs',
-                                cityOfMistThemeKit.theme_type === type.value
-                                    ? ''
-                                    : 'bg-background'
-                            )}
-                            onClick={() => setThemeType(type.value)}
-                        >
-                            {type.label}
-                        </Button>
-                    ))}
-                </div>
+                <SegmentedRadioGroup
+                    id="theme-kit-type"
+                    value={cityOfMistThemeKit.theme_type}
+                    onValueChange={(value) => setThemeType(value as ThemeType)}
+                    options={TYPES}
+                    ariaLabel="Theme type"
+                />
                 <p className="text-xs text-muted-foreground">
                     The type decides the banner and how the motivation zone is
                     named. Switching it renames the zone without touching what
