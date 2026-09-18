@@ -288,6 +288,12 @@ export function MonsterheartsPlaybookEditorPanel() {
     }
     if (sheet.target === 'moves')
         return <MonsterheartsCollection path="moves" />
+    if (
+        sheet.target === 'conditions' ||
+        sheet.target === 'advancement' ||
+        sheet.target === 'advances'
+    )
+        return <MonsterheartsCollection path={sheet.target} />
     const key = sheet.target
     const value = (playbook as Record<string, unknown>)[key]
     return (

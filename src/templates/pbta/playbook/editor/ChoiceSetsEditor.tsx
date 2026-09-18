@@ -41,9 +41,13 @@ function blankChoiceSet(): ChoiceSet {
 function ChoiceEntriesEditor({
     value,
     onChange,
+    allowAddRemove,
+    allowReorder,
 }: {
     value: ChoiceEntry[]
     onChange: (next: ChoiceEntry[]) => void
+    allowAddRemove: boolean
+    allowReorder: boolean
 }) {
     function updateAt(index: number, entry: ChoiceEntry) {
         onChange(value.map((current, i) => (i === index ? entry : current)))
@@ -138,7 +142,7 @@ function ChoiceEntriesEditor({
                             placeholder="advancement"
                         />
                         <div className="flex-1" />
-                        <Button
+                        {allowReorder && <Button
                             type="button"
                             variant="ghost"
                             size="icon-sm"
@@ -147,8 +151,8 @@ function ChoiceEntriesEditor({
                             onClick={() => moveAt(index, -1)}
                         >
                             <ChevronUp className="h-3.5 w-3.5" />
-                        </Button>
-                        <Button
+                        </Button>}
+                        {allowReorder && <Button
                             type="button"
                             variant="ghost"
                             size="icon-sm"
@@ -157,8 +161,8 @@ function ChoiceEntriesEditor({
                             onClick={() => moveAt(index, 1)}
                         >
                             <ChevronDown className="h-3.5 w-3.5" />
-                        </Button>
-                        <Button
+                        </Button>}
+                        {allowAddRemove && <Button
                             type="button"
                             variant="ghost"
                             size="icon-sm"
@@ -167,7 +171,7 @@ function ChoiceEntriesEditor({
                             onClick={() => removeAt(index)}
                         >
                             <X className="h-3.5 w-3.5" />
-                        </Button>
+                        </Button>}
                     </div>
 
                     {entry.kind === 'ref' ? (
@@ -192,7 +196,7 @@ function ChoiceEntriesEditor({
                     )}
                 </div>
             ))}
-            <Button
+            {allowAddRemove && <Button
                 type="button"
                 variant="secondary"
                 size="sm"
@@ -210,7 +214,7 @@ function ChoiceEntriesEditor({
                 }
             >
                 Add choice
-            </Button>
+            </Button>}
         </div>
     )
 }
@@ -218,13 +222,24 @@ function ChoiceEntriesEditor({
 export type ChoiceSetsEditorProps = {
     value: ChoiceSet[]
     onChange: (next: ChoiceSet[]) => void
+    allowAddRemove?: boolean
+    allowReorder?: boolean
+    allowChoiceAddRemove?: boolean
+    allowChoiceReorder?: boolean
 }
 
 /* Array of structured objects, following ClockPresetsEditor's move-up/down
    pattern. Each choice set nests its own ChoiceEntry[] list, which in turn
    reuses MoveInlineFields for its inline branch - the same body as a move,
    plus granted/advancement. */
-export function ChoiceSetsEditor({ value, onChange }: ChoiceSetsEditorProps) {
+export function ChoiceSetsEditor({
+    value,
+    onChange,
+    allowAddRemove = true,
+    allowReorder = true,
+    allowChoiceAddRemove = true,
+    allowChoiceReorder = true,
+}: ChoiceSetsEditorProps) {
     function updateAt(index: number, entry: ChoiceSet) {
         onChange(value.map((current, i) => (i === index ? entry : current)))
     }
@@ -294,7 +309,7 @@ export function ChoiceSetsEditor({ value, onChange }: ChoiceSetsEditorProps) {
                                 Multi
                             </button>
                         </div>
-                        <Button
+                        {allowReorder && <Button
                             type="button"
                             variant="ghost"
                             size="icon-sm"
@@ -303,8 +318,8 @@ export function ChoiceSetsEditor({ value, onChange }: ChoiceSetsEditorProps) {
                             onClick={() => moveAt(index, -1)}
                         >
                             <ChevronUp className="h-3.5 w-3.5" />
-                        </Button>
-                        <Button
+                        </Button>}
+                        {allowReorder && <Button
                             type="button"
                             variant="ghost"
                             size="icon-sm"
@@ -313,8 +328,8 @@ export function ChoiceSetsEditor({ value, onChange }: ChoiceSetsEditorProps) {
                             onClick={() => moveAt(index, 1)}
                         >
                             <ChevronDown className="h-3.5 w-3.5" />
-                        </Button>
-                        <Button
+                        </Button>}
+                        {allowAddRemove && <Button
                             type="button"
                             variant="ghost"
                             size="icon-sm"
@@ -323,7 +338,7 @@ export function ChoiceSetsEditor({ value, onChange }: ChoiceSetsEditorProps) {
                             onClick={() => removeAt(index)}
                         >
                             <X className="h-3.5 w-3.5" />
-                        </Button>
+                        </Button>}
                     </div>
 
                     <Textarea
@@ -377,6 +392,8 @@ export function ChoiceSetsEditor({ value, onChange }: ChoiceSetsEditorProps) {
                         </Label>
                         <ChoiceEntriesEditor
                             value={choiceSet.choices}
+                            allowAddRemove={allowChoiceAddRemove}
+                            allowReorder={allowChoiceReorder}
                             onChange={(choices) =>
                                 updateAt(index, { ...choiceSet, choices })
                             }
@@ -384,7 +401,7 @@ export function ChoiceSetsEditor({ value, onChange }: ChoiceSetsEditorProps) {
                     </div>
                 </div>
             ))}
-            <Button
+            {allowAddRemove && <Button
                 type="button"
                 variant="secondary"
                 size="sm"
@@ -392,7 +409,7 @@ export function ChoiceSetsEditor({ value, onChange }: ChoiceSetsEditorProps) {
                 onClick={() => onChange([...value, blankChoiceSet()])}
             >
                 Add choice set
-            </Button>
+            </Button>}
         </div>
     )
 }

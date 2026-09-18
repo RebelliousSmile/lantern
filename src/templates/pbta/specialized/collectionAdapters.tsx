@@ -6,6 +6,7 @@ import { inferObject } from '@/core/editor-schema/inferSchema'
 import { ChevronDown, ChevronUp, X } from 'lucide-react'
 import {
     PBTA_COLLECTION_ITEM_EDITORS,
+    getPbtaCollectionPresentation,
     type PbtaCollectionItemEditor,
     type PbtaCollectionPresentation,
 } from 'schema-pbta'
@@ -19,14 +20,41 @@ export type CollectionAdapterProps = {
     onChange: (items: unknown[]) => void
 }
 
-function blankItem(editor: PbtaCollectionItemEditor): unknown {
+function blankItem(editor: PbtaCollectionItemEditor, items: unknown[]): unknown {
     switch (editor) {
         case 'pbta-move':
+            if (
+                items.some(
+                    (item) =>
+                        item &&
+                        typeof item === 'object' &&
+                        !('kind' in item)
+                )
+            )
+                return {
+                    name: 'New Move',
+                    moveType: 'move',
+                    description: 'Describe this move.',
+                }
             return { kind: 'inline', name: 'New Move', moveType: 'move', description: 'Describe this move.' }
         case 'pbta-choice-set':
             return { title: 'New Choice Set', type: 'single', choices: [] }
         case 'pbta-advancement':
             return { label: 'New advancement' }
+        case 'pbta-ascendant':
+            return { name: 'New Ascendant', value: 0 }
+        case 'pbta-condition':
+            return { name: 'New Condition' }
+        case 'pbta-creation-question':
+            return { label: 'New question', options: [] }
+        case 'pbta-gear':
+            return { name: 'New gear' }
+        case 'pbta-relationship':
+            return { key: 'new-relationship', label: 'New relationship' }
+        case 'pbta-scar':
+            return { name: 'New scar' }
+        case 'pbta-stat-profile':
+            return { key: 'new-profile', label: 'New profile', stats: {} }
         case 'pbta-text':
             return ''
         default:
@@ -61,7 +89,7 @@ function GenericCollectionAdapter({ presentation, items, onChange }: CollectionA
             </div>
             {typeof item === 'string' ? <Input value={item} onChange={(event) => update(index, event.target.value)} /> : item && typeof item === 'object' && !Array.isArray(item) ? <SchemaEditor schema={inferObject(presentation.label, item as Record<string, unknown>)} value={item as Record<string, unknown>} onChange={(next) => update(index, next)} /> : <p className="text-sm text-destructive">Unsupported published collection item.</p>}
         </div>)}
-        {mutable && <Button type="button" variant="secondary" size="sm" onClick={() => onChange([...items, blankItem(presentation.itemEditor)])}>Add {presentation.label}</Button>}
+        {mutable && <Button type="button" variant="secondary" size="sm" onClick={() => onChange([...items, blankItem(presentation.itemEditor, items)])}>Add {presentation.label}</Button>}
     </div>
 }
 
@@ -72,7 +100,13 @@ function MovesAdapter(props: CollectionAdapterProps) {
 }
 
 function ChoiceSetsAdapter(props: CollectionAdapterProps) {
-    return <ChoiceSetsEditor value={props.items as ChoiceSet[]} onChange={(items) => props.onChange(items)} />
+    const choices = getPbtaCollectionPresentation(
+        props.presentation.target,
+        'choiceSets[].choices'
+    )
+    if (!choices)
+        return <p className="text-sm text-destructive">Missing published choice collection configuration.</p>
+    return <ChoiceSetsEditor value={props.items as ChoiceSet[]} onChange={(items) => props.onChange(items)} allowAddRemove={props.presentation.cardinality === 'mutable'} allowReorder={props.presentation.reorder} allowChoiceAddRemove={choices.cardinality === 'mutable'} allowChoiceReorder={choices.reorder} />
 }
 
 const generic = (props: CollectionAdapterProps) => <GenericCollectionAdapter {...props} />

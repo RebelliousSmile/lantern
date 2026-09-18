@@ -29,7 +29,7 @@ export function collectionItems(
     const path = collectionPath(presentation.path)
     if (!path) return null
     const value = getAtPath(document, path)
-    return Array.isArray(value) ? value : null
+    return value === undefined ? [] : Array.isArray(value) ? value : null
 }
 
 export function replaceCollectionItems(
