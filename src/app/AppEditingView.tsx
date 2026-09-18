@@ -1,6 +1,4 @@
 import { Button } from '@/components/ui/button'
-import { TemplateInspector } from '@/core/templates/shell/TemplateInspector'
-import { cn } from '@/utils/cn'
 import type { ReactNode } from 'react'
 
 type AppEditingViewProps = {
@@ -39,16 +37,6 @@ export default function AppEditingView({
                 {templatePreview}
             </div>
 
-            <div
-                className={cn(
-                    'md:hidden',
-                    mobileInspectorOpen ? 'block' : 'hidden'
-                )}
-            >
-                <div className="max-h-[75vh] overflow-hidden rounded-lg border bg-background">
-                    <TemplateInspector />
-                </div>
-            </div>
         </div>
     )
 }

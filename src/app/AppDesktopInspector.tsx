@@ -32,7 +32,7 @@ export default function AppDesktopInspector({
                 variant="floating"
                 collapsible="offcanvas"
                 withGap={false}
-                className="z-30 hidden !top-16 !bottom-auto !h-auto !max-h-[calc(100svh-8rem)] md:flex [--sidebar-width:22rem]"
+                className="z-30 !top-16 !bottom-auto !h-auto !max-h-[calc(100svh-8rem)] [--sidebar-width:22rem]"
             >
                 <TemplateInspector />
             </Sidebar>

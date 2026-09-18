@@ -16,6 +16,7 @@ import {
 import { ChallengePreview } from './preview/ChallengePreview'
 import { getSampleLegendInTheMistChallenge } from './sample'
 import { exportToTOML, importFromTOMLWithWarnings } from './toml'
+import { migrateLegacyChallengeWorkspace } from './legacyWorkspaceMigration'
 
 function cloneValue<T>(value: T): T {
     if (typeof structuredClone === 'function') {
@@ -39,6 +40,10 @@ const challengeTemplate: AnyTemplateDefinition = {
         cloneValue(defaultLegendInTheMistChallengeSheetState),
     getTabTitle: (doc: LegendInTheMistChallenge) =>
         doc.name.trim() || 'Challenge',
+    legacyWorkspaceMigration: {
+        storageKey: 'litm:challenge:v2',
+        migrate: migrateLegacyChallengeWorkspace,
+    },
     sections: challengeSections,
     landing: {
         description:

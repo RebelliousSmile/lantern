@@ -30,12 +30,14 @@ export default function App() {
                         activeTab={shell.activeTab}
                         activeTemplate={shell.activeTemplate}
                         hydrated={shell.hydrated}
-                        mobileInspectorOpen={ui.mobileInspectorOpen}
+                        mobileInspectorOpen={ui.desktopInspectorOpen}
                         templatePreview={shell.templatePreview}
                         onOpenImport={() => ui.setImportOpen(true)}
                         onStartBlank={shell.startEditingBlank}
                         onStartExample={shell.startEditingWithExample}
-                        onToggleMobileInspector={ui.toggleMobileInspector}
+                        onToggleMobileInspector={() =>
+                            ui.setDesktopInspectorOpen(!ui.desktopInspectorOpen)
+                        }
                     />
                 </main>
             </div>

@@ -1,13 +1,9 @@
-import type { LegendInTheMistChallenge as LegendInTheMistChallengeData } from '@/contracts/mist-engine'
-import { documentContracts } from '@/contracts/registry'
-import { templateById } from '@/core/templates/registry'
-import { normalizeLegacyChallenge } from './legacyMigration'
+import { templateById, templateRegistry } from '@/core/templates/registry'
 import { create } from 'zustand'
 import type { TemplateMode } from '../templates/types'
 import type { AnyWorkspaceTab, WorkspaceSnapshot, WorkspaceTab } from './types'
 
 const WORKSPACE_STORAGE_KEY = 'mist:workspace:v1'
-const LEGACY_CHALLENGE_KEY = 'litm:challenge:v2'
 
 type WorkspaceState = {
     tabs: WorkspaceTab[]
@@ -29,7 +25,6 @@ type WorkspaceState = {
     setTabSheet: (tabId: string, sheet: unknown) => void
 
     hydrateWorkspace: () => void
-    persistWorkspace: () => void
 }
 
 function createTabId() {
@@ -114,46 +109,34 @@ function migrateLegacyChallenge(): WorkspaceSnapshot | null {
     if (typeof window === 'undefined') return null
 
     try {
-        const rawLegacy = window.localStorage.getItem(LEGACY_CHALLENGE_KEY)
+        const template = templateRegistry.find((entry) => {
+            const migration = entry.legacyWorkspaceMigration
+            return migration && window.localStorage.getItem(migration.storageKey)
+        })
+        const migration = template?.legacyWorkspaceMigration
+        if (!template || !migration) return null
+        const rawLegacy = window.localStorage.getItem(migration.storageKey)
         if (!rawLegacy) return null
-
-        const parsed = JSON.parse(rawLegacy) as {
-            version?: number
-            data?: unknown
-        }
-        const legacyData = parsed?.data
-        /*
-         * The one place `core/` validates a document itself. It reads the schema
-         * off the registry rather than off the template's own re-export, so the
-         * legacy migration and the Challenge module share a single contract.
-         */
-        const validated = documentContracts
-            .require<LegendInTheMistChallengeData>(
-                'mist/legend-in-the-mist/challenge'
-            )
-            .schema.safeParse(legacyData)
-        if (!validated.success) return null
-
-        const template = templateById.get('legend.challenge')
-        if (!template) return null
+        const doc = migration.migrate(JSON.parse(rawLegacy))
+        if (!doc) return null
 
         const now = Date.now()
         const tabId = createTabId()
-        const doc = cloneValue(normalizeLegacyChallenge(validated.data))
+        const clonedDoc = cloneValue(doc)
 
         const migratedTab: AnyWorkspaceTab = {
             id: tabId,
             templateId: template.id,
-            title: template.getTabTitle(doc),
+            title: template.getTabTitle(clonedDoc),
             mode: 'editing',
             createdAt: now,
             updatedAt: now,
-            doc,
+            doc: clonedDoc,
             view: cloneValue(template.createInitialView()),
             sheet: cloneValue(template.createInitialSheet()),
         }
 
-        window.localStorage.removeItem(LEGACY_CHALLENGE_KEY)
+        window.localStorage.removeItem(migration.storageKey)
 
         return {
             version: 1,
@@ -375,10 +358,6 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => {
             set({ hydrated: true })
         },
 
-        persistWorkspace: () => {
-            const state = get()
-            persistSnapshot(state)
-        },
     }
 })
 
