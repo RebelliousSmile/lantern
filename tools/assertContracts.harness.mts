@@ -8,6 +8,13 @@ import {
     overlayCanonicalSource,
 } from '../src/contracts/mist-engine'
 import { nodeDocumentContracts } from '../src/contracts/registry.node'
+import {
+    appendAtPath,
+    getAtPath,
+    moveAtPath,
+    removeAtPath,
+    setAtPath,
+} from '../src/core/editor-schema/path'
 import { normalizeContractManifests } from './contractManifests.mjs'
 
 /*
@@ -60,9 +67,13 @@ const LANTERN_MODULES: Record<
     pbta: (target) => {
         const modules: Record<string, () => Promise<TemplateCodec>> = {
             playbook: () =>
-                import('../src/templates/pbta/playbook/toml.ts') as Promise<TemplateCodec>,
+                import(
+                    '../src/templates/pbta/playbook/toml.ts'
+                ) as Promise<TemplateCodec>,
             'salvage-run-playbook': () =>
-                import('../src/templates/pbta/playbook/toml.ts') as Promise<TemplateCodec>,
+                import(
+                    '../src/templates/pbta/playbook/toml.ts'
+                ) as Promise<TemplateCodec>,
             'monsterhearts-playbook': () =>
                 import(
                     '../src/templates/monsterhearts/playbook/toml.ts'
@@ -335,7 +346,10 @@ async function assertLinkedCreationRoundTrip(cases: NormalizedCase[]) {
                 .replace(/\\/g, '/')
                 .endsWith('corpus/contract/valid/playbook-complete.toml')
     )
-    assert.ok(witness, 'the linked creation playbook witness is not among the cases run')
+    assert.ok(
+        witness,
+        'the linked creation playbook witness is not among the cases run'
+    )
 
     const resolvePbta = LANTERN_MODULES.pbta
     assert.ok(resolvePbta, 'the PbtA Lantern module resolver is unavailable')
@@ -382,9 +396,7 @@ async function assertUrbanShadowsCreationRoundTrip(cases: NormalizedCase[]) {
     const imported = codec.importFromTOMLWithWarnings(
         fs.readFileSync(witness.file, 'utf8')
     )
-    const rendered = codec.exportToTOML(
-        imported.urbanShadowsPlaybook as never
-    )
+    const rendered = codec.exportToTOML(imported.urbanShadowsPlaybook as never)
     const parsed = parseToml(rendered) as Record<string, unknown>
 
     assert.deepStrictEqual(parsed.attributes, {
@@ -403,7 +415,8 @@ async function assertUrbanShadowsCreationRoundTrip(cases: NormalizedCase[]) {
         {
             key: 'loyal-significant-other',
             label: 'Loyal significant other',
-            description: 'Keeps choosing you when the city makes that dangerous.',
+            description:
+                'Keeps choosing you when the city makes that dangerous.',
         },
         {
             key: 'struggling-best-friend',
@@ -445,6 +458,25 @@ function assertOverlayIdentity() {
     assert.equal('__canonicalSource' in actual, false)
 }
 
+function assertEditorSchemaPaths() {
+    const source = {
+        mode: 'inline',
+        hidden: { note: 'retain me' },
+        moves: [{ name: 'First' }],
+    }
+    const renamed = setAtPath(source, ['moves', 0, 'name'], 'Renamed')
+    assert.equal(getAtPath(renamed, ['moves', 0, 'name']), 'Renamed')
+    assert.equal(getAtPath(source, ['moves', 0, 'name']), 'First')
+
+    const appended = appendAtPath(renamed, ['moves'], { name: 'Blank' })
+    assert.equal(getAtPath(appended, ['moves', 1, 'name']), 'Blank')
+    const moved = moveAtPath(appended, ['moves'], 1, 0)
+    assert.equal(getAtPath(moved, ['moves', 0, 'name']), 'Blank')
+    const removed = removeAtPath(moved, ['moves'], 0)
+    assert.equal(getAtPath(removed, ['moves', 0, 'name']), 'Renamed')
+    assert.equal(getAtPath(removed, ['hidden', 'note']), 'retain me')
+}
+
 async function main() {
     /* Handed down by the calling script: the bundle runs from a temp directory and resolves nothing. */
     const handed = process.env.LANTERN_CONTRACT_MANIFESTS
@@ -476,6 +508,7 @@ async function main() {
     await assertLinkedCreationRoundTrip(cases)
     await assertUrbanShadowsCreationRoundTrip(cases)
     assertOverlayIdentity()
+    assertEditorSchemaPaths()
 
     const perContract = [...tally.entries()].map(([contractId, counts]) => {
         const targets = nodeDocumentContracts.byContract(contractId).length
