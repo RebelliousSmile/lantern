@@ -1,8 +1,15 @@
 ---
-status: pending
+status: blocked
 ---
 
 # Instruction: Render Urban Shadows relationship creation
+
+## Blocker
+
+`schema-pbta` v5.0.0 declares the Urban Shadows schema, but its published
+canonical witness does not yet carry the required relationship catalogue,
+ListMany destination, or linked creation question. Lantern must wait for that
+published witness rather than recreating those semantics locally.
 
 ## Architecture projection
 
