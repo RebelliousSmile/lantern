@@ -3,6 +3,7 @@ import { Label } from '@/components/ui/label'
 import { documentContracts } from '@/contracts/registry'
 import { SchemaEditor } from '@/core/editor-schema/SchemaEditor'
 import { inferObject } from '@/core/editor-schema/inferSchema'
+import { getAtPath } from '@/core/editor-schema/path'
 import type { AnyTemplateDefinition } from '@/core/templates/types'
 import { useActiveTemplateTab } from '@/core/workspace/selectors'
 import { useWorkspaceStore } from '@/core/workspace/store'
@@ -15,6 +16,7 @@ import {
     collectionItems,
     replaceCollectionItems,
 } from './collectionPolicy'
+import { PBTA_COLLECTION_PRESENTATIONS } from 'schema-pbta'
 import './specializedPlaybookTheme.css'
 
 type Document = Record<string, unknown>
@@ -138,10 +140,21 @@ export function createSpecializedPlaybookTemplate(
     config: Config
 ): AnyTemplateDefinition {
     const clone = <T,>(value: T): T => structuredClone(value)
+    const target = config.contractKey.replace(
+        /^pbta\//,
+        ''
+    ) as Parameters<typeof collectionFor>[0]
+    const collectionSections = PBTA_COLLECTION_PRESENTATIONS.filter(
+        (presentation) =>
+            presentation.target === target &&
+            !presentation.path.includes('[]') &&
+            !config.sections.some(({ id }) => id === presentation.path)
+    ).map(({ path, label }) => ({ id: path, label }))
+    const sections = [...config.sections, ...collectionSections]
     const defaultView = (): View => ({
         previewWidth: 1123,
         hidden: Object.fromEntries(
-            config.sections.map(({ id }) => [id, false])
+            sections.map(({ id }) => [id, false])
         ),
     })
     const defaultSheet = (): Sheet => ({ open: false, target: null })
@@ -188,7 +201,7 @@ export function createSpecializedPlaybookTemplate(
                         <h1>{String(doc.name ?? config.label)}</h1>
                         <p>{String(doc.description ?? '')}</p>
                     </button>
-                    {config.sections.map(
+                    {sections.map(
                         (section) =>
                             !view.hidden[section.id] && (
                                 <section
@@ -204,7 +217,10 @@ export function createSpecializedPlaybookTemplate(
                                     </button>
                                     <div className="pbta-specialized-content">
                                         <PlaybookValue
-                                            value={doc[section.id]}
+                                            value={getAtPath(
+                                                doc,
+                                                section.id.split('.')
+                                            )}
                                         />
                                     </div>
                                 </section>
@@ -248,10 +264,6 @@ export function createSpecializedPlaybookTemplate(
             )
         const key = sheet.target as string
         const section = doc[key]
-        const target = config.contractKey.replace(
-            /^pbta\//,
-            ''
-        ) as Parameters<typeof collectionFor>[0]
         const presentation = collectionFor(target, key)
         if (presentation) {
             const items = collectionItems(doc, presentation)
@@ -308,7 +320,7 @@ export function createSpecializedPlaybookTemplate(
         const view = { ...defaultView(), ...(tab?.view ?? {}) }
         return (
             <div className="space-y-2">
-                {config.sections.map((section) => (
+                {sections.map((section) => (
                     <label key={section.id} className="flex items-center gap-2">
                         <input
                             type="checkbox"
@@ -342,7 +354,7 @@ export function createSpecializedPlaybookTemplate(
         createInitialView: defaultView,
         createInitialSheet: defaultSheet,
         getTabTitle: (doc) => String(doc.name || config.label),
-        sections: config.sections,
+        sections,
         landing: {
             description: `Create an original ${config.gameLabel} playbook as one TOML document.`,
             exampleLabel: 'Start with example',
