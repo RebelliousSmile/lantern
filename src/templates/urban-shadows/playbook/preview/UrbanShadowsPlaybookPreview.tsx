@@ -22,8 +22,9 @@ export function UrbanShadowsPlaybookPreview() {
             </>
         ),
         relationships: playbook.mortalRelationships.map((x) => (
-            <p key={x.name}>
-                <b>{x.name}</b> — {x.description}
+            <p key={x.key}>
+                <b>{x.label}</b>
+                {x.description ? ` — ${x.description}` : ''}
             </p>
         )),
         harm: (
@@ -55,7 +56,12 @@ export function UrbanShadowsPlaybookPreview() {
         )),
         creation: playbook.creation.map((x) => (
             <p key={x.label}>
-                {x.label}: {x.options.join(', ')}
+                {x.label}:{' '}
+                {x.options
+                    .map((option) =>
+                        typeof option === 'string' ? option : option.label
+                    )
+                    .join(', ')}
             </p>
         )),
         gear: playbook.gear.map((x) => (

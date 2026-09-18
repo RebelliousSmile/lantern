@@ -359,6 +359,78 @@ async function assertLinkedCreationRoundTrip(cases: NormalizedCase[]) {
     ])
 }
 
+async function assertUrbanShadowsCreationRoundTrip(cases: NormalizedCase[]) {
+    const witness = cases.find(
+        (entry) =>
+            entry.contractId === 'pbta' &&
+            entry.target === 'urban-shadows-playbook' &&
+            entry.expect === 'accept' &&
+            entry.file
+                .replace(/\\/g, '/')
+                .endsWith(
+                    'corpus/contract/valid/urban-shadows-playbook-complete.toml'
+                )
+    )
+    assert.ok(
+        witness,
+        'the Urban Shadows linked creation witness is not among the cases run'
+    )
+
+    const resolvePbta = LANTERN_MODULES.pbta
+    assert.ok(resolvePbta, 'the PbtA Lantern module resolver is unavailable')
+    const codec = await resolvePbta('urban-shadows-playbook')
+    const imported = codec.importFromTOMLWithWarnings(
+        fs.readFileSync(witness.file, 'utf8')
+    )
+    const rendered = codec.exportToTOML(
+        imported.urbanShadowsPlaybook as never
+    )
+    const parsed = parseToml(rendered) as Record<string, unknown>
+
+    assert.deepStrictEqual(parsed.attributes, {
+        mortalRelationships: [
+            'younger-sibling',
+            'loyal-significant-other',
+            'struggling-best-friend',
+        ],
+    })
+    assert.deepStrictEqual(parsed.mortalRelationships, [
+        {
+            key: 'younger-sibling',
+            label: 'Younger sibling',
+            description: 'Relies on you for transportation and advice.',
+        },
+        {
+            key: 'loyal-significant-other',
+            label: 'Loyal significant other',
+            description: 'Keeps choosing you when the city makes that dangerous.',
+        },
+        {
+            key: 'struggling-best-friend',
+            label: 'Struggling best friend',
+            description: 'Always gets into messy altercations.',
+        },
+    ])
+    assert.deepStrictEqual(parsed.creation, [
+        {
+            label: 'Choose three mortal relationships.',
+            options: [
+                { value: 'younger-sibling', label: 'Younger sibling' },
+                {
+                    value: 'loyal-significant-other',
+                    label: 'Loyal significant other',
+                },
+                {
+                    value: 'struggling-best-friend',
+                    label: 'Struggling best friend',
+                },
+            ],
+            selection: { min: 3, max: 3 },
+            attribute: 'mortalRelationships',
+        },
+    ])
+}
+
 function assertOverlayIdentity() {
     /* The corpus cannot produce this one: an overlay caller handing the same object to both sides. */
     const source = { name: 'Danger', rating: 0, extension: false }
@@ -402,6 +474,7 @@ async function main() {
     const tally = assertPublishedCodecs(cases)
     const { covered, uncovered } = await assertLanternModules(cases)
     await assertLinkedCreationRoundTrip(cases)
+    await assertUrbanShadowsCreationRoundTrip(cases)
     assertOverlayIdentity()
 
     const perContract = [...tally.entries()].map(([contractId, counts]) => {

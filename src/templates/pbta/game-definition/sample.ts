@@ -1,7 +1,7 @@
 import type { PbtaGameDefinition } from './model'
 
-/* An original, wholly invented PbtA hack - not a transcription of any
-   published game - that still exercises every section: five stats, one
+/* An original Salvage Run game definition for the Apocalypse World pack -
+   not a transcription of any published game - that still exercises every section: five stats, one
    Resource and one Clock attribute, an NPC section, an MC section and a
    fronts section with a clock preset. */
 export function getSamplePbtaGameDefinition(): PbtaGameDefinition {
@@ -31,6 +31,12 @@ export function getSamplePbtaGameDefinition(): PbtaGameDefinition {
                     type: 'Text',
                     label: 'Name',
                     description: 'The name used on salvage runs.',
+                    position: 'top',
+                },
+                look: {
+                    type: 'LongText',
+                    label: 'Look',
+                    description: 'How the crew recognizes you at a glance.',
                     position: 'top',
                 },
                 fuel: {

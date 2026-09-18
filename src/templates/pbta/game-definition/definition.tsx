@@ -26,8 +26,8 @@ function cloneValue<T>(value: T): T {
 
 const gameDefinitionTemplate: AnyTemplateDefinition = {
     id: 'pbta.gameDefinition',
-    gameId: 'pbta',
-    gameLabel: 'Powered by the Apocalypse',
+    gameId: 'apocalypse-world',
+    gameLabel: 'Apocalypse World',
     label: 'Game Definition',
     implemented: true,
     contractKey: 'pbta/game-definition',
@@ -40,7 +40,7 @@ const gameDefinitionTemplate: AnyTemplateDefinition = {
     sections: gameDefinitionSections,
     landing: {
         description:
-            'A Game Definition is the rulebook a PbtA hack runs on: its stats, its move types, the results a roll can land on, and who gets a character sheet. Start blank, open the example, or import a TOML file.',
+            'A Game Definition defines an Apocalypse World game such as Salvage Run: its stats, its move types, the results a roll can land on, and who gets a character sheet. Start blank, open the example, or import a TOML file.',
         exampleLabel: 'Start with example',
         blankLabel: 'Start blank',
         importLabel: 'Import TOML',
