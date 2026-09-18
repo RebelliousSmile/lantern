@@ -5,6 +5,19 @@ All notable changes to this project are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.13.0] - 2026-09-18
+
+### Added
+
+- **schema-pbta v5 playbook workflow.** Lantern now consumes the immutable v5 contract, applies
+  creation choices to editable attributes and stat profiles, and renders persistent acquisition
+  checklists for generic, Urban Shadows, and Monsterhearts playbooks.
+
+### Changed
+
+- **PbtA contract conformance.** Generic playbooks now cover the published Salvage Run witness,
+  preserving v5 acquisition, creation, and stat-profile data through TOML round trips.
+
 ## [v0.12.0] - 2026-09-17
 
 ### Added
