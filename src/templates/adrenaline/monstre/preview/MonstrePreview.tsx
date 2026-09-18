@@ -3,6 +3,7 @@ import {
     AdrenalineHeader,
     AdrenalineSection,
     AdrenalineStatGrid,
+    currentValue,
 } from '../../shared/preview/SheetPrimitives'
 import '../../shared/preview/adrenalineTheme.css'
 import { blankMonstre } from '../sample'
@@ -12,7 +13,7 @@ export function MonstrePreview() {
         'adrenaline.monstre',
         blankMonstre() as unknown as Record<string, unknown>
     )
-    const stats = (document.caracteristiques ?? {}) as Record<string, number>
+    const stats = (document.caracteristiques ?? {}) as Record<string, unknown>
     const alternate = (document.etatAlternatif ?? {}) as Record<string, unknown>
     const contagion = (document.contagion ?? {}) as Record<string, unknown>
     const health = (document.sante ?? {}) as Record<string, unknown>
@@ -20,7 +21,7 @@ export function MonstrePreview() {
     const equipment = (document.equipement ?? {}) as Record<string, unknown>
     const narrative = (document.narratif ?? {}) as Record<string, unknown>
     const meta = (document.meta ?? {}) as Record<string, unknown>
-    const list = (value: unknown) => Array.isArray(value) ? value : []
+    const list = (value: unknown) => (Array.isArray(value) ? value : [])
     return (
         <article className="adr-doc adr-card mx-auto w-full max-w-[620px] overflow-hidden">
             <AdrenalineHeader
@@ -45,11 +46,71 @@ export function MonstrePreview() {
                     </p>
                 </AdrenalineSection>
             </button>
-            <button type="button" className="block w-full text-left" onClick={() => openSection('health')}><AdrenalineSection title="Santé"><p className="m-0">{Object.keys(health).join(' · ') || 'Non renseignée'}</p></AdrenalineSection></button>
-            <button type="button" className="block w-full text-left" onClick={() => openSection('protections')}><AdrenalineSection title="Protections"><p className="m-0">{Object.keys(protections).join(' · ') || 'Aucune'}</p></AdrenalineSection></button>
-            <button type="button" className="block w-full text-left" onClick={() => openSection('behaviour')}><AdrenalineSection title="Comportement et traits"><p className="m-0">{[...list(document.comportement), ...list(document.traitsSpeciaux)].join(' · ') || 'Aucun trait'}</p></AdrenalineSection></button>
-            <button type="button" className="block w-full text-left" onClick={() => openSection('skills')}><AdrenalineSection title="Compétences"><p className="m-0">{list(document.competences).map((entry) => String((entry as Record<string, unknown>).nom ?? 'Compétence')).join(' · ') || 'Aucune'}</p></AdrenalineSection></button>
-            <button type="button" className="block w-full text-left" onClick={() => openSection('equipment')}><AdrenalineSection title="Équipement"><p className="m-0">{list(equipment.possessions).join(' · ') || 'Aucun'}</p></AdrenalineSection></button>
+            <button
+                type="button"
+                className="block w-full text-left"
+                onClick={() => openSection('health')}
+            >
+                <AdrenalineSection title="Santé">
+                    <p className="m-0">
+                        {Object.keys(health).join(' · ') || 'Non renseignée'}
+                    </p>
+                </AdrenalineSection>
+            </button>
+            <button
+                type="button"
+                className="block w-full text-left"
+                onClick={() => openSection('protections')}
+            >
+                <AdrenalineSection title="Protections">
+                    <p className="m-0">
+                        {Object.keys(protections).join(' · ') || 'Aucune'}
+                    </p>
+                </AdrenalineSection>
+            </button>
+            <button
+                type="button"
+                className="block w-full text-left"
+                onClick={() => openSection('behaviour')}
+            >
+                <AdrenalineSection title="Comportement et traits">
+                    <p className="m-0">
+                        {[
+                            ...list(document.comportement),
+                            ...list(document.traitsSpeciaux),
+                        ].join(' · ') || 'Aucun trait'}
+                    </p>
+                </AdrenalineSection>
+            </button>
+            <button
+                type="button"
+                className="block w-full text-left"
+                onClick={() => openSection('skills')}
+            >
+                <AdrenalineSection title="Compétences">
+                    <p className="m-0">
+                        {list(document.competences)
+                            .map((entry) =>
+                                String(
+                                    (entry as Record<string, unknown>).nom ??
+                                        'Compétence'
+                                )
+                            )
+                            .join(' · ') || 'Aucune'}
+                    </p>
+                </AdrenalineSection>
+            </button>
+            <button
+                type="button"
+                className="block w-full text-left"
+                onClick={() => openSection('equipment')}
+            >
+                <AdrenalineSection title="Équipement">
+                    <p className="m-0">
+                        {list(equipment.possessions).join(' · ') || 'Aucun'}
+                    </p>
+                </AdrenalineSection>
+            </button>
             <button
                 type="button"
                 className="block w-full text-left"
@@ -59,7 +120,7 @@ export function MonstrePreview() {
                     <AdrenalineStatGrid
                         values={Object.entries(stats).map(([label, value]) => ({
                             label: label.toUpperCase(),
-                            value,
+                            value: currentValue(value),
                         }))}
                     />
                 </AdrenalineSection>
@@ -76,14 +137,48 @@ export function MonstrePreview() {
                 </AdrenalineSection>
             </button>
             {Object.keys(contagion).length ? (
-                <button type="button" className="block w-full text-left" onClick={() => openSection('contagion')}><AdrenalineSection title="Contagion">
-                    <p className="m-0">
-                        {String(contagion.agent ?? 'Agent non précisé')}
-                    </p>
-                </AdrenalineSection></button>
+                <button
+                    type="button"
+                    className="block w-full text-left"
+                    onClick={() => openSection('contagion')}
+                >
+                    <AdrenalineSection title="Contagion">
+                        <p className="m-0">
+                            {String(contagion.agent ?? 'Agent non précisé')}
+                        </p>
+                    </AdrenalineSection>
+                </button>
             ) : null}
-            <button type="button" className="block w-full text-left" onClick={() => openSection('narrative')}><AdrenalineSection title="Narratif"><p className="m-0">{[narrative.role, narrative.attitude, narrative.evolutionPossible].filter(Boolean).join(' · ') || 'Non renseigné'}</p></AdrenalineSection></button>
-            <button type="button" className="block w-full text-left" onClick={() => openSection('meta')}><AdrenalineSection title="Provenance"><p className="m-0">{[meta.source, meta.page, meta.licence].filter(Boolean).join(' · ') || 'Non renseignée'}</p></AdrenalineSection></button>
+            <button
+                type="button"
+                className="block w-full text-left"
+                onClick={() => openSection('narrative')}
+            >
+                <AdrenalineSection title="Narratif">
+                    <p className="m-0">
+                        {[
+                            narrative.role,
+                            narrative.attitude,
+                            narrative.evolutionPossible,
+                        ]
+                            .filter(Boolean)
+                            .join(' · ') || 'Non renseigné'}
+                    </p>
+                </AdrenalineSection>
+            </button>
+            <button
+                type="button"
+                className="block w-full text-left"
+                onClick={() => openSection('meta')}
+            >
+                <AdrenalineSection title="Provenance">
+                    <p className="m-0">
+                        {[meta.source, meta.page, meta.licence]
+                            .filter(Boolean)
+                            .join(' · ') || 'Non renseignée'}
+                    </p>
+                </AdrenalineSection>
+            </button>
         </article>
     )
 }

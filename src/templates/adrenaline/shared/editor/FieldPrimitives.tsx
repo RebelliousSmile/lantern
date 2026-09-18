@@ -45,6 +45,81 @@ export function NumberField({
     )
 }
 
+export type RangedValue = {
+    minimum: number
+    current: number
+    maximum: number
+}
+
+export function rangedValue(value: unknown, fallback = 0): RangedValue {
+    if (typeof value === 'number' && Number.isFinite(value)) {
+        return { minimum: 0, current: value, maximum: value }
+    }
+    if (!value || typeof value !== 'object' || Array.isArray(value)) {
+        return { minimum: 0, current: fallback, maximum: fallback }
+    }
+    const source = value as Partial<RangedValue>
+    const minimum = Number.isFinite(source.minimum) ? source.minimum! : 0
+    const current = Math.max(
+        minimum,
+        Number.isFinite(source.current) ? source.current! : fallback
+    )
+    const maximum = Math.max(
+        current,
+        Number.isFinite(source.maximum) ? source.maximum! : current
+    )
+    return { minimum, current, maximum }
+}
+
+/** A document value, not view state: all three editable bounds are exported. */
+export function RangedNumberField({
+    label,
+    value,
+    onChange,
+}: {
+    label: string
+    value: unknown
+    onChange: (value: RangedValue) => void
+}) {
+    const range = rangedValue(value)
+    const setMinimum = (minimum: number) =>
+        onChange({
+            minimum,
+            current: Math.max(minimum, range.current),
+            maximum: Math.max(minimum, range.maximum),
+        })
+    const setCurrent = (current: number) =>
+        onChange({
+            ...range,
+            current: Math.min(range.maximum, Math.max(range.minimum, current)),
+        })
+    const setMaximum = (maximum: number) =>
+        onChange({ ...range, maximum: Math.max(range.current, maximum) })
+
+    return (
+        <fieldset className="grid gap-1 rounded border p-2 text-sm">
+            <legend className="px-1">{label}</legend>
+            <div className="grid grid-cols-3 gap-1">
+                <NumberField
+                    label="Min."
+                    value={range.minimum}
+                    onChange={setMinimum}
+                />
+                <NumberField
+                    label="Actuel"
+                    value={range.current}
+                    onChange={setCurrent}
+                />
+                <NumberField
+                    label="Max."
+                    value={range.maximum}
+                    onChange={setMaximum}
+                />
+            </div>
+        </fieldset>
+    )
+}
+
 export function LongTextField({
     label,
     value,
@@ -123,7 +198,11 @@ export function RecordRows<T>({
     values: T[]
     create: () => T
     onChange: (values: T[]) => void
-    children: (value: T, index: number, replace: (value: T) => void) => ReactNode
+    children: (
+        value: T,
+        index: number,
+        replace: (value: T) => void
+    ) => ReactNode
 }) {
     return (
         <div className="grid gap-2">
@@ -131,14 +210,28 @@ export function RecordRows<T>({
             {values.map((value, index) => (
                 <div className="grid gap-2 rounded border p-2" key={index}>
                     {children(value, index, (replacement) =>
-                        onChange(values.map((entry, at) => at === index ? replacement : entry))
+                        onChange(
+                            values.map((entry, at) =>
+                                at === index ? replacement : entry
+                            )
+                        )
                     )}
-                    <Button type="button" variant="outline" onClick={() => onChange(values.filter((_, at) => at !== index))}>
+                    <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() =>
+                            onChange(values.filter((_, at) => at !== index))
+                        }
+                    >
                         Remove
                     </Button>
                 </div>
             ))}
-            <Button type="button" variant="outline" onClick={() => onChange([...values, create()])}>
+            <Button
+                type="button"
+                variant="outline"
+                onClick={() => onChange([...values, create()])}
+            >
                 Add
             </Button>
         </div>

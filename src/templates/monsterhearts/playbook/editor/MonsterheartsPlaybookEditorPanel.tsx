@@ -21,7 +21,8 @@ function blankMove(checked = false): MonsterheartsMove {
 }
 
 function withoutChecked(move: MonsterheartsMove): MonsterheartsMove {
-    const { checked: _, ...next } = move
+    const next = { ...move }
+    delete next.checked
     return next
 }
 

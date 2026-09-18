@@ -1,5 +1,15 @@
 import type { ReactNode } from 'react'
 
+export function currentValue(value: unknown): string | number | undefined {
+    if (typeof value === 'number' || typeof value === 'string') return value
+    if (value && typeof value === 'object' && 'current' in value) {
+        const current = (value as { current?: unknown }).current
+        if (typeof current === 'number' || typeof current === 'string')
+            return current
+    }
+    return undefined
+}
+
 export function AdrenalineHeader({
     eyebrow,
     title,
