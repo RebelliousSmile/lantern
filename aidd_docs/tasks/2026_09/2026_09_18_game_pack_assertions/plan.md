@@ -1,6 +1,6 @@
 ---
 objective: "Lantern automatically proves that every game pack shown by the launcher is backed by registered, contract-valid templates and that pack preferences preserve their documented behavior."
-status: in-progress
+status: implemented
 ---
 
 # Plan: Game-pack assertions
