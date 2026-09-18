@@ -33,6 +33,12 @@ export function getSamplePbtaGameDefinition(): PbtaGameDefinition {
                     description: 'The name used on salvage runs.',
                     position: 'top',
                 },
+                look: {
+                    type: 'LongText',
+                    label: 'Look',
+                    description: 'How the crew recognizes you at a glance.',
+                    position: 'top',
+                },
                 fuel: {
                     type: 'Resource',
                     label: 'Fuel',

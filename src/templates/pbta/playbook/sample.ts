@@ -111,7 +111,11 @@ export function getSamplePbtaPlaybook(): PbtaPlaybook {
                     { value: 'oren', label: 'Oren' },
                 ],
             },
-            { label: 'Look', options: ['grease-stained', 'patched coveralls'] },
+            {
+                label: 'Look',
+                attribute: 'look',
+                options: ['grease-stained', 'patched coveralls'],
+            },
         ],
         gear: [
             {
