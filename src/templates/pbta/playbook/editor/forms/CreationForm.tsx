@@ -1,5 +1,5 @@
-import { Checkbox } from '@/components/ui/checkbox'
 import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
 import { useState } from 'react'
 import { useGameDefinitionForGame } from '../../../shared/gameDefinition'
@@ -36,35 +36,82 @@ export default function CreationForm() {
                         !selectedWithinBounds ||
                         (validScalarTarget && selected.length !== 1) ||
                         (!validScalarTarget && !validListTarget)
-                    ) return
+                    )
+                        return
                     setAttributes({
                         ...playbook.attributes,
                         [question.attribute]: validScalarTarget
-                            ? selected[0] ?? ''
+                            ? (selected[0] ?? '')
                             : selected,
                     })
                 }
-                return <fieldset key={index} className="space-y-2 rounded-md border p-3">
-                    <legend className="px-1 text-sm font-medium">{question.label}</legend>
-                    {question.options.map((option) => {
-                        const value = typeof option === 'string' ? option : option.value
-                        const label = typeof option === 'string' ? option : option.label
-                        return <div key={value} className="flex items-center gap-2">
-                            <Checkbox checked={selected.includes(value)} onCheckedChange={(next) => {
-                                if (next !== true) return choose(selected.filter((item) => item !== value))
-                                if (max === 1) return choose([value])
-                                if (selected.length < max) choose([...selected, value])
-                            }} />
-                            <Label>{label}</Label>
-                        </div>
-                    })}
-                    {question.attribute && !validScalarTarget && !validListTarget ? (
-                        <p className="text-sm text-destructive">
-                            This question must target an available Text or LongText attribute for one answer, or a ListMany attribute for multiple answers.
-                        </p>
-                    ) : null}
-                    {question.attribute ? <Button type="button" size="sm" disabled={!selectedWithinBounds || (validScalarTarget ? selected.length !== 1 : !validListTarget)} onClick={apply}>Apply selection</Button> : null}
-                </fieldset>
+                return (
+                    <fieldset
+                        key={index}
+                        className="space-y-2 rounded-md border p-3"
+                    >
+                        <legend className="px-1 text-sm font-medium">
+                            {question.label}
+                        </legend>
+                        {question.options.map((option) => {
+                            const value =
+                                typeof option === 'string'
+                                    ? option
+                                    : option.value
+                            const label =
+                                typeof option === 'string'
+                                    ? option
+                                    : option.label
+                            return (
+                                <div
+                                    key={value}
+                                    className="flex items-center gap-2"
+                                >
+                                    <Checkbox
+                                        checked={selected.includes(value)}
+                                        onCheckedChange={(next) => {
+                                            if (next !== true)
+                                                return choose(
+                                                    selected.filter(
+                                                        (item) => item !== value
+                                                    )
+                                                )
+                                            if (max === 1)
+                                                return choose([value])
+                                            if (selected.length < max)
+                                                choose([...selected, value])
+                                        }}
+                                    />
+                                    <Label>{label}</Label>
+                                </div>
+                            )
+                        })}
+                        {question.attribute &&
+                        !validScalarTarget &&
+                        !validListTarget ? (
+                            <p className="text-sm text-destructive">
+                                This question must target an available Text or
+                                LongText attribute for one answer, or a ListMany
+                                attribute for multiple answers.
+                            </p>
+                        ) : null}
+                        {question.attribute ? (
+                            <Button
+                                type="button"
+                                size="sm"
+                                disabled={
+                                    !selectedWithinBounds ||
+                                    (validScalarTarget
+                                        ? selected.length !== 1
+                                        : !validListTarget)
+                                }
+                                onClick={apply}
+                            >
+                                Apply selection
+                            </Button>
+                        ) : null}
+                    </fieldset>
+                )
             })}
         </div>
     )

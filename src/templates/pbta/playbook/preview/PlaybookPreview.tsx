@@ -71,8 +71,12 @@ export function PlaybookPreview() {
                                 }
                             />
                             <MovesBlock
-                                onClick={() =>
-                                    openSheet({ kind: 'moves', mode: 'edit' })
+                                onMoveClick={(index) =>
+                                    openSheet({
+                                        kind: 'moves',
+                                        index,
+                                        mode: 'edit',
+                                    })
                                 }
                             />
                         </SectionGate>

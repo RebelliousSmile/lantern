@@ -42,8 +42,17 @@ export type ChoiceSet = {
 
 export type AdvancementEntry = { label: string; checked?: boolean }
 export type CreationOption = string | { value: string; label: string }
-export type CreationEntry = { label: string; options: CreationOption[]; selection?: { min: number; max: number }; attribute?: string }
-export type StatProfile = { key: string; label: string; stats: Record<string, number> }
+export type CreationEntry = {
+    label: string
+    options: CreationOption[]
+    selection?: { min: number; max: number }
+    attribute?: string
+}
+export type StatProfile = {
+    key: string
+    label: string
+    stats: Record<string, number>
+}
 
 export type GearEntry = {
     name: string
@@ -212,7 +221,9 @@ export function toPlaybookPayload(doc: PbtaPlaybook): Record<string, unknown> {
         stats: doc.stats,
         moves: doc.moves.map((move) =>
             move.kind === 'ref'
-                ? move.checked ? { ref: move.ref, checked: true } : { ref: move.ref }
+                ? move.checked
+                    ? { ref: move.ref, checked: true }
+                    : { ref: move.ref }
                 : toMoveInlinePayload(move)
         ),
     }
@@ -317,7 +328,7 @@ export type PlaybookViewState = {
 export type SheetTarget =
     | { kind: 'basic'; mode?: 'edit' }
     | { kind: 'stats'; mode?: 'edit' }
-    | { kind: 'moves'; mode?: 'edit' }
+    | { kind: 'moves'; index?: number; mode?: 'edit' }
     | { kind: 'choiceSets'; mode?: 'edit' }
     | { kind: 'advancement'; mode?: 'edit' }
     | { kind: 'creation'; mode?: 'edit' }

@@ -1,5 +1,5 @@
 ---
-status: pending
+status: done
 ---
 
 # Instruction: Make the generic PbtA playbook element-addressable
@@ -99,10 +99,10 @@ journey
 
 ## Test acceptance criteria
 
-| Task | Acceptance criteria |
-| --- | --- |
-| 1 | The generic playbook’s field and collection forms derive from one declared editing shape rather than a panel `switch` plus duplicated list forms. |
-| 2 | Clicking a rendered move edits that one move; clicking the Moves heading or add control addresses the collection instead. |
-| 2 | Adding a move appends one declared blank inline move (not a branch-selection prompt) and never duplicates it because the inspector is mounted twice. |
-| 3 | Users can add, edit, remove, and, where declared, reorder moves, choice entries, creation entries, and gear without JSON editing. |
-| 3 | TOML round trips retain all unaffected values and the published schema remains the validity boundary. |
+| Task | Acceptance criteria                                                                                                                                  |
+| ---- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1    | The generic playbook’s field and collection forms derive from one declared editing shape rather than a panel `switch` plus duplicated list forms.    |
+| 2    | Clicking a rendered move edits that one move; clicking the Moves heading or add control addresses the collection instead.                            |
+| 2    | Adding a move appends one declared blank inline move (not a branch-selection prompt) and never duplicates it because the inspector is mounted twice. |
+| 3    | Users can add, edit, remove, and, where declared, reorder moves, choice entries, creation entries, and gear without JSON editing.                    |
+| 3    | TOML round trips retain all unaffected values and the published schema remains the validity boundary.                                                |
