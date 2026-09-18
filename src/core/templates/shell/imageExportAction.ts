@@ -1,4 +1,6 @@
 import type { TemplateExportAction } from '@/core/templates/types'
+import i18n from '@/i18n'
+import { formatError } from '@/i18n/formatError'
 import { snapdom, type CaptureResult } from '@zumer/snapdom'
 import type { ReactNode } from 'react'
 import { toast } from 'sonner'
@@ -35,9 +37,7 @@ export function createImageExportAction<TView extends ExportableView>(options: {
         }) => {
             const node = getPreviewNode()
             if (!node) {
-                toast.error(
-                    'Preview not found. Make sure the preview is visible.'
-                )
+                toast.error(i18n.t('export.previewNotFound'))
                 return
             }
 
@@ -54,9 +54,9 @@ export function createImageExportAction<TView extends ExportableView>(options: {
                     filename: `${fileStem}@${pixelRatio}x.png`,
                 })
 
-                toast.success('Exported PNG.')
-            } catch (errorAny: any) {
-                toast.error(errorAny?.message || 'Failed to export PNG.')
+                toast.success(i18n.t('export.exportedPng'))
+            } catch (error) {
+                toast.error(formatError(error, 'errors.exportPngFailed'))
             } finally {
                 node.classList.remove('exporting')
             }

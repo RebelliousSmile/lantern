@@ -4,6 +4,7 @@ import {
     SidebarTrigger,
 } from '@/components/ui/sidebar'
 import { TemplateInspector } from '@/core/templates/shell/TemplateInspector'
+import { useTranslation } from 'react-i18next'
 
 type AppDesktopInspectorProps = {
     open: boolean
@@ -14,6 +15,8 @@ export default function AppDesktopInspector({
     open,
     onOpenChange,
 }: AppDesktopInspectorProps) {
+    const { t } = useTranslation()
+
     return (
         <SidebarProvider
             open={open}
@@ -23,8 +26,8 @@ export default function AppDesktopInspector({
         >
             <SidebarTrigger
                 className="fixed top-14 right-4 z-40 hidden rounded-md border bg-background shadow-sm md:inline-flex"
-                aria-label="Toggle editor sidebar"
-                title="Toggle editor sidebar"
+                aria-label={t('editing.toggleSidebar')}
+                title={t('editing.toggleSidebar')}
             />
 
             <Sidebar

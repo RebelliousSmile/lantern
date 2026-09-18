@@ -1,7 +1,10 @@
 import { useActiveTab, useActiveTemplate } from '@/core/workspace/selectors'
 import { useWorkspaceStore } from '@/core/workspace/store'
+import i18n from '@/i18n'
+import { formatError } from '@/i18n/formatError'
 import * as React from 'react'
 import { useRef, useState } from 'react'
+import { Trans, useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
@@ -26,9 +29,10 @@ type Props = { open: boolean; onOpenChange: (open: boolean) => void }
  * carried, so an unnamed document is announced without one rather than under a made-up title.
  */
 const importedMessage = (name?: string) =>
-    name ? `Imported “${name}”.` : 'Imported.'
+    name ? i18n.t('import.importedNamed', { name }) : i18n.t('import.imported')
 
 export default function ImportDialog({ open, onOpenChange }: Props) {
+    const { t } = useTranslation()
     const activeTab = useActiveTab()
     const activeTemplate = useActiveTemplate()
 
@@ -62,7 +66,7 @@ export default function ImportDialog({ open, onOpenChange }: Props) {
 
     function validateToml(content: string) {
         if (!importToml) {
-            throw new Error('Import is not available for this template.')
+            throw new Error(t('import.unavailable'))
         }
 
         const parsed = importToml(content)
@@ -82,12 +86,12 @@ export default function ImportDialog({ open, onOpenChange }: Props) {
                 const text = String(reader.result || '')
                 validateToml(text)
                 setFileRawToml(text)
-                toast.success('TOML validated.')
-            } catch (errAny: any) {
+                toast.success(t('import.validated'))
+            } catch (error) {
                 setPreviewName(null)
                 setWarnings([])
                 setFileRawToml(null)
-                setError(errAny?.message || 'Failed to parse/validate TOML.')
+                setError(formatError(error, 'errors.parseFailed'))
             }
         }
 
@@ -95,7 +99,7 @@ export default function ImportDialog({ open, onOpenChange }: Props) {
             setPreviewName(null)
             setWarnings([])
             setFileRawToml(null)
-            setError('Failed to read file.')
+            setError(t('errors.readFailed'))
         }
 
         reader.readAsText(file)
@@ -111,12 +115,14 @@ export default function ImportDialog({ open, onOpenChange }: Props) {
             toast.success(importedMessage(parsed.previewName))
             if (parsed.warnings?.length) {
                 toast.warning(
-                    `Imported with ${parsed.warnings.length} warning(s).`
+                    t('import.importedWithWarnings', {
+                        count: parsed.warnings.length,
+                    })
                 )
             }
             close()
-        } catch (errorAny: any) {
-            toast.error(errorAny?.message || 'Failed to import.')
+        } catch (error) {
+            toast.error(formatError(error, 'errors.importFailed'))
         }
     }
 
@@ -131,10 +137,10 @@ export default function ImportDialog({ open, onOpenChange }: Props) {
 
         try {
             validateToml(value)
-        } catch (errorAny: any) {
+        } catch (error) {
             setPreviewName(null)
             setWarnings([])
-            setError(errorAny?.message || 'Invalid TOML.')
+            setError(formatError(error, 'errors.invalidToml'))
         }
     }
 
@@ -148,16 +154,18 @@ export default function ImportDialog({ open, onOpenChange }: Props) {
             toast.success(importedMessage(parsed.previewName))
             if (parsed.warnings?.length) {
                 toast.warning(
-                    `Imported with ${parsed.warnings.length} warning(s).`
+                    t('import.importedWithWarnings', {
+                        count: parsed.warnings.length,
+                    })
                 )
             }
             close()
-        } catch (errorAny: any) {
-            toast.error(errorAny?.message || 'Failed to import.')
+        } catch (error) {
+            toast.error(formatError(error, 'errors.importFailed'))
         }
     }
 
-    const templateLabel = activeTemplate?.label || 'Template'
+    const templateLabel = activeTemplate?.label || t('import.templateFallback')
 
     return (
         <Dialog
@@ -166,10 +174,14 @@ export default function ImportDialog({ open, onOpenChange }: Props) {
         >
             <DialogContent className="sm:max-w-[720px]">
                 <DialogHeader>
-                    <DialogTitle>Import {templateLabel}</DialogTitle>
+                    <DialogTitle>
+                        {t('import.title', { label: templateLabel })}
+                    </DialogTitle>
                     <DialogDescription>
-                        Import from a <code>.toml</code> file or by pasting
-                        TOML.
+                        <Trans
+                            i18nKey="import.description"
+                            components={{ code: <code /> }}
+                        />
                     </DialogDescription>
                 </DialogHeader>
 
@@ -177,23 +189,20 @@ export default function ImportDialog({ open, onOpenChange }: Props) {
                     <TabsList>
                         <TabsTrigger value="file" className="gap-2">
                             <Upload className="h-4 w-4" />
-                            File
+                            {t('import.fileTab')}
                         </TabsTrigger>
                         <TabsTrigger value="paste" className="gap-2">
                             <FileText className="h-4 w-4" />
-                            Paste
+                            {t('import.pasteTab')}
                         </TabsTrigger>
                     </TabsList>
 
                     <TabsContent value="file" className="space-y-3">
                         <Alert variant="destructive">
                             <AlertTriangle className="h-4 w-4" />
-                            <AlertTitle>
-                                Import from trusted sources only
-                            </AlertTitle>
+                            <AlertTitle>{t('import.trustedTitle')}</AlertTitle>
                             <AlertDescription>
-                                Importing files can include malicious content.
-                                Only open TOML from creators you trust.
+                                {t('import.trustedFile')}
                             </AlertDescription>
                         </Alert>
 
@@ -206,17 +215,17 @@ export default function ImportDialog({ open, onOpenChange }: Props) {
                         />
 
                         <div className="grid gap-2">
-                            <Label>Select a .toml file</Label>
+                            <Label>{t('import.selectFile')}</Label>
                             <div className="flex items-center gap-2">
                                 <Button
                                     variant="outline"
                                     onClick={() => fileRef.current?.click()}
                                     disabled={!importToml}
                                 >
-                                    Choose file…
+                                    {t('import.chooseFile')}
                                 </Button>
                                 <span className="text-sm text-muted-foreground">
-                                    We validate before importing.
+                                    {t('import.validateHint')}
                                 </span>
                             </div>
                         </div>
@@ -237,7 +246,7 @@ export default function ImportDialog({ open, onOpenChange }: Props) {
                                     !activeTab
                                 }
                             >
-                                Import file
+                                {t('import.importFile')}
                             </Button>
                         </div>
                     </TabsContent>
@@ -245,17 +254,16 @@ export default function ImportDialog({ open, onOpenChange }: Props) {
                     <TabsContent value="paste" className="space-y-3">
                         <Alert variant="destructive">
                             <AlertTriangle className="h-4 w-4" />
-                            <AlertTitle>
-                                Import from trusted sources only
-                            </AlertTitle>
+                            <AlertTitle>{t('import.trustedTitle')}</AlertTitle>
                             <AlertDescription>
-                                Pasted TOML can include malicious payloads. Only
-                                paste content from creators you trust.
+                                {t('import.trustedPaste')}
                             </AlertDescription>
                         </Alert>
 
                         <div className="grid gap-2">
-                            <Label htmlFor="paste-toml">Paste TOML</Label>
+                            <Label htmlFor="paste-toml">
+                                {t('import.pasteLabel')}
+                            </Label>
                             <Textarea
                                 id="paste-toml"
                                 rows={12}
@@ -268,7 +276,7 @@ export default function ImportDialog({ open, onOpenChange }: Props) {
                                 }
                             />
                             <div className="text-xs text-muted-foreground">
-                                Auto-validates as you type/paste.
+                                {t('import.autoValidate')}
                             </div>
                         </div>
 
@@ -288,7 +296,7 @@ export default function ImportDialog({ open, onOpenChange }: Props) {
                                     !activeTab
                                 }
                             >
-                                Import pasted TOML
+                                {t('import.importPasted')}
                             </Button>
                         </div>
                     </TabsContent>
@@ -307,6 +315,8 @@ function PreviewPane({
     warnings: string[]
     error: string | null
 }) {
+    const { t } = useTranslation()
+
     if (error) {
         return (
             <div className="rounded-md border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive whitespace-pre-wrap">
@@ -318,7 +328,7 @@ function PreviewPane({
     if (!name && warnings.length === 0) {
         return (
             <div className="text-sm text-muted-foreground">
-                No preview yet. Select a file or paste TOML.
+                {t('import.noPreview')}
             </div>
         )
     }
@@ -327,14 +337,15 @@ function PreviewPane({
         <div className="space-y-2 rounded-md border p-3">
             {name && (
                 <div className="text-sm">
-                    <span className="font-medium">Document:</span> {name}
+                    <span className="font-medium">{t('import.document')}</span>{' '}
+                    {name}
                 </div>
             )}
             {warnings.length > 0 && (
                 <div className="rounded-md border bg-amber-50/60 p-3">
                     <div className="flex items-center gap-2 font-medium text-amber-800">
                         <AlertTriangle className="h-4 w-4" />
-                        {warnings.length} warning(s)
+                        {t('import.warnings', { count: warnings.length })}
                     </div>
                     <ScrollArea className="mt-2 h-24">
                         <ul className="ml-5 list-disc space-y-1 text-sm text-amber-900">

@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/dialog'
 import { Copy, ExternalLink } from 'lucide-react'
 import { useEffect, useState } from 'react'
+import { Trans, useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
 type Props = {
@@ -51,6 +52,7 @@ function formatFeedbackContext(context: FeedbackContext) {
 }
 
 export default function FeedbackDialog({ open, onOpenChange }: Props) {
+    const { t } = useTranslation()
     const [feedbackContext, setFeedbackContext] = useState<FeedbackContext>(
         captureFeedbackContext
     )
@@ -75,9 +77,9 @@ export default function FeedbackDialog({ open, onOpenChange }: Props) {
     async function copyFeedbackContext() {
         try {
             await navigator.clipboard.writeText(contextText)
-            toast.success('Feedback context copied.')
+            toast.success(t('feedback.copied'))
         } catch {
-            toast.error('Could not copy feedback context.')
+            toast.error(t('feedback.copyFailed'))
         }
     }
 
@@ -85,34 +87,32 @@ export default function FeedbackDialog({ open, onOpenChange }: Props) {
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-[680px]">
                 <DialogHeader>
-                    <DialogTitle>Send feedback on Discord</DialogTitle>
+                    <DialogTitle>{t('feedback.title')}</DialogTitle>
                     <DialogDescription>
-                        Reach out to <strong>@4rtamis</strong> on the City of
-                        Mist Discord server to send feedback about the app.
+                        <Trans
+                            i18nKey="feedback.description"
+                            components={{ strong: <strong /> }}
+                        />
                     </DialogDescription>
                 </DialogHeader>
 
                 <div className="space-y-4 text-sm">
                     <p className="text-muted-foreground">
-                        As there is no tutorial yet, the most useful feedback is
-                        what felt intuitive, what did not, and where the app was
-                        unclear.
+                        {t('feedback.mostUseful')}
                     </p>
 
                     <p className="text-muted-foreground">
-                        Smartphone feedback is not useful for now because a
-                        responsive small-device view has not been developed yet.
+                        {t('feedback.noSmartphone')}
                     </p>
 
                     <div className="rounded-lg border bg-muted/30 p-4">
                         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                             <div>
                                 <h3 className="font-medium">
-                                    Include this context with your feedback
+                                    {t('feedback.contextTitle')}
                                 </h3>
                                 <p className="text-muted-foreground text-xs">
-                                    Copy and paste this block so the report has
-                                    the browser and app details I need.
+                                    {t('feedback.contextHint')}
                                 </p>
                             </div>
                             <Button
@@ -122,7 +122,7 @@ export default function FeedbackDialog({ open, onOpenChange }: Props) {
                                 onClick={copyFeedbackContext}
                             >
                                 <Copy />
-                                Copy context
+                                {t('feedback.copyContext')}
                             </Button>
                         </div>
 
@@ -139,7 +139,7 @@ export default function FeedbackDialog({ open, onOpenChange }: Props) {
                         variant="outline"
                         onClick={() => onOpenChange(false)}
                     >
-                        Close
+                        {t('feedback.close')}
                     </Button>
                     <Button asChild>
                         <a
@@ -147,7 +147,7 @@ export default function FeedbackDialog({ open, onOpenChange }: Props) {
                             target="_blank"
                             rel="noreferrer"
                         >
-                            Join Discord
+                            {t('feedback.joinDiscord')}
                             <ExternalLink />
                         </a>
                     </Button>

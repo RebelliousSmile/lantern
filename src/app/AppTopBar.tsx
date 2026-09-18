@@ -16,11 +16,13 @@ import { useWorkspaceStore } from '@/core/workspace/store'
 import type { WorkspaceTab } from '@/core/workspace/types'
 import { TagIcon, X } from 'lucide-react'
 import { useMemo, useState } from 'react'
+import { Trans, useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 
 const HIDE_CLOSE_TAB_ALERT_KEY = 'mist:hide-close-tab-alert:v1'
 
 export default function AppTopBar() {
+    const { t } = useTranslation()
     const navigate = useNavigate()
 
     const tabs = useWorkspaceStore((s) => s.tabs)
@@ -106,6 +108,7 @@ export default function AppTopBar() {
                                 <button
                                     type="button"
                                     className="rounded p-0.5 opacity-70 hover:bg-background/70 hover:opacity-100"
+                                    aria-label={t('topBar.closeTab')}
                                     onClick={(event) => {
                                         event.stopPropagation()
 
@@ -130,7 +133,7 @@ export default function AppTopBar() {
                     </div>
                 ) : (
                     <div className="px-1 text-xs text-muted-foreground">
-                        No open tabs
+                        {t('topBar.noOpenTabs')}
                     </div>
                 )}
             </div>
@@ -144,15 +147,18 @@ export default function AppTopBar() {
                 <AlertDialogContent size="default">
                     <AlertDialogHeader className="place-items-start text-left">
                         <AlertDialogTitle>
-                            Are you absolutely sure you want to remove this tab?
+                            {t('topBar.closeTitle')}
                         </AlertDialogTitle>
                         <AlertDialogDescription>
-                            This action cannot be undone. This will permanently
-                            delete{' '}
-                            <strong>
-                                {pendingCloseTab?.title ?? 'this tab'}
-                            </strong>
-                            .
+                            <Trans
+                                i18nKey="topBar.closeDescription"
+                                values={{
+                                    title:
+                                        pendingCloseTab?.title ??
+                                        t('topBar.thisTab'),
+                                }}
+                                components={{ strong: <strong /> }}
+                            />
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <div className="flex items-center gap-2">
@@ -167,12 +173,12 @@ export default function AppTopBar() {
                             htmlFor="hide-close-tab-alert"
                             className="text-sm font-normal text-muted-foreground"
                         >
-                            Don&apos;t show me this again
+                            {t('topBar.dontShowAgain')}
                         </Label>
                     </div>
                     <AlertDialogFooter>
                         <AlertDialogCancel variant="outline">
-                            Cancel
+                            {t('topBar.cancel')}
                         </AlertDialogCancel>
                         <AlertDialogAction
                             variant="destructive"
@@ -192,7 +198,7 @@ export default function AppTopBar() {
                                 setConfirmCloseTabId(null)
                             }}
                         >
-                            Continue
+                            {t('topBar.continue')}
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
