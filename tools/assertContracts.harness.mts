@@ -325,6 +325,40 @@ async function assertLanternModules(cases: NormalizedCase[]) {
     return { covered, uncovered }
 }
 
+async function assertLinkedCreationRoundTrip(cases: NormalizedCase[]) {
+    const witness = cases.find(
+        (entry) =>
+            entry.contractId === 'pbta' &&
+            entry.target === 'playbook' &&
+            entry.expect === 'accept' &&
+            entry.file
+                .replace(/\\/g, '/')
+                .endsWith('corpus/contract/valid/playbook-complete.toml')
+    )
+    assert.ok(witness, 'the linked creation playbook witness is not among the cases run')
+
+    const resolvePbta = LANTERN_MODULES.pbta
+    assert.ok(resolvePbta, 'the PbtA Lantern module resolver is unavailable')
+    const codec = await resolvePbta('playbook')
+    const imported = codec.importFromTOMLWithWarnings(
+        fs.readFileSync(witness.file, 'utf8')
+    )
+    const rendered = codec.exportToTOML(imported.playbook as never)
+    const parsed = parseToml(rendered) as Record<string, unknown>
+
+    assert.deepStrictEqual(parsed.creation, [
+        {
+            label: 'Which tool exported this document?',
+            options: [
+                { value: 'lantern', label: 'Lantern' },
+                { value: 'handbook', label: 'Handbook' },
+            ],
+            selection: { min: 1, max: 1 },
+            attribute: 'quoted key',
+        },
+    ])
+}
+
 function assertOverlayIdentity() {
     /* The corpus cannot produce this one: an overlay caller handing the same object to both sides. */
     const source = { name: 'Danger', rating: 0, extension: false }
@@ -367,6 +401,7 @@ async function main() {
     assertRegistryCoverage(cases)
     const tally = assertPublishedCodecs(cases)
     const { covered, uncovered } = await assertLanternModules(cases)
+    await assertLinkedCreationRoundTrip(cases)
     assertOverlayIdentity()
 
     const perContract = [...tally.entries()].map(([contractId, counts]) => {
