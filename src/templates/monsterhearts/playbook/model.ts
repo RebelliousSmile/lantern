@@ -6,6 +6,7 @@ export type SectionId =
     | 'conditions'
     | 'editorial'
     | 'moves'
+    | 'advancement'
     | 'advances'
     | 'harm'
 export type ViewState = {
@@ -20,6 +21,7 @@ export const sections: Array<{ id: SectionId; label: string }> = [
     { id: 'conditions', label: 'Conditions' },
     { id: 'editorial', label: 'Editorial' },
     { id: 'moves', label: 'Moves' },
+    { id: 'advancement', label: 'Advancement' },
     { id: 'advances', label: 'Advances' },
     { id: 'harm', label: 'Harm' },
 ]

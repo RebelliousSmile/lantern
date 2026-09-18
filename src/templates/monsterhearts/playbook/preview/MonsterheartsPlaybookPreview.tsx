@@ -15,6 +15,7 @@ export function MonsterheartsPlaybookPreview() {
         editorial: playbook.editorial,
         moves: playbook.moves.map((move) => `${move.checked ? '☑' : '☐'} ${'ref' in move ? move.ref : move.name}`),
         advances: playbook.advances.map((advance) => `${advance.checked ? '☑' : '☐'} ${advance.label}`),
+        advancement: (playbook.advancement ?? []).map((advance) => `${advance.checked ? '☑' : '☐'} ${advance.label}`),
         harm: playbook.harm,
     }
     return (

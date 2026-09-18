@@ -1,4 +1,5 @@
 import { Checkbox } from '@/components/ui/checkbox'
+import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { useState } from 'react'
 import { useGameDefinitionForGame } from '../../../shared/gameDefinition'
@@ -17,13 +18,16 @@ export default function CreationForm() {
                     ? game?.character.attributes?.[question.attribute]
                     : undefined
                 const max = question.selection?.max ?? 1
-                const apply = (next: string[]) => {
+                const min = question.selection?.min ?? 1
+                const choose = (next: string[]) => {
                     setAnswers({ ...answers, [index]: next })
+                }
+                const apply = () => {
                     if (!question.attribute || !target) return
                     if (max > 1 && target.type === 'ListMany')
-                        setAttributes({ ...playbook.attributes, [question.attribute]: next })
+                        setAttributes({ ...playbook.attributes, [question.attribute]: selected })
                     if (max === 1 && (target.type === 'Text' || target.type === 'LongText'))
-                        setAttributes({ ...playbook.attributes, [question.attribute]: next[0] ?? '' })
+                        setAttributes({ ...playbook.attributes, [question.attribute]: selected[0] ?? '' })
                 }
                 return <fieldset key={index} className="space-y-2 rounded-md border p-3">
                     <legend className="px-1 text-sm font-medium">{question.label}</legend>
@@ -32,13 +36,14 @@ export default function CreationForm() {
                         const label = typeof option === 'string' ? option : option.label
                         return <div key={value} className="flex items-center gap-2">
                             <Checkbox checked={selected.includes(value)} onCheckedChange={(next) => {
-                                if (next !== true) return apply(selected.filter((item) => item !== value))
-                                if (max === 1) return apply([value])
-                                if (selected.length < max) apply([...selected, value])
+                                if (next !== true) return choose(selected.filter((item) => item !== value))
+                                if (max === 1) return choose([value])
+                                if (selected.length < max) choose([...selected, value])
                             }} />
                             <Label>{label}</Label>
                         </div>
                     })}
+                    {question.attribute ? <Button type="button" size="sm" disabled={selected.length < min || selected.length > max} onClick={apply}>Apply selection</Button> : null}
                 </fieldset>
             })}
         </div>

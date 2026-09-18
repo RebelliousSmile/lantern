@@ -45,6 +45,10 @@ export function MonsterheartsPlaybookEditorPanel() {
         return <div className="space-y-2">{playbook.advances.map((entry, index) => (
             <Label key={index} className="flex items-center gap-2"><Checkbox checked={entry.checked === true} onCheckedChange={(checked) => setPlaybook({ advances: playbook.advances.map((item, i) => i === index ? { ...item, ...(checked === true ? { checked: true } : { checked: undefined }) } : item) })} />{entry.label}</Label>
         ))}</div>
+    if (sheet.target === 'advancement')
+        return <div className="space-y-2">{(playbook.advancement ?? []).map((entry, index) => (
+            <Label key={index} className="flex items-center gap-2"><Checkbox checked={entry.checked === true} onCheckedChange={(checked) => setPlaybook({ advancement: (playbook.advancement ?? []).map((item, i) => i === index ? { ...item, ...(checked === true ? { checked: true } : { checked: undefined }) } : item) })} />{entry.label}</Label>
+        ))}</div>
     const key = sheet.target
     return (
         <StructuredJsonEditor
