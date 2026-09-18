@@ -5,6 +5,19 @@ All notable changes to this project are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.16.1] - 2026-09-18
+
+### Changed
+
+- **Game-pack launcher behavior.** Every launch now starts with all game packs collapsed; only
+  the user’s disabled-pack filters persist between sessions.
+
+### Added
+
+- **Game-pack assertions.** The workspace harness now verifies pack preference migration,
+  persistence, open-tab safety, registry grouping, unique template identities and contract
+  resolution.
+
 ## [v0.16.0] - 2026-09-18
 
 ### Added
