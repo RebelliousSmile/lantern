@@ -1,8 +1,9 @@
-import { Input } from '@/components/ui/input'
 import { Checkbox } from '@/components/ui/checkbox'
+import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import { StructuredJsonEditor } from '@/templates/shared/StructuredJsonEditor'
+import { SchemaEditor } from '@/core/editor-schema/SchemaEditor'
+import { inferObject } from '@/core/editor-schema/inferSchema'
 import { useMonsterheartsSheet, useMonsterheartsStore } from '../hooks'
 
 export function MonsterheartsPlaybookEditorPanel() {
@@ -38,25 +39,100 @@ export function MonsterheartsPlaybookEditorPanel() {
             </div>
         )
     if (sheet.target === 'moves')
-        return <div className="space-y-2">{playbook.moves.map((move, index) => (
-            <Label key={index} className="flex items-center gap-2"><Checkbox checked={move.checked === true} onCheckedChange={(checked) => setPlaybook({ moves: playbook.moves.map((item, i) => i === index ? { ...item, ...(checked === true ? { checked: true } : { checked: undefined }) } : item) })} />{'ref' in move ? move.ref : move.name}</Label>
-        ))}</div>
+        return (
+            <div className="space-y-2">
+                {playbook.moves.map((move, index) => (
+                    <Label key={index} className="flex items-center gap-2">
+                        <Checkbox
+                            checked={move.checked === true}
+                            onCheckedChange={(checked) =>
+                                setPlaybook({
+                                    moves: playbook.moves.map((item, i) =>
+                                        i === index
+                                            ? {
+                                                  ...item,
+                                                  ...(checked === true
+                                                      ? { checked: true }
+                                                      : { checked: undefined }),
+                                              }
+                                            : item
+                                    ),
+                                })
+                            }
+                        />
+                        {'ref' in move ? move.ref : move.name}
+                    </Label>
+                ))}
+            </div>
+        )
     if (sheet.target === 'advances')
-        return <div className="space-y-2">{playbook.advances.map((entry, index) => (
-            <Label key={index} className="flex items-center gap-2"><Checkbox checked={entry.checked === true} onCheckedChange={(checked) => setPlaybook({ advances: playbook.advances.map((item, i) => i === index ? { ...item, ...(checked === true ? { checked: true } : { checked: undefined }) } : item) })} />{entry.label}</Label>
-        ))}</div>
+        return (
+            <div className="space-y-2">
+                {playbook.advances.map((entry, index) => (
+                    <Label key={index} className="flex items-center gap-2">
+                        <Checkbox
+                            checked={entry.checked === true}
+                            onCheckedChange={(checked) =>
+                                setPlaybook({
+                                    advances: playbook.advances.map(
+                                        (item, i) =>
+                                            i === index
+                                                ? {
+                                                      ...item,
+                                                      ...(checked === true
+                                                          ? { checked: true }
+                                                          : {
+                                                                checked:
+                                                                    undefined,
+                                                            }),
+                                                  }
+                                                : item
+                                    ),
+                                })
+                            }
+                        />
+                        {entry.label}
+                    </Label>
+                ))}
+            </div>
+        )
     if (sheet.target === 'advancement')
-        return <div className="space-y-2">{(playbook.advancement ?? []).map((entry, index) => (
-            <Label key={index} className="flex items-center gap-2"><Checkbox checked={entry.checked === true} onCheckedChange={(checked) => setPlaybook({ advancement: (playbook.advancement ?? []).map((item, i) => i === index ? { ...item, ...(checked === true ? { checked: true } : { checked: undefined }) } : item) })} />{entry.label}</Label>
-        ))}</div>
+        return (
+            <div className="space-y-2">
+                {(playbook.advancement ?? []).map((entry, index) => (
+                    <Label key={index} className="flex items-center gap-2">
+                        <Checkbox
+                            checked={entry.checked === true}
+                            onCheckedChange={(checked) =>
+                                setPlaybook({
+                                    advancement: (
+                                        playbook.advancement ?? []
+                                    ).map((item, i) =>
+                                        i === index
+                                            ? {
+                                                  ...item,
+                                                  ...(checked === true
+                                                      ? { checked: true }
+                                                      : { checked: undefined }),
+                                              }
+                                            : item
+                                    ),
+                                })
+                            }
+                        />
+                        {entry.label}
+                    </Label>
+                ))}
+            </div>
+        )
     const key = sheet.target
+    const value = (playbook as Record<string, unknown>)[key]
     return (
-        <StructuredJsonEditor
-            id={`monsterhearts-${key}`}
-            label={key}
-            value={(playbook as Record<string, unknown>)[key]}
-            onValidValue={(value) =>
-                setPlaybook({ [key]: value } as Partial<typeof playbook>)
+        <SchemaEditor
+            schema={inferObject(key, value as Record<string, unknown>)}
+            value={(value as Record<string, unknown>) ?? {}}
+            onChange={(next) =>
+                setPlaybook({ [key]: next } as Partial<typeof playbook>)
             }
         />
     )

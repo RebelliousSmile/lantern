@@ -35,8 +35,8 @@ export type ObjectDescriptor = BaseDescriptor & {
 
 export type CollectionDescriptor = BaseDescriptor & {
     kind: 'collection'
-    item: ObjectDescriptor
-    createEmpty: () => Record<string, unknown>
+    item: EditorDescriptor
+    createEmpty: () => unknown
     minItems?: number
     reorderable?: boolean
 }

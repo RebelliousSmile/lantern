@@ -4,9 +4,10 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { SchemaEditor } from '@/core/editor-schema/SchemaEditor'
+import { inferObject } from '@/core/editor-schema/inferSchema'
 import { AttributeField } from '@/templates/pbta/shared/attributeField'
 import { useGameDefinitionForGame } from '@/templates/pbta/shared/gameDefinition'
-import { StructuredJsonEditor } from '@/templates/shared/StructuredJsonEditor'
 import { useState } from 'react'
 import {
     useUrbanShadowsPlaybookStore,
@@ -56,19 +57,102 @@ export function UrbanShadowsPlaybookEditorPanel() {
             </div>
         )
     if (target.kind === 'moves')
-        return <div className="space-y-2">{playbook.moves.map((move, index) => (
-            <Label key={index} className="flex items-center gap-2"><Checkbox checked={move.checked === true} onCheckedChange={(checked) => setPlaybook({ moves: playbook.moves.map((item, i) => i === index ? { ...item, ...(checked === true ? { checked: true } : { checked: undefined }) } : item) })} />{move.name}</Label>
-        ))}</div>
+        return (
+            <div className="space-y-2">
+                {playbook.moves.map((move, index) => (
+                    <Label key={index} className="flex items-center gap-2">
+                        <Checkbox
+                            checked={move.checked === true}
+                            onCheckedChange={(checked) =>
+                                setPlaybook({
+                                    moves: playbook.moves.map((item, i) =>
+                                        i === index
+                                            ? {
+                                                  ...item,
+                                                  ...(checked === true
+                                                      ? { checked: true }
+                                                      : { checked: undefined }),
+                                              }
+                                            : item
+                                    ),
+                                })
+                            }
+                        />
+                        {move.name}
+                    </Label>
+                ))}
+            </div>
+        )
     if (target.kind === 'advancement')
-        return <div className="space-y-2">{playbook.advancement.map((entry, index) => (
-            <Label key={index} className="flex items-center gap-2"><Checkbox checked={entry.checked === true} onCheckedChange={(checked) => setPlaybook({ advancement: playbook.advancement.map((item, i) => i === index ? { ...item, ...(checked === true ? { checked: true } : { checked: undefined }) } : item) })} />{entry.label}</Label>
-        ))}</div>
+        return (
+            <div className="space-y-2">
+                {playbook.advancement.map((entry, index) => (
+                    <Label key={index} className="flex items-center gap-2">
+                        <Checkbox
+                            checked={entry.checked === true}
+                            onCheckedChange={(checked) =>
+                                setPlaybook({
+                                    advancement: playbook.advancement.map(
+                                        (item, i) =>
+                                            i === index
+                                                ? {
+                                                      ...item,
+                                                      ...(checked === true
+                                                          ? { checked: true }
+                                                          : {
+                                                                checked:
+                                                                    undefined,
+                                                            }),
+                                                  }
+                                                : item
+                                    ),
+                                })
+                            }
+                        />
+                        {entry.label}
+                    </Label>
+                ))}
+            </div>
+        )
     if (target.kind === 'corruption')
-        return <div className="space-y-2">{playbook.corruption.advances.map((entry, index) => (
-            <Label key={index} className="flex items-center gap-2"><Checkbox checked={entry.checked === true} onCheckedChange={(checked) => setPlaybook({ corruption: { ...playbook.corruption, advances: playbook.corruption.advances.map((item, i) => i === index ? { ...item, ...(checked === true ? { checked: true } : { checked: undefined }) } : item) } })} />{entry.label}</Label>
-        ))}</div>
-    if (target.kind === 'creation')
-        return <UrbanShadowsCreationForm />
+        return (
+            <div className="space-y-2">
+                {playbook.corruption.advances.map((entry, index) => (
+                    <Label key={index} className="flex items-center gap-2">
+                        <Checkbox
+                            checked={entry.checked === true}
+                            onCheckedChange={(checked) =>
+                                setPlaybook({
+                                    corruption: {
+                                        ...playbook.corruption,
+                                        advances:
+                                            playbook.corruption.advances.map(
+                                                (item, i) =>
+                                                    i === index
+                                                        ? {
+                                                              ...item,
+                                                              ...(checked ===
+                                                              true
+                                                                  ? {
+                                                                        checked: true,
+                                                                    }
+                                                                  : {
+                                                                        checked:
+                                                                            undefined,
+                                                                    }),
+                                                          }
+                                                        : item
+                                            ),
+                                    },
+                                })
+                            }
+                        />
+                        {entry.label}
+                    </Label>
+                ))}
+            </div>
+        )
+    if (target.kind === 'creation') return <UrbanShadowsCreationForm />
     if (target.kind === 'relationships') {
         const attribute = game.character.attributes?.mortalRelationships
         if (!attribute || attribute.type !== 'ListMany')
@@ -105,13 +189,13 @@ export function UrbanShadowsPlaybookEditorPanel() {
         )
     }
     const key = target.kind
+    const value = (playbook as Record<string, unknown>)[key]
     return (
-        <StructuredJsonEditor
-            id={`urban-shadows-${key}`}
-            label={key}
-            value={(playbook as Record<string, unknown>)[key]}
-            onValidValue={(value) =>
-                setPlaybook({ [key]: value } as Partial<typeof playbook>)
+        <SchemaEditor
+            schema={inferObject(key, value as Record<string, unknown>)}
+            value={(value as Record<string, unknown>) ?? {}}
+            onChange={(next) =>
+                setPlaybook({ [key]: next } as Partial<typeof playbook>)
             }
         />
     )
@@ -131,8 +215,7 @@ function UrbanShadowsCreationForm() {
                 const target = question.attribute
                     ? game?.character.attributes?.[question.attribute]
                     : undefined
-                const validDestination =
-                    max > 1 && target?.type === 'ListMany'
+                const validDestination = max > 1 && target?.type === 'ListMany'
                 const selectedWithinBounds =
                     selected.length >= min && selected.length <= max
                 const choose = (next: string[]) =>
@@ -142,7 +225,8 @@ function UrbanShadowsCreationForm() {
                         !question.attribute ||
                         !validDestination ||
                         !selectedWithinBounds
-                    ) return
+                    )
+                        return
                     setPlaybook({
                         attributes: {
                             ...playbook.attributes,
@@ -152,18 +236,26 @@ function UrbanShadowsCreationForm() {
                 }
 
                 return (
-                    <fieldset key={index} className="space-y-2 rounded-md border p-3">
+                    <fieldset
+                        key={index}
+                        className="space-y-2 rounded-md border p-3"
+                    >
                         <legend className="px-1 text-sm font-medium">
                             {question.label}
                         </legend>
                         {question.options.map((option) => {
                             const value =
-                                typeof option === 'string' ? option : option.value
+                                typeof option === 'string'
+                                    ? option
+                                    : option.value
                             const label =
-                                typeof option === 'string' ? option : option.label
-                            const relationship = playbook.mortalRelationships.find(
-                                (entry) => entry.key === value
-                            )
+                                typeof option === 'string'
+                                    ? option
+                                    : option.label
+                            const relationship =
+                                playbook.mortalRelationships.find(
+                                    (entry) => entry.key === value
+                                )
                             return (
                                 <div key={value} className="space-y-1">
                                     <div className="flex items-center gap-2">
@@ -173,7 +265,8 @@ function UrbanShadowsCreationForm() {
                                                 if (next !== true)
                                                     return choose(
                                                         selected.filter(
-                                                            (item) => item !== value
+                                                            (item) =>
+                                                                item !== value
                                                         )
                                                     )
                                                 if (selected.length < max)
@@ -192,14 +285,17 @@ function UrbanShadowsCreationForm() {
                         })}
                         {question.attribute && !validDestination ? (
                             <p className="text-sm text-destructive">
-                                This question must target an available ListMany attribute.
+                                This question must target an available ListMany
+                                attribute.
                             </p>
                         ) : null}
                         {question.attribute ? (
                             <Button
                                 type="button"
                                 size="sm"
-                                disabled={!validDestination || !selectedWithinBounds}
+                                disabled={
+                                    !validDestination || !selectedWithinBounds
+                                }
                                 onClick={apply}
                             >
                                 Apply selection

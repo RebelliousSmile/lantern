@@ -175,17 +175,32 @@ function CollectionField({
             </legend>
             {list.map((entry, index) => (
                 <div key={index} className="space-y-2 rounded border p-2">
-                    <SchemaEditor
-                        schema={descriptor.item}
-                        value={(entry as Record<string, unknown>) ?? {}}
-                        onChange={(next) =>
-                            replace(
-                                list.map((item, itemIndex) =>
-                                    itemIndex === index ? next : item
+                    {descriptor.item.kind === 'object' ? (
+                        <SchemaEditor
+                            schema={descriptor.item}
+                            value={(entry as Record<string, unknown>) ?? {}}
+                            onChange={(next) =>
+                                replace(
+                                    list.map((item, itemIndex) =>
+                                        itemIndex === index ? next : item
+                                    )
                                 )
-                            )
-                        }
-                    />
+                            }
+                        />
+                    ) : (
+                        <Field
+                            descriptor={descriptor.item}
+                            root={{ value: entry }}
+                            path={['value']}
+                            onChange={(next) =>
+                                replace(
+                                    list.map((item, itemIndex) =>
+                                        itemIndex === index ? next.value : item
+                                    )
+                                )
+                            }
+                        />
+                    )}
                     <div className="flex gap-1">
                         {descriptor.reorderable ? (
                             <>
