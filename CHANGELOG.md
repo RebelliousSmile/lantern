@@ -5,6 +5,23 @@ All notable changes to this project are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.16.0] - 2026-09-18
+
+### Added
+
+- **Schema-driven editing runtime.** Templates can declare editor fields, collections,
+  conditional visibility, variants, empty-item factories, deletion limits and ordering without
+  placing template-specific logic in the application shell.
+- **Precise PbtA move editing.** Clicking a rendered move now opens that move’s form, while the
+  Moves section remains the collection-level editor; new moves begin as blank inline moves.
+- **Editor-schema guidance.** The architecture and template-authoring documentation now define
+  the boundary between published document codecs and Lantern’s editor metadata.
+
+### Changed
+
+- **Specialized playbook editing.** Monsterhearts, Urban Shadows and factory-backed playbooks no
+  longer expose raw JSON as their normal editor surface.
+
 ## [v0.15.0] - 2026-09-18
 
 ### Added
