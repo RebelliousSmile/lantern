@@ -5,6 +5,22 @@ All notable changes to this project are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.13.0] - 2026-09-18
+
+### Added
+
+- **Specialized PbtA playbooks.** Published game contracts now drive their dedicated Lantern playbook surfaces.
+- **Ranged Adrenaline attributes.** Schema-backed ranges are available to Adrenaline templates.
+- **Theme type selectors.** The editor exposes the unified type selector surface.
+
+### Changed
+
+- **PbtA collection presentation.** Lantern pins the published schema-pbta collection-presentation release.
+
+### Fixed
+
+- **Creation destinations.** Uncatalogued ListMany destinations remain freely editable after setup, while Urban Shadows relationship catalogues remain transient setup metadata.
+
 ## [v0.7.2] - 2026-09-18
 
 ### Added
