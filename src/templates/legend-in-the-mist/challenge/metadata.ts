@@ -23,7 +23,17 @@ export const challengeSections: Array<{
 
 export const challengeZoomOptions = [0.75, 1, 1.25, 1.5]
 
-export const challengeBackgroundOptions = [
-    { value: 'parchment', label: 'Parchment' },
-    { value: 'plain', label: 'Plain' },
-] as const
+export const challengeBackgroundOptions: Array<{
+    value: 'parchment' | 'plain'
+    label: TranslationKey
+}> = [
+    {
+        value: 'parchment',
+        label: 'legend:forms.challenge.appearancePanel.background.parchment',
+    },
+    {
+        value: 'plain',
+        label: 'legend:forms.challenge.appearancePanel.background.plain',
+    },
+    // Note: labels are display-only; the stored `value` stays English (view state, not doc).
+]

@@ -1,5 +1,11 @@
 import type { ResourceShape } from '@/i18n/resourceShape'
 import type en from '../en/otherscape'
+import challengeForms from './otherscape/challengeForms'
+import characterTropeForms from './otherscape/characterTropeForms'
+import loadoutItemForms from './otherscape/loadoutItemForms'
+import powerSetForms from './otherscape/powerSetForms'
+import themeForms from './otherscape/themeForms'
+import themeKitForms from './otherscape/themeKitForms'
 
 /* Game terms are provisional until the French glossary is validated. */
 const otherscape: ResourceShape<typeof en> = {
@@ -12,13 +18,13 @@ const otherscape: ResourceShape<typeof en> = {
             braced: 'Tags de pouvoir écrits avec des accolades : {{tags}}. Elles sont ajoutées au rendu de la carte, les accolades apparaîtront donc en double.',
             marked: 'Tags de pouvoir écrits avec un « ! » initial : {{tags}}. Un tag qui joue contre le personnage a sa place dans les Tags de faiblesse.',
             statusLike:
-                'Tags de pouvoir qui se lisent comme un statut ou une limite : {{tags}}. Un « -<n> » ou « :<n> » final fait afficher le tag comme une jauge plutôt que comme un tag.',
+                'Tags de pouvoir qui se lisent comme un statut ou une limite : {{tags}}. Un « -<n> » ou « :<n> » final fait afficher le tag comme un statut plutôt que comme un tag.',
         },
         weakness: {
             braced: 'Tags de faiblesse écrits avec des accolades : {{tags}}. Elles sont ajoutées au rendu de la carte, les accolades apparaîtront donc en double.',
             marked: 'Tags de faiblesse écrits avec un « ! » initial : {{tags}}. Les tags de faiblesse sont déjà signalés par le champ où ils se trouvent.',
             statusLike:
-                'Tags de faiblesse qui se lisent comme un statut ou une limite : {{tags}}. Un « -<n> » ou « :<n> » final fait afficher le tag comme une jauge plutôt que comme un tag.',
+                'Tags de faiblesse qui se lisent comme un statut ou une limite : {{tags}}. Un « -<n> » ou « :<n> » final fait afficher le tag comme un statut plutôt que comme un tag.',
         },
     },
     challenge: {
@@ -32,7 +38,7 @@ const otherscape: ResourceShape<typeof en> = {
             description: 'Description',
             tagsStatuses: 'Tags et statuts',
             limits: 'Limites',
-            specials: 'Spéciaux',
+            specials: 'Particularités',
             threats: 'Menaces',
             generalConsequences: 'Conséquences générales',
             meta: 'Pied de page méta',
@@ -41,11 +47,11 @@ const otherscape: ResourceShape<typeof en> = {
             limitTokens:
                 'Des marqueurs de type limite figurent dans Tags et statuts et seront ignorés par certains outils : {{tokens}}. Envisagez de les déplacer dans la section Limites.',
             progressWithoutOnMax:
-                'Limite(s) de progression sans « on_max » : {{limits}}. La jauge se remplit et rien n’est imprimé pour elle.',
+                'Limite(s) de progression sans « on_max » : {{limits}}. La limite se remplit et rien n’est imprimé pour elle.',
             polarWithoutSlash:
                 'Limite(s) polaire(s) sans « / » dans leur nom : {{limits}}. Une Limite polaire relie ses deux pôles par une barre oblique, comme dans « catch/outrun ».',
             onMaxWithoutProgress:
-                'Limite(s) portant un résultat « on_max » sans être une jauge de progression : {{limits}}. Ce résultat ne sera jamais atteint.',
+                'Limite(s) portant un résultat « on_max » sans être une limite de progression : {{limits}}. Ce résultat ne sera jamais atteint.',
             noLimits:
                 'Ce Défi n’a aucune Limite : rien d’imprimé ne permet de le surmonter.',
         },
@@ -78,7 +84,7 @@ const otherscape: ResourceShape<typeof en> = {
         label: 'Pièce d’équipement',
         newTitle: 'Nouvelle pièce d’équipement',
         description:
-            'Une Pièce d’équipement est une entrée du Street Catalog : son nom, la rubrique où elle est classée, le texte que le catalogue imprime, les tags qu’elle accorde et l’unique tag qu’elle retourne contre son porteur. Partez d’une fiche vierge, ouvrez l’exemple ou importez un fichier TOML.',
+            'Une Pièce d’équipement est une entrée du Street Catalog : son nom, la catégorie où elle est classée, le texte que le catalogue imprime, les tags qu’elle accorde et l’unique tag qu’elle retourne contre son porteur. Partez d’une fiche vierge, ouvrez l’exemple ou importez un fichier TOML.',
         exportToml: 'Exporter les données de la pièce d’équipement en TOML.',
         exportPng: 'Exporter la carte de la pièce d’équipement en PNG.',
         sections: {
@@ -92,13 +98,13 @@ const otherscape: ResourceShape<typeof en> = {
                 braced: 'Tags d’atout écrits avec des accolades : {{tags}}. Elles sont ajoutées au rendu de la carte, les accolades apparaîtront donc en double.',
                 marked: 'Tags d’atout écrits avec un « ! » initial : {{tags}}. Un tag qui joue contre son porteur a sa place dans le tag de faiblesse.',
                 statusLike:
-                    'Tags d’atout qui se lisent comme un statut ou une limite : {{tags}}. Un « -<n> » ou « :<n> » final fait afficher le tag comme une jauge plutôt que comme un tag.',
+                    'Tags d’atout qui se lisent comme un statut ou une limite : {{tags}}. Un « -<n> » ou « :<n> » final fait afficher le tag comme un statut plutôt que comme un tag.',
             },
             weakness: {
                 braced: 'Tag de faiblesse écrit avec des accolades : {{tags}}. Elles sont ajoutées au rendu de la carte, les accolades apparaîtront donc en double.',
                 marked: 'Tag de faiblesse écrit avec un « ! » initial : {{tags}}. Le tag de faiblesse est déjà signalé par le champ où il se trouve.',
                 statusLike:
-                    'Tag de faiblesse qui se lit comme un statut ou une limite : {{tags}}. Un « -<n> » ou « :<n> » final fait afficher le tag comme une jauge plutôt que comme un tag.',
+                    'Tag de faiblesse qui se lit comme un statut ou une limite : {{tags}}. Un « -<n> » ou « :<n> » final fait afficher le tag comme un statut plutôt que comme un tag.',
             },
             noTags: 'Cette Pièce d’équipement n’accorde aucun tag : il n’y a rien à invoquer avec elle.',
             firstTagNotName:
@@ -114,7 +120,7 @@ const otherscape: ResourceShape<typeof en> = {
         exportPng: 'Exporter l’aperçu de l’ensemble de pouvoirs en PNG.',
         sections: {
             description: 'Description',
-            specials: 'Spéciaux',
+            specials: 'Particularités',
             threats: 'Menaces',
             generalConsequences: 'Conséquences générales',
             meta: 'Pied de page méta',
@@ -128,7 +134,7 @@ const otherscape: ResourceShape<typeof en> = {
         label: 'Thème',
         newTitle: 'Nouveau thème',
         description:
-            'Un Thème est une carte qu’un personnage a faite sienne : un tag de titre, le type de thème auquel il appartient, ses tags de pouvoir et de faiblesse, la quête qu’il fixe, et les jauges d’Amélioration et de Déclin qui mesurent jusqu’où il a été joué. Partez d’une fiche vierge, ouvrez l’exemple ou importez un fichier TOML.',
+            'Un Thème est une carte qu’un personnage a faite sienne : un tag de titre, le type de thème auquel il appartient, ses tags de pouvoir et de faiblesse, la quête qu’il fixe, et les jauges d’Évolution et de Déclin qui mesurent jusqu’où il a été joué. Partez d’une fiche vierge, ouvrez l’exemple ou importez un fichier TOML.',
         exportToml: 'Exporter les données du thème en TOML.',
         exportPng: 'Exporter la carte du thème en PNG.',
         sections: {
@@ -158,6 +164,15 @@ const otherscape: ResourceShape<typeof en> = {
         warnings: {
             noTags: 'Ce Kit de thème ne suggère aucun tag : un personnage n’a rien parmi quoi choisir.',
         },
+    },
+    /* One file per template, so each template's form strings can change on their own. */
+    forms: {
+        challenge: challengeForms,
+        characterTrope: characterTropeForms,
+        loadoutItem: loadoutItemForms,
+        powerSet: powerSetForms,
+        theme: themeForms,
+        themeKit: themeKitForms,
     },
 }
 

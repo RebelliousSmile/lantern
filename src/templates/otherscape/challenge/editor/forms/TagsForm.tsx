@@ -1,4 +1,5 @@
 import { SystemMarkdownScope } from '@/components/markdown/SystemMarkdownScope'
+import { useUiText } from '@/i18n/text'
 import { renderSystemMarkdownInline } from '@/utils/markdown'
 import { useEffect, useMemo, useState } from 'react'
 import { useOtherscapeChallengeStore } from '../../hooks'
@@ -26,6 +27,7 @@ import {
 import { CSS } from '@dnd-kit/utilities'
 
 export default function TagsForm({ focusIndex }: { focusIndex?: number }) {
+    const text = useUiText()
     const {
         otherscapeChallenge,
         addToken,
@@ -111,7 +113,7 @@ export default function TagsForm({ focusIndex }: { focusIndex?: number }) {
         if (editingIndex == null) return
         const next = raw.trim()
         if (!next) {
-            setError('Please enter a value.')
+            setError(text('otherscape:forms.challenge.tags.errorRequired'))
             return
         }
         // allow duplicates intentionally (they’re just strings)
@@ -153,7 +155,9 @@ export default function TagsForm({ focusIndex }: { focusIndex?: number }) {
                                                     htmlFor={`tag-raw-${idx}`}
                                                     className="text-xs"
                                                 >
-                                                    Raw value
+                                                    {text(
+                                                        'otherscape:forms.challenge.tags.rawValueLabel'
+                                                    )}
                                                 </Label>
                                                 <Input
                                                     id={`tag-raw-${idx}`}
@@ -162,7 +166,9 @@ export default function TagsForm({ focusIndex }: { focusIndex?: number }) {
                                                     onChange={(e) =>
                                                         setRaw(e.target.value)
                                                     }
-                                                    placeholder="{power tag}, {status-3}, {!weakness tag} or plain text"
+                                                    placeholder={text(
+                                                        'otherscape:forms.challenge.tags.rawValuePlaceholder'
+                                                    )}
                                                 />
                                             </div>
 
@@ -173,7 +179,7 @@ export default function TagsForm({ focusIndex }: { focusIndex?: number }) {
                                                     className="h-7 px-2.5 text-xs"
                                                     onClick={confirmEdit}
                                                 >
-                                                    Save
+                                                    {text('actions.save')}
                                                 </Button>
                                                 <Button
                                                     type="button"
@@ -181,7 +187,7 @@ export default function TagsForm({ focusIndex }: { focusIndex?: number }) {
                                                     className="h-7 px-0 text-xs"
                                                     onClick={cancelEdit}
                                                 >
-                                                    Cancel
+                                                    {text('actions.cancel')}
                                                 </Button>
                                             </div>
                                         </div>
@@ -199,7 +205,10 @@ export default function TagsForm({ focusIndex }: { focusIndex?: number }) {
                                 className="mt-1 h-8 w-full justify-center gap-1.5 border-dashed px-2.5 text-xs"
                                 onClick={addPlaceholder}
                             >
-                                <Plus className="h-3.5 w-3.5" /> Add entry
+                                <Plus className="h-3.5 w-3.5" />{' '}
+                                {text(
+                                    'otherscape:forms.challenge.tags.addEntry'
+                                )}
                             </Button>
                         </li>
                     </ul>
@@ -225,6 +234,7 @@ function SortableTokenItem({
     onRemove: () => void
     children?: React.ReactNode
 }) {
+    const text = useUiText()
     const {
         attributes,
         listeners,
@@ -259,11 +269,13 @@ function SortableTokenItem({
                       ? 'opacity-40 cursor-not-allowed hover:bg-transparent'
                       : 'cursor-grab active:cursor-grabbing'
               }`}
-                        aria-label="Drag to reorder"
+                        aria-label={text('actions.dragToReorder')}
                         title={
                             dragDisabled
-                                ? 'Finish editing to reorder'
-                                : 'Drag to reorder'
+                                ? text(
+                                      'otherscape:forms.challenge.tags.finishEditingToReorder'
+                                  )
+                                : text('actions.dragToReorder')
                         }
                         disabled={dragDisabled}
                         {...(!dragDisabled ? attributes : {})}
@@ -294,7 +306,7 @@ function SortableTokenItem({
                         size="icon"
                         className="h-7 w-7"
                         onClick={onEdit}
-                        title="Edit"
+                        title={text('actions.edit')}
                     >
                         <Pencil className="h-3.5 w-3.5" />
                     </Button>
@@ -304,7 +316,7 @@ function SortableTokenItem({
                         size="icon"
                         className="h-7 w-7 text-destructive"
                         onClick={onRemove}
-                        title="Remove"
+                        title={text('actions.remove')}
                     >
                         <Trash2 className="h-3.5 w-3.5" />
                     </Button>

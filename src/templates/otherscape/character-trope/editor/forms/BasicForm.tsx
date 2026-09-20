@@ -1,9 +1,11 @@
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { useUiText } from '@/i18n/text'
 import { useOtherscapeCharacterTropeStore } from '../../hooks'
 
 export default function BasicForm() {
+    const text = useUiText()
     const { otherscapeCharacterTrope, setOtherscapeCharacterTrope } =
         useOtherscapeCharacterTropeStore()
 
@@ -11,12 +13,14 @@ export default function BasicForm() {
         <div className="space-y-4">
             <div className="grid gap-1">
                 <Label htmlFor="os-character-trope-name">
-                    Character Trope name
+                    {text('otherscape:forms.characterTrope.basic.nameLabel')}
                 </Label>
                 <Input
                     id="os-character-trope-name"
                     className="h-8 px-2 text-sm"
-                    placeholder="e.g., Neon Exorcist"
+                    placeholder={text(
+                        'otherscape:forms.characterTrope.basic.namePlaceholder'
+                    )}
                     value={otherscapeCharacterTrope.name}
                     onChange={(event) =>
                         setOtherscapeCharacterTrope({
@@ -29,13 +33,19 @@ export default function BasicForm() {
             </div>
 
             <div className="grid gap-1">
-                <Label htmlFor="os-character-trope-category">Category</Label>
+                <Label htmlFor="os-character-trope-category">
+                    {text(
+                        'otherscape:forms.characterTrope.basic.categoryLabel'
+                    )}
+                </Label>
                 {/* Free text rather than a picker: the category groups tropes
                     on the page, and nothing in the app resolves against it. */}
                 <Input
                     id="os-character-trope-category"
                     className="h-8 px-2 text-sm"
-                    placeholder="e.g., MYSTICS & MEDIUMS"
+                    placeholder={text(
+                        'otherscape:forms.characterTrope.basic.categoryPlaceholder'
+                    )}
                     value={otherscapeCharacterTrope.category}
                     onChange={(event) =>
                         setOtherscapeCharacterTrope({
@@ -44,20 +54,21 @@ export default function BasicForm() {
                     }
                 />
                 <p className="text-xs text-muted-foreground">
-                    The family of characters this trope belongs to, as the book
-                    files it.
+                    {text('otherscape:forms.characterTrope.basic.categoryHint')}
                 </p>
             </div>
 
             <div className="space-y-2">
                 <Label htmlFor="os-character-trope-description">
-                    Description
+                    {text('fields.description')}
                 </Label>
                 <Textarea
                     id="os-character-trope-description"
                     rows={4}
                     className="px-2 py-1 text-sm"
-                    placeholder="Write a short summary of the character trope here..."
+                    placeholder={text(
+                        'otherscape:forms.characterTrope.basic.descriptionPlaceholder'
+                    )}
                     value={otherscapeCharacterTrope.description}
                     onChange={(event) =>
                         setOtherscapeCharacterTrope({

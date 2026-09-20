@@ -1,3 +1,10 @@
+import challengeForms from './otherscape/challengeForms'
+import characterTropeForms from './otherscape/characterTropeForms'
+import loadoutItemForms from './otherscape/loadoutItemForms'
+import powerSetForms from './otherscape/powerSetForms'
+import themeForms from './otherscape/themeForms'
+import themeKitForms from './otherscape/themeKitForms'
+
 /* English source of truth for this game family's templates; the French file is typed against it. */
 const otherscape = {
     /* Messages several templates raise word for word. */
@@ -155,6 +162,15 @@ const otherscape = {
         warnings: {
             noTags: 'This Theme Kit suggests no tags, so there is nothing for a character to pick from.',
         },
+    },
+    /* One file per template, so each template's form strings can change on their own. */
+    forms: {
+        challenge: challengeForms,
+        characterTrope: characterTropeForms,
+        loadoutItem: loadoutItemForms,
+        powerSet: powerSetForms,
+        theme: themeForms,
+        themeKit: themeKitForms,
     },
 }
 

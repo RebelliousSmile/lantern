@@ -1,14 +1,18 @@
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+import { useUiText } from '@/i18n/text'
 import { useOtherscapeLoadoutItemViewStore } from '../hooks'
 
 export function LoadoutItemImageExportSettings() {
+    const text = useUiText()
     const { exportPrefs, setExportPrefs } = useOtherscapeLoadoutItemViewStore()
 
     return (
         <div className="space-y-4">
             <div className="space-y-2">
                 <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                    Image scale
+                    {text(
+                        'otherscape:forms.loadoutItem.export.imageScaleTitle'
+                    )}
                 </p>
                 <RadioGroup
                     value={String(exportPrefs.scale)}

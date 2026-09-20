@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { useUiText } from '@/i18n/text'
 import type { ReactNode } from 'react'
 
 export function TextField({
@@ -95,23 +96,24 @@ export function RangedNumberField({
         })
     const setMaximum = (maximum: number) =>
         onChange({ ...range, maximum: Math.max(range.current, maximum) })
+    const text = useUiText()
 
     return (
         <fieldset className="grid gap-1 rounded border p-2 text-sm">
             <legend className="px-1">{label}</legend>
             <div className="grid grid-cols-3 gap-1">
                 <NumberField
-                    label="Min."
+                    label={text('adrenaline:shared.range.min')}
                     value={range.minimum}
                     onChange={setMinimum}
                 />
                 <NumberField
-                    label="Actuel"
+                    label={text('adrenaline:shared.range.current')}
                     value={range.current}
                     onChange={setCurrent}
                 />
                 <NumberField
-                    label="Max."
+                    label={text('adrenaline:shared.range.max')}
                     value={range.maximum}
                     onChange={setMaximum}
                 />
@@ -149,6 +151,7 @@ export function StringRows({
     values: string[]
     onChange: (values: string[]) => void
 }) {
+    const text = useUiText()
     return (
         <div className="grid gap-2">
             <Label>{label}</Label>
@@ -171,7 +174,7 @@ export function StringRows({
                             onChange(values.filter((_, at) => at !== index))
                         }
                     >
-                        Remove
+                        {text('actions.remove')}
                     </Button>
                 </div>
             ))}
@@ -180,7 +183,7 @@ export function StringRows({
                 variant="outline"
                 onClick={() => onChange([...values, ''])}
             >
-                Add
+                {text('actions.add')}
             </Button>
         </div>
     )
@@ -204,6 +207,7 @@ export function RecordRows<T>({
         replace: (value: T) => void
     ) => ReactNode
 }) {
+    const text = useUiText()
     return (
         <div className="grid gap-2">
             <Label>{label}</Label>
@@ -223,7 +227,7 @@ export function RecordRows<T>({
                             onChange(values.filter((_, at) => at !== index))
                         }
                     >
-                        Remove
+                        {text('actions.remove')}
                     </Button>
                 </div>
             ))}
@@ -232,7 +236,7 @@ export function RecordRows<T>({
                 variant="outline"
                 onClick={() => onChange([...values, create()])}
             >
-                Add
+                {text('actions.add')}
             </Button>
         </div>
     )

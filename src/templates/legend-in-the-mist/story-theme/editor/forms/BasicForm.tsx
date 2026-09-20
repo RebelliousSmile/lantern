@@ -2,61 +2,64 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { cn } from '@/utils/cn'
+import { useTranslation } from 'react-i18next'
 import { useLegendInTheMistStoryThemeStore, type ThemeLevel } from '../../hooks'
 
-const LEVELS: { value: ThemeLevel; label: string; hint: string }[] = [
-    { value: 'origin', label: 'Origin', hint: 'Where the hero comes from' },
-    { value: 'adventure', label: 'Adventure', hint: 'What the hero does now' },
-    {
-        value: 'greatness',
-        label: 'Greatness',
-        hint: 'What the hero may become',
-    },
-]
+const LEVEL_VALUES: ThemeLevel[] = ['origin', 'adventure', 'greatness']
 
 export default function BasicForm() {
+    const { t } = useTranslation()
     const { legendInTheMistStoryTheme, setTitleTag, setLevel, setCategory } =
         useLegendInTheMistStoryThemeStore()
 
     return (
         <div className="space-y-4">
             <div className="grid gap-1">
-                <Label htmlFor="story-theme-title">Title tag</Label>
+                <Label htmlFor="story-theme-title">
+                    {t('legend:forms.storyTheme.basicForm.titleTagLabel')}
+                </Label>
                 <Input
                     id="story-theme-title"
                     className="h-8 px-2 text-sm"
                     value={legendInTheMistStoryTheme.title_tag}
                     onChange={(event) => setTitleTag(event.target.value)}
-                    placeholder="The Village I Left Behind"
+                    placeholder={t(
+                        'legend:forms.storyTheme.basicForm.titleTagPlaceholder'
+                    )}
                 />
                 <p className="text-xs text-muted-foreground">
-                    The theme's own tag, written bare: the card adds the
-                    highlight.
+                    {t('legend:forms.storyTheme.basicForm.titleTagHint')}
                 </p>
             </div>
 
             <div className="grid gap-1">
-                <Label>Level</Label>
+                <Label>
+                    {t('legend:forms.storyTheme.basicForm.levelLabel')}
+                </Label>
                 <div className="grid grid-cols-3 overflow-hidden rounded-md border">
-                    {LEVELS.map((level) => (
+                    {LEVEL_VALUES.map((value) => (
                         <Button
-                            key={level.value}
+                            key={value}
                             type="button"
                             variant={
-                                legendInTheMistStoryTheme.level === level.value
+                                legendInTheMistStoryTheme.level === value
                                     ? 'default'
                                     : 'ghost'
                             }
                             className={cn(
                                 'h-8 rounded-none border-none px-2 text-xs',
-                                legendInTheMistStoryTheme.level === level.value
+                                legendInTheMistStoryTheme.level === value
                                     ? ''
                                     : 'bg-background'
                             )}
-                            title={level.hint}
-                            onClick={() => setLevel(level.value)}
+                            title={t(
+                                `legend:forms.storyTheme.basicForm.levels.${value}.hint`
+                            )}
+                            onClick={() => setLevel(value)}
                         >
-                            {level.label}
+                            {t(
+                                `legend:forms.storyTheme.basicForm.levels.${value}.label`
+                            )}
                         </Button>
                     ))}
                 </div>
@@ -64,15 +67,21 @@ export default function BasicForm() {
 
             <div className="grid gap-1">
                 <Label htmlFor="story-theme-category">
-                    Category{' '}
-                    <span className="text-muted-foreground">(optional)</span>
+                    {t('legend:forms.storyTheme.basicForm.categoryLabel')}{' '}
+                    <span className="text-muted-foreground">
+                        {t(
+                            'legend:forms.storyTheme.basicForm.categoryOptional'
+                        )}
+                    </span>
                 </Label>
                 <Input
                     id="story-theme-category"
                     className="h-8 px-2 text-sm"
                     value={legendInTheMistStoryTheme.category}
                     onChange={(event) => setCategory(event.target.value)}
-                    placeholder="Kinship, Mission, Destiny..."
+                    placeholder={t(
+                        'legend:forms.storyTheme.basicForm.categoryPlaceholder'
+                    )}
                 />
             </div>
         </div>

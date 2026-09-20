@@ -1,3 +1,4 @@
+import { useUiText } from '@/i18n/text'
 import {
     CharacteristicsFields,
     EquipmentFields,
@@ -28,6 +29,7 @@ const records = (value: unknown): Entry[] =>
         : []
 
 export function PjEditorPanel() {
+    const text = useUiText()
     const { document, update } = useAdrenalineDocument(
         'adrenaline.pj',
         blankPj() as unknown as Record<string, unknown>
@@ -39,9 +41,11 @@ export function PjEditorPanel() {
     return (
         <div className="space-y-6 p-1">
             <section className="grid gap-3">
-                <h3 className="font-semibold">Personnage et paramètres</h3>
+                <h3 className="font-semibold">
+                    {text('adrenaline:pj.form.characterHeading')}
+                </h3>
                 <TextField
-                    label="Nom"
+                    label={text('fields.name')}
                     value={String(document.nom ?? '')}
                     onChange={(nom) => set('nom', nom)}
                 />
@@ -53,14 +57,18 @@ export function PjEditorPanel() {
                 />
             </section>
             <section className="grid gap-3">
-                <h3 className="font-semibold">Identité</h3>
+                <h3 className="font-semibold">
+                    {text('adrenaline:shared.headings.identity')}
+                </h3>
                 <IdentityFields
                     value={document.identite}
                     onChange={(identite) => set('identite', identite)}
                 />
             </section>
             <section className="grid gap-3">
-                <h3 className="font-semibold">Caractéristiques</h3>
+                <h3 className="font-semibold">
+                    {text('adrenaline:shared.headings.characteristics')}
+                </h3>
                 <CharacteristicsFields
                     value={document.caracteristiques}
                     onChange={(caracteristiques) =>
@@ -69,7 +77,9 @@ export function PjEditorPanel() {
                 />
             </section>
             <section className="grid gap-3">
-                <h3 className="font-semibold">Santé et protections</h3>
+                <h3 className="font-semibold">
+                    {text('adrenaline:shared.headings.health')}
+                </h3>
                 <HealthFields
                     value={document.sante}
                     onChange={(sante) => set('sante', sante)}
@@ -80,9 +90,11 @@ export function PjEditorPanel() {
                 />
             </section>
             <section className="grid gap-3">
-                <h3 className="font-semibold">Formations</h3>
+                <h3 className="font-semibold">
+                    {text('adrenaline:pj.form.trainingsHeading')}
+                </h3>
                 <RecordRows
-                    label="Formations"
+                    label={text('adrenaline:shared.trainings.label')}
                     values={records(document.formations)}
                     create={() => ({
                         type: '',
@@ -96,21 +108,21 @@ export function PjEditorPanel() {
                         <div className="grid gap-2">
                             <div className="grid grid-cols-2 gap-2">
                                 <TextField
-                                    label="Type"
+                                    label={text('adrenaline:shared.type')}
                                     value={String(formation.type ?? '')}
                                     onChange={(type) =>
                                         replace({ ...formation, type })
                                     }
                                 />
                                 <TextField
-                                    label="Nom"
+                                    label={text('fields.name')}
                                     value={String(formation.nom ?? '')}
                                     onChange={(nom) =>
                                         replace({ ...formation, nom })
                                     }
                                 />
                                 <RangedNumberField
-                                    label="Pourcentage"
+                                    label={text('adrenaline:shared.percentage')}
                                     value={formation.pourcentage}
                                     onChange={(pourcentage) =>
                                         replace({ ...formation, pourcentage })
@@ -118,7 +130,9 @@ export function PjEditorPanel() {
                                 />
                             </div>
                             <SkillRows
-                                label="Compétences de formation"
+                                label={text(
+                                    'adrenaline:shared.trainings.trainingSkills'
+                                )}
                                 value={formation.competences}
                                 onChange={(competences) =>
                                     replace({ ...formation, competences })
@@ -129,14 +143,18 @@ export function PjEditorPanel() {
                 </RecordRows>
             </section>
             <section className="grid gap-3">
-                <h3 className="font-semibold">Équipement</h3>
+                <h3 className="font-semibold">
+                    {text('adrenaline:shared.headings.equipment')}
+                </h3>
                 <EquipmentFields
                     value={document.equipement}
                     onChange={(equipement) => set('equipement', equipement)}
                 />
             </section>
             <section className="grid gap-3">
-                <h3 className="font-semibold">Provenance</h3>
+                <h3 className="font-semibold">
+                    {text('adrenaline:shared.headings.provenance')}
+                </h3>
                 <MetaFields
                     value={document.meta}
                     onChange={(meta) => set('meta', meta)}

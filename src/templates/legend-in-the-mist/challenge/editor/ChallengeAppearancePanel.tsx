@@ -26,7 +26,9 @@ export function ChallengeAppearancePanel() {
         <div className="space-y-4">
             <div className="flex items-center justify-between gap-4">
                 <Label htmlFor="auto-hide-empty" className="text-xs">
-                    Auto-hide empty sections
+                    {text(
+                        'legend:forms.challenge.appearancePanel.autoHideEmpty'
+                    )}
                 </Label>
                 <Switch
                     id="auto-hide-empty"
@@ -37,7 +39,7 @@ export function ChallengeAppearancePanel() {
 
             <div className="space-y-2">
                 <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                    Sections
+                    {text('legend:forms.challenge.appearancePanel.sections')}
                 </p>
                 <div className="grid grid-cols-[1fr_0.8fr] gap-x-3 gap-y-1.5">
                     {challengeSections.map((section) => (
@@ -60,7 +62,9 @@ export function ChallengeAppearancePanel() {
             <div className="space-y-2">
                 <div className="flex items-center justify-between gap-2">
                     <Label htmlFor="preview-width" className="text-xs">
-                        Preview width
+                        {text(
+                            'legend:forms.challenge.appearancePanel.previewWidth'
+                        )}
                     </Label>
                     <span className="text-xs font-medium">
                         {previewWidth}px
@@ -77,7 +81,9 @@ export function ChallengeAppearancePanel() {
                         setPreviewWidth(Number(event.target.value))
                     }
                     className="w-full accent-primary"
-                    aria-label="Preview width"
+                    aria-label={text(
+                        'legend:forms.challenge.appearancePanel.previewWidth'
+                    )}
                 />
                 <div className="flex items-center justify-between text-[10px] text-muted-foreground">
                     <span>{PREVIEW_WIDTH_MIN}px</span>
@@ -87,7 +93,9 @@ export function ChallengeAppearancePanel() {
 
             <div className="space-y-2">
                 <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                    Background
+                    {text(
+                        'legend:forms.challenge.appearancePanel.backgroundLabel'
+                    )}
                 </p>
                 <RadioGroup
                     value={background}
@@ -105,7 +113,9 @@ export function ChallengeAppearancePanel() {
                                 value={option.value}
                                 id={`background-${option.value}`}
                             />
-                            <span className="text-xs">{option.label}</span>
+                            <span className="text-xs">
+                                {text(option.label)}
+                            </span>
                         </label>
                     ))}
                 </RadioGroup>
@@ -118,7 +128,7 @@ export function ChallengeAppearancePanel() {
                 className="h-8 w-full text-xs"
                 onClick={resetViewPrefs}
             >
-                Reset view
+                {text('legend:forms.challenge.appearancePanel.resetView')}
             </Button>
         </div>
     )

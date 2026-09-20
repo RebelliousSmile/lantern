@@ -4,6 +4,7 @@ import { renderLitmMarkdown } from '@/utils/markdown'
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { ArrowLeft, Plus } from 'lucide-react'
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import type { Threat } from '../../model'
 import {
@@ -53,6 +54,7 @@ export function ConsequencesPanel({
     onEditGeneral: (index: number | null) => void
     onRemoveGeneral: (index: number) => void
 }) {
+    const { t } = useTranslation()
     if (panel.kind === 'cons' && threat)
         return (
             <ThreatConsequences
@@ -83,7 +85,7 @@ export function ConsequencesPanel({
         )
     return (
         <div className="flex items-center justify-center text-muted-foreground">
-            Select a threat to edit its consequences
+            {t('legend:forms.challenge.consequencesPanel.selectThreatPrompt')}
         </div>
     )
 }
@@ -109,6 +111,7 @@ function ThreatConsequences({
     onEdit: (index: number | null) => void
     onRemove: (index: number) => void
 }) {
+    const { t } = useTranslation()
     const [draft, setDraft] = useState('')
     useEffect(
         () =>
@@ -120,13 +123,23 @@ function ThreatConsequences({
     function save() {
         if (editing === null) return
         const value = draft.trim()
-        if (!value) return toast.error('Consequence cannot be empty.')
+        if (!value)
+            return toast.error(
+                t(
+                    'legend:forms.challenge.consequencesPanel.consequenceEmptyError'
+                )
+            )
         onSave(editing, value)
     }
     return (
         <div className="w-full min-w-0 space-y-3 pl-2">
             <PanelTitle onBack={onBack}>
-                Consequences for: {threat.name}
+                {t(
+                    'legend:forms.challenge.consequencesPanel.consequencesForTitle',
+                    {
+                        name: threat.name,
+                    }
+                )}
             </PanelTitle>
             {threat.description ? (
                 <SystemMarkdownScope
@@ -153,7 +166,9 @@ function ThreatConsequences({
                             onRemove={() =>
                                 threat.consequences.length <= 1
                                     ? toast.error(
-                                          'Each threat needs at least one consequence.'
+                                          t(
+                                              'legend:forms.challenge.consequencesPanel.consequenceMinError'
+                                          )
                                       )
                                     : onRemove(index)
                             }
@@ -168,7 +183,11 @@ function ThreatConsequences({
                             ) : null}
                         </ConsequenceRow>
                     ))}
-                    <AddButton onClick={onAdd}>Add consequence</AddButton>
+                    <AddButton onClick={onAdd}>
+                        {t(
+                            'legend:forms.challenge.consequencesPanel.addConsequence'
+                        )}
+                    </AddButton>
                 </ul>
             </SortableContext>
         </div>
@@ -196,6 +215,7 @@ function GeneralConsequences({
     onEdit: (index: number | null) => void
     onRemove: (index: number) => void
 }) {
+    const { t } = useTranslation()
     const [draft, setDraft] = useState('')
     useEffect(
         () => setDraft(editing === null ? '' : (values[editing] ?? '')),
@@ -203,7 +223,9 @@ function GeneralConsequences({
     )
     return (
         <div className="w-full min-w-0 space-y-3 pl-2">
-            <PanelTitle onBack={onBack}>General Consequences</PanelTitle>
+            <PanelTitle onBack={onBack}>
+                {t('legend:challenge.sections.generalConsequences')}
+            </PanelTitle>
             <SortableContext items={ids} strategy={verticalListSortingStrategy}>
                 <ul className="space-y-1.5">
                     {values.map((value, index) => (
@@ -230,7 +252,9 @@ function GeneralConsequences({
                         </ConsequenceRow>
                     ))}
                     <AddButton onClick={onAdd}>
-                        Add general consequence
+                        {t(
+                            'legend:forms.challenge.consequencesPanel.addGeneralConsequence'
+                        )}
                     </AddButton>
                 </ul>
             </SortableContext>
@@ -245,6 +269,7 @@ function PanelTitle({
     children: React.ReactNode
     onBack: () => void
 }) {
+    const { t } = useTranslation()
     return (
         <div className="flex items-center gap-2">
             <Button
@@ -253,7 +278,8 @@ function PanelTitle({
                 className="h-7 px-2 text-xs"
                 onClick={onBack}
             >
-                <ArrowLeft className="mr-1 h-3.5 w-3.5" /> Back
+                <ArrowLeft className="mr-1 h-3.5 w-3.5" />{' '}
+                {t('legend:forms.challenge.consequencesPanel.back')}
             </Button>
             <div className="font-semibold">{children}</div>
         </div>

@@ -141,6 +141,28 @@ const common: ResourceShape<typeof en> = {
         close: 'Fermer',
         joinDiscord: 'Rejoindre Discord',
     },
+    actions: {
+        add: 'Ajouter',
+        remove: 'Retirer',
+        edit: 'Modifier',
+        delete: 'Supprimer',
+        cancel: 'Annuler',
+        save: 'Enregistrer',
+        done: 'Terminé',
+        dragToReorder: 'Glisser pour réordonner',
+        moveUp: 'Monter',
+        moveDown: 'Descendre',
+        addItem: 'Ajouter un élément',
+        removeItem: 'Retirer l’élément',
+        moveItemUp: 'Monter l’élément',
+        moveItemDown: 'Descendre l’élément',
+    },
+    fields: {
+        name: 'Nom',
+        description: 'Description',
+        title: 'Titre',
+        notes: 'Notes',
+    },
     errors: {
         tomlSyntax:
             'Erreur de syntaxe TOML, ligne {{line}}, colonne {{column}}',

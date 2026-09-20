@@ -19,28 +19,45 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from '@/components/ui/popover'
+import { useUiText, type TranslationKey } from '@/i18n/text'
 import { getCatalogSources, type CatalogItem } from '@/utils/catalog'
 import { cn } from '@/utils/cn'
 import { Check, ChevronsUpDown, X } from 'lucide-react'
 
-const TYPES: { value: PublicationType; label: string }[] = [
-    { value: 'official', label: 'Official' },
-    { value: 'third_party', label: 'Third Party' },
-    { value: 'cauldron', label: 'Cauldron' },
-    { value: 'homebrew', label: 'Homebrew' },
+const TYPES: { value: PublicationType; label: TranslationKey }[] = [
+    {
+        value: 'official',
+        label: 'otherscape:forms.characterTrope.meta.type.official',
+    },
+    {
+        value: 'third_party',
+        label: 'otherscape:forms.characterTrope.meta.type.thirdParty',
+    },
+    {
+        value: 'cauldron',
+        label: 'otherscape:forms.characterTrope.meta.type.cauldron',
+    },
+    {
+        value: 'homebrew',
+        label: 'otherscape:forms.characterTrope.meta.type.homebrew',
+    },
 ]
 
 /* ---------- Authors chips input ---------- */
 function AuthorsInput({
     value,
     onChange,
-    placeholder = 'Add author and press Enter',
+    placeholder,
 }: {
     value: string[]
     onChange: (next: string[]) => void
     placeholder?: string
 }) {
+    const text = useUiText()
     const [draft, setDraft] = useState('')
+    const resolvedPlaceholder =
+        placeholder ??
+        text('otherscape:forms.characterTrope.meta.authorsPlaceholderDefault')
 
     function commitDraft() {
         const name = draft.trim()
@@ -61,7 +78,10 @@ function AuthorsInput({
                         <button
                             type="button"
                             className="opacity-70 hover:opacity-100"
-                            aria-label={`Remove ${author}`}
+                            aria-label={text(
+                                'otherscape:forms.characterTrope.meta.removeAuthorAriaLabel',
+                                { author }
+                            )}
                             onClick={() =>
                                 onChange(value.filter((x) => x !== author))
                             }
@@ -87,7 +107,7 @@ function AuthorsInput({
                             onChange(value.slice(0, -1))
                         }
                     }}
-                    placeholder={value.length ? '' : placeholder}
+                    placeholder={value.length ? '' : resolvedPlaceholder}
                 />
             </div>
         </div>
@@ -106,6 +126,7 @@ function SourceCombobox({
     onSelect: (item: CatalogItem) => void
     placeholder: string
 }) {
+    const text = useUiText()
     const [open, setOpen] = useState(false)
     const current = items.find((item) => item.title === value)
 
@@ -124,8 +145,14 @@ function SourceCombobox({
             </PopoverTrigger>
             <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
                 <Command>
-                    <CommandInput placeholder="Search source..." />
-                    <CommandEmpty>No match.</CommandEmpty>
+                    <CommandInput
+                        placeholder={text(
+                            'otherscape:forms.characterTrope.meta.searchSourcePlaceholder'
+                        )}
+                    />
+                    <CommandEmpty>
+                        {text('otherscape:forms.characterTrope.meta.noMatch')}
+                    </CommandEmpty>
                     <CommandGroup>
                         {items.map((item) => (
                             <CommandItem
@@ -162,6 +189,8 @@ function TypeSegment({
     value?: PublicationType
     onChange: (next: PublicationType) => void
 }) {
+    const text = useUiText()
+
     return (
         <div className="grid grid-cols-2 overflow-hidden rounded-md border sm:inline-grid sm:grid-cols-4">
             {TYPES.map((type) => (
@@ -175,7 +204,7 @@ function TypeSegment({
                     )}
                     onClick={() => onChange(type.value)}
                 >
-                    {type.label}
+                    {text(type.label)}
                 </Button>
             ))}
         </div>
@@ -184,6 +213,7 @@ function TypeSegment({
 
 /* ---------- Main MetaForm ---------- */
 export default function MetaForm() {
+    const text = useUiText()
     const { otherscapeCharacterTrope, updateMeta } =
         useOtherscapeCharacterTropeStore()
     const meta = otherscapeCharacterTrope.meta
@@ -213,26 +243,39 @@ export default function MetaForm() {
     return (
         <div className="space-y-4">
             <div className="grid gap-1">
-                <Label>Publication type</Label>
+                <Label>
+                    {text(
+                        'otherscape:forms.characterTrope.meta.publicationTypeLabel'
+                    )}
+                </Label>
                 <TypeSegment value={type} onChange={setType} />
             </div>
 
             {sourceOptions.length > 0 ? (
                 <div className="grid gap-1">
-                    <Label>Source</Label>
+                    <Label>
+                        {text(
+                            'otherscape:forms.characterTrope.meta.sourceLabel'
+                        )}
+                    </Label>
                     <SourceCombobox
                         items={sourceOptions}
                         value={meta?.source}
                         onSelect={pickFromCatalog}
                         placeholder={
                             type === 'official'
-                                ? 'Select an official book...'
-                                : 'Select a third-party source...'
+                                ? text(
+                                      'otherscape:forms.characterTrope.meta.selectOfficialBookPlaceholder'
+                                  )
+                                : text(
+                                      'otherscape:forms.characterTrope.meta.selectThirdPartySourcePlaceholder'
+                                  )
                         }
                     />
                     <div className="text-xs text-muted-foreground">
-                        Selecting a source auto-fills authors. You can still
-                        edit below.
+                        {text(
+                            'otherscape:forms.characterTrope.meta.sourceHint'
+                        )}
                     </div>
                 </div>
             ) : null}
@@ -241,12 +284,20 @@ export default function MetaForm() {
                 <div className="grid gap-1">
                     <Label htmlFor="os-character-trope-meta-source">
                         {type === 'cauldron'
-                            ? 'Cauldron product title'
+                            ? text(
+                                  'otherscape:forms.characterTrope.meta.sourceTitleLabel.cauldron'
+                              )
                             : type === 'homebrew'
-                              ? 'Homebrew title / location'
-                              : 'Source title'}{' '}
+                              ? text(
+                                    'otherscape:forms.characterTrope.meta.sourceTitleLabel.homebrew'
+                                )
+                              : text(
+                                    'otherscape:forms.characterTrope.meta.sourceTitleLabel.default'
+                                )}{' '}
                         <span className="text-muted-foreground">
-                            (optional)
+                            {text(
+                                'otherscape:forms.characterTrope.meta.optional'
+                            )}
                         </span>
                     </Label>
                     <Input
@@ -258,19 +309,27 @@ export default function MetaForm() {
                         }
                         placeholder={
                             type === 'cauldron'
-                                ? 'e.g., Cauldron: Neon Debts'
+                                ? text(
+                                      'otherscape:forms.characterTrope.meta.sourceTitlePlaceholder.cauldron'
+                                  )
                                 : type === 'homebrew'
-                                  ? 'e.g., Personal blog, campaign doc...'
-                                  : 'Override selected source title'
+                                  ? text(
+                                        'otherscape:forms.characterTrope.meta.sourceTitlePlaceholder.homebrew'
+                                    )
+                                  : text(
+                                        'otherscape:forms.characterTrope.meta.sourceTitlePlaceholder.default'
+                                    )
                         }
                     />
                 </div>
 
                 <div className="grid gap-1">
                     <Label htmlFor="os-character-trope-meta-page">
-                        Page{' '}
+                        {text('otherscape:forms.characterTrope.meta.pageLabel')}{' '}
                         <span className="text-muted-foreground">
-                            (optional)
+                            {text(
+                                'otherscape:forms.characterTrope.meta.optional'
+                            )}
                         </span>
                     </Label>
                     <Input
@@ -289,23 +348,28 @@ export default function MetaForm() {
                                     : undefined,
                             })
                         }
-                        placeholder="71"
+                        placeholder={text(
+                            'otherscape:forms.characterTrope.meta.pagePlaceholderExample'
+                        )}
                     />
                 </div>
             </div>
 
             <div className="grid gap-1">
-                <Label>Authors</Label>
+                <Label>
+                    {text('otherscape:forms.characterTrope.meta.authorsLabel')}
+                </Label>
                 <AuthorsInput
                     value={authors}
                     onChange={(next) => updateMeta({ authors: next })}
-                    placeholder="Add author..."
+                    placeholder={text(
+                        'otherscape:forms.characterTrope.meta.authorsPlaceholder'
+                    )}
                 />
             </div>
 
             <div className="text-xs text-muted-foreground">
-                Meta helps attribution & search and is preserved on
-                import/export.
+                {text('otherscape:forms.characterTrope.meta.footerHint')}
             </div>
         </div>
     )

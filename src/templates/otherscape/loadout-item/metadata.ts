@@ -13,7 +13,16 @@ export const loadoutItemSections: Array<{ id: SectionId; label: UiText }> = [
 
 export const loadoutItemZoomOptions = [0.75, 1, 1.25, 1.5]
 
-export const loadoutItemBackgroundOptions = [
-    { value: 'neon', label: 'Neon' },
-    { value: 'plain', label: 'Plain' },
-] as const
+export const loadoutItemBackgroundOptions: Array<{
+    value: 'neon' | 'plain'
+    label: UiText
+}> = [
+    {
+        value: 'neon',
+        label: 'otherscape:forms.loadoutItem.appearance.backgroundNeon',
+    },
+    {
+        value: 'plain',
+        label: 'otherscape:forms.loadoutItem.appearance.backgroundPlain',
+    },
+]

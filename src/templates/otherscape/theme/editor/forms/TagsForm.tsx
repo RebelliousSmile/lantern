@@ -2,6 +2,8 @@ import { SystemMarkdownScope } from '@/components/markdown/SystemMarkdownScope'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import type { TranslationKey } from '@/i18n/text'
+import { useUiText } from '@/i18n/text'
 import { renderLitmInline } from '@/utils/markdown'
 import { formatPower, formatWeakness } from '@/utils/tags'
 import {
@@ -31,11 +33,14 @@ const FORMAT: Record<TagField, (name: string) => string> = {
     weakness: formatWeakness,
 }
 
-const FIELD_LABEL: Record<TagField, string> = {
-    power: 'Power tags',
-    weakness: 'Weakness tags',
+const FIELD_LABEL_KEY: Record<TagField, TranslationKey> = {
+    power: 'otherscape:forms.theme.tags.powerLabel',
+    weakness: 'otherscape:forms.theme.tags.weaknessLabel',
 }
 
+// These samples are written straight into the document by `addPlaceholder`
+// (via `addTag`), not shown as a placeholder hint, so they stay English like
+// every other value that crosses the TOML boundary.
 const PLACEHOLDERS: Record<TagField, string[]> = {
     power: [
         'reads a body like a schematic',
@@ -58,6 +63,7 @@ export default function TagsForm({
     focusIndex?: number
     autoCreate?: boolean
 }) {
+    const text = useUiText()
     const { otherscapeTheme, addTag, removeTagAt, replaceTagAt, moveTag } =
         useOtherscapeThemeStore()
 
@@ -142,7 +148,7 @@ export default function TagsForm({
 
         const next = raw.trim()
         if (!next) {
-            setError('Please enter a value.')
+            setError(text('otherscape:forms.theme.tags.valueRequired'))
             return
         }
 
@@ -154,10 +160,10 @@ export default function TagsForm({
         <div className="space-y-2.5">
             <div className="flex items-baseline justify-between gap-2">
                 <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                    {FIELD_LABEL[field]}
+                    {text(FIELD_LABEL_KEY[field])}
                 </p>
                 <p className="text-xs text-muted-foreground">
-                    Write tags bare, without braces.
+                    {text('otherscape:forms.theme.tags.writeBareHelp')}
                 </p>
             </div>
 
@@ -193,7 +199,9 @@ export default function TagsForm({
                                                 htmlFor={`os-theme-tag-${field}-${index}`}
                                                 className="text-xs"
                                             >
-                                                Tag
+                                                {text(
+                                                    'otherscape:forms.theme.tags.tagFieldLabel'
+                                                )}
                                             </Label>
                                             <Input
                                                 id={`os-theme-tag-${field}-${index}`}
@@ -214,7 +222,9 @@ export default function TagsForm({
                                                         cancelEdit()
                                                     }
                                                 }}
-                                                placeholder="reads a body like a schematic"
+                                                placeholder={text(
+                                                    'otherscape:forms.theme.tags.tagInputPlaceholder'
+                                                )}
                                             />
                                         </div>
 
@@ -225,7 +235,7 @@ export default function TagsForm({
                                                 className="h-7 px-2.5 text-xs"
                                                 onClick={confirmEdit}
                                             >
-                                                Save
+                                                {text('actions.save')}
                                             </Button>
                                             <Button
                                                 type="button"
@@ -233,7 +243,7 @@ export default function TagsForm({
                                                 className="h-7 px-0 text-xs"
                                                 onClick={cancelEdit}
                                             >
-                                                Cancel
+                                                {text('actions.cancel')}
                                             </Button>
                                         </div>
                                     </div>
@@ -249,7 +259,8 @@ export default function TagsForm({
                                 className="mt-1 h-8 w-full justify-center gap-1.5 border-dashed px-2.5 text-xs"
                                 onClick={addPlaceholder}
                             >
-                                <Plus className="h-3.5 w-3.5" /> Add tag
+                                <Plus className="h-3.5 w-3.5" />{' '}
+                                {text('otherscape:forms.theme.tags.addButton')}
                             </Button>
                         </li>
                     </ul>
@@ -286,6 +297,8 @@ function SortableTagItem({
         isDragging,
     } = useSortable({ id, disabled: dragDisabled })
 
+    const text = useUiText()
+
     const style: React.CSSProperties = {
         transform: CSS.Transform.toString(transform),
         transition,
@@ -309,11 +322,13 @@ function SortableTagItem({
                       ? 'opacity-40 cursor-not-allowed hover:bg-transparent'
                       : 'cursor-grab active:cursor-grabbing'
               }`}
-                        aria-label="Drag to reorder"
+                        aria-label={text('actions.dragToReorder')}
                         title={
                             dragDisabled
-                                ? 'Finish editing to reorder'
-                                : 'Drag to reorder'
+                                ? text(
+                                      'otherscape:forms.theme.tags.finishEditingToReorder'
+                                  )
+                                : text('actions.dragToReorder')
                         }
                         disabled={dragDisabled}
                         {...(!dragDisabled ? attributes : {})}
@@ -343,7 +358,7 @@ function SortableTagItem({
                         size="icon"
                         className="h-7 w-7"
                         onClick={onEdit}
-                        title="Edit"
+                        title={text('actions.edit')}
                     >
                         <Pencil className="h-3.5 w-3.5" />
                     </Button>
@@ -353,7 +368,7 @@ function SortableTagItem({
                         size="icon"
                         className="h-7 w-7 text-destructive"
                         onClick={onRemove}
-                        title="Remove"
+                        title={text('actions.remove')}
                     >
                         <Trash2 className="h-3.5 w-3.5" />
                     </Button>

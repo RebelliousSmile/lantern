@@ -1,3 +1,4 @@
+import { useUiText } from '@/i18n/text'
 import { useOtherscapeCharacterTropeSheetStore } from '../hooks'
 import BasicForm from './forms/BasicForm'
 import ChoicesForm from './forms/ChoicesForm'
@@ -6,12 +7,13 @@ import MetaForm from './forms/MetaForm'
 import ThemeKitsForm from './forms/ThemeKitsForm'
 
 export function CharacterTropeEditorPanel() {
+    const text = useUiText()
     const { open, target } = useOtherscapeCharacterTropeSheetStore()
 
     if (!open || !target) {
         return (
             <div className="rounded-md border border-dashed px-3 py-4 text-sm text-muted-foreground">
-                Click on the card to edit a specific section.
+                {text('otherscape:forms.characterTrope.panel.emptyState')}
             </div>
         )
     }

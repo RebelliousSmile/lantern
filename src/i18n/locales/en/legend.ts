@@ -1,3 +1,8 @@
+import challengeForms from './legend/challengeForms'
+import journeyForms from './legend/journeyForms'
+import storyThemeForms from './legend/storyThemeForms'
+import themeKitForms from './legend/themeKitForms'
+
 /* English source of truth for this game family's templates; the French file is typed against it. */
 const legend = {
     challenge: {
@@ -112,6 +117,13 @@ const legend = {
             improvementsWithoutEffect:
                 'Improvements named without an effect: {{improvements}}. The card prints the label alone, which is right only if the themebook states nothing more.',
         },
+    },
+    /* One file per template, so each template's form strings can change on their own. */
+    forms: {
+        challenge: challengeForms,
+        journey: journeyForms,
+        storyTheme: storyThemeForms,
+        themeKit: themeKitForms,
     },
 }
 

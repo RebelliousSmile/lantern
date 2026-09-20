@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { useLegendInTheMistChallengeSheetStore } from '../hooks'
 import BasicForm from './forms/BasicForm'
 import LimitsForm from './forms/LimitsForm'
@@ -8,12 +9,13 @@ import TagsStatusesForm from './forms/TagsStatusesForm'
 import ThreatsForm from './forms/ThreatsForm'
 
 export function ChallengeEditorPanel() {
+    const { t } = useTranslation()
     const { open, target } = useLegendInTheMistChallengeSheetStore()
 
     if (!open || !target) {
         return (
             <div className="rounded-md border border-dashed px-3 py-4 text-sm text-muted-foreground">
-                Click on the preview to edit a specific section.
+                {t('legend:forms.challenge.panel.emptyState')}
             </div>
         )
     }

@@ -1,4 +1,5 @@
 import { SystemMarkdownScope } from '@/components/markdown/SystemMarkdownScope'
+import { useUiText } from '@/i18n/text'
 import { renderLitmMarkdown } from '@/utils/markdown'
 import { useEffect, useMemo, useState } from 'react'
 import { toast } from 'sonner'
@@ -36,6 +37,7 @@ import { CSS } from '@dnd-kit/utilities'
 const DEFAULT_LOADOUT_ENTRY = 'Describe a piece of gear.'
 
 export default function LoadoutForm({ focusIndex }: { focusIndex?: number }) {
+    const text = useUiText()
     const {
         otherscapeCharacterTrope,
         addLoadoutEntry,
@@ -101,7 +103,9 @@ export default function LoadoutForm({ focusIndex }: { focusIndex?: number }) {
         if (editing == null) return
         const next = draft.trim()
         if (!next) {
-            toast.error('Loadout entry cannot be empty.')
+            toast.error(
+                text('otherscape:forms.characterTrope.loadout.emptyEntryError')
+            )
             return
         }
 
@@ -117,9 +121,7 @@ export default function LoadoutForm({ focusIndex }: { focusIndex?: number }) {
         >
             <div className="space-y-3">
                 <p className="text-xs text-muted-foreground">
-                    The gear the character walks in with. Write each entry the
-                    way it should print; it names what is carried rather than
-                    pointing at a loadout item document.
+                    {text('otherscape:forms.characterTrope.loadout.hint')}
                 </p>
 
                 <SortableContext
@@ -159,8 +161,10 @@ export default function LoadoutForm({ focusIndex }: { focusIndex?: number }) {
                                 className="mt-1 h-8 w-full justify-center gap-1.5 border-dashed px-2.5 text-xs"
                                 onClick={addPlaceholder}
                             >
-                                <Plus className="h-3.5 w-3.5" /> Add loadout
-                                entry
+                                <Plus className="h-3.5 w-3.5" />{' '}
+                                {text(
+                                    'otherscape:forms.characterTrope.loadout.addButton'
+                                )}
                             </Button>
                         </li>
                     </ul>
@@ -187,6 +191,7 @@ function LoadoutRow({
     onRemove: () => void
     children?: React.ReactNode
 }) {
+    const uiText = useUiText()
     const {
         attributes,
         listeners,
@@ -213,11 +218,15 @@ function LoadoutRow({
                 <button
                     className={`inline-flex h-7 w-7 items-center justify-center rounded hover:bg-slate-50
             ${dragDisabled ? 'cursor-not-allowed opacity-40 hover:bg-transparent' : 'cursor-grab active:cursor-grabbing'}`}
-                    aria-label="Drag to reorder loadout entry"
+                    aria-label={uiText(
+                        'otherscape:forms.characterTrope.loadout.dragAriaLabel'
+                    )}
                     title={
                         dragDisabled
-                            ? 'Finish editing to reorder'
-                            : 'Drag to reorder'
+                            ? uiText(
+                                  'otherscape:forms.characterTrope.loadout.finishEditingToReorder'
+                              )
+                            : uiText('actions.dragToReorder')
                     }
                     disabled={dragDisabled}
                     {...(!dragDisabled ? attributes : {})}
@@ -247,7 +256,7 @@ function LoadoutRow({
                     variant="ghost"
                     size="icon-sm"
                     className="h-7 w-7"
-                    title="Edit"
+                    title={uiText('actions.edit')}
                     onClick={onEdit}
                 >
                     <Pencil className="h-3.5 w-3.5" />
@@ -257,7 +266,7 @@ function LoadoutRow({
                 variant="ghost"
                 size="icon-sm"
                 className="h-7 w-7 text-destructive"
-                title="Remove"
+                title={uiText('actions.remove')}
                 onClick={onRemove}
             >
                 <Trash2 className="h-3.5 w-3.5" />
@@ -277,6 +286,7 @@ function InlineLoadoutEditor({
     onSave: () => void
     onCancel: () => void
 }) {
+    const text = useUiText()
     return (
         <div className="flex items-center gap-1.5">
             <Input
@@ -294,7 +304,7 @@ function InlineLoadoutEditor({
             <Button
                 size="icon-xs"
                 className="h-5 w-5 shrink-0"
-                title="Save"
+                title={text('actions.save')}
                 onClick={onSave}
             >
                 <Check className="h-3 w-3" />
@@ -303,7 +313,7 @@ function InlineLoadoutEditor({
                 size="icon-xs"
                 variant="secondary"
                 className="h-5 w-5 shrink-0"
-                title="Cancel"
+                title={text('actions.cancel')}
                 onClick={onCancel}
             >
                 <X className="h-3 w-3" />

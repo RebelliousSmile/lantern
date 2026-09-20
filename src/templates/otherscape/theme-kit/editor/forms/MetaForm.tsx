@@ -16,16 +16,24 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from '@/components/ui/popover'
+import { useUiText, type TranslationKey } from '@/i18n/text'
 import { getCatalogSources, type CatalogItem } from '@/utils/catalog'
 import { cn } from '@/utils/cn'
 import { Check, ChevronsUpDown, X } from 'lucide-react'
 
-const TYPES: { value: PublicationType; label: string }[] = [
-    { value: 'official', label: 'Official' },
-    { value: 'third_party', label: 'Third Party' },
-    { value: 'cauldron', label: 'Cauldron' },
-    { value: 'homebrew', label: 'Homebrew' },
+const TYPE_VALUES: PublicationType[] = [
+    'official',
+    'third_party',
+    'cauldron',
+    'homebrew',
 ]
+
+const TYPE_LABEL_KEY: Record<PublicationType, TranslationKey> = {
+    official: 'otherscape:forms.themeKit.meta.publicationType.official',
+    third_party: 'otherscape:forms.themeKit.meta.publicationType.thirdParty',
+    cauldron: 'otherscape:forms.themeKit.meta.publicationType.cauldron',
+    homebrew: 'otherscape:forms.themeKit.meta.publicationType.homebrew',
+}
 
 /* ---------- Authors chips input ---------- */
 function AuthorsInput({
@@ -37,6 +45,7 @@ function AuthorsInput({
     onChange: (next: string[]) => void
     placeholder?: string
 }) {
+    const text = useUiText()
     const [draft, setDraft] = useState('')
 
     function commitDraft() {
@@ -58,7 +67,10 @@ function AuthorsInput({
                         <button
                             type="button"
                             className="opacity-70 hover:opacity-100"
-                            aria-label={`Remove ${author}`}
+                            aria-label={text(
+                                'otherscape:forms.themeKit.meta.removeAuthorAriaLabel',
+                                { author }
+                            )}
                             onClick={() =>
                                 onChange(value.filter((x) => x !== author))
                             }
@@ -103,6 +115,7 @@ function SourceCombobox({
     onSelect: (item: CatalogItem) => void
     placeholder: string
 }) {
+    const text = useUiText()
     const [open, setOpen] = useState(false)
     const current = items.find((item) => item.title === value)
 
@@ -121,8 +134,14 @@ function SourceCombobox({
             </PopoverTrigger>
             <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
                 <Command>
-                    <CommandInput placeholder="Search source..." />
-                    <CommandEmpty>No match.</CommandEmpty>
+                    <CommandInput
+                        placeholder={text(
+                            'otherscape:forms.themeKit.meta.searchSourcePlaceholder'
+                        )}
+                    />
+                    <CommandEmpty>
+                        {text('otherscape:forms.themeKit.meta.noMatch')}
+                    </CommandEmpty>
                     <CommandGroup>
                         {items.map((item) => (
                             <CommandItem
@@ -159,20 +178,21 @@ function TypeSegment({
     value?: PublicationType
     onChange: (next: PublicationType) => void
 }) {
+    const text = useUiText()
     return (
         <div className="grid grid-cols-2 overflow-hidden rounded-md border sm:inline-grid sm:grid-cols-4">
-            {TYPES.map((type) => (
+            {TYPE_VALUES.map((type) => (
                 <Button
-                    key={type.value}
+                    key={type}
                     type="button"
-                    variant={value === type.value ? 'default' : 'ghost'}
+                    variant={value === type ? 'default' : 'ghost'}
                     className={cn(
                         'h-8 rounded-none border-none px-2 text-xs',
-                        value === type.value ? '' : 'bg-background'
+                        value === type ? '' : 'bg-background'
                     )}
-                    onClick={() => onChange(type.value)}
+                    onClick={() => onChange(type)}
                 >
-                    {type.label}
+                    {text(TYPE_LABEL_KEY[type] as Parameters<typeof text>[0])}
                 </Button>
             ))}
         </div>

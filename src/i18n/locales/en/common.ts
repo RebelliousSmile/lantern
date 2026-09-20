@@ -140,6 +140,32 @@ const common = {
         close: 'Close',
         joinDiscord: 'Join Discord',
     },
+    /*
+     * Generic editor words every game's forms share. They take no noun, so they stay correct
+     * whatever the label beside them and whatever its grammatical gender.
+     */
+    actions: {
+        add: 'Add',
+        remove: 'Remove',
+        edit: 'Edit',
+        delete: 'Delete',
+        cancel: 'Cancel',
+        save: 'Save',
+        done: 'Done',
+        dragToReorder: 'Drag to reorder',
+        moveUp: 'Move up',
+        moveDown: 'Move down',
+        addItem: 'Add item',
+        removeItem: 'Remove item',
+        moveItemUp: 'Move item up',
+        moveItemDown: 'Move item down',
+    },
+    fields: {
+        name: 'Name',
+        description: 'Description',
+        title: 'Title',
+        notes: 'Notes',
+    },
     errors: {
         tomlSyntax: 'TOML syntax error, line {{line}}, column {{column}}',
         importFailed: 'Failed to import.',

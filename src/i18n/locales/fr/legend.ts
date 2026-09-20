@@ -1,5 +1,9 @@
 import type { ResourceShape } from '@/i18n/resourceShape'
 import type en from '../en/legend'
+import challengeForms from './legend/challengeForms'
+import journeyForms from './legend/journeyForms'
+import storyThemeForms from './legend/storyThemeForms'
+import themeKitForms from './legend/themeKitForms'
 
 /* Game terms are provisional until the French glossary is validated. */
 const legend: ResourceShape<typeof en> = {
@@ -32,7 +36,7 @@ const legend: ResourceShape<typeof en> = {
         label: 'Voyage',
         newTitle: 'Nouveau voyage',
         description:
-            'Un Voyage est le passage de l’histoire entre deux lieux : une route traversée, une occasion vécue ou une tâche accomplie. Il porte les tags qu’il offre, ce que les héros gagnent à le mener à bien, ce qu’il peut coûter à chaque étape, et les vignettes qui le découpent. Partez d’une fiche vierge, ouvrez l’exemple ou importez un fichier TOML.',
+            'Un Voyage est le passage de l’histoire entre deux lieux : une route traversée, une occasion vécue ou une entreprise menée à bien. Il porte les tags qu’il offre, ce que les héros gagnent à le mener à bien, ce qu’il peut coûter à chaque étape, et les vignettes qui le découpent. Partez d’une fiche vierge, ouvrez l’exemple ou importez un fichier TOML.',
         exportToml: 'Exporter les données du voyage en TOML.',
         exportPng: 'Exporter la double page du voyage en PNG.',
         sections: {
@@ -47,7 +51,7 @@ const legend: ResourceShape<typeof en> = {
             bracedTags:
                 'Tags écrits avec des accolades : {{tags}}. Elles sont ajoutées au rendu de la fiche, les accolades apparaîtront donc en double.',
             statusLikeTags:
-                'Tags qui se lisent comme un statut ou une limite : {{tags}}. Un « -<n> » ou « :<n> » final fait afficher le tag comme une jauge plutôt que comme un tag. Un statut infligé par le Voyage a sa place dans ses Conséquences.',
+                'Tags qui se lisent comme un statut ou une limite : {{tags}}. Un « -<n> » ou « :<n> » final fait afficher le tag comme un indicateur plutôt que comme un tag. Un statut infligé par le Voyage a sa place dans ses Conséquences.',
             unnamedVignette: 'une vignette sans nom',
             vignettesWithoutConsequence:
                 'Vignettes sans Conséquence : {{vignettes}}. Une vignette en porte au moins une, et le fichier ne pourra pas être exporté tant que chacune d’elles n’en aura pas.',
@@ -73,13 +77,13 @@ const legend: ResourceShape<typeof en> = {
                 braced: 'Tags de pouvoir écrits avec des accolades : {{tags}}. Elles sont ajoutées au rendu de la carte, les accolades apparaîtront donc en double.',
                 marked: 'Tags de pouvoir écrits avec un « ! » initial : {{tags}}. Un tag qui joue contre le Héros a sa place dans les Tags de faiblesse.',
                 statusLike:
-                    'Tags de pouvoir qui se lisent comme un statut ou une limite : {{tags}}. Un « -<n> » ou « :<n> » final fait afficher le tag comme une jauge plutôt que comme un tag.',
+                    'Tags de pouvoir qui se lisent comme un statut ou une limite : {{tags}}. Un « -<n> » ou « :<n> » final fait afficher le tag comme un indicateur plutôt que comme un tag.',
             },
             weakness: {
                 braced: 'Tags de faiblesse écrits avec des accolades : {{tags}}. Elles sont ajoutées au rendu de la carte, les accolades apparaîtront donc en double.',
                 marked: 'Tags de faiblesse écrits avec un « ! » initial : {{tags}}. Les tags de faiblesse sont déjà signalés par le champ où ils se trouvent.',
                 statusLike:
-                    'Tags de faiblesse qui se lisent comme un statut ou une limite : {{tags}}. Un « -<n> » ou « :<n> » final fait afficher le tag comme une jauge plutôt que comme un tag.',
+                    'Tags de faiblesse qui se lisent comme un statut ou une limite : {{tags}}. Un « -<n> » ou « :<n> » final fait afficher le tag comme un indicateur plutôt que comme un tag.',
             },
             noTags: 'Ce Thème d’histoire n’accorde aucun tag : un Héros n’a rien à invoquer.',
         },
@@ -103,18 +107,25 @@ const legend: ResourceShape<typeof en> = {
                 braced: 'Tags de pouvoir écrits avec des accolades : {{tags}}. Elles sont ajoutées au rendu de la carte, les accolades apparaîtront donc en double.',
                 marked: 'Tags de pouvoir écrits avec un « ! » initial : {{tags}}. Un tag qui joue contre le Héros a sa place dans les Tags de faiblesse.',
                 statusLike:
-                    'Tags de pouvoir qui se lisent comme un statut ou une limite : {{tags}}. Un « -<n> » ou « :<n> » final fait afficher le tag comme une jauge plutôt que comme un tag.',
+                    'Tags de pouvoir qui se lisent comme un statut ou une limite : {{tags}}. Un « -<n> » ou « :<n> » final fait afficher le tag comme un indicateur plutôt que comme un tag.',
             },
             weakness: {
                 braced: 'Tags de faiblesse écrits avec des accolades : {{tags}}. Elles sont ajoutées au rendu de la carte, les accolades apparaîtront donc en double.',
                 marked: 'Tags de faiblesse écrits avec un « ! » initial : {{tags}}. Les tags de faiblesse sont déjà signalés par le champ où ils se trouvent.',
                 statusLike:
-                    'Tags de faiblesse qui se lisent comme un statut ou une limite : {{tags}}. Un « -<n> » ou « :<n> » final fait afficher le tag comme une jauge plutôt que comme un tag.',
+                    'Tags de faiblesse qui se lisent comme un statut ou une limite : {{tags}}. Un « -<n> » ou « :<n> » final fait afficher le tag comme un indicateur plutôt que comme un tag.',
             },
             noTags: 'Ce Kit de thème ne suggère aucun tag : un Héros n’a rien parmi quoi choisir.',
             improvementsWithoutEffect:
                 'Améliorations nommées sans effet : {{improvements}}. La carte n’imprime que l’intitulé, ce qui n’est juste que si le livre de thèmes n’en dit pas plus.',
         },
+    },
+    /* One file per template, so each template's form strings can change on their own. */
+    forms: {
+        challenge: challengeForms,
+        journey: journeyForms,
+        storyTheme: storyThemeForms,
+        themeKit: themeKitForms,
     },
 }
 

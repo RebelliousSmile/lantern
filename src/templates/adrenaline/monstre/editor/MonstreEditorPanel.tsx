@@ -1,3 +1,4 @@
+import { useUiText, type TranslationKey } from '@/i18n/text'
 import {
     CharacteristicsFields,
     EquipmentFields,
@@ -37,7 +38,17 @@ const strings = (value: unknown): string[] =>
         ? value.filter((entry): entry is string => typeof entry === 'string')
         : []
 
+const creatureFields: [string, TranslationKey][] = [
+    ['nom', 'fields.name'],
+    ['typeDeCorps', 'adrenaline:monstre.form.bodyType'],
+    ['instinct', 'adrenaline:monstre.form.instinct'],
+    ['typeInfecte', 'adrenaline:monstre.form.infectedType'],
+    ['zoneDeDetection', 'adrenaline:monstre.form.detectionRange'],
+    ['deplacement', 'adrenaline:monstre.form.movement'],
+]
+
 export function MonstreEditorPanel() {
+    const text = useUiText()
     const { document, update } = useAdrenalineDocument(
         'adrenaline.monstre',
         blankMonstre() as unknown as Record<string, unknown>
@@ -51,46 +62,41 @@ export function MonstreEditorPanel() {
     return (
         <div className="space-y-6 p-1">
             <section className="grid gap-2">
-                <h3 className="font-semibold">Créature</h3>
-                {(
-                    [
-                        ['nom', 'Nom'],
-                        ['typeDeCorps', 'Type de corps'],
-                        ['instinct', 'Instinct'],
-                        ['typeInfecte', 'Type infecté'],
-                        ['zoneDeDetection', 'Zone de détection'],
-                        ['deplacement', 'Déplacement'],
-                    ] as const
-                ).map(([key, label]) => (
+                <h3 className="font-semibold">
+                    {text('adrenaline:monstre.form.creatureHeading')}
+                </h3>
+                {creatureFields.map(([key, labelKey]) => (
                     <TextField
                         key={key}
-                        label={label}
+                        label={text(labelKey)}
                         value={String(document[key] ?? '')}
                         onChange={(next) => set(key, next)}
                     />
                 ))}
                 <NumberField
-                    label="Niveau de danger"
+                    label={text('adrenaline:monstre.form.dangerLevel')}
                     value={Number(document.niveauDeDanger ?? 0)}
                     onChange={(niveauDeDanger) =>
                         set('niveauDeDanger', niveauDeDanger)
                     }
                 />
                 <NumberField
-                    label="Actions par round"
+                    label={text('adrenaline:monstre.form.actionsPerRound')}
                     value={Number(document.actionsParRound ?? 0)}
                     onChange={(actionsParRound) =>
                         set('actionsParRound', actionsParRound)
                     }
                 />
                 <LongTextField
-                    label="Description"
+                    label={text('fields.description')}
                     value={String(document.description ?? '')}
                     onChange={(description) => set('description', description)}
                 />
             </section>
             <section className="grid gap-2">
-                <h3 className="font-semibold">Caractéristiques</h3>
+                <h3 className="font-semibold">
+                    {text('adrenaline:shared.headings.characteristics')}
+                </h3>
                 <CharacteristicsFields
                     value={document.caracteristiques}
                     onChange={(caracteristiques) =>
@@ -99,7 +105,9 @@ export function MonstreEditorPanel() {
                 />
             </section>
             <section className="grid gap-2">
-                <h3 className="font-semibold">Santé et protections</h3>
+                <h3 className="font-semibold">
+                    {text('adrenaline:shared.headings.health')}
+                </h3>
                 <HealthFields
                     value={document.sante}
                     onChange={(sante) => set('sante', sante)}
@@ -110,45 +118,51 @@ export function MonstreEditorPanel() {
                 />
             </section>
             <section className="grid gap-2">
-                <h3 className="font-semibold">Comportement</h3>
+                <h3 className="font-semibold">
+                    {text('adrenaline:monstre.form.behaviourHeading')}
+                </h3>
                 <StringRows
-                    label="Comportements"
+                    label={text('adrenaline:monstre.form.behaviours')}
                     values={strings(document.comportement)}
                     onChange={(comportement) =>
                         set('comportement', comportement)
                     }
                 />
                 <StringRows
-                    label="Traits spéciaux"
+                    label={text('adrenaline:monstre.form.specialTraits')}
                     values={strings(document.traitsSpeciaux)}
                     onChange={(traitsSpeciaux) =>
                         set('traitsSpeciaux', traitsSpeciaux)
                     }
                 />
                 <SkillRows
-                    label="Compétences"
+                    label={text('adrenaline:shared.skills.label')}
                     value={document.competences}
                     onChange={(competences) => set('competences', competences)}
                 />
             </section>
             <section className="grid gap-2">
-                <h3 className="font-semibold">Équipement</h3>
+                <h3 className="font-semibold">
+                    {text('adrenaline:shared.headings.equipment')}
+                </h3>
                 <EquipmentFields
                     value={document.equipement}
                     onChange={(equipement) => set('equipement', equipement)}
                 />
             </section>
             <section className="grid gap-2">
-                <h3 className="font-semibold">État alternatif</h3>
+                <h3 className="font-semibold">
+                    {text('adrenaline:monstre.form.alternateStateHeading')}
+                </h3>
                 <TextField
-                    label="Nom"
+                    label={text('fields.name')}
                     value={String(alternate.nom ?? '')}
                     onChange={(nom) =>
                         set('etatAlternatif', { ...alternate, nom })
                     }
                 />
                 <StringRows
-                    label="Déclencheurs"
+                    label={text('adrenaline:monstre.form.triggers')}
                     values={strings(alternate.declencheurs)}
                     onChange={(declencheurs) =>
                         set('etatAlternatif', { ...alternate, declencheurs })
@@ -164,28 +178,28 @@ export function MonstreEditorPanel() {
                     }
                 />
                 <TextField
-                    label="Zone de détection"
+                    label={text('adrenaline:monstre.form.detectionRange')}
                     value={String(alternate.zoneDeDetection ?? '')}
                     onChange={(zoneDeDetection) =>
                         set('etatAlternatif', { ...alternate, zoneDeDetection })
                     }
                 />
                 <TextField
-                    label="Déplacement"
+                    label={text('adrenaline:monstre.form.movement')}
                     value={String(alternate.deplacement ?? '')}
                     onChange={(deplacement) =>
                         set('etatAlternatif', { ...alternate, deplacement })
                     }
                 />
                 <NumberField
-                    label="Actions par round"
+                    label={text('adrenaline:monstre.form.actionsPerRound')}
                     value={Number(alternate.actionsParRound ?? 0)}
                     onChange={(actionsParRound) =>
                         set('etatAlternatif', { ...alternate, actionsParRound })
                     }
                 />
                 <LongTextField
-                    label="Notes"
+                    label={text('fields.notes')}
                     value={String(alternate.notes ?? '')}
                     onChange={(notes) =>
                         set('etatAlternatif', { ...alternate, notes })
@@ -193,30 +207,32 @@ export function MonstreEditorPanel() {
                 />
             </section>
             <section className="grid gap-2">
-                <h3 className="font-semibold">Contagion</h3>
+                <h3 className="font-semibold">
+                    {text('adrenaline:monstre.form.contagionHeading')}
+                </h3>
                 <TextField
-                    label="Agent"
+                    label={text('adrenaline:monstre.form.agent')}
                     value={String(contagion.agent ?? '')}
                     onChange={(agent) =>
                         set('contagion', { ...contagion, agent })
                     }
                 />
                 <TextField
-                    label="Délai avant effet"
+                    label={text('adrenaline:monstre.form.onsetDelay')}
                     value={String(contagion.delaiAvantEffet ?? '')}
                     onChange={(delaiAvantEffet) =>
                         set('contagion', { ...contagion, delaiAvantEffet })
                     }
                 />
                 <LongTextField
-                    label="Issue"
+                    label={text('adrenaline:monstre.form.outcome')}
                     value={String(contagion.issue ?? '')}
                     onChange={(issue) =>
                         set('contagion', { ...contagion, issue })
                     }
                 />
                 <RecordRows
-                    label="Vecteurs"
+                    label={text('adrenaline:monstre.form.vectors')}
                     values={records(contagion.vecteurs)}
                     create={() => ({
                         nom: '',
@@ -230,19 +246,21 @@ export function MonstreEditorPanel() {
                     {(entry, _, replace) => (
                         <div className="grid grid-cols-2 gap-2">
                             <TextField
-                                label="Nom"
+                                label={text('fields.name')}
                                 value={String(entry.nom ?? '')}
                                 onChange={(nom) => replace({ ...entry, nom })}
                             />
                             <RangedNumberField
-                                label="Probabilité"
+                                label={text(
+                                    'adrenaline:monstre.form.probability'
+                                )}
                                 value={entry.probabilite}
                                 onChange={(probabilite) =>
                                     replace({ ...entry, probabilite })
                                 }
                             />
                             <LongTextField
-                                label="Notes"
+                                label={text('fields.notes')}
                                 value={String(entry.notes ?? '')}
                                 onChange={(notes) =>
                                     replace({ ...entry, notes })
@@ -252,7 +270,7 @@ export function MonstreEditorPanel() {
                     )}
                 </RecordRows>
                 <RecordRows
-                    label="Modulations"
+                    label={text('adrenaline:monstre.form.modifiers')}
                     values={records(contagion.modulations)}
                     create={() => ({
                         profil: '',
@@ -266,21 +284,23 @@ export function MonstreEditorPanel() {
                     {(entry, _, replace) => (
                         <div className="grid grid-cols-2 gap-2">
                             <TextField
-                                label="Profil"
+                                label={text('adrenaline:monstre.form.profile')}
                                 value={String(entry.profil ?? '')}
                                 onChange={(profil) =>
                                     replace({ ...entry, profil })
                                 }
                             />
                             <TextField
-                                label="Délai avant effet"
+                                label={text(
+                                    'adrenaline:monstre.form.onsetDelay'
+                                )}
                                 value={String(entry.delaiAvantEffet ?? '')}
                                 onChange={(delaiAvantEffet) =>
                                     replace({ ...entry, delaiAvantEffet })
                                 }
                             />
                             <LongTextField
-                                label="Issue"
+                                label={text('adrenaline:monstre.form.outcome')}
                                 value={String(entry.issue ?? '')}
                                 onChange={(issue) =>
                                     replace({ ...entry, issue })
@@ -291,14 +311,18 @@ export function MonstreEditorPanel() {
                 </RecordRows>
             </section>
             <section className="grid gap-2">
-                <h3 className="font-semibold">Narratif</h3>
+                <h3 className="font-semibold">
+                    {text('adrenaline:shared.headings.narrative')}
+                </h3>
                 <NarrativeFields
                     value={document.narratif}
                     onChange={(narratif) => set('narratif', narratif)}
                 />
             </section>
             <section className="grid gap-2">
-                <h3 className="font-semibold">Provenance</h3>
+                <h3 className="font-semibold">
+                    {text('adrenaline:shared.headings.provenance')}
+                </h3>
                 <MetaFields
                     value={document.meta}
                     onChange={(meta) => set('meta', meta)}

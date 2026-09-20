@@ -10,4 +10,4 @@ export const rolesList = [
     'Sapper',
     'Support',
     'Watcher',
-]
+] as const

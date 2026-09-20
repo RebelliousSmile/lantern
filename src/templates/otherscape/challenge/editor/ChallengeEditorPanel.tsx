@@ -1,3 +1,4 @@
+import { useUiText } from '@/i18n/text'
 import { useOtherscapeChallengeSheetStore } from '../hooks'
 import BasicForm from './forms/BasicForm'
 import ConsequencesForm from './forms/ConsequencesForm'
@@ -8,12 +9,13 @@ import TagsForm from './forms/TagsForm'
 import ThreatsForm from './forms/ThreatsForm'
 
 export function ChallengeEditorPanel() {
+    const text = useUiText()
     const { open, target } = useOtherscapeChallengeSheetStore()
 
     if (!open || !target) {
         return (
             <div className="rounded-md border border-dashed px-3 py-4 text-sm text-muted-foreground">
-                Click on the card to edit a specific section.
+                {text('otherscape:forms.challenge.panel.emptyState')}
             </div>
         )
     }

@@ -14,7 +14,16 @@ export const storyThemeSections: Array<{
 
 export const storyThemeZoomOptions = [0.75, 1, 1.25, 1.5]
 
-export const storyThemeBackgroundOptions = [
-    { value: 'parchment', label: 'Parchment' },
-    { value: 'plain', label: 'Plain' },
-] as const
+export const storyThemeBackgroundOptions: Array<{
+    value: 'parchment' | 'plain'
+    label: TranslationKey
+}> = [
+    {
+        value: 'parchment',
+        label: 'legend:forms.storyTheme.appearance.backgroundOptions.parchment',
+    },
+    {
+        value: 'plain',
+        label: 'legend:forms.storyTheme.appearance.backgroundOptions.plain',
+    },
+]

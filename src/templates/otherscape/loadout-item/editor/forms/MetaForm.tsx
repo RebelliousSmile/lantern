@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import {
     useOtherscapeLoadoutItemStore,
     type PublicationType,
@@ -23,23 +24,20 @@ import { getCatalogSources, type CatalogItem } from '@/utils/catalog'
 import { cn } from '@/utils/cn'
 import { Check, ChevronsUpDown, X } from 'lucide-react'
 
-const TYPES: { value: PublicationType; label: string }[] = [
-    { value: 'official', label: 'Official' },
-    { value: 'third_party', label: 'Third Party' },
-    { value: 'cauldron', label: 'Cauldron' },
-    { value: 'homebrew', label: 'Homebrew' },
-]
-
 /* ---------- Authors chips input ---------- */
 function AuthorsInput({
     value,
     onChange,
-    placeholder = 'Add author and press Enter',
+    placeholder,
 }: {
     value: string[]
     onChange: (next: string[]) => void
     placeholder?: string
 }) {
+    const { t } = useTranslation()
+    const effectivePlaceholder =
+        placeholder ??
+        t('otherscape:forms.loadoutItem.meta.authorsInputPlaceholder')
     const [draft, setDraft] = useState('')
 
     function commitDraft() {
@@ -61,7 +59,10 @@ function AuthorsInput({
                         <button
                             type="button"
                             className="opacity-70 hover:opacity-100"
-                            aria-label={`Remove ${author}`}
+                            aria-label={t(
+                                'otherscape:forms.loadoutItem.meta.removeAuthor',
+                                { author }
+                            )}
                             onClick={() =>
                                 onChange(value.filter((x) => x !== author))
                             }
@@ -87,7 +88,7 @@ function AuthorsInput({
                             onChange(value.slice(0, -1))
                         }
                     }}
-                    placeholder={value.length ? '' : placeholder}
+                    placeholder={value.length ? '' : effectivePlaceholder}
                 />
             </div>
         </div>
@@ -106,6 +107,7 @@ function SourceCombobox({
     onSelect: (item: CatalogItem) => void
     placeholder: string
 }) {
+    const { t } = useTranslation()
     const [open, setOpen] = useState(false)
     const current = items.find((item) => item.title === value)
 
@@ -124,8 +126,14 @@ function SourceCombobox({
             </PopoverTrigger>
             <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
                 <Command>
-                    <CommandInput placeholder="Search source..." />
-                    <CommandEmpty>No match.</CommandEmpty>
+                    <CommandInput
+                        placeholder={t(
+                            'otherscape:forms.loadoutItem.meta.sourceSearchPlaceholder'
+                        )}
+                    />
+                    <CommandEmpty>
+                        {t('otherscape:forms.loadoutItem.meta.sourceEmpty')}
+                    </CommandEmpty>
                     <CommandGroup>
                         {items.map((item) => (
                             <CommandItem
@@ -156,15 +164,17 @@ function SourceCombobox({
 
 /* ---------- Publication type segmented buttons ---------- */
 function TypeSegment({
+    types,
     value,
     onChange,
 }: {
+    types: { value: PublicationType; label: string }[]
     value?: PublicationType
     onChange: (next: PublicationType) => void
 }) {
     return (
         <div className="grid grid-cols-2 overflow-hidden rounded-md border sm:inline-grid sm:grid-cols-4">
-            {TYPES.map((type) => (
+            {types.map((type) => (
                 <Button
                     key={type.value}
                     type="button"
@@ -184,6 +194,7 @@ function TypeSegment({
 
 /* ---------- Main MetaForm ---------- */
 export default function MetaForm() {
+    const { t } = useTranslation()
     const { otherscapeLoadoutItem, updateMeta } =
         useOtherscapeLoadoutItemStore()
     const meta = otherscapeLoadoutItem.meta
@@ -194,6 +205,25 @@ export default function MetaForm() {
         type === 'official' || type === 'third_party'
             ? getCatalogSources('otherscape', type)
             : []
+
+    const types: { value: PublicationType; label: string }[] = [
+        {
+            value: 'official',
+            label: t('otherscape:forms.loadoutItem.meta.typeOfficial'),
+        },
+        {
+            value: 'third_party',
+            label: t('otherscape:forms.loadoutItem.meta.typeThirdParty'),
+        },
+        {
+            value: 'cauldron',
+            label: t('otherscape:forms.loadoutItem.meta.typeCauldron'),
+        },
+        {
+            value: 'homebrew',
+            label: t('otherscape:forms.loadoutItem.meta.typeHomebrew'),
+        },
+    ]
 
     function setType(next: PublicationType) {
         updateMeta({
@@ -213,26 +243,35 @@ export default function MetaForm() {
     return (
         <div className="space-y-4">
             <div className="grid gap-1">
-                <Label>Publication type</Label>
-                <TypeSegment value={type} onChange={setType} />
+                <Label>
+                    {t(
+                        'otherscape:forms.loadoutItem.meta.publicationTypeLabel'
+                    )}
+                </Label>
+                <TypeSegment types={types} value={type} onChange={setType} />
             </div>
 
             {sourceOptions.length > 0 ? (
                 <div className="grid gap-1">
-                    <Label>Source</Label>
+                    <Label>
+                        {t('otherscape:forms.loadoutItem.meta.sourceLabel')}
+                    </Label>
                     <SourceCombobox
                         items={sourceOptions}
                         value={meta?.source}
                         onSelect={pickFromCatalog}
                         placeholder={
                             type === 'official'
-                                ? 'Select an official book...'
-                                : 'Select a third-party source...'
+                                ? t(
+                                      'otherscape:forms.loadoutItem.meta.officialPlaceholder'
+                                  )
+                                : t(
+                                      'otherscape:forms.loadoutItem.meta.thirdPartyPlaceholder'
+                                  )
                         }
                     />
                     <div className="text-xs text-muted-foreground">
-                        Selecting a source auto-fills authors. You can still
-                        edit below.
+                        {t('otherscape:forms.loadoutItem.meta.autofillHelp')}
                     </div>
                 </div>
             ) : null}
@@ -241,12 +280,20 @@ export default function MetaForm() {
                 <div className="grid gap-1">
                     <Label htmlFor="os-loadout-item-meta-source">
                         {type === 'cauldron'
-                            ? 'Cauldron product title'
+                            ? t(
+                                  'otherscape:forms.loadoutItem.meta.sourceTitleCauldronLabel'
+                              )
                             : type === 'homebrew'
-                              ? 'Homebrew title / location'
-                              : 'Source title'}{' '}
+                              ? t(
+                                    'otherscape:forms.loadoutItem.meta.sourceTitleHomebrewLabel'
+                                )
+                              : t(
+                                    'otherscape:forms.loadoutItem.meta.sourceTitleDefaultLabel'
+                                )}{' '}
                         <span className="text-muted-foreground">
-                            (optional)
+                            {t(
+                                'otherscape:forms.loadoutItem.meta.sourceTitleOptional'
+                            )}
                         </span>
                     </Label>
                     <Input
@@ -258,19 +305,27 @@ export default function MetaForm() {
                         }
                         placeholder={
                             type === 'cauldron'
-                                ? 'e.g., Cauldron: Neon Debts'
+                                ? t(
+                                      'otherscape:forms.loadoutItem.meta.sourceTitleCauldronPlaceholder'
+                                  )
                                 : type === 'homebrew'
-                                  ? 'e.g., Personal blog, campaign doc...'
-                                  : 'Override selected source title'
+                                  ? t(
+                                        'otherscape:forms.loadoutItem.meta.sourceTitleHomebrewPlaceholder'
+                                    )
+                                  : t(
+                                        'otherscape:forms.loadoutItem.meta.sourceTitleDefaultPlaceholder'
+                                    )
                         }
                     />
                 </div>
 
                 <div className="grid gap-1">
                     <Label htmlFor="os-loadout-item-meta-page">
-                        Page{' '}
+                        {t('otherscape:forms.loadoutItem.meta.pageLabel')}{' '}
                         <span className="text-muted-foreground">
-                            (optional)
+                            {t(
+                                'otherscape:forms.loadoutItem.meta.pageOptional'
+                            )}
                         </span>
                     </Label>
                     <Input
@@ -289,23 +344,28 @@ export default function MetaForm() {
                                     : undefined,
                             })
                         }
-                        placeholder="71"
+                        placeholder={t(
+                            'otherscape:forms.loadoutItem.meta.pagePlaceholder'
+                        )}
                     />
                 </div>
             </div>
 
             <div className="grid gap-1">
-                <Label>Authors</Label>
+                <Label>
+                    {t('otherscape:forms.loadoutItem.meta.authorsLabel')}
+                </Label>
                 <AuthorsInput
                     value={authors}
                     onChange={(next) => updateMeta({ authors: next })}
-                    placeholder="Add author..."
+                    placeholder={t(
+                        'otherscape:forms.loadoutItem.meta.authorsAddPlaceholder'
+                    )}
                 />
             </div>
 
             <div className="text-xs text-muted-foreground">
-                Meta helps attribution & search and is preserved on
-                import/export.
+                {t('otherscape:forms.loadoutItem.meta.footerHelp')}
             </div>
         </div>
     )

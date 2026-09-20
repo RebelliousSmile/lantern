@@ -1,3 +1,4 @@
+import { useUiText, type TranslationKey } from '@/i18n/text'
 import {
     LongTextField,
     NumberField,
@@ -8,8 +9,26 @@ import {
 } from './FieldPrimitives'
 
 type RecordValue = Record<string, unknown>
-const stats = ['for', 'con', 'dex', 'rap', 'log', 'vol', 'per', 'cha']
-const wounds = ['superficiel', 'leger', 'grave', 'profond']
+const stats: [string, TranslationKey][] = [
+    ['for', 'adrenaline:shared.characteristics.for'],
+    ['con', 'adrenaline:shared.characteristics.con'],
+    ['dex', 'adrenaline:shared.characteristics.dex'],
+    ['rap', 'adrenaline:shared.characteristics.rap'],
+    ['log', 'adrenaline:shared.characteristics.log'],
+    ['vol', 'adrenaline:shared.characteristics.vol'],
+    ['per', 'adrenaline:shared.characteristics.per'],
+    ['cha', 'adrenaline:shared.characteristics.cha'],
+]
+const wounds: [string, TranslationKey][] = [
+    ['superficiel', 'adrenaline:shared.health.superficielBase'],
+    ['leger', 'adrenaline:shared.health.legerBase'],
+    ['grave', 'adrenaline:shared.health.graveBase'],
+    ['profond', 'adrenaline:shared.health.profondBase'],
+]
+const healthKindHeadingKeys: Record<'physique' | 'mental', TranslationKey> = {
+    physique: 'adrenaline:shared.health.physicalHeading',
+    mental: 'adrenaline:shared.health.mentalHeading',
+}
 const record = (value: unknown): RecordValue =>
     value && typeof value === 'object' && !Array.isArray(value)
         ? (value as RecordValue)
@@ -35,13 +54,14 @@ export function CharacteristicsFields({
     value: unknown
     onChange: (value: RecordValue) => void
 }) {
+    const text = useUiText()
     const current = record(value)
     return (
         <div className="grid grid-cols-2 gap-2">
-            {stats.map((key) => (
+            {stats.map(([key, labelKey]) => (
                 <RangedNumberField
                     key={key}
-                    label={key.toUpperCase()}
+                    label={text(labelKey)}
                     value={current[key]}
                     onChange={(next) => onChange({ ...current, [key]: next })}
                 />
@@ -57,23 +77,24 @@ export function IdentityFields({
     value: unknown
     onChange: (value: RecordValue) => void
 }) {
+    const text = useUiText()
     const current = record(value)
-    const textFields = [
-        ['nationalite', 'Nationalité'],
-        ['genre', 'Genre'],
-        ['cheveux', 'Cheveux'],
-        ['yeux', 'Yeux'],
-        ['taille', 'Taille'],
-        ['peau', 'Peau'],
-        ['poids', 'Poids'],
-    ] as const
+    const textFields: [string, TranslationKey][] = [
+        ['nationalite', 'adrenaline:shared.identity.nationality'],
+        ['genre', 'adrenaline:shared.identity.gender'],
+        ['cheveux', 'adrenaline:shared.identity.hair'],
+        ['yeux', 'adrenaline:shared.identity.eyes'],
+        ['taille', 'adrenaline:shared.identity.height'],
+        ['peau', 'adrenaline:shared.identity.skin'],
+        ['poids', 'adrenaline:shared.identity.weight'],
+    ]
     return (
         <div className="grid gap-2">
             <div className="grid grid-cols-2 gap-2">
-                {textFields.map(([key, label]) => (
+                {textFields.map(([key, labelKey]) => (
                     <TextField
                         key={key}
-                        label={label}
+                        label={text(labelKey)}
                         value={String(current[key] ?? '')}
                         onChange={(next) =>
                             onChange({ ...current, [key]: next })
@@ -81,13 +102,13 @@ export function IdentityFields({
                     />
                 ))}
                 <NumberField
-                    label="Âge"
+                    label={text('adrenaline:shared.identity.age')}
                     value={Number(current.age ?? 0)}
                     onChange={(age) => onChange({ ...current, age })}
                 />
             </div>
             <StringRows
-                label="Signes particuliers"
+                label={text('adrenaline:shared.identity.distinguishingMarks')}
                 values={strings(current.signesParticuliers)}
                 onChange={(signesParticuliers) =>
                     onChange({ ...current, signesParticuliers })
@@ -104,6 +125,7 @@ export function HealthFields({
     value: unknown
     onChange: (value: RecordValue) => void
 }) {
+    const text = useUiText()
     const current = record(value)
     return (
         <div className="grid gap-3">
@@ -111,9 +133,11 @@ export function HealthFields({
                 const block = record(current[kind])
                 return (
                     <div className="grid gap-2" key={kind}>
-                        <h4 className="font-medium capitalize">Santé {kind}</h4>
+                        <h4 className="font-medium capitalize">
+                            {text(healthKindHeadingKeys[kind])}
+                        </h4>
                         <div className="grid grid-cols-2 gap-2">
-                            {wounds.map((level) => {
+                            {wounds.map(([level, baseLabelKey]) => {
                                 const threshold = record(block[level])
                                 const set = (key: string, next: unknown) =>
                                     onChange({
@@ -129,14 +153,16 @@ export function HealthFields({
                                 return (
                                     <div className="grid gap-1" key={level}>
                                         <RangedNumberField
-                                            label={`${level} base`}
+                                            label={text(baseLabelKey)}
                                             value={threshold.base}
                                             onChange={(next) =>
                                                 set('base', next)
                                             }
                                         />
                                         <RangedNumberField
-                                            label="Couvert"
+                                            label={text(
+                                                'adrenaline:shared.health.covered'
+                                            )}
                                             value={threshold.couvert}
                                             onChange={(next) =>
                                                 set('couvert', next)
@@ -164,6 +190,7 @@ function DefenceFields({
     onChange: (value: RecordValue) => void
     mental?: boolean
 }) {
+    const text = useUiText()
     const current = record(value)
     const shield = record(current.bouclier)
     const armour = record(current[mental ? 'caractere' : 'armure'])
@@ -172,13 +199,17 @@ function DefenceFields({
         <div className="grid gap-2 rounded border p-2">
             <h4 className="font-medium">{label}</h4>
             <RangedNumberField
-                label="Solidité"
+                label={text('adrenaline:shared.protection.toughness')}
                 value={current.solidite}
                 onChange={(solidite) => onChange({ ...current, solidite })}
             />
             <div className="grid grid-cols-2 gap-2">
                 <TextField
-                    label={mental ? 'Trait de caractère' : 'Armure'}
+                    label={text(
+                        mental
+                            ? 'adrenaline:shared.protection.characterTrait'
+                            : 'adrenaline:shared.protection.armour'
+                    )}
                     value={String(armour[mental ? 'trait' : 'nom'] ?? '')}
                     onChange={(next) =>
                         onChange({
@@ -191,7 +222,7 @@ function DefenceFields({
                     }
                 />
                 <RangedNumberField
-                    label="Points"
+                    label={text('adrenaline:shared.protection.points')}
                     value={armour.points}
                     onChange={(points) =>
                         onChange({
@@ -202,7 +233,7 @@ function DefenceFields({
                 />
             </div>
             <StringRows
-                label="Localisations"
+                label={text('adrenaline:shared.protection.locations')}
                 values={strings(armour.localisations)}
                 onChange={(localisations) =>
                     onChange({
@@ -212,14 +243,14 @@ function DefenceFields({
                 }
             />
             <TextField
-                label="Bouclier"
+                label={text('adrenaline:shared.protection.shield')}
                 value={String(shield.nom ?? '')}
                 onChange={(nom) =>
                     onChange({ ...current, bouclier: { ...shield, nom } })
                 }
             />
             <StringRows
-                label="Propriétés du bouclier"
+                label={text('adrenaline:shared.protection.shieldProperties')}
                 values={strings(shield.proprietes)}
                 onChange={(proprietes) =>
                     onChange({
@@ -238,16 +269,17 @@ export function ProtectionFields({
     value: unknown
     onChange: (value: RecordValue) => void
 }) {
+    const text = useUiText()
     const current = record(value)
     return (
         <div className="grid gap-3">
             <DefenceFields
-                label="Protection physique"
+                label={text('adrenaline:shared.protection.physicalHeading')}
                 value={current.physiques}
                 onChange={(physiques) => onChange({ ...current, physiques })}
             />
             <DefenceFields
-                label="Protection mentale"
+                label={text('adrenaline:shared.protection.mentalHeading')}
                 mental
                 value={current.mentales}
                 onChange={(mentales) => onChange({ ...current, mentales })}
@@ -265,6 +297,7 @@ export function SkillRows({
     value: unknown
     onChange: (value: RecordValue[]) => void
 }) {
+    const text = useUiText()
     const current = rows(value)
     return (
         <RecordRows
@@ -284,39 +317,41 @@ export function SkillRows({
                 <div className="grid gap-2">
                     <div className="grid grid-cols-2 gap-2">
                         <TextField
-                            label="Nom"
+                            label={text('fields.name')}
                             value={String(entry.nom ?? '')}
                             onChange={(nom) => replace({ ...entry, nom })}
                         />
                         <TextField
-                            label="Spécialité"
+                            label={text('adrenaline:shared.skills.specialty')}
                             value={String(entry.specialite ?? '')}
                             onChange={(specialite) =>
                                 replace({ ...entry, specialite })
                             }
                         />
                         <RangedNumberField
-                            label="Pourcentage"
+                            label={text('adrenaline:shared.percentage')}
                             value={entry.pourcentage}
                             onChange={(pourcentage) =>
                                 replace({ ...entry, pourcentage })
                             }
                         />
                         <TextField
-                            label="Caractéristique"
+                            label={text(
+                                'adrenaline:shared.skills.characteristic'
+                            )}
                             value={String(entry.caracteristique ?? '')}
                             onChange={(caracteristique) =>
                                 replace({ ...entry, caracteristique })
                             }
                         />
                         <RangedNumberField
-                            label="Total"
+                            label={text('adrenaline:shared.skills.total')}
                             value={entry.total}
                             onChange={(total) => replace({ ...entry, total })}
                         />
                     </div>
                     <StringRows
-                        label="Avantages"
+                        label={text('adrenaline:shared.skills.perks')}
                         values={strings(entry.avantages)}
                         onChange={(avantages) =>
                             replace({ ...entry, avantages })
@@ -335,10 +370,11 @@ export function EquipmentFields({
     value: unknown
     onChange: (value: RecordValue) => void
 }) {
+    const text = useUiText()
     const current = record(value)
-    const weapons = (key: string, label: string) => (
+    const weapons = (key: string, labelKey: TranslationKey) => (
         <RecordRows
-            label={label}
+            label={text(labelKey)}
             values={rows(current[key])}
             create={() => ({
                 nom: '',
@@ -352,31 +388,31 @@ export function EquipmentFields({
             {(entry, _, replace) => (
                 <div className="grid grid-cols-2 gap-2">
                     <TextField
-                        label="Nom"
+                        label={text('fields.name')}
                         value={String(entry.nom ?? '')}
                         onChange={(nom) => replace({ ...entry, nom })}
                     />
                     <RangedNumberField
-                        label="Pourcentage"
+                        label={text('adrenaline:shared.percentage')}
                         value={entry.pourcentage}
                         onChange={(pourcentage) =>
                             replace({ ...entry, pourcentage })
                         }
                     />
                     <NumberField
-                        label="Dés de dégâts"
+                        label={text('adrenaline:shared.equipment.damageDice')}
                         value={Number(entry.desDeDegats ?? 0)}
                         onChange={(desDeDegats) =>
                             replace({ ...entry, desDeDegats })
                         }
                     />
                     <TextField
-                        label="Type"
+                        label={text('adrenaline:shared.type')}
                         value={String(entry.type ?? '')}
                         onChange={(type) => replace({ ...entry, type })}
                     />
                     <LongTextField
-                        label="Notes"
+                        label={text('fields.notes')}
                         value={String(entry.notes ?? '')}
                         onChange={(notes) => replace({ ...entry, notes })}
                     />
@@ -387,21 +423,27 @@ export function EquipmentFields({
     return (
         <div className="grid gap-3">
             <StringRows
-                label="Possessions"
+                label={text('adrenaline:shared.equipment.possessions')}
                 values={strings(current.possessions)}
                 onChange={(possessions) =>
                     onChange({ ...current, possessions })
                 }
             />
             <TextField
-                label="Équipement favori"
+                label={text('adrenaline:shared.equipment.favouriteGear')}
                 value={String(current.equipementFavori ?? '')}
                 onChange={(equipementFavori) =>
                     onChange({ ...current, equipementFavori })
                 }
             />
-            {weapons('armesPhysiques', 'Armes physiques')}
-            {weapons('armesMentales', 'Armes mentales')}
+            {weapons(
+                'armesPhysiques',
+                'adrenaline:shared.equipment.physicalWeapons'
+            )}
+            {weapons(
+                'armesMentales',
+                'adrenaline:shared.equipment.mentalWeapons'
+            )}
         </div>
     )
 }
@@ -413,42 +455,42 @@ export function NarrativeFields({
     value: unknown
     onChange: (value: RecordValue) => void
 }) {
+    const text = useUiText()
     const current = record(value)
+    const stringFields: [string, TranslationKey][] = [
+        ['personnalite', 'adrenaline:shared.narrative.personality'],
+        ['interpretation', 'adrenaline:shared.narrative.roleplayingTips'],
+        ['repliques', 'adrenaline:shared.narrative.lines'],
+        ['notesMj', 'adrenaline:shared.narrative.gmNotes'],
+    ]
     return (
         <div className="grid gap-2">
             <TextField
-                label="Rôle"
+                label={text('adrenaline:shared.narrative.role')}
                 value={String(current.role ?? '')}
                 onChange={(role) => onChange({ ...current, role })}
             />
             <TextField
-                label="Attitude"
+                label={text('adrenaline:shared.narrative.attitude')}
                 value={String(current.attitude ?? '')}
                 onChange={(attitude) => onChange({ ...current, attitude })}
             />
             <LongTextField
-                label="Historique"
+                label={text('adrenaline:shared.narrative.background')}
                 value={String(current.historique ?? '')}
                 onChange={(historique) => onChange({ ...current, historique })}
             />
             <LongTextField
-                label="Évolution possible"
+                label={text('adrenaline:shared.narrative.possibleDevelopment')}
                 value={String(current.evolutionPossible ?? '')}
                 onChange={(evolutionPossible) =>
                     onChange({ ...current, evolutionPossible })
                 }
             />
-            {(
-                [
-                    ['personnalite', 'Personnalité'],
-                    ['interpretation', 'Interprétation'],
-                    ['repliques', 'Répliques'],
-                    ['notesMj', 'Notes MJ'],
-                ] as const
-            ).map(([key, label]) => (
+            {stringFields.map(([key, labelKey]) => (
                 <StringRows
                     key={key}
-                    label={label}
+                    label={text(labelKey)}
                     values={strings(current[key])}
                     onChange={(next) => onChange({ ...current, [key]: next })}
                 />
@@ -464,33 +506,34 @@ export function MetaFields({
     value: unknown
     onChange: (value: RecordValue) => void
 }) {
+    const text = useUiText()
     const current = record(value)
     return (
         <div className="grid grid-cols-2 gap-2">
             <TextField
-                label="Type de publication"
+                label={text('adrenaline:shared.meta.publicationType')}
                 value={String(current.typeDePublication ?? '')}
                 onChange={(typeDePublication) =>
                     onChange({ ...current, typeDePublication })
                 }
             />
             <TextField
-                label="Source"
+                label={text('adrenaline:shared.meta.source')}
                 value={String(current.source ?? '')}
                 onChange={(source) => onChange({ ...current, source })}
             />
             <StringRows
-                label="Auteurs"
+                label={text('adrenaline:shared.meta.authors')}
                 values={strings(current.auteurs)}
                 onChange={(auteurs) => onChange({ ...current, auteurs })}
             />
             <NumberField
-                label="Page"
+                label={text('adrenaline:shared.meta.page')}
                 value={Number(current.page ?? 0)}
                 onChange={(page) => onChange({ ...current, page })}
             />
             <TextField
-                label="Licence"
+                label={text('adrenaline:shared.meta.licence')}
                 value={String(current.licence ?? '')}
                 onChange={(licence) => onChange({ ...current, licence })}
             />
@@ -505,26 +548,26 @@ export function ParametersFields({
     value: unknown
     onChange: (value: RecordValue) => void
 }) {
+    const text = useUiText()
     const current = record(value)
+    const textFields: [string, TranslationKey][] = [
+        ['joueur', 'adrenaline:pj.form.player'],
+        ['typeDeCreation', 'adrenaline:pj.form.creationMethod'],
+        ['typeDeScenario', 'adrenaline:pj.form.scenarioType'],
+        ['declinaisonDeCampagne', 'adrenaline:pj.form.campaignVariant'],
+    ]
     return (
         <div className="grid grid-cols-2 gap-2">
-            {(
-                [
-                    ['joueur', 'Joueur'],
-                    ['typeDeCreation', 'Type de création'],
-                    ['typeDeScenario', 'Type de scénario'],
-                    ['declinaisonDeCampagne', 'Déclinaison de campagne'],
-                ] as const
-            ).map(([key, label]) => (
+            {textFields.map(([key, labelKey]) => (
                 <TextField
                     key={key}
-                    label={label}
+                    label={text(labelKey)}
                     value={String(current[key] ?? '')}
                     onChange={(next) => onChange({ ...current, [key]: next })}
                 />
             ))}
             <RangedNumberField
-                label="PX"
+                label={text('adrenaline:pj.form.xp')}
                 value={current.px}
                 onChange={(px) => onChange({ ...current, px })}
             />

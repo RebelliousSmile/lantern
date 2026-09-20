@@ -19,6 +19,7 @@ The app is a shared shell plus self-contained template modules.
 - `src/templates/<game>/<object>/` — one template module. `<game>` is any registry-derived game id; current modules cover City of Mist, Legend in the Mist, :Otherscape, PbtA, Adrenaline, Urban Shadows, Monsterhearts, Masks, Monster of the Week, and The Sprawl. PbtA's generic `playbook` remains an interchange workflow; each published specialized `*-playbook` target owns its canonical template.
 - `src/app/` — the shell's own pieces: top bar, main content, landing and editing views, inspectors, dialogs, and the hooks holding shell state.
 - `src/components/ui/` — generated shadcn/Radix primitives; `src/components/sidebar/` and `markdown/` hold app-specific composites.
+- `src/i18n/` — the UI language layer: i18next setup, the language list, the `UiText` helpers, the error formatter, the English and French strings under `locales/`, and each game's French glossary under `glossary/`.
 - `src/utils/`, `src/hooks/`, `src/styles/` — cross-cutting helpers, the viewport hook, and the four aggregated stylesheets.
 
 ## Core subsystems
@@ -65,6 +66,16 @@ The sidebar renders `templatesByGame` from the registry, a hand-written list of 
 - `TemplateExportPanel.tsx` — renders the active template's export actions and passes them a context
 
 These stay template-agnostic. A capability valid for one template belongs in that module and reaches the shell through the contract.
+
+### Language
+
+The UI speaks English or French; the game sheet always speaks English. `src/i18n/index.ts` sets up i18next synchronously with one namespace for the shell and generic editor words (`common`) and one per game family (`legend`, `city`, `otherscape`, `pbta` — the PbtA hacks included — and `adrenaline`). English under `locales/en/` is the source of truth; each French file is typed against it, so a missing key fails the build.
+
+- The language menu sits on the sidebar's Feedback row and opens upward. Only an explicit choice is stored (`mist:language:v1`); a first visit follows the browser locale.
+- Text fields of `TemplateDefinition` are `UiText`: a translation key, a key with values, or a raw `{ text }`. `useUiText()` resolves them in the UI language, `translateEnglish` in English for previews and file names.
+- Previews, the PNG, file names and `doc` defaults are never translated.
+- Changing the language also calls `z.config` with the matching Zod locale. Zod keeps that config on `globalThis`, so the published schema packages' validation messages follow without a change on their side.
+- `formatError` (`src/i18n/formatError.ts`) is the one way an error reaches the user: one line per Zod issue with its 1-based path (`limits[2].name`), a positioned message for a TOML syntax error, a translated fallback otherwise. Import warnings are `{ key, values }` data, worded by the dialog.
 
 ## Template module layout
 
@@ -124,7 +135,7 @@ A field is unreachable until something in the preview opens its form, and `openS
 
 Import: the landing dialog calls `template.io.importToml(...)`, the template validates and normalises, the tab's `doc` is replaced and the tab switches to editing mode. Zod runs **only** at this boundary and before export — never on keystroke — so an invalid document can reach the store and only fails on export.
 
-Export: the shared panel renders the template's actions and calls `run({ doc, view, sheet, fileStem, getPreviewNode })`. The PNG action captures the live preview node with `@zumer/snapdom`; the TOML action serialises the document. Each module currently declares its own local copy of the image action rather than sharing one — copy the neighbouring module's.
+Export: the shared panel renders the template's actions and calls `run({ doc, view, sheet, fileStem, getPreviewNode })`. The PNG action captures the live preview node with `@zumer/snapdom`; the TOML action serialises the document. Both are shared factories in `src/core/templates/shell/` (`createImageExportAction`, `createTomlExportAction`) that every module calls rather than copying.
 
 ## Known defects
 
