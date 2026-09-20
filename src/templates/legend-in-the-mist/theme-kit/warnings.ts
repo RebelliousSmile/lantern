@@ -1,9 +1,26 @@
+import type { ImportWarning } from '@/core/templates/types'
+import type { TranslationKey } from '@/i18n/text'
 import { parseToken } from '@/utils/tags'
 import type { LegendInTheMistThemeKit, TagField } from './model'
 
-const FIELD_LABEL: Record<TagField, string> = {
-    power: 'Power tags',
-    weakness: 'Weakness tags',
+const TAG_WARNING_KEYS: Record<
+    TagField,
+    {
+        braced: TranslationKey
+        marked: TranslationKey
+        statusLike: TranslationKey
+    }
+> = {
+    power: {
+        braced: 'legend:themeKit.warnings.power.braced',
+        marked: 'legend:themeKit.warnings.power.marked',
+        statusLike: 'legend:themeKit.warnings.power.statusLike',
+    },
+    weakness: {
+        braced: 'legend:themeKit.warnings.weakness.braced',
+        marked: 'legend:themeKit.warnings.weakness.marked',
+        statusLike: 'legend:themeKit.warnings.weakness.statusLike',
+    },
 }
 
 // Tags are stored bare: the field a tag sits in is what makes it a power tag or
@@ -13,26 +30,26 @@ const FIELD_LABEL: Record<TagField, string> = {
 function collectTagWarnings(
     tags: string[],
     field: TagField,
-    warnings: string[]
+    warnings: ImportWarning[]
 ) {
+    const keys = TAG_WARNING_KEYS[field]
+
     const braced = tags.filter((tag) => /^\{[\s\S]*\}$/.test(tag.trim()))
     if (braced.length > 0) {
-        warnings.push(
-            `${FIELD_LABEL[field]} written with braces: ${braced.join(', ')}. They are added when the card is rendered, so the braces will show up twice.`
-        )
+        warnings.push({
+            key: keys.braced,
+            values: { tags: braced.join(', ') },
+        })
     }
 
     const marked = tags.filter((tag) =>
         tag.trim().replace(/^\{/, '').startsWith('!')
     )
     if (marked.length > 0) {
-        warnings.push(
-            `${FIELD_LABEL[field]} written with a leading "!": ${marked.join(', ')}. ${
-                field === 'weakness'
-                    ? 'Weakness tags are already marked by the field they are in.'
-                    : 'A tag that works against the Hero belongs in Weakness tags.'
-            }`
-        )
+        warnings.push({
+            key: keys.marked,
+            values: { tags: marked.join(', ') },
+        })
     }
 
     const statusLike = tags.filter((tag) => {
@@ -40,16 +57,17 @@ function collectTagWarnings(
         return parsed?.kind === 'status' || parsed?.kind === 'limit'
     })
     if (statusLike.length > 0) {
-        warnings.push(
-            `${FIELD_LABEL[field]} that read as a status or a limit: ${statusLike.join(', ')}. A trailing "-<n>" or ":<n>" makes a tag render as a tracker rather than as a tag.`
-        )
+        warnings.push({
+            key: keys.statusLike,
+            values: { tags: statusLike.join(', ') },
+        })
     }
 }
 
 export function computeLegendInTheMistThemeKitWarnings(
     legendInTheMistThemeKit: LegendInTheMistThemeKit
-): string[] {
-    const warnings: string[] = []
+): ImportWarning[] {
+    const warnings: ImportWarning[] = []
 
     collectTagWarnings(legendInTheMistThemeKit.power_tags, 'power', warnings)
     collectTagWarnings(
@@ -62,9 +80,7 @@ export function computeLegendInTheMistThemeKitWarnings(
         !legendInTheMistThemeKit.power_tags.length &&
         !legendInTheMistThemeKit.weakness_tags.length
     ) {
-        warnings.push(
-            'This Theme Kit suggests no tags, so there is nothing for a Hero to pick from.'
-        )
+        warnings.push({ key: 'legend:themeKit.warnings.noTags' })
     }
 
     // An improvement is a choice offered to a Hero. A label with no effect is
@@ -76,9 +92,10 @@ export function computeLegendInTheMistThemeKitWarnings(
         )
         .map((improvement) => improvement.name)
     if (namedOnly.length > 0) {
-        warnings.push(
-            `Improvements named without an effect: ${namedOnly.join(', ')}. The card prints the label alone, which is right only if the themebook states nothing more.`
-        )
+        warnings.push({
+            key: 'legend:themeKit.warnings.improvementsWithoutEffect',
+            values: { improvements: namedOnly.join(', ') },
+        })
     }
 
     return warnings

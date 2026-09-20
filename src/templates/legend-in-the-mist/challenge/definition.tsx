@@ -1,11 +1,12 @@
 import { createImageExportAction } from '@/core/templates/shell/imageExportAction'
-import { cloneValue } from '@/utils/clone'
+import { createTomlExportAction } from '@/core/templates/shell/tomlExportAction'
 import type { AnyTemplateDefinition } from '@/core/templates/types'
-import { toast } from 'sonner'
+import { cloneValue } from '@/utils/clone'
 import { ChallengeAppearancePanel } from './editor/ChallengeAppearancePanel'
 import { ChallengeEditorPanel } from './editor/ChallengeEditorPanel'
 import { ChallengeImageExportSettings } from './editor/ChallengeImageExportSettings'
 import { getLegendInTheMistChallengePreviewWidth } from './hooks'
+import { migrateLegacyChallengeWorkspace } from './legacyWorkspaceMigration'
 import { challengeSections } from './metadata'
 import {
     blankLegendInTheMistChallenge,
@@ -17,13 +18,12 @@ import {
 import { ChallengePreview } from './preview/ChallengePreview'
 import { getSampleLegendInTheMistChallenge } from './sample'
 import { exportToTOML, importFromTOMLWithWarnings } from './toml'
-import { migrateLegacyChallengeWorkspace } from './legacyWorkspaceMigration'
 
 const challengeTemplate: AnyTemplateDefinition = {
     id: 'legend.challenge',
     gameId: 'legend',
     gameLabel: 'Legend in the Mist',
-    label: 'Challenge',
+    label: 'legend:challenge.label',
     implemented: true,
     contractKey: 'mist/legend-in-the-mist/challenge',
     createBlank: blankLegendInTheMistChallenge,
@@ -39,11 +39,8 @@ const challengeTemplate: AnyTemplateDefinition = {
     },
     sections: challengeSections,
     landing: {
-        description:
-            'Choose how to start this template: blank, example, or import from TOML.',
-        exampleLabel: 'Start with example',
-        blankLabel: 'Start blank',
-        importLabel: 'Import TOML',
+        newTitle: 'legend:challenge.newTitle',
+        description: 'landing.chooseStart',
     },
     io: {
         importToml: (tomlText: string) => {
@@ -63,7 +60,6 @@ const challengeTemplate: AnyTemplateDefinition = {
         render: () => <ChallengePreview />,
     },
     editor: {
-        emptyState: 'Click on the preview to edit a specific section.',
         renderPanel: () => <ChallengeEditorPanel />,
     },
     appearance: {
@@ -73,41 +69,12 @@ const challengeTemplate: AnyTemplateDefinition = {
     },
     export: {
         actions: [
-            {
-                id: 'toml',
-                label: 'TOML',
-                buttonLabel: 'Export TOML',
-                description: 'Export the current challenge data as TOML.',
-                run: ({
-                    doc,
-                    fileStem,
-                }: {
-                    doc: LegendInTheMistChallenge
-                    fileStem: string
-                }) => {
-                    try {
-                        const toml = exportToTOML(doc)
-                        const blob = new Blob([toml], {
-                            type: 'text/plain;charset=utf-8',
-                        })
-                        const url = URL.createObjectURL(blob)
-                        const anchor = document.createElement('a')
-                        anchor.href = url
-                        anchor.download = `${fileStem}.toml`
-                        document.body.appendChild(anchor)
-                        anchor.click()
-                        anchor.remove()
-                        URL.revokeObjectURL(url)
-                        toast.success('Exported TOML.')
-                    } catch (errorAny: any) {
-                        toast.error(
-                            errorAny?.message || 'Failed to export TOML.'
-                        )
-                    }
-                },
-            },
+            createTomlExportAction({
+                exportToml: exportToTOML,
+                description: 'legend:challenge.exportToml',
+            }),
             createImageExportAction({
-                description: 'Export the current challenge preview as PNG.',
+                description: 'legend:challenge.exportPng',
                 renderSettings: () => <ChallengeImageExportSettings />,
             }),
         ],

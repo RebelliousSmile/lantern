@@ -1,16 +1,11 @@
+import type { TranslationKey } from '@/i18n/text'
 import { sectionIds, type SectionId } from './model'
-export const urbanShadowsSections: Array<{ id: SectionId; label: string }> =
-    sectionIds.map((id) => ({
-        id,
-        label: {
-            circles: 'Circles & Status',
-            relationships: 'Mortal Relationships',
-            harm: 'Harm & Scars',
-            corruption: 'Corruption & End Move',
-            editorial: 'Editorial',
-            moves: 'Moves',
-            creation: 'Creation',
-            gear: 'Gear',
-            advancement: 'Advancement',
-        }[id],
-    }))
+
+/* Keys, not text: the appearance panel translates them, the preview resolves them in English. */
+export const urbanShadowsSections: Array<{
+    id: SectionId
+    label: TranslationKey
+}> = sectionIds.map((id) => ({
+    id,
+    label: `pbta:urbanShadows.sections.${id}` as const,
+}))

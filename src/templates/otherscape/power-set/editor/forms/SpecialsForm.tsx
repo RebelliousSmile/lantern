@@ -1,4 +1,5 @@
 import { SystemMarkdownScope } from '@/components/markdown/SystemMarkdownScope'
+import { useUiText } from '@/i18n/text'
 import { renderLitmMarkdown } from '@/utils/markdown'
 import { useEffect, useMemo, useState } from 'react'
 import { useOtherscapePowerSetStore } from '../../hooks'
@@ -27,6 +28,7 @@ import {
 import { CSS } from '@dnd-kit/utilities'
 
 export default function SpecialsForm({ focusIndex }: { focusIndex?: number }) {
+    const text = useUiText()
     const {
         otherscapePowerSet,
         addSpecial,
@@ -126,8 +128,16 @@ export default function SpecialsForm({ focusIndex }: { focusIndex?: number }) {
 
     function saveEdit() {
         if (editingIndex == null) return
-        if (!eName.trim()) return setError('Name is required.')
-        if (!eDesc.trim()) return setError('Description is required.')
+        if (!eName.trim())
+            return setError(
+                text('otherscape:forms.powerSet.specials.nameRequiredError')
+            )
+        if (!eDesc.trim())
+            return setError(
+                text(
+                    'otherscape:forms.powerSet.specials.descriptionRequiredError'
+                )
+            )
         updateSpecialAt(editingIndex, {
             name: eName.trim(),
             description: eDesc.trim(),
@@ -156,6 +166,7 @@ export default function SpecialsForm({ focusIndex }: { focusIndex?: number }) {
                                 dragDisabled={dragDisabled}
                                 onEdit={() => startEdit(i)}
                                 onRemove={() => removeSpecialAt(i)}
+                                text={text}
                             >
                                 {editingIndex === i && (
                                     <div className="mt-2 space-y-2.5 rounded-md border bg-muted/30 p-2.5">
@@ -169,7 +180,7 @@ export default function SpecialsForm({ focusIndex }: { focusIndex?: number }) {
                                                 htmlFor={`sf-name-${i}`}
                                                 className="text-xs"
                                             >
-                                                Name
+                                                {text('fields.name')}
                                             </Label>
                                             <Input
                                                 id={`sf-name-${i}`}
@@ -185,9 +196,11 @@ export default function SpecialsForm({ focusIndex }: { focusIndex?: number }) {
                                                 htmlFor={`sf-desc-${i}`}
                                                 className="text-xs"
                                             >
-                                                Description{' '}
+                                                {text('fields.description')}{' '}
                                                 <span className="text-muted-foreground">
-                                                    (Markdown)
+                                                    {text(
+                                                        'otherscape:forms.powerSet.specials.descriptionHint'
+                                                    )}
                                                 </span>
                                             </Label>
                                             <Textarea
@@ -198,7 +211,9 @@ export default function SpecialsForm({ focusIndex }: { focusIndex?: number }) {
                                                 onChange={(e) =>
                                                     setEDesc(e.target.value)
                                                 }
-                                                placeholder="When this happens... then do that."
+                                                placeholder={text(
+                                                    'otherscape:forms.powerSet.specials.descriptionPlaceholder'
+                                                )}
                                             />
                                         </div>
                                         <div className="flex items-center gap-2">
@@ -208,7 +223,7 @@ export default function SpecialsForm({ focusIndex }: { focusIndex?: number }) {
                                                 className="h-7 px-2.5 text-xs"
                                                 onClick={saveEdit}
                                             >
-                                                Save
+                                                {text('actions.save')}
                                             </Button>
                                             <Button
                                                 type="button"
@@ -216,7 +231,7 @@ export default function SpecialsForm({ focusIndex }: { focusIndex?: number }) {
                                                 className="h-7 px-0 text-xs"
                                                 onClick={cancelEdit}
                                             >
-                                                Cancel
+                                                {text('actions.cancel')}
                                             </Button>
                                         </div>
                                     </div>
@@ -233,7 +248,10 @@ export default function SpecialsForm({ focusIndex }: { focusIndex?: number }) {
                                 className="mt-1 h-8 w-full justify-center gap-1.5 border-dashed px-2.5 text-xs"
                                 onClick={addPlaceholder}
                             >
-                                <Plus className="h-3.5 w-3.5" /> Add special
+                                <Plus className="h-3.5 w-3.5" />{' '}
+                                {text(
+                                    'otherscape:forms.powerSet.specials.addButton'
+                                )}
                             </Button>
                         </li>
                     </ul>
@@ -252,6 +270,7 @@ function SortableSpecialItem({
     dragDisabled,
     onEdit,
     onRemove,
+    text,
     children,
 }: {
     id: string
@@ -260,6 +279,7 @@ function SortableSpecialItem({
     dragDisabled: boolean
     onEdit: () => void
     onRemove: () => void
+    text: ReturnType<typeof useUiText>
     children?: React.ReactNode
 }) {
     const {
@@ -294,11 +314,13 @@ function SortableSpecialItem({
                       ? 'opacity-40 cursor-not-allowed hover:bg-transparent'
                       : 'cursor-grab active:cursor-grabbing'
               }`}
-                        aria-label="Drag to reorder"
+                        aria-label={text('actions.dragToReorder')}
                         title={
                             dragDisabled
-                                ? 'Finish editing to reorder'
-                                : 'Drag to reorder'
+                                ? text(
+                                      'otherscape:forms.powerSet.specials.dragTitleDisabled'
+                                  )
+                                : text('actions.dragToReorder')
                         }
                         disabled={dragDisabled}
                         {...(!dragDisabled ? attributes : {})}
@@ -320,7 +342,7 @@ function SortableSpecialItem({
                         variant="ghost"
                         size="icon"
                         className="h-7 w-7"
-                        title="Edit"
+                        title={text('actions.edit')}
                         onClick={onEdit}
                     >
                         <Pencil className="h-3.5 w-3.5" />
@@ -330,7 +352,7 @@ function SortableSpecialItem({
                         variant="ghost"
                         size="icon"
                         className="h-7 w-7 text-destructive"
-                        title="Remove"
+                        title={text('actions.remove')}
                         onClick={onRemove}
                     >
                         <Trash2 className="h-3.5 w-3.5" />
@@ -348,7 +370,9 @@ function SortableSpecialItem({
                     />
                 ) : (
                     <div className="text-sm text-muted-foreground">
-                        No description
+                        {text(
+                            'otherscape:forms.powerSet.specials.noDescription'
+                        )}
                     </div>
                 )}
             </SystemMarkdownScope>

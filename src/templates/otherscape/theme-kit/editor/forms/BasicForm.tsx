@@ -1,66 +1,80 @@
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { SegmentedRadioGroup } from '@/components/ui/segmented-radio-group'
+import { useUiText } from '@/i18n/text'
 import { useOtherscapeThemeKitStore, type ThemeType } from '../../hooks'
-import { QUEST_LABEL, THEME_TYPE_LABEL } from '../../model'
 
 const THEME_TYPES: ThemeType[] = ['self', 'mythos', 'noise', 'crew']
 
 export default function BasicForm() {
+    const text = useUiText()
     const { otherscapeThemeKit, setTitleTag, setThemeType, setCategory } =
         useOtherscapeThemeKitStore()
+    const themeType = otherscapeThemeKit.theme_type
 
     return (
         <div className="space-y-4">
             <div className="grid gap-1">
-                <Label htmlFor="os-theme-kit-title-tag">Title tag</Label>
+                <Label htmlFor="os-theme-kit-title-tag">
+                    {text('otherscape:forms.themeKit.basic.titleTagLabel')}
+                </Label>
                 <Input
                     id="os-theme-kit-title-tag"
                     className="h-8 px-2 text-sm"
                     value={otherscapeThemeKit.title_tag}
                     onChange={(event) => setTitleTag(event.target.value)}
-                    placeholder="Back-Alley Ripperdoc"
+                    placeholder={text(
+                        'otherscape:forms.themeKit.basic.titleTagPlaceholder'
+                    )}
                 />
                 <p className="text-xs text-muted-foreground">
-                    The card prints it as its title, so write it bare, without
-                    braces, and leave it out of the power tags.
+                    {text('otherscape:forms.themeKit.basic.titleTagHint')}
                 </p>
             </div>
 
             <div className="grid gap-1">
-                <Label>Theme type</Label>
+                <Label>
+                    {text('otherscape:forms.themeKit.basic.themeTypeLabel')}
+                </Label>
                 <SegmentedRadioGroup
                     id="os-theme-kit-type"
                     value={otherscapeThemeKit.theme_type}
                     onValueChange={(value) => setThemeType(value as ThemeType)}
                     options={THEME_TYPES.map((value) => ({
                         value,
-                        label: THEME_TYPE_LABEL[value],
+                        label: text(
+                            `otherscape:forms.themeKit.themeType.${value}`
+                        ),
                     }))}
-                    ariaLabel="Theme type"
+                    ariaLabel={text(
+                        'otherscape:forms.themeKit.basic.themeTypeLabel'
+                    )}
                 />
                 <p className="text-xs text-muted-foreground">
-                    Sets the card's colour and what its quest is called:{' '}
-                    {QUEST_LABEL[otherscapeThemeKit.theme_type]} for a{' '}
-                    {THEME_TYPE_LABEL[otherscapeThemeKit.theme_type]} theme.
+                    {text(
+                        `otherscape:forms.themeKit.basic.themeTypeHint.${themeType}`
+                    )}
                 </p>
             </div>
 
             <div className="grid gap-1">
                 <Label htmlFor="os-theme-kit-category">
-                    Themebook{' '}
-                    <span className="text-muted-foreground">(optional)</span>
+                    {text('otherscape:forms.themeKit.basic.themebookLabel')}{' '}
+                    <span className="text-muted-foreground">
+                        {text('otherscape:forms.themeKit.optional')}
+                    </span>
                 </Label>
                 <Input
                     id="os-theme-kit-category"
                     className="h-8 px-2 text-sm"
                     value={otherscapeThemeKit.category}
                     onChange={(event) => setCategory(event.target.value)}
-                    placeholder="Street Trade, Augmented, Enclave..."
+                    placeholder={text(
+                        'otherscape:forms.themeKit.basic.themebookPlaceholder'
+                    )}
                 />
                 <p className="text-xs text-muted-foreground">
-                    Printed in the header band. Left empty, the band still
-                    shows.
+                    {text('otherscape:forms.themeKit.basic.themebookHint')}
                 </p>
             </div>
         </div>

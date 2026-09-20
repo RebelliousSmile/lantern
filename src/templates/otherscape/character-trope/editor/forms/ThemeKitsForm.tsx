@@ -4,6 +4,7 @@ import { useOtherscapeCharacterTropeStore } from '../../hooks'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { useUiText } from '@/i18n/text'
 import { GripVertical, Pencil, Plus, Trash2 } from 'lucide-react'
 
 import {
@@ -30,6 +31,7 @@ import { CSS } from '@dnd-kit/utilities'
 ---------------------------------------------------------------------------- */
 
 export default function ThemeKitsForm({ focusIndex }: { focusIndex?: number }) {
+    const text = useUiText()
     const {
         otherscapeCharacterTrope,
         addThemeKit,
@@ -126,8 +128,18 @@ export default function ThemeKitsForm({ focusIndex }: { focusIndex?: number }) {
 
     function saveEdit() {
         if (editingIndex == null) return
-        if (!eTitleTag.trim()) return setError('Title tag is required.')
-        if (!eCategory.trim()) return setError('Category is required.')
+        if (!eTitleTag.trim())
+            return setError(
+                text(
+                    'otherscape:forms.characterTrope.themeKits.titleTagRequired'
+                )
+            )
+        if (!eCategory.trim())
+            return setError(
+                text(
+                    'otherscape:forms.characterTrope.themeKits.categoryRequired'
+                )
+            )
 
         updateThemeKitAt(editingIndex, {
             title_tag: eTitleTag.trim(),
@@ -139,9 +151,7 @@ export default function ThemeKitsForm({ focusIndex }: { focusIndex?: number }) {
     return (
         <div className="space-y-2.5">
             <p className="text-xs text-muted-foreground">
-                The theme kits this trope grants outright. Spell the title tag
-                and the category the way the kit itself spells them: that pair
-                is what points at the kit.
+                {text('otherscape:forms.characterTrope.themeKits.hint')}
             </p>
 
             <DndContext
@@ -176,7 +186,9 @@ export default function ThemeKitsForm({ focusIndex }: { focusIndex?: number }) {
                                                 htmlFor={`tk-title-${index}`}
                                                 className="text-xs"
                                             >
-                                                Title tag
+                                                {text(
+                                                    'otherscape:forms.characterTrope.themeKits.titleTagLabel'
+                                                )}
                                             </Label>
                                             <Input
                                                 id={`tk-title-${index}`}
@@ -194,7 +206,9 @@ export default function ThemeKitsForm({ focusIndex }: { focusIndex?: number }) {
                                                 htmlFor={`tk-category-${index}`}
                                                 className="text-xs"
                                             >
-                                                Category
+                                                {text(
+                                                    'otherscape:forms.characterTrope.themeKits.categoryLabel'
+                                                )}
                                             </Label>
                                             <Input
                                                 id={`tk-category-${index}`}
@@ -205,7 +219,9 @@ export default function ThemeKitsForm({ focusIndex }: { focusIndex?: number }) {
                                                         event.target.value
                                                     )
                                                 }
-                                                placeholder="e.g., RITUAL"
+                                                placeholder={text(
+                                                    'otherscape:forms.characterTrope.themeKits.categoryPlaceholder'
+                                                )}
                                             />
                                         </div>
                                         <div className="flex items-center gap-2">
@@ -215,7 +231,7 @@ export default function ThemeKitsForm({ focusIndex }: { focusIndex?: number }) {
                                                 className="h-7 px-2.5 text-xs"
                                                 onClick={saveEdit}
                                             >
-                                                Save
+                                                {text('actions.save')}
                                             </Button>
                                             <Button
                                                 type="button"
@@ -223,7 +239,7 @@ export default function ThemeKitsForm({ focusIndex }: { focusIndex?: number }) {
                                                 className="h-7 px-0 text-xs"
                                                 onClick={cancelEdit}
                                             >
-                                                Cancel
+                                                {text('actions.cancel')}
                                             </Button>
                                         </div>
                                     </div>
@@ -240,7 +256,10 @@ export default function ThemeKitsForm({ focusIndex }: { focusIndex?: number }) {
                                 className="mt-1 h-8 w-full justify-center gap-1.5 border-dashed px-2.5 text-xs"
                                 onClick={addPlaceholder}
                             >
-                                <Plus className="h-3.5 w-3.5" /> Add theme kit
+                                <Plus className="h-3.5 w-3.5" />{' '}
+                                {text(
+                                    'otherscape:forms.characterTrope.themeKits.addButton'
+                                )}
                             </Button>
                         </li>
                     </ul>
@@ -268,6 +287,7 @@ function SortableThemeKitItem({
     onRemove: () => void
     children?: React.ReactNode
 }) {
+    const text = useUiText()
     const {
         attributes,
         listeners,
@@ -300,11 +320,13 @@ function SortableThemeKitItem({
                       ? 'opacity-40 cursor-not-allowed hover:bg-transparent'
                       : 'cursor-grab active:cursor-grabbing'
               }`}
-                        aria-label="Drag to reorder"
+                        aria-label={text('actions.dragToReorder')}
                         title={
                             dragDisabled
-                                ? 'Finish editing to reorder'
-                                : 'Drag to reorder'
+                                ? text(
+                                      'otherscape:forms.characterTrope.themeKits.finishEditingToReorder'
+                                  )
+                                : text('actions.dragToReorder')
                         }
                         disabled={dragDisabled}
                         {...(!dragDisabled ? attributes : {})}
@@ -318,7 +340,10 @@ function SortableThemeKitItem({
                             {titleTag}
                         </div>
                         <div className="truncate text-[11px] uppercase tracking-widest text-muted-foreground">
-                            {category || 'No category'}
+                            {category ||
+                                text(
+                                    'otherscape:forms.characterTrope.themeKits.noCategory'
+                                )}
                         </div>
                     </div>
                 </div>
@@ -329,7 +354,7 @@ function SortableThemeKitItem({
                         variant="ghost"
                         size="icon"
                         className="h-7 w-7"
-                        title="Edit"
+                        title={text('actions.edit')}
                         onClick={onEdit}
                     >
                         <Pencil className="h-3.5 w-3.5" />
@@ -339,7 +364,7 @@ function SortableThemeKitItem({
                         variant="ghost"
                         size="icon"
                         className="h-7 w-7 text-destructive"
-                        title="Remove"
+                        title={text('actions.remove')}
                         onClick={onRemove}
                     >
                         <Trash2 className="h-3.5 w-3.5" />

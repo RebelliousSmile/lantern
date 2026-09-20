@@ -1,12 +1,16 @@
+import type { TranslationKey } from '@/i18n/text'
 import type { Background, SectionId } from './model'
 
-export const themeCardSections: Array<{ id: SectionId; label: string }> = [
-    { id: 'motivation', label: 'Motivation' },
-    { id: 'tracks', label: 'Tracks' },
-    { id: 'powerTags', label: 'Power tags' },
-    { id: 'weaknessTags', label: 'Weakness tags' },
-    { id: 'improvements', label: 'Improvements' },
-    { id: 'meta', label: 'Meta footer' },
+export const themeCardSections: Array<{
+    id: SectionId
+    label: TranslationKey
+}> = [
+    { id: 'motivation', label: 'city:themeCard.sections.motivation' },
+    { id: 'tracks', label: 'city:themeCard.sections.tracks' },
+    { id: 'powerTags', label: 'city:themeCard.sections.powerTags' },
+    { id: 'weaknessTags', label: 'city:themeCard.sections.weaknessTags' },
+    { id: 'improvements', label: 'city:themeCard.sections.improvements' },
+    { id: 'meta', label: 'city:themeCard.sections.meta' },
 ]
 
 export const themeCardBackgroundOptions: Array<{

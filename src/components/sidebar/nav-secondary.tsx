@@ -14,10 +14,13 @@ export function NavSecondary({
     ...props
 }: {
     items: {
+        id: string
         title: string
         href?: string
         onClick?: () => void
         icon: LucideIcon
+        /** Rendered after the button, on the same row (a `SidebarMenuAction`). */
+        action?: React.ReactNode
     }[]
 } & React.ComponentPropsWithoutRef<typeof SidebarGroup>) {
     return (
@@ -25,7 +28,7 @@ export function NavSecondary({
             <SidebarGroupContent>
                 <SidebarMenu>
                     {items.map((item) => (
-                        <SidebarMenuItem key={item.title}>
+                        <SidebarMenuItem key={item.id}>
                             {item.href ? (
                                 <SidebarMenuButton asChild size="sm">
                                     <a
@@ -48,6 +51,7 @@ export function NavSecondary({
                                     </button>
                                 </SidebarMenuButton>
                             )}
+                            {item.action}
                         </SidebarMenuItem>
                     ))}
                 </SidebarMenu>

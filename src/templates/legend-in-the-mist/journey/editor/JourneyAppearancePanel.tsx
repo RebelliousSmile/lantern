@@ -3,6 +3,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Switch } from '@/components/ui/switch'
+import { useUiText } from '@/i18n/text'
 import { useLegendInTheMistJourneyViewStore } from '../hooks'
 import {
     journeyBackgroundOptions,
@@ -14,6 +15,7 @@ import { PREVIEW_WIDTH_MAX, PREVIEW_WIDTH_MIN } from '../model'
 /* Everything here writes to the view, never to the document: a journey exported
    after a zoom change is byte for byte the journey exported before it. */
 export function JourneyAppearancePanel() {
+    const text = useUiText()
     const {
         hidden,
         toggleHidden,
@@ -55,7 +57,9 @@ export function JourneyAppearancePanel() {
                                 checked={!hidden[section.id]}
                                 onCheckedChange={() => toggleHidden(section.id)}
                             />
-                            <span className="text-xs">{section.label}</span>
+                            <span className="text-xs">
+                                {text(section.label)}
+                            </span>
                         </label>
                     ))}
                 </div>

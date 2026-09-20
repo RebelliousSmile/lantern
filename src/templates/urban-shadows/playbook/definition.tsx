@@ -1,6 +1,6 @@
 import { createImageExportAction } from '@/core/templates/shell/imageExportAction'
+import { createTomlExportAction } from '@/core/templates/shell/tomlExportAction'
 import type { AnyTemplateDefinition } from '@/core/templates/types'
-import { toast } from 'sonner'
 import { UrbanShadowsPlaybookAppearancePanel } from './editor/UrbanShadowsPlaybookAppearancePanel'
 import { UrbanShadowsPlaybookEditorPanel } from './editor/UrbanShadowsPlaybookEditorPanel'
 import { UrbanShadowsPlaybookImageExportSettings } from './editor/UrbanShadowsPlaybookImageExportSettings'
@@ -21,7 +21,7 @@ const template: AnyTemplateDefinition = {
     id: 'urban-shadows.playbook',
     gameId: 'urban-shadows',
     gameLabel: 'Urban Shadows',
-    label: 'Playbook',
+    label: 'pbta:playbook.label',
     implemented: true,
     contractKey: 'pbta/urban-shadows-playbook',
     createBlank: blankPlaybook,
@@ -32,11 +32,11 @@ const template: AnyTemplateDefinition = {
         doc.name || 'Urban Shadows Playbook',
     sections: urbanShadowsSections,
     landing: {
-        description:
-            'Create an original Urban Shadows playbook as one TOML document.',
-        exampleLabel: 'Start with example',
-        blankLabel: 'Start blank',
-        importLabel: 'Import TOML',
+        newTitle: 'pbta:playbook.newTitle',
+        description: {
+            key: 'pbta:specialized.description',
+            values: { game: 'Urban Shadows' },
+        },
     },
     io: {
         importToml: (text) => {
@@ -50,7 +50,6 @@ const template: AnyTemplateDefinition = {
         render: () => <UrbanShadowsPlaybookPreview />,
     },
     editor: {
-        emptyState: 'Click a sheet section to edit it.',
         renderPanel: () => <UrbanShadowsPlaybookEditorPanel />,
     },
     appearance: {
@@ -59,38 +58,12 @@ const template: AnyTemplateDefinition = {
     },
     export: {
         actions: [
-            {
-                id: 'toml',
-                label: 'TOML',
-                buttonLabel: 'Export TOML',
-                description: 'Export this playbook as TOML.',
-                run: ({
-                    doc,
-                    fileStem,
-                }: {
-                    doc: UrbanShadowsPlaybook
-                    fileStem: string
-                }) => {
-                    try {
-                        const url = URL.createObjectURL(
-                            new Blob([exportToTOML(doc)], {
-                                type: 'text/plain',
-                            })
-                        )
-                        const a = document.createElement('a')
-                        a.href = url
-                        a.download = `${fileStem}.toml`
-                        a.click()
-                        URL.revokeObjectURL(url)
-                        toast.success('Exported TOML.')
-                    } catch (error: any) {
-                        toast.error(error?.message || 'Failed to export TOML.')
-                    }
-                },
-            },
+            createTomlExportAction({
+                exportToml: exportToTOML,
+                description: 'pbta:playbook.exportToml',
+            }),
             createImageExportAction({
-                description:
-                    'Export the current Urban Shadows playbook as PNG.',
+                description: 'pbta:playbook.exportPng',
                 renderSettings: () => (
                     <UrbanShadowsPlaybookImageExportSettings />
                 ),

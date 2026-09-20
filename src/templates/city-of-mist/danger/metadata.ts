@@ -1,12 +1,13 @@
+import type { TranslationKey } from '@/i18n/text'
 import type { Background, SectionId } from './model'
 
-export const dangerSections: Array<{ id: SectionId; label: string }> = [
-    { id: 'description', label: 'Description' },
-    { id: 'spectrums', label: 'Spectrums' },
-    { id: 'customMoves', label: 'Custom Moves' },
-    { id: 'hardMoves', label: 'Hard Moves' },
-    { id: 'softMoves', label: 'Soft Moves' },
-    { id: 'meta', label: 'Meta footer' },
+export const dangerSections: Array<{ id: SectionId; label: TranslationKey }> = [
+    { id: 'description', label: 'city:danger.sections.description' },
+    { id: 'spectrums', label: 'city:danger.sections.spectrums' },
+    { id: 'customMoves', label: 'city:danger.sections.customMoves' },
+    { id: 'hardMoves', label: 'city:danger.sections.hardMoves' },
+    { id: 'softMoves', label: 'city:danger.sections.softMoves' },
+    { id: 'meta', label: 'city:danger.sections.meta' },
 ]
 
 export const dangerBackgroundOptions: Array<{

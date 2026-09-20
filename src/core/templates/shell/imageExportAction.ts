@@ -1,4 +1,7 @@
 import type { TemplateExportAction } from '@/core/templates/types'
+import i18n from '@/i18n'
+import { formatError } from '@/i18n/formatError'
+import type { UiText } from '@/i18n/text'
 import { snapdom, type CaptureResult } from '@zumer/snapdom'
 import type { ReactNode } from 'react'
 import { toast } from 'sonner'
@@ -15,13 +18,13 @@ type ExportableView = {
  * scaling and download logic is otherwise identical across all fourteen.
  */
 export function createImageExportAction<TView extends ExportableView>(options: {
-    description: string
+    description: UiText
     renderSettings: () => ReactNode
 }): TemplateExportAction<unknown, TView, unknown> {
     return {
         id: 'png',
-        label: 'PNG',
-        buttonLabel: 'Export PNG',
+        label: 'export.png',
+        buttonLabel: 'export.exportPng',
         description: options.description,
         renderSettings: options.renderSettings,
         run: async ({
@@ -35,9 +38,7 @@ export function createImageExportAction<TView extends ExportableView>(options: {
         }) => {
             const node = getPreviewNode()
             if (!node) {
-                toast.error(
-                    'Preview not found. Make sure the preview is visible.'
-                )
+                toast.error(i18n.t('export.previewNotFound'))
                 return
             }
 
@@ -54,9 +55,9 @@ export function createImageExportAction<TView extends ExportableView>(options: {
                     filename: `${fileStem}@${pixelRatio}x.png`,
                 })
 
-                toast.success('Exported PNG.')
-            } catch (errorAny: any) {
-                toast.error(errorAny?.message || 'Failed to export PNG.')
+                toast.success(i18n.t('export.exportedPng'))
+            } catch (error) {
+                toast.error(formatError(error, 'errors.exportPngFailed'))
             } finally {
                 node.classList.remove('exporting')
             }

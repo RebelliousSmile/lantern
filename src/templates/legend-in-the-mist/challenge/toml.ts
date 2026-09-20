@@ -4,6 +4,7 @@ import {
     stringifyCanonical,
 } from '@/contracts/mist-engine'
 import { documentContracts } from '@/contracts/registry'
+import type { ImportWarning } from '@/core/templates/types'
 import {
     toLegendInTheMistChallengeDocument,
     type LegendInTheMistChallenge,
@@ -19,7 +20,7 @@ export const importFromTOML = (tomlText: string) =>
 
 export function importFromTOMLWithWarnings(tomlText: string): {
     legendInTheMistChallenge: LegendInTheMistChallenge
-    warnings: string[]
+    warnings: ImportWarning[]
 } {
     const parsed = contract.parseToml(tomlText)
     return {

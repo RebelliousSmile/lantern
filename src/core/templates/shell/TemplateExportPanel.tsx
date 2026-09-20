@@ -1,8 +1,11 @@
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useActiveTab, useActiveTemplate } from '@/core/workspace/selectors'
+import { formatError } from '@/i18n/formatError'
+import { translateEnglish, useUiText } from '@/i18n/text'
 import { slugify } from '@/utils/strings'
 import { useEffect, useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
 function copyWithLegacyClipboard(text: string) {
@@ -24,6 +27,8 @@ function copyWithLegacyClipboard(text: string) {
 }
 
 export function TemplateExportPanel() {
+    const { t } = useTranslation()
+    const text = useUiText()
     const activeTab = useActiveTab()
     const activeTemplate = useActiveTemplate()
     const [activeActionId, setActiveActionId] = useState<string | null>(null)
@@ -51,7 +56,7 @@ export function TemplateExportPanel() {
     if (!activeTab || !activeTemplate || !activeAction) {
         return (
             <p className="text-sm text-muted-foreground">
-                Open an implemented template to export it.
+                {t('export.openTemplate')}
             </p>
         )
     }
@@ -78,7 +83,10 @@ export function TemplateExportPanel() {
                 view: tab.view,
                 sheet: tab.sheet,
                 getPreviewNode,
-                fileStem: slugify(tab.title || template.label),
+                // English whatever the UI language: a file name must not depend on it.
+                fileStem: slugify(
+                    tab.title || translateEnglish(template.label)
+                ),
             })
         } finally {
             setBusyActionId(null)
@@ -91,8 +99,8 @@ export function TemplateExportPanel() {
         let toml: string
         try {
             toml = exportToml(tab.doc)
-        } catch (errorAny: any) {
-            toast.error(errorAny?.message || 'Failed to generate TOML.')
+        } catch (error) {
+            toast.error(formatError(error, 'errors.generateTomlFailed'))
             return
         }
 
@@ -100,14 +108,12 @@ export function TemplateExportPanel() {
         setIsCopyingToml(true)
         try {
             await navigator.clipboard.writeText(toml)
-            toast.success('Copied TOML.')
+            toast.success(t('export.copied'))
         } catch {
             if (copyWithLegacyClipboard(toml)) {
-                toast.success('Copied TOML.')
+                toast.success(t('export.copied'))
             } else {
-                toast.error(
-                    'Could not copy TOML. Select the text below and copy it manually.'
-                )
+                toast.error(t('export.copyFailed'))
             }
         } finally {
             setIsCopyingToml(false)
@@ -129,7 +135,7 @@ export function TemplateExportPanel() {
                 >
                     {actions.map((action) => (
                         <TabsTrigger key={action.id} value={action.id}>
-                            {action.label}
+                            {text(action.label)}
                         </TabsTrigger>
                     ))}
                 </TabsList>
@@ -137,7 +143,7 @@ export function TemplateExportPanel() {
 
             <div className="space-y-4">
                 <p className="text-sm text-muted-foreground">
-                    {activeAction.description}
+                    {text(activeAction.description)}
                 </p>
                 {activeAction.renderSettings?.()}
             </div>
@@ -151,7 +157,7 @@ export function TemplateExportPanel() {
                         onClick={copyToml}
                         disabled={busyActionId !== null || isCopyingToml}
                     >
-                        Copy TOML
+                        {t('export.copyToml')}
                     </Button>
                     <Button
                         type="button"
@@ -161,26 +167,28 @@ export function TemplateExportPanel() {
                         onClick={runExportAction}
                         disabled={busyActionId !== null || isCopyingToml}
                     >
-                        Export TOML
+                        {t('export.exportToml')}
                     </Button>
 
                     {tomlText !== null && (
                         <div className="space-y-2 rounded-md border bg-muted/30 p-2">
                             <div className="flex items-center justify-between gap-2">
-                                <p className="text-xs font-medium">TOML</p>
+                                <p className="text-xs font-medium">
+                                    {t('export.toml')}
+                                </p>
                                 <Button
                                     type="button"
                                     variant="ghost"
                                     size="xs"
                                     onClick={() => setTomlText(null)}
                                 >
-                                    Hide
+                                    {t('export.hide')}
                                 </Button>
                             </div>
                             <textarea
                                 readOnly
                                 value={tomlText}
-                                aria-label="Generated TOML"
+                                aria-label={t('export.generatedToml')}
                                 className="h-48 max-h-64 w-full resize-y overflow-auto rounded-md border bg-background px-3 py-2 font-mono text-xs leading-5 text-foreground"
                             />
                         </div>
@@ -194,7 +202,11 @@ export function TemplateExportPanel() {
                     onClick={runExportAction}
                     disabled={busyActionId !== null}
                 >
-                    {activeAction.buttonLabel ?? `Export ${activeAction.label}`}
+                    {activeAction.buttonLabel
+                        ? text(activeAction.buttonLabel)
+                        : t('export.exportAction', {
+                              label: text(activeAction.label),
+                          })}
                 </Button>
             )}
         </div>

@@ -3,13 +3,17 @@ export default createSpecializedPlaybookTemplate({
     id: 'monster-of-the-week.playbook',
     gameId: 'monster-of-the-week',
     gameLabel: 'Monster of the Week',
-    label: 'Playbook',
+    label: 'pbta:playbook.label',
+    newTitle: 'pbta:playbook.newTitle',
     contractKey: 'pbta/monster-of-the-week-playbook',
     sections: [
-        { id: 'stats', label: 'Stats' },
-        { id: 'moves', label: 'Moves' },
-        { id: 'improvements', label: 'Improvements' },
-        { id: 'editorial', label: 'Editorial' },
+        { id: 'stats', label: 'pbta:specialized.sections.stats' },
+        { id: 'moves', label: 'pbta:specialized.sections.moves' },
+        {
+            id: 'improvements',
+            label: 'pbta:specialized.sections.improvements',
+        },
+        { id: 'editorial', label: 'pbta:specialized.sections.editorial' },
     ],
     blank: {
         slug: 'untitled-hunter',

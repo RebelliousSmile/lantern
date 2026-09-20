@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { useUiText } from '@/i18n/text'
 import {
     DndContext,
     KeyboardSensor,
@@ -47,6 +48,7 @@ export default function ImprovementsForm({
     focusIndex?: number
     autoCreate?: boolean
 }) {
+    const text = useUiText()
     const {
         legendInTheMistThemeKit,
         addImprovement,
@@ -143,7 +145,9 @@ export default function ImprovementsForm({
 
         const nextName = name.trim()
         if (!nextName) {
-            setError('An improvement needs a name.')
+            setError(
+                text('legend:forms.themeKit.improvements.errorNameRequired')
+            )
             return
         }
 
@@ -160,10 +164,10 @@ export default function ImprovementsForm({
         <div className="space-y-2.5">
             <div className="flex items-baseline justify-between gap-2">
                 <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                    Improvements
+                    {text('legend:forms.themeKit.improvements.heading')}
                 </p>
                 <p className="text-xs text-muted-foreground">
-                    The options this kit offers.
+                    {text('legend:forms.themeKit.improvements.subheading')}
                 </p>
             </div>
 
@@ -198,7 +202,9 @@ export default function ImprovementsForm({
                                                 htmlFor={`theme-kit-improvement-name-${index}`}
                                                 className="text-xs"
                                             >
-                                                Name
+                                                {text(
+                                                    'legend:forms.themeKit.improvements.nameLabel'
+                                                )}
                                             </Label>
                                             <Input
                                                 id={`theme-kit-improvement-name-${index}`}
@@ -219,7 +225,9 @@ export default function ImprovementsForm({
                                                         cancelEdit()
                                                     }
                                                 }}
-                                                placeholder="Second Sight"
+                                                placeholder={text(
+                                                    'legend:forms.themeKit.improvements.namePlaceholder'
+                                                )}
                                             />
                                         </div>
 
@@ -228,9 +236,13 @@ export default function ImprovementsForm({
                                                 htmlFor={`theme-kit-improvement-effect-${index}`}
                                                 className="text-xs"
                                             >
-                                                Effect{' '}
+                                                {text(
+                                                    'legend:forms.themeKit.improvements.effectLabel'
+                                                )}{' '}
                                                 <span className="text-muted-foreground">
-                                                    (optional)
+                                                    {text(
+                                                        'legend:forms.themeKit.shared.optional'
+                                                    )}
                                                 </span>
                                             </Label>
                                             <Textarea
@@ -250,7 +262,9 @@ export default function ImprovementsForm({
                                                         cancelEdit()
                                                     }
                                                 }}
-                                                placeholder="What the improvement lets the hero do."
+                                                placeholder={text(
+                                                    'legend:forms.themeKit.improvements.effectPlaceholder'
+                                                )}
                                             />
                                         </div>
 
@@ -261,7 +275,7 @@ export default function ImprovementsForm({
                                                 className="h-7 px-2.5 text-xs"
                                                 onClick={confirmEdit}
                                             >
-                                                Save
+                                                {text('common:actions.save')}
                                             </Button>
                                             <Button
                                                 type="button"
@@ -269,7 +283,7 @@ export default function ImprovementsForm({
                                                 className="h-7 px-0 text-xs"
                                                 onClick={cancelEdit}
                                             >
-                                                Cancel
+                                                {text('common:actions.cancel')}
                                             </Button>
                                         </div>
                                     </div>

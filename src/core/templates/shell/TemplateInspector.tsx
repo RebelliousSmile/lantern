@@ -6,9 +6,11 @@ import {
 } from '@/components/ui/accordion'
 import { SidebarContent, SidebarFooter } from '@/components/ui/sidebar'
 import { useActiveTemplate } from '@/core/workspace/selectors'
+import { useTranslation } from 'react-i18next'
 import { TemplateExportPanel } from './TemplateExportPanel'
 
 export function TemplateInspector() {
+    const { t } = useTranslation()
     const activeTemplate = useActiveTemplate()
 
     if (!activeTemplate || !activeTemplate.implemented) {
@@ -27,7 +29,7 @@ export function TemplateInspector() {
                 >
                     <AccordionItem value="editor">
                         <AccordionTrigger className="py-3 text-sm">
-                            Editor
+                            {t('inspector.editor')}
                         </AccordionTrigger>
                         <AccordionContent className="pb-3">
                             <div className="[&_input[data-slot=input]]:text-xs [&_textarea[data-slot=textarea]]:text-xs [&_textarea[data-slot=textarea]]:leading-snug">
@@ -42,7 +44,7 @@ export function TemplateInspector() {
                 <Accordion type="multiple" defaultValue={[]} className="w-full">
                     <AccordionItem value="appearance">
                         <AccordionTrigger className="py-2 text-sm">
-                            General Appearance
+                            {t('inspector.appearance')}
                         </AccordionTrigger>
                         <AccordionContent className="pb-2">
                             {activeTemplate.appearance.renderPanel()}
@@ -59,7 +61,7 @@ export function TemplateInspector() {
                 >
                     <AccordionItem value="export">
                         <AccordionTrigger className="py-2 text-sm">
-                            Export
+                            {t('inspector.export')}
                         </AccordionTrigger>
                         <AccordionContent className="pb-2">
                             <TemplateExportPanel />

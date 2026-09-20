@@ -1,8 +1,10 @@
 import { Checkbox } from '@/components/ui/checkbox'
+import { useUiText } from '@/i18n/text'
 import { useMonsterheartsView } from '../hooks'
 import { sections } from '../model'
 export function MonsterheartsPlaybookAppearancePanel() {
     const { hidden, setHidden } = useMonsterheartsView()
+    const text = useUiText()
     return (
         <div className="space-y-2">
             {sections.map((s) => (
@@ -11,7 +13,7 @@ export function MonsterheartsPlaybookAppearancePanel() {
                         checked={!hidden[s.id]}
                         onCheckedChange={(v) => setHidden(s.id, !v)}
                     />
-                    {s.label}
+                    {text(s.label)}
                 </label>
             ))}
         </div>

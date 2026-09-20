@@ -1,12 +1,16 @@
+import type { TranslationKey } from '@/i18n/text'
 import type { Background, SectionId } from './model'
 
 /* The zones the appearance panel can hide, in print order. The move header is
    not among them: a card is its name and its kind, so it always prints. */
-export const customMoveSections: Array<{ id: SectionId; label: string }> = [
-    { id: 'trigger', label: 'Trigger' },
-    { id: 'roll', label: 'Roll' },
-    { id: 'outcomes', label: 'Outcomes' },
-    { id: 'meta', label: 'Meta footer' },
+export const customMoveSections: Array<{
+    id: SectionId
+    label: TranslationKey
+}> = [
+    { id: 'trigger', label: 'city:customMove.sections.trigger' },
+    { id: 'roll', label: 'city:customMove.sections.roll' },
+    { id: 'outcomes', label: 'city:customMove.sections.outcomes' },
+    { id: 'meta', label: 'city:customMove.sections.meta' },
 ]
 
 /* The same eight papers the Danger offers, so a swatch picks the same ground on

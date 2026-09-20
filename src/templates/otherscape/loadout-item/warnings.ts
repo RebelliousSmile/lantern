@@ -1,3 +1,5 @@
+import type { ImportWarning } from '@/core/templates/types'
+import type { TranslationKey } from '@/i18n/text'
 import { parseToken } from '@/utils/tags'
 import {
     NAME_TAG_INDEX,
@@ -5,9 +7,26 @@ import {
     type TagField,
 } from './model'
 
-const FIELD_LABEL: Record<TagField, string> = {
-    feature: 'Feature tags',
-    weakness: 'Weakness tag',
+/* One sentence per field and per problem: the field name is part of the
+   sentence, so it cannot be interpolated without breaking French agreement. */
+const TAG_WARNING_KEYS: Record<
+    TagField,
+    {
+        braced: TranslationKey
+        marked: TranslationKey
+        statusLike: TranslationKey
+    }
+> = {
+    feature: {
+        braced: 'otherscape:loadoutItem.warnings.feature.braced',
+        marked: 'otherscape:loadoutItem.warnings.feature.marked',
+        statusLike: 'otherscape:loadoutItem.warnings.feature.statusLike',
+    },
+    weakness: {
+        braced: 'otherscape:loadoutItem.warnings.weakness.braced',
+        marked: 'otherscape:loadoutItem.warnings.weakness.marked',
+        statusLike: 'otherscape:loadoutItem.warnings.weakness.statusLike',
+    },
 }
 
 // Tags are stored bare: the field a tag sits in is what makes it a feature or a
@@ -17,26 +36,20 @@ const FIELD_LABEL: Record<TagField, string> = {
 function collectTagWarnings(
     tags: string[],
     field: TagField,
-    warnings: string[]
+    warnings: ImportWarning[]
 ) {
+    const keys = TAG_WARNING_KEYS[field]
+
     const braced = tags.filter((tag) => /^\{[\s\S]*\}$/.test(tag.trim()))
     if (braced.length > 0) {
-        warnings.push(
-            `${FIELD_LABEL[field]} written with braces: ${braced.join(', ')}. They are added when the card is rendered, so the braces will show up twice.`
-        )
+        warnings.push({ key: keys.braced, values: { tags: braced.join(', ') } })
     }
 
     const marked = tags.filter((tag) =>
         tag.trim().replace(/^\{/, '').startsWith('!')
     )
     if (marked.length > 0) {
-        warnings.push(
-            `${FIELD_LABEL[field]} written with a leading "!": ${marked.join(', ')}. ${
-                field === 'weakness'
-                    ? 'The weakness tag is already marked by the field it is in.'
-                    : 'A tag that works against its bearer belongs in the weakness tag.'
-            }`
-        )
+        warnings.push({ key: keys.marked, values: { tags: marked.join(', ') } })
     }
 
     const statusLike = tags.filter((tag) => {
@@ -44,16 +57,17 @@ function collectTagWarnings(
         return parsed?.kind === 'status' || parsed?.kind === 'limit'
     })
     if (statusLike.length > 0) {
-        warnings.push(
-            `${FIELD_LABEL[field]} that read as a status or a limit: ${statusLike.join(', ')}. A trailing "-<n>" or ":<n>" makes a tag render as a tracker rather than as a tag.`
-        )
+        warnings.push({
+            key: keys.statusLike,
+            values: { tags: statusLike.join(', ') },
+        })
     }
 }
 
 export function computeOtherscapeLoadoutItemWarnings(
     otherscapeLoadoutItem: OtherscapeLoadoutItem
-): string[] {
-    const warnings: string[] = []
+): ImportWarning[] {
+    const warnings: ImportWarning[] = []
 
     collectTagWarnings(otherscapeLoadoutItem.feature_tags, 'feature', warnings)
     if (otherscapeLoadoutItem.weakness_tag.trim()) {
@@ -68,9 +82,7 @@ export function computeOtherscapeLoadoutItemWarnings(
         !otherscapeLoadoutItem.feature_tags.length &&
         !otherscapeLoadoutItem.weakness_tag.trim()
     ) {
-        warnings.push(
-            'This Loadout Item grants no tags, so there is nothing to invoke it with.'
-        )
+        warnings.push({ key: 'otherscape:loadoutItem.warnings.noTags' })
     }
 
     // The Street Catalog prints the item's name as its first feature tag. A
@@ -79,9 +91,10 @@ export function computeOtherscapeLoadoutItemWarnings(
     const name = otherscapeLoadoutItem.name.trim()
     const firstTag = otherscapeLoadoutItem.feature_tags[NAME_TAG_INDEX]
     if (name && firstTag != null && firstTag.trim() !== name) {
-        warnings.push(
-            `The first feature tag is "${firstTag}" rather than the item's name, "${name}". The Street Catalog opens the list with the name, and the card prints the rest of the list under it.`
-        )
+        warnings.push({
+            key: 'otherscape:loadoutItem.warnings.firstTagNotName',
+            values: { firstTag, name },
+        })
     }
 
     return warnings

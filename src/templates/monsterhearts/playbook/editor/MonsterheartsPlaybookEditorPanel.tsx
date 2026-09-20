@@ -57,7 +57,10 @@ function MonsterheartsMovesEditor({
             {value.map((move, index) => {
                 const isReference = 'ref' in move
                 return (
-                    <div key={index} className="space-y-2 rounded-md border p-2">
+                    <div
+                        key={index}
+                        className="space-y-2 rounded-md border p-2"
+                    >
                         <div className="flex items-center gap-1.5">
                             <Checkbox
                                 checked={move.checked === true}
@@ -74,7 +77,9 @@ function MonsterheartsMovesEditor({
                             <div className="flex overflow-hidden rounded-md border">
                                 <Button
                                     type="button"
-                                    variant={isReference ? 'secondary' : 'ghost'}
+                                    variant={
+                                        isReference ? 'secondary' : 'ghost'
+                                    }
                                     size="xs"
                                     onClick={() =>
                                         !isReference &&
@@ -90,7 +95,9 @@ function MonsterheartsMovesEditor({
                                 </Button>
                                 <Button
                                     type="button"
-                                    variant={isReference ? 'ghost' : 'secondary'}
+                                    variant={
+                                        isReference ? 'ghost' : 'secondary'
+                                    }
                                     size="xs"
                                     onClick={() =>
                                         isReference &&
@@ -128,7 +135,9 @@ function MonsterheartsMovesEditor({
                                 size="icon-sm"
                                 aria-label="Remove move"
                                 onClick={() =>
-                                    onChange(value.filter((_, i) => i !== index))
+                                    onChange(
+                                        value.filter((_, i) => i !== index)
+                                    )
                                 }
                             >
                                 <X className="h-3.5 w-3.5" />
@@ -316,6 +325,24 @@ function MonsterheartsCollection({ path }: { path: string }) {
     const document = playbook as Record<string, unknown>
     const items = presentation && collectionItems(document, presentation)
     if (!presentation || !items)
-        return <p className="text-sm text-destructive">Invalid published collection configuration.</p>
-    return <PublishedCollectionEditor presentation={presentation} items={items} onChange={(next) => setPlaybook(replaceCollectionItems(document, presentation, next) as Partial<typeof playbook>)} />
+        return (
+            <p className="text-sm text-destructive">
+                Invalid published collection configuration.
+            </p>
+        )
+    return (
+        <PublishedCollectionEditor
+            presentation={presentation}
+            items={items}
+            onChange={(next) =>
+                setPlaybook(
+                    replaceCollectionItems(
+                        document,
+                        presentation,
+                        next
+                    ) as Partial<typeof playbook>
+                )
+            }
+        />
+    )
 }

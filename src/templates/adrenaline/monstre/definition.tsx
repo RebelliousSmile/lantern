@@ -1,12 +1,12 @@
 import { createImageExportAction } from '@/core/templates/shell/imageExportAction'
+import { createTomlExportAction } from '@/core/templates/shell/tomlExportAction'
 import type { AnyTemplateDefinition } from '@/core/templates/types'
+import { cloneValue } from '@/utils/clone'
 import { AdrenalineAppearancePanel } from '../shared/editor/AdrenalineAppearancePanel'
-import { downloadToml } from '../shared/export'
 import {
     defaultAdrenalineView,
     emptyAdrenalineSheetState,
 } from '../shared/model'
-import { cloneValue } from '@/utils/clone'
 import { MonstreEditorPanel } from './editor/MonstreEditorPanel'
 import { MonstrePreview } from './preview/MonstrePreview'
 import { blankMonstre, sampleMonstre } from './sample'
@@ -16,7 +16,7 @@ const template: AnyTemplateDefinition = {
     id: 'adrenaline.monstre',
     gameId: 'adrenaline',
     gameLabel: 'Adrenaline',
-    label: 'Monstre',
+    label: 'adrenaline:monstre.label',
     implemented: true,
     contractKey: 'adrenaline/monstre',
     createBlank: blankMonstre,
@@ -24,13 +24,10 @@ const template: AnyTemplateDefinition = {
     createInitialView: () => cloneValue(defaultAdrenalineView),
     createInitialSheet: () => cloneValue(emptyAdrenalineSheetState),
     getTabTitle: (doc) => (doc as { nom?: string }).nom?.trim() || 'Monstre',
-    sections: [{ id: 'document', label: 'Document' }],
+    sections: [{ id: 'document', label: 'adrenaline:sections.document' }],
     landing: {
-        description:
-            'Create an Adrenaline creature card with alternate-state and contagion data.',
-        exampleLabel: 'Start with example',
-        blankLabel: 'Start blank',
-        importLabel: 'Import TOML',
+        newTitle: 'adrenaline:monstre.newTitle',
+        description: 'adrenaline:monstre.description',
     },
     io: {
         importToml: (source) => {
@@ -44,7 +41,6 @@ const template: AnyTemplateDefinition = {
         render: () => <MonstrePreview />,
     },
     editor: {
-        emptyState: 'Click a card region to edit it.',
         renderPanel: () => <MonstreEditorPanel />,
     },
     appearance: {
@@ -53,16 +49,12 @@ const template: AnyTemplateDefinition = {
     },
     export: {
         actions: [
-            {
-                id: 'toml',
-                label: 'TOML',
-                buttonLabel: 'Export TOML',
-                description: 'Export the current monster data as TOML.',
-                run: ({ doc, fileStem }) =>
-                    downloadToml(exportToTOML(doc), fileStem),
-            },
+            createTomlExportAction({
+                exportToml: exportToTOML,
+                description: 'adrenaline:monstre.exportToml',
+            }),
             createImageExportAction({
-                description: 'Export the current monster preview as PNG.',
+                description: 'adrenaline:monstre.exportPng',
                 renderSettings: () => null,
             }),
         ],

@@ -3,6 +3,7 @@ import {
     stringifyCanonical,
 } from '@/contracts/canonicalSource'
 import { documentContracts } from '@/contracts/registry'
+import type { ImportWarning } from '@/core/templates/types'
 import {
     toGameDefinitionDocument,
     toGameDefinitionPayload,
@@ -18,7 +19,7 @@ export const importFromTOML = (tomlText: string) =>
 
 export function importFromTOMLWithWarnings(tomlText: string): {
     gameDefinition: PbtaGameDefinition
-    warnings: string[]
+    warnings: ImportWarning[]
 } {
     const parsed = contract.parseToml(tomlText)
     return {

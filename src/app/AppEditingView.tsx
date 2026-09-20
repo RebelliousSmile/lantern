@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button'
 import type { ReactNode } from 'react'
+import { useTranslation } from 'react-i18next'
 
 type AppEditingViewProps = {
     activeGameThemeId?: string
@@ -16,6 +17,8 @@ export default function AppEditingView({
     templatePreview,
     onToggleMobileInspector,
 }: AppEditingViewProps) {
+    const { t } = useTranslation()
+
     return (
         <div className="space-y-3">
             <div className="flex justify-end md:hidden">
@@ -25,8 +28,8 @@ export default function AppEditingView({
                     onClick={onToggleMobileInspector}
                 >
                     {mobileInspectorOpen
-                        ? 'Hide editor sidebar'
-                        : 'Show editor sidebar'}
+                        ? t('editing.hideSidebar')
+                        : t('editing.showSidebar')}
                 </Button>
             </div>
 
@@ -36,7 +39,6 @@ export default function AppEditingView({
             >
                 {templatePreview}
             </div>
-
         </div>
     )
 }

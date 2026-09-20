@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
+import { useUiText } from '@/i18n/text'
 import { renderLitmMarkdown } from '@/utils/markdown'
 import { GripVertical, Pencil, Plus, Trash2 } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
@@ -29,6 +30,7 @@ import { CSS } from '@dnd-kit/utilities'
 const PRESET_LIMITS = ['Convince', 'Disable', 'Outrun', 'Overwhelm', 'Hack']
 
 export default function LimitsForm({ focusIndex }: { focusIndex?: number }) {
+    const text = useUiText()
     const {
         otherscapeChallenge,
         addLimit,
@@ -113,9 +115,14 @@ export default function LimitsForm({ focusIndex }: { focusIndex?: number }) {
     function confirmEdit() {
         if (editingIndex == null) return
         const nm = eName.trim()
-        if (!nm) return setError('Name is required.')
+        if (!nm)
+            return setError(
+                text('otherscape:forms.challenge.limits.errorNameRequired')
+            )
         if (isDuplicateName(nm, editingIndex))
-            return setError('Limit name already exists.')
+            return setError(
+                text('otherscape:forms.challenge.limits.errorDuplicateName')
+            )
         updateLimitAt(editingIndex, {
             name: nm,
             level: Math.max(1, Math.min(6, Number(eLevel) || 1)),

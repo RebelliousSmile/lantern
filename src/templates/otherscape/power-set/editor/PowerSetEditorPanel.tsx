@@ -1,3 +1,4 @@
+import { useUiText } from '@/i18n/text'
 import { useOtherscapePowerSetSheetStore } from '../hooks'
 import BasicForm from './forms/BasicForm'
 import ConsequencesForm from './forms/ConsequencesForm'
@@ -6,12 +7,13 @@ import SpecialsForm from './forms/SpecialsForm'
 import ThreatsForm from './forms/ThreatsForm'
 
 export function PowerSetEditorPanel() {
+    const text = useUiText()
     const { open, target } = useOtherscapePowerSetSheetStore()
 
     if (!open || !target) {
         return (
             <div className="rounded-md border border-dashed px-3 py-4 text-sm text-muted-foreground">
-                Click on the card to edit a specific section.
+                {text('otherscape:forms.powerSet.panel.emptyState')}
             </div>
         )
     }

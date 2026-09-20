@@ -1,7 +1,7 @@
 import { createImageExportAction } from '@/core/templates/shell/imageExportAction'
-import { cloneValue } from '@/utils/clone'
+import { createTomlExportAction } from '@/core/templates/shell/tomlExportAction'
 import type { AnyTemplateDefinition } from '@/core/templates/types'
-import { toast } from 'sonner'
+import { cloneValue } from '@/utils/clone'
 import { ChallengeAppearancePanel } from './editor/ChallengeAppearancePanel'
 import { ChallengeEditorPanel } from './editor/ChallengeEditorPanel'
 import { ChallengeImageExportSettings } from './editor/ChallengeImageExportSettings'
@@ -22,7 +22,7 @@ const challengeTemplate: AnyTemplateDefinition = {
     id: 'otherscape.challenge',
     gameId: 'otherscape',
     gameLabel: ':Otherscape',
-    label: 'Challenge',
+    label: 'otherscape:challenge.label',
     implemented: true,
     contractKey: 'mist/otherscape/challenge',
     createBlank: blankOtherscapeChallenge,
@@ -32,11 +32,8 @@ const challengeTemplate: AnyTemplateDefinition = {
     getTabTitle: (doc: OtherscapeChallenge) => doc.name.trim() || 'Challenge',
     sections: challengeSections,
     landing: {
-        description:
-            'A Challenge is anything the Crew has to get through: its scale, the tags and statuses on it, the Limits that stop it, the Specials it breaks the rules with, and the Threats it answers with. Start blank, open the example, or import a TOML file.',
-        exampleLabel: 'Start with example',
-        blankLabel: 'Start blank',
-        importLabel: 'Import TOML',
+        newTitle: 'otherscape:challenge.newTitle',
+        description: 'otherscape:challenge.description',
     },
     io: {
         importToml: (tomlText: string) => {
@@ -55,7 +52,6 @@ const challengeTemplate: AnyTemplateDefinition = {
         render: () => <ChallengePreview />,
     },
     editor: {
-        emptyState: 'Click on the card to edit a specific section.',
         renderPanel: () => <ChallengeEditorPanel />,
     },
     appearance: {
@@ -65,41 +61,12 @@ const challengeTemplate: AnyTemplateDefinition = {
     },
     export: {
         actions: [
-            {
-                id: 'toml',
-                label: 'TOML',
-                buttonLabel: 'Export TOML',
-                description: 'Export the current challenge data as TOML.',
-                run: ({
-                    doc,
-                    fileStem,
-                }: {
-                    doc: OtherscapeChallenge
-                    fileStem: string
-                }) => {
-                    try {
-                        const toml = exportToTOML(doc)
-                        const blob = new Blob([toml], {
-                            type: 'text/plain;charset=utf-8',
-                        })
-                        const url = URL.createObjectURL(blob)
-                        const anchor = document.createElement('a')
-                        anchor.href = url
-                        anchor.download = `${fileStem}.toml`
-                        document.body.appendChild(anchor)
-                        anchor.click()
-                        anchor.remove()
-                        URL.revokeObjectURL(url)
-                        toast.success('Exported TOML.')
-                    } catch (errorAny: any) {
-                        toast.error(
-                            errorAny?.message || 'Failed to export TOML.'
-                        )
-                    }
-                },
-            },
+            createTomlExportAction({
+                exportToml: exportToTOML,
+                description: 'otherscape:challenge.exportToml',
+            }),
             createImageExportAction({
-                description: 'Export the current challenge preview as PNG.',
+                description: 'otherscape:challenge.exportPng',
                 renderSettings: () => <ChallengeImageExportSettings />,
             }),
         ],

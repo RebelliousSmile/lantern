@@ -1,3 +1,4 @@
+import { translateEnglish } from '@/i18n/text'
 import {
     useUrbanShadowsPlaybookStore,
     useUrbanShadowsSheetStore,
@@ -42,7 +43,10 @@ export function UrbanShadowsPlaybookPreview() {
                 {playbook.corruption.trigger}
                 <br />
                 {playbook.corruption.advances
-                    .map((advance) => `${advance.checked ? '☑' : '☐'} ${advance.label}`)
+                    .map(
+                        (advance) =>
+                            `${advance.checked ? '☑' : '☐'} ${advance.label}`
+                    )
                     .join(' · ')}
                 <br />
                 <b>End move:</b> {playbook.endMove}
@@ -70,7 +74,9 @@ export function UrbanShadowsPlaybookPreview() {
             </p>
         )),
         advancement: playbook.advancement
-            .map((advance) => `${advance.checked ? '☑' : '☐'} ${advance.label}`)
+            .map(
+                (advance) => `${advance.checked ? '☑' : '☐'} ${advance.label}`
+            )
             .join(' · '),
     }
     return (
@@ -100,7 +106,7 @@ export function UrbanShadowsPlaybookPreview() {
                                         openSheet({ kind: section.id })
                                     }
                                 >
-                                    {section.label}
+                                    {translateEnglish(section.label)}
                                 </button>
                                 <div>{rows[section.id]}</div>
                             </section>

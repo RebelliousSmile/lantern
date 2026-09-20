@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
+import { useUiText } from '@/i18n/text'
 import { usePlaybookViewStore } from '../hooks'
 import { playbookSections } from '../metadata'
 import { PREVIEW_WIDTH_MAX, PREVIEW_WIDTH_MIN } from '../model'
@@ -18,6 +19,7 @@ export function PlaybookAppearancePanel() {
         setShowSeparators,
         resetViewPrefs,
     } = usePlaybookViewStore()
+    const text = useUiText()
 
     return (
         <div className="space-y-4">
@@ -57,7 +59,9 @@ export function PlaybookAppearancePanel() {
                                 checked={!hidden[section.id]}
                                 onCheckedChange={() => toggleHidden(section.id)}
                             />
-                            <span className="text-xs">{section.label}</span>
+                            <span className="text-xs">
+                                {text(section.label)}
+                            </span>
                         </label>
                     ))}
                 </div>

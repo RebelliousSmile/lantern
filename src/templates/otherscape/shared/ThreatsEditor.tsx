@@ -52,18 +52,43 @@ const DEFAULT_THREAT_DESCRIPTION = 'Describe how this threat escalates.'
 const DEFAULT_CONSEQUENCE = 'Describe a consequence.'
 
 export type ThreatEditorStore = {
-    otherscapeChallenge: { threats: Array<{ name: string; description?: string; consequences?: string[] }> }
-    addThreat: (threat: { name: string; description: string; consequences: string[] }) => void
-    updateThreatAt: (index: number, patch: { name?: string; description?: string }) => void
+    otherscapeChallenge: {
+        threats: Array<{
+            name: string
+            description?: string
+            consequences?: string[]
+        }>
+    }
+    addThreat: (threat: {
+        name: string
+        description: string
+        consequences: string[]
+    }) => void
+    updateThreatAt: (
+        index: number,
+        patch: { name?: string; description?: string }
+    ) => void
     removeThreatAt: (index: number) => void
     moveThreat: (from: number, to: number) => void
     addConsequence: (index: number, value: string) => void
-    updateConsequence: (threat: number, consequence: number, value: string) => void
+    updateConsequence: (
+        threat: number,
+        consequence: number,
+        value: string
+    ) => void
     removeConsequence: (threat: number, consequence: number) => void
     moveConsequence: (threat: number, from: number, to: number) => void
 }
 
-export default function ThreatsEditor({ focusIndex, noun, store }: { focusIndex?: number; noun: string; store: ThreatEditorStore }) {
+export default function ThreatsEditor({
+    focusIndex,
+    noun,
+    store,
+}: {
+    focusIndex?: number
+    noun: string
+    store: ThreatEditorStore
+}) {
     const {
         otherscapeChallenge,
         addThreat,

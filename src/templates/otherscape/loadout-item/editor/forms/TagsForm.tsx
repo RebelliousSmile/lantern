@@ -22,6 +22,7 @@ import {
 import { CSS } from '@dnd-kit/utilities'
 import { GripVertical, Pencil, Plus, Trash2 } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
+import { Trans, useTranslation } from 'react-i18next'
 import { useOtherscapeLoadoutItemStore, type TagField } from '../../hooks'
 import { NAME_TAG_INDEX, featureTagsAfterName } from '../../model'
 
@@ -30,8 +31,6 @@ const FEATURE_PLACEHOLDERS = [
     'paints a target for a friend',
     'reads as medical hardware on a scan',
 ]
-
-const WEAKNESS_PLACEHOLDER = 'still answers to the factory handshake'
 
 /* The two fields are not two instances of one list: features are an ordered run
    whose first entry is the item's name, and the weakness is a single slot. They
@@ -53,6 +52,7 @@ export default function TagsForm({
 
 /* ---------- Weakness: one slot ---------- */
 function WeaknessTagForm() {
+    const { t } = useTranslation()
     const { otherscapeLoadoutItem, setWeaknessTag } =
         useOtherscapeLoadoutItemStore()
 
@@ -60,21 +60,24 @@ function WeaknessTagForm() {
         <div className="space-y-2.5">
             <div className="grid gap-1">
                 <Label htmlFor="os-loadout-item-weakness-tag">
-                    Weakness tag{' '}
-                    <span className="text-muted-foreground">(optional)</span>
+                    {t('otherscape:forms.loadoutItem.tags.weaknessLabel')}{' '}
+                    <span className="text-muted-foreground">
+                        {t(
+                            'otherscape:forms.loadoutItem.tags.weaknessOptional'
+                        )}
+                    </span>
                 </Label>
                 <Input
                     id="os-loadout-item-weakness-tag"
                     className="h-8 px-2 text-sm"
                     value={otherscapeLoadoutItem.weakness_tag}
                     onChange={(event) => setWeaknessTag(event.target.value)}
-                    placeholder={WEAKNESS_PLACEHOLDER}
+                    placeholder={t(
+                        'otherscape:forms.loadoutItem.tags.weaknessPlaceholder'
+                    )}
                 />
                 <p className="text-xs text-muted-foreground">
-                    The one tag this item turns against its bearer. Write it
-                    bare: the card adds the braces and the marker. Emptying the
-                    field leaves the item with no weakness, which a few catalog
-                    entries do.
+                    {t('otherscape:forms.loadoutItem.tags.weaknessHelp')}
                 </p>
             </div>
 
@@ -103,6 +106,7 @@ function FeatureTagsForm({
     focusIndex?: number
     autoCreate?: boolean
 }) {
+    const { t } = useTranslation()
     const {
         otherscapeLoadoutItem,
         addTag,
@@ -198,7 +202,7 @@ function FeatureTagsForm({
 
         const next = raw.trim()
         if (!next) {
-            setError('Please enter a value.')
+            setError(t('otherscape:forms.loadoutItem.tags.errorRequired'))
             return
         }
 
@@ -210,20 +214,25 @@ function FeatureTagsForm({
         <div className="space-y-2.5">
             <div className="flex items-baseline justify-between gap-2">
                 <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                    Feature tags
+                    {t('otherscape:forms.loadoutItem.tags.featureTitle')}
                 </p>
                 <p className="text-xs text-muted-foreground">
-                    Write tags bare, without braces.
+                    {t('otherscape:forms.loadoutItem.tags.featureHint')}
                 </p>
             </div>
 
             <p className="text-xs text-muted-foreground">
-                The catalog opens the list with the item's name, so{' '}
-                <span className="font-medium">
-                    {otherscapeLoadoutItem.name || 'the name'}
-                </span>{' '}
-                holds the first slot and is edited with the name itself. What
-                follows is listed here.
+                <Trans
+                    i18nKey="otherscape:forms.loadoutItem.tags.catalogHint"
+                    values={{
+                        name:
+                            otherscapeLoadoutItem.name ||
+                            t(
+                                'otherscape:forms.loadoutItem.tags.catalogHintFallbackName'
+                            ),
+                    }}
+                    components={{ bold: <span className="font-medium" /> }}
+                />
             </p>
 
             <DndContext
@@ -260,7 +269,9 @@ function FeatureTagsForm({
                                                     htmlFor={`os-loadout-item-tag-feature-${index}`}
                                                     className="text-xs"
                                                 >
-                                                    Tag
+                                                    {t(
+                                                        'otherscape:forms.loadoutItem.tags.tagLabel'
+                                                    )}
                                                 </Label>
                                                 <Input
                                                     id={`os-loadout-item-tag-feature-${index}`}
@@ -287,7 +298,9 @@ function FeatureTagsForm({
                                                             cancelEdit()
                                                         }
                                                     }}
-                                                    placeholder="subvocal, so nobody hears you talk"
+                                                    placeholder={t(
+                                                        'otherscape:forms.loadoutItem.tags.tagPlaceholder'
+                                                    )}
                                                 />
                                             </div>
 
@@ -298,7 +311,7 @@ function FeatureTagsForm({
                                                     className="h-7 px-2.5 text-xs"
                                                     onClick={confirmEdit}
                                                 >
-                                                    Save
+                                                    {t('actions.save')}
                                                 </Button>
                                                 <Button
                                                     type="button"
@@ -306,7 +319,7 @@ function FeatureTagsForm({
                                                     className="h-7 px-0 text-xs"
                                                     onClick={cancelEdit}
                                                 >
-                                                    Cancel
+                                                    {t('actions.cancel')}
                                                 </Button>
                                             </div>
                                         </div>
@@ -323,7 +336,8 @@ function FeatureTagsForm({
                                 className="mt-1 h-8 w-full justify-center gap-1.5 border-dashed px-2.5 text-xs"
                                 onClick={addPlaceholder}
                             >
-                                <Plus className="h-3.5 w-3.5" /> Add tag
+                                <Plus className="h-3.5 w-3.5" />{' '}
+                                {t('otherscape:forms.loadoutItem.tags.addTag')}
                             </Button>
                         </li>
                     </ul>
@@ -349,6 +363,7 @@ function SortableTagItem({
     onRemove: () => void
     children?: React.ReactNode
 }) {
+    const { t } = useTranslation()
     const {
         attributes,
         listeners,
@@ -381,11 +396,13 @@ function SortableTagItem({
                       ? 'opacity-40 cursor-not-allowed hover:bg-transparent'
                       : 'cursor-grab active:cursor-grabbing'
               }`}
-                        aria-label="Drag to reorder"
+                        aria-label={t('actions.dragToReorder')}
                         title={
                             dragDisabled
-                                ? 'Finish editing to reorder'
-                                : 'Drag to reorder'
+                                ? t(
+                                      'otherscape:forms.loadoutItem.tags.finishEditingToReorder'
+                                  )
+                                : t('actions.dragToReorder')
                         }
                         disabled={dragDisabled}
                         {...(!dragDisabled ? attributes : {})}
@@ -415,7 +432,7 @@ function SortableTagItem({
                         size="icon"
                         className="h-7 w-7"
                         onClick={onEdit}
-                        title="Edit"
+                        title={t('actions.edit')}
                     >
                         <Pencil className="h-3.5 w-3.5" />
                     </Button>
@@ -425,7 +442,7 @@ function SortableTagItem({
                         size="icon"
                         className="h-7 w-7 text-destructive"
                         onClick={onRemove}
-                        title="Remove"
+                        title={t('actions.remove')}
                     >
                         <Trash2 className="h-3.5 w-3.5" />
                     </Button>

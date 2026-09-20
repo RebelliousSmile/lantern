@@ -3,13 +3,17 @@ export default createSpecializedPlaybookTemplate({
     id: 'masks.playbook',
     gameId: 'masks',
     gameLabel: 'Masks',
-    label: 'Playbook',
+    label: 'pbta:playbook.label',
+    newTitle: 'pbta:playbook.newTitle',
     contractKey: 'pbta/masks-playbook',
     sections: [
-        { id: 'stats', label: 'Labels' },
-        { id: 'moves', label: 'Moves' },
-        { id: 'momentOfTruth', label: 'Moment of Truth' },
-        { id: 'editorial', label: 'Editorial' },
+        { id: 'stats', label: 'pbta:specialized.sections.labels' },
+        { id: 'moves', label: 'pbta:specialized.sections.moves' },
+        {
+            id: 'momentOfTruth',
+            label: 'pbta:specialized.sections.momentOfTruth',
+        },
+        { id: 'editorial', label: 'pbta:specialized.sections.editorial' },
     ],
     blank: {
         slug: 'untitled-masks-playbook',

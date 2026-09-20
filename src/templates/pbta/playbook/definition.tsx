@@ -1,7 +1,7 @@
 import { createImageExportAction } from '@/core/templates/shell/imageExportAction'
+import { createTomlExportAction } from '@/core/templates/shell/tomlExportAction'
 import type { AnyTemplateDefinition } from '@/core/templates/types'
 import { cloneValue } from '@/utils/clone'
-import { toast } from 'sonner'
 import { PlaybookAppearancePanel } from './editor/PlaybookAppearancePanel'
 import { PlaybookEditorPanel } from './editor/PlaybookEditorPanel'
 import { PlaybookImageExportSettings } from './editor/PlaybookImageExportSettings'
@@ -23,7 +23,7 @@ const playbookTemplate: AnyTemplateDefinition = {
     id: 'pbta.playbook',
     gameId: 'apocalypse-world',
     gameLabel: 'Apocalypse World',
-    label: 'Playbook',
+    label: 'pbta:playbook.label',
     implemented: true,
     contractKey: 'pbta/playbook',
     createBlank: blankPlaybook,
@@ -33,11 +33,8 @@ const playbookTemplate: AnyTemplateDefinition = {
     getTabTitle: (doc: PbtaPlaybook) => doc.name.trim() || 'Playbook',
     sections: playbookSections,
     landing: {
-        description:
-            'A Playbook is an Apocalypse World character type: its stats, its moves, the choices made at creation, and the gear it starts with. Start blank, open the example, or import a TOML file.',
-        exampleLabel: 'Start with example',
-        blankLabel: 'Start blank',
-        importLabel: 'Import TOML',
+        newTitle: 'pbta:playbook.newTitle',
+        description: 'pbta:playbook.description',
     },
     io: {
         importToml: (tomlText: string) => {
@@ -55,7 +52,6 @@ const playbookTemplate: AnyTemplateDefinition = {
         render: () => <PlaybookPreview />,
     },
     editor: {
-        emptyState: 'Click on the preview to edit a specific section.',
         renderPanel: () => <PlaybookEditorPanel />,
         schema: playbookEditorSchema,
     },
@@ -66,41 +62,12 @@ const playbookTemplate: AnyTemplateDefinition = {
     },
     export: {
         actions: [
-            {
-                id: 'toml',
-                label: 'TOML',
-                buttonLabel: 'Export TOML',
-                description: 'Export the current playbook as TOML.',
-                run: ({
-                    doc,
-                    fileStem,
-                }: {
-                    doc: PbtaPlaybook
-                    fileStem: string
-                }) => {
-                    try {
-                        const toml = exportToTOML(doc)
-                        const blob = new Blob([toml], {
-                            type: 'text/plain;charset=utf-8',
-                        })
-                        const url = URL.createObjectURL(blob)
-                        const anchor = document.createElement('a')
-                        anchor.href = url
-                        anchor.download = `${fileStem}.toml`
-                        document.body.appendChild(anchor)
-                        anchor.click()
-                        anchor.remove()
-                        URL.revokeObjectURL(url)
-                        toast.success('Exported TOML.')
-                    } catch (errorAny: any) {
-                        toast.error(
-                            errorAny?.message || 'Failed to export TOML.'
-                        )
-                    }
-                },
-            },
+            createTomlExportAction({
+                exportToml: exportToTOML,
+                description: 'pbta:playbook.exportToml',
+            }),
             createImageExportAction({
-                description: 'Export the current playbook sheet as PNG.',
+                description: 'pbta:playbook.exportPng',
                 renderSettings: () => <PlaybookImageExportSettings />,
             }),
         ],

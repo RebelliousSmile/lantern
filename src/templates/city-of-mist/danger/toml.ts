@@ -4,6 +4,7 @@ import {
     stringifyCanonical,
 } from '@/contracts/mist-engine'
 import { documentContracts } from '@/contracts/registry'
+import type { ImportWarning } from '@/core/templates/types'
 import { toCityOfMistDangerDocument, type CityOfMistDanger } from './model'
 
 /* Resolved at module load: an unknown key fails here, not at the first import. */
@@ -16,7 +17,7 @@ export const importFromTOML = (tomlText: string) =>
 
 export function importFromTOMLWithWarnings(tomlText: string): {
     cityOfMistDanger: CityOfMistDanger
-    warnings: string[]
+    warnings: ImportWarning[]
 } {
     const parsed = contract.parseToml(tomlText)
     return {

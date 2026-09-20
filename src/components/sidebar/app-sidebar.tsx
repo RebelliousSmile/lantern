@@ -16,6 +16,7 @@ import {
 import { useGamePackStore } from '@/core/gamePacks'
 import { templatesByGame } from '@/core/templates/registry'
 import { useWorkspaceStore } from '@/core/workspace/store'
+import { useUiText } from '@/i18n/text'
 
 import FeedbackDialog from '@/app/FeedbackDialog'
 import {
@@ -33,24 +34,14 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Minus, Plus, Send, SlidersHorizontal } from 'lucide-react'
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
+import { LanguageMenu } from './LanguageMenu'
 import { NavSecondary } from './nav-secondary'
 
-const data = {
-    navSecondary: [
-        /*{
-            title: 'Support',
-            href: 'https://discord.gg/jH686wH',
-            icon: LifeBuoy,
-        },*/
-        {
-            title: 'Feedback',
-            icon: Send,
-        },
-    ],
-}
-
 export function AppSidebar() {
+    const { t } = useTranslation()
+    const text = useUiText()
     const navigate = useNavigate()
     const createTab = useWorkspaceStore((s) => s.createTab)
     const activeTabId = useWorkspaceStore((s) => s.activeTabId)
@@ -70,14 +61,15 @@ export function AppSidebar() {
         isGamePackEnabled(group.gameId)
     )
 
-    const navSecondaryItems = data.navSecondary.map((item) =>
-        item.title === 'Feedback'
-            ? {
-                  ...item,
-                  onClick: () => setFeedbackDialogOpen(true),
-              }
-            : item
-    )
+    const navSecondaryItems = [
+        {
+            id: 'feedback',
+            title: t('sidebar.feedback'),
+            icon: Send,
+            onClick: () => setFeedbackDialogOpen(true),
+            action: <LanguageMenu />,
+        },
+    ]
 
     return (
         <>
@@ -87,7 +79,7 @@ export function AppSidebar() {
                         <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-secondary text-sidebar-primary-foreground">
                             <img
                                 src="/lantern-logo.svg"
-                                alt="Lantern logo"
+                                alt={t('sidebar.logoAlt')}
                                 className="size-6"
                             />
                         </div>
@@ -96,20 +88,24 @@ export function AppSidebar() {
                                 Lantern
                             </span>
                             <span className="truncate text-xs">
-                                Template editor
+                                {t('sidebar.tagline')}
                             </span>
                         </div>
                     </div>
                 </SidebarHeader>
                 <SidebarContent>
                     <SidebarGroup>
-                        <SidebarGroupLabel>Game packs</SidebarGroupLabel>
+                        <SidebarGroupLabel>
+                            {t('sidebar.gamePacks')}
+                        </SidebarGroupLabel>
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <SidebarGroupAction title="Choose game packs">
+                                <SidebarGroupAction
+                                    title={t('sidebar.chooseGamePacks')}
+                                >
                                     <SlidersHorizontal />
                                     <span className="sr-only">
-                                        Choose game packs
+                                        {t('sidebar.chooseGamePacks')}
                                     </span>
                                 </SidebarGroupAction>
                             </DropdownMenuTrigger>
@@ -119,7 +115,7 @@ export function AppSidebar() {
                                 side="bottom"
                             >
                                 <DropdownMenuLabel className="text-xs text-muted-foreground">
-                                    Show these packs
+                                    {t('sidebar.showThesePacks')}
                                 </DropdownMenuLabel>
                                 <DropdownMenuSeparator />
                                 {templatesByGame.map((group) => (
@@ -198,14 +194,16 @@ export function AppSidebar() {
                                                                     }}
                                                                 >
                                                                     <span>
-                                                                        {
+                                                                        {text(
                                                                             template.label
-                                                                        }
+                                                                        )}
                                                                     </span>
                                                                     {!template.implemented && (
                                                                         <span className="text-[8px] opacity-65 uppercase tracking-wide">
-                                                                            {template.comingSoonLabel ||
-                                                                                'Coming soon'}
+                                                                            {text(
+                                                                                template.comingSoonLabel ??
+                                                                                    'sidebar.comingSoon'
+                                                                            )}
                                                                         </span>
                                                                     )}
                                                                 </button>
@@ -220,8 +218,7 @@ export function AppSidebar() {
                             ))}
                             {visibleGroups.length === 0 && (
                                 <p className="px-2 py-1.5 text-xs text-sidebar-foreground/70">
-                                    Every game pack is hidden. Bring one back
-                                    from the sliders above.
+                                    {t('sidebar.allPacksHidden')}
                                 </p>
                             )}
                         </SidebarMenu>
@@ -233,7 +230,7 @@ export function AppSidebar() {
                 </SidebarContent>
                 <SidebarFooter>
                     <div className="flex items-center justify-center text-xs text-center">
-                        Created by 4rtamis <br />
+                        {t('sidebar.credit')}
                     </div>
                 </SidebarFooter>
             </Sidebar>

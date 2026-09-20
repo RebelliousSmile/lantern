@@ -1,7 +1,7 @@
 import { createImageExportAction } from '@/core/templates/shell/imageExportAction'
-import { cloneValue } from '@/utils/clone'
+import { createTomlExportAction } from '@/core/templates/shell/tomlExportAction'
 import type { AnyTemplateDefinition } from '@/core/templates/types'
-import { toast } from 'sonner'
+import { cloneValue } from '@/utils/clone'
 import { LoadoutItemAppearancePanel } from './editor/LoadoutItemAppearancePanel'
 import { LoadoutItemEditorPanel } from './editor/LoadoutItemEditorPanel'
 import { LoadoutItemImageExportSettings } from './editor/LoadoutItemImageExportSettings'
@@ -22,7 +22,7 @@ const loadoutItemTemplate: AnyTemplateDefinition = {
     id: 'otherscape.loadoutItem',
     gameId: 'otherscape',
     gameLabel: ':Otherscape',
-    label: 'Loadout Item',
+    label: 'otherscape:loadoutItem.label',
     implemented: true,
     contractKey: 'mist/otherscape/loadout-item',
     createBlank: blankOtherscapeLoadoutItem,
@@ -34,11 +34,8 @@ const loadoutItemTemplate: AnyTemplateDefinition = {
         doc.name.trim() || 'Loadout Item',
     sections: loadoutItemSections,
     landing: {
-        description:
-            'A Loadout Item is one entry of the Street Catalog: its name, the rubric it is filed under, the prose the catalog prints, the tags it grants, and the one tag it turns against its bearer. Start blank, open the example, or import a TOML file.',
-        exampleLabel: 'Start with example',
-        blankLabel: 'Start blank',
-        importLabel: 'Import TOML',
+        newTitle: 'otherscape:loadoutItem.newTitle',
+        description: 'otherscape:loadoutItem.description',
     },
     io: {
         importToml: (tomlText: string) => {
@@ -58,7 +55,6 @@ const loadoutItemTemplate: AnyTemplateDefinition = {
         render: () => <LoadoutItemPreview />,
     },
     editor: {
-        emptyState: 'Click on the card to edit a specific section.',
         renderPanel: () => <LoadoutItemEditorPanel />,
     },
     appearance: {
@@ -68,41 +64,12 @@ const loadoutItemTemplate: AnyTemplateDefinition = {
     },
     export: {
         actions: [
-            {
-                id: 'toml',
-                label: 'TOML',
-                buttonLabel: 'Export TOML',
-                description: 'Export the current loadout item data as TOML.',
-                run: ({
-                    doc,
-                    fileStem,
-                }: {
-                    doc: OtherscapeLoadoutItem
-                    fileStem: string
-                }) => {
-                    try {
-                        const toml = exportToTOML(doc)
-                        const blob = new Blob([toml], {
-                            type: 'text/plain;charset=utf-8',
-                        })
-                        const url = URL.createObjectURL(blob)
-                        const anchor = document.createElement('a')
-                        anchor.href = url
-                        anchor.download = `${fileStem}.toml`
-                        document.body.appendChild(anchor)
-                        anchor.click()
-                        anchor.remove()
-                        URL.revokeObjectURL(url)
-                        toast.success('Exported TOML.')
-                    } catch (errorAny: any) {
-                        toast.error(
-                            errorAny?.message || 'Failed to export TOML.'
-                        )
-                    }
-                },
-            },
+            createTomlExportAction({
+                exportToml: exportToTOML,
+                description: 'otherscape:loadoutItem.exportToml',
+            }),
             createImageExportAction({
-                description: 'Export the current loadout item card as PNG.',
+                description: 'otherscape:loadoutItem.exportPng',
                 renderSettings: () => <LoadoutItemImageExportSettings />,
             }),
         ],

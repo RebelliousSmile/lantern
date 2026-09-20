@@ -4,9 +4,11 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { rolesList } from '@/utils/constants'
+import { Trans, useTranslation } from 'react-i18next'
 import { useLegendInTheMistChallengeStore } from '../../hooks'
 
 export default function BasicForm() {
+    const { t } = useTranslation()
     const { legendInTheMistChallenge, setLegendInTheMistChallenge } =
         useLegendInTheMistChallengeStore()
 
@@ -27,11 +29,15 @@ export default function BasicForm() {
             {/* Name + Rating */}
             <div className="grid gap-3 md:grid-cols-[1fr_auto] md:items-end">
                 <div className="grid gap-1">
-                    <Label htmlFor="challenge-name">Challenge name</Label>
+                    <Label htmlFor="challenge-name">
+                        {t('legend:forms.challenge.basicForm.nameLabel')}
+                    </Label>
                     <Input
                         id="challenge-name"
                         className="h-8 px-2 text-sm"
-                        placeholder="e.g., The Heap Thing"
+                        placeholder={t(
+                            'legend:forms.challenge.basicForm.namePlaceholder'
+                        )}
                         value={legendInTheMistChallenge.name}
                         onChange={(e) =>
                             setLegendInTheMistChallenge({
@@ -42,7 +48,9 @@ export default function BasicForm() {
                 </div>
 
                 <div className="grid w-[88px] gap-1">
-                    <Label htmlFor="challenge-rating">Rating (1-5)</Label>
+                    <Label htmlFor="challenge-rating">
+                        {t('legend:forms.challenge.basicForm.ratingLabel')}
+                    </Label>
                     <Input
                         id="challenge-rating"
                         className="h-8 px-2 text-sm"
@@ -61,7 +69,9 @@ export default function BasicForm() {
 
             {/* Roles */}
             <div className="space-y-2">
-                <Label>Roles</Label>
+                <Label>
+                    {t('legend:forms.challenge.basicForm.rolesLabel')}
+                </Label>
                 <div className="flex flex-wrap gap-1.5">
                     {rolesList.map((role) => {
                         const active =
@@ -75,26 +85,33 @@ export default function BasicForm() {
                                 className="h-7 rounded-full px-2.5 text-xs"
                                 onClick={() => toggleRole(role)}
                             >
-                                {role}
+                                {t(
+                                    `legend:forms.challenge.basicForm.roles.${role}`
+                                )}
                             </Button>
                         )
                     })}
                 </div>
                 <p className="text-xs text-muted-foreground">
-                    Pick one or more roles that best describe this challenge
-                    (see <i>Legend in the Mist - Vol. II - The Narrator</i>, p.
-                    110)
+                    <Trans
+                        i18nKey="legend:forms.challenge.basicForm.rolesHint"
+                        components={{ i: <i /> }}
+                    />
                 </p>
             </div>
 
             {/* Description */}
             <div className="space-y-2">
-                <Label htmlFor="challenge-desc">Description</Label>
+                <Label htmlFor="challenge-desc">
+                    {t('legend:forms.challenge.basicForm.descriptionLabel')}
+                </Label>
                 <Textarea
                     id="challenge-desc"
                     rows={4}
                     className="px-2 py-1 text-sm"
-                    placeholder="Write a short summary of the challenge here..."
+                    placeholder={t(
+                        'legend:forms.challenge.basicForm.descriptionPlaceholder'
+                    )}
                     value={legendInTheMistChallenge.description}
                     onChange={(e) =>
                         setLegendInTheMistChallenge({

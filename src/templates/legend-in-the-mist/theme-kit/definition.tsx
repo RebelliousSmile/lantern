@@ -1,7 +1,7 @@
 import { createImageExportAction } from '@/core/templates/shell/imageExportAction'
-import { cloneValue } from '@/utils/clone'
+import { createTomlExportAction } from '@/core/templates/shell/tomlExportAction'
 import type { AnyTemplateDefinition } from '@/core/templates/types'
-import { toast } from 'sonner'
+import { cloneValue } from '@/utils/clone'
 import { ThemeKitAppearancePanel } from './editor/ThemeKitAppearancePanel'
 import { ThemeKitEditorPanel } from './editor/ThemeKitEditorPanel'
 import { ThemeKitImageExportSettings } from './editor/ThemeKitImageExportSettings'
@@ -22,7 +22,7 @@ const themeKitTemplate: AnyTemplateDefinition = {
     id: 'legend.themeKit',
     gameId: 'legend',
     gameLabel: 'Legend in the Mist',
-    label: 'Theme Kit',
+    label: 'legend:themeKit.label',
     implemented: true,
     contractKey: 'mist/legend-in-the-mist/theme-kit',
     createBlank: blankLegendInTheMistThemeKit,
@@ -34,11 +34,8 @@ const themeKitTemplate: AnyTemplateDefinition = {
         doc.name.trim() || 'Theme Kit',
     sections: themeKitSections,
     landing: {
-        description:
-            'A Theme Kit is the card a themebook offers a Hero: a name, the power and weakness tags it suggests, the quest it points at, and the improvements it opens up. Start blank, open the example, or import a TOML file.',
-        exampleLabel: 'Start with example',
-        blankLabel: 'Start blank',
-        importLabel: 'Import TOML',
+        newTitle: 'legend:themeKit.newTitle',
+        description: 'legend:themeKit.description',
     },
     io: {
         importToml: (tomlText: string) => {
@@ -58,7 +55,6 @@ const themeKitTemplate: AnyTemplateDefinition = {
         render: () => <ThemeKitPreview />,
     },
     editor: {
-        emptyState: 'Click on the card to edit a specific section.',
         renderPanel: () => <ThemeKitEditorPanel />,
     },
     appearance: {
@@ -68,41 +64,12 @@ const themeKitTemplate: AnyTemplateDefinition = {
     },
     export: {
         actions: [
-            {
-                id: 'toml',
-                label: 'TOML',
-                buttonLabel: 'Export TOML',
-                description: 'Export the current theme kit data as TOML.',
-                run: ({
-                    doc,
-                    fileStem,
-                }: {
-                    doc: LegendInTheMistThemeKit
-                    fileStem: string
-                }) => {
-                    try {
-                        const toml = exportToTOML(doc)
-                        const blob = new Blob([toml], {
-                            type: 'text/plain;charset=utf-8',
-                        })
-                        const url = URL.createObjectURL(blob)
-                        const anchor = document.createElement('a')
-                        anchor.href = url
-                        anchor.download = `${fileStem}.toml`
-                        document.body.appendChild(anchor)
-                        anchor.click()
-                        anchor.remove()
-                        URL.revokeObjectURL(url)
-                        toast.success('Exported TOML.')
-                    } catch (errorAny: any) {
-                        toast.error(
-                            errorAny?.message || 'Failed to export TOML.'
-                        )
-                    }
-                },
-            },
+            createTomlExportAction({
+                exportToml: exportToTOML,
+                description: 'legend:themeKit.exportToml',
+            }),
             createImageExportAction({
-                description: 'Export the current theme kit card as PNG.',
+                description: 'legend:themeKit.exportPng',
                 renderSettings: () => <ThemeKitImageExportSettings />,
             }),
         ],

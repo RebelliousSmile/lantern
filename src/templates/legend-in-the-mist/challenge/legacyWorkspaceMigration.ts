@@ -1,5 +1,5 @@
-import { documentContracts } from '@/contracts/registry'
 import type { LegendInTheMistChallenge as PublishedChallenge } from '@/contracts/mist-engine'
+import { documentContracts } from '@/contracts/registry'
 import {
     toLegendInTheMistChallengeDocument,
     type LegendInTheMistChallenge,

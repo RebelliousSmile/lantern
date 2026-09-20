@@ -1,3 +1,4 @@
+import { useUiText } from '@/i18n/text'
 import { useLegendInTheMistThemeKitSheetStore } from '../hooks'
 import BasicForm from './forms/BasicForm'
 import ImprovementsForm from './forms/ImprovementsForm'
@@ -6,12 +7,13 @@ import QuestForm from './forms/QuestForm'
 import TagsForm from './forms/TagsForm'
 
 export function ThemeKitEditorPanel() {
+    const text = useUiText()
     const { open, target } = useLegendInTheMistThemeKitSheetStore()
 
     if (!open || !target) {
         return (
             <div className="rounded-md border border-dashed px-3 py-4 text-sm text-muted-foreground">
-                Click on the card to edit a specific section.
+                {text('legend:forms.themeKit.editorPanel.emptyState')}
             </div>
         )
     }

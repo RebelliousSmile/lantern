@@ -4,6 +4,7 @@ import { useOtherscapeCharacterTropeStore } from '../../hooks'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { useUiText } from '@/i18n/text'
 import { GripVertical, Pencil, Plus, Trash2 } from 'lucide-react'
 
 import {
@@ -30,6 +31,7 @@ import { CSS } from '@dnd-kit/utilities'
 ---------------------------------------------------------------------------- */
 
 export default function ChoicesForm({ focusIndex }: { focusIndex?: number }) {
+    const text = useUiText()
     const {
         otherscapeCharacterTrope,
         addChoice,
@@ -126,8 +128,14 @@ export default function ChoicesForm({ focusIndex }: { focusIndex?: number }) {
 
     function saveEdit() {
         if (editingIndex == null) return
-        if (!eTitleTag.trim()) return setError('Title tag is required.')
-        if (!eCategory.trim()) return setError('Category is required.')
+        if (!eTitleTag.trim())
+            return setError(
+                text('otherscape:forms.characterTrope.choices.titleTagRequired')
+            )
+        if (!eCategory.trim())
+            return setError(
+                text('otherscape:forms.characterTrope.choices.categoryRequired')
+            )
 
         updateChoiceAt(editingIndex, {
             title_tag: eTitleTag.trim(),
@@ -139,9 +147,7 @@ export default function ChoicesForm({ focusIndex }: { focusIndex?: number }) {
     return (
         <div className="space-y-2.5">
             <p className="text-xs text-muted-foreground">
-                One of these theme kits, the player’s pick. Spell the title tag
-                and the category the way the kit itself spells them: that pair
-                is what points at the kit.
+                {text('otherscape:forms.characterTrope.choices.hint')}
             </p>
 
             <DndContext
@@ -176,7 +182,9 @@ export default function ChoicesForm({ focusIndex }: { focusIndex?: number }) {
                                                 htmlFor={`ch-title-${index}`}
                                                 className="text-xs"
                                             >
-                                                Title tag
+                                                {text(
+                                                    'otherscape:forms.characterTrope.choices.titleTagLabel'
+                                                )}
                                             </Label>
                                             <Input
                                                 id={`ch-title-${index}`}
@@ -194,7 +202,9 @@ export default function ChoicesForm({ focusIndex }: { focusIndex?: number }) {
                                                 htmlFor={`ch-category-${index}`}
                                                 className="text-xs"
                                             >
-                                                Category
+                                                {text(
+                                                    'otherscape:forms.characterTrope.choices.categoryLabel'
+                                                )}
                                             </Label>
                                             <Input
                                                 id={`ch-category-${index}`}
@@ -205,7 +215,9 @@ export default function ChoicesForm({ focusIndex }: { focusIndex?: number }) {
                                                         event.target.value
                                                     )
                                                 }
-                                                placeholder="e.g., RITUAL"
+                                                placeholder={text(
+                                                    'otherscape:forms.characterTrope.choices.categoryPlaceholder'
+                                                )}
                                             />
                                         </div>
                                         <div className="flex items-center gap-2">
@@ -215,7 +227,7 @@ export default function ChoicesForm({ focusIndex }: { focusIndex?: number }) {
                                                 className="h-7 px-2.5 text-xs"
                                                 onClick={saveEdit}
                                             >
-                                                Save
+                                                {text('actions.save')}
                                             </Button>
                                             <Button
                                                 type="button"
@@ -223,7 +235,7 @@ export default function ChoicesForm({ focusIndex }: { focusIndex?: number }) {
                                                 className="h-7 px-0 text-xs"
                                                 onClick={cancelEdit}
                                             >
-                                                Cancel
+                                                {text('actions.cancel')}
                                             </Button>
                                         </div>
                                     </div>
@@ -240,7 +252,10 @@ export default function ChoicesForm({ focusIndex }: { focusIndex?: number }) {
                                 className="mt-1 h-8 w-full justify-center gap-1.5 border-dashed px-2.5 text-xs"
                                 onClick={addPlaceholder}
                             >
-                                <Plus className="h-3.5 w-3.5" /> Add choice
+                                <Plus className="h-3.5 w-3.5" />{' '}
+                                {text(
+                                    'otherscape:forms.characterTrope.choices.addButton'
+                                )}
                             </Button>
                         </li>
                     </ul>
@@ -268,6 +283,7 @@ function SortableChoiceItem({
     onRemove: () => void
     children?: React.ReactNode
 }) {
+    const text = useUiText()
     const {
         attributes,
         listeners,
@@ -300,11 +316,13 @@ function SortableChoiceItem({
                       ? 'opacity-40 cursor-not-allowed hover:bg-transparent'
                       : 'cursor-grab active:cursor-grabbing'
               }`}
-                        aria-label="Drag to reorder"
+                        aria-label={text('actions.dragToReorder')}
                         title={
                             dragDisabled
-                                ? 'Finish editing to reorder'
-                                : 'Drag to reorder'
+                                ? text(
+                                      'otherscape:forms.characterTrope.choices.finishEditingToReorder'
+                                  )
+                                : text('actions.dragToReorder')
                         }
                         disabled={dragDisabled}
                         {...(!dragDisabled ? attributes : {})}
@@ -318,7 +336,10 @@ function SortableChoiceItem({
                             {titleTag}
                         </div>
                         <div className="truncate text-[11px] uppercase tracking-widest text-muted-foreground">
-                            {category || 'No category'}
+                            {category ||
+                                text(
+                                    'otherscape:forms.characterTrope.choices.noCategory'
+                                )}
                         </div>
                     </div>
                 </div>
@@ -329,7 +350,7 @@ function SortableChoiceItem({
                         variant="ghost"
                         size="icon"
                         className="h-7 w-7"
-                        title="Edit"
+                        title={text('actions.edit')}
                         onClick={onEdit}
                     >
                         <Pencil className="h-3.5 w-3.5" />
@@ -339,7 +360,7 @@ function SortableChoiceItem({
                         variant="ghost"
                         size="icon"
                         className="h-7 w-7 text-destructive"
-                        title="Remove"
+                        title={text('actions.remove')}
                         onClick={onRemove}
                     >
                         <Trash2 className="h-3.5 w-3.5" />

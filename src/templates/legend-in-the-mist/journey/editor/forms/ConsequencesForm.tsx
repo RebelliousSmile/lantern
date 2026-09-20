@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { useUiText } from '@/i18n/text'
 import {
     DndContext,
     KeyboardSensor,
@@ -19,6 +20,7 @@ import {
 import { CSS } from '@dnd-kit/utilities'
 import { GripVertical, Pencil, Plus, Trash2 } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
+import { Trans } from 'react-i18next'
 import { useLegendInTheMistJourneyStore } from '../../hooks'
 
 /* The journey's own list: what the road can cost anywhere along it. A vignette
@@ -37,6 +39,7 @@ export default function ConsequencesForm({
     focusIndex?: number
     autoCreate?: boolean
 }) {
+    const text = useUiText()
     const {
         legendInTheMistJourney,
         addConsequence,
@@ -126,7 +129,7 @@ export default function ConsequencesForm({
 
         const next = raw.trim()
         if (!next) {
-            setError('A consequence needs some text.')
+            setError(text('legend:forms.journey.consequences.emptyError'))
             return
         }
 
@@ -138,10 +141,10 @@ export default function ConsequencesForm({
         <div className="space-y-2.5">
             <div className="flex items-baseline justify-between gap-2">
                 <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                    General consequences
+                    {text('legend:journey.sections.consequences')}
                 </p>
                 <p className="text-xs text-muted-foreground">
-                    What the road can cost anywhere.
+                    {text('legend:forms.journey.consequences.hint')}
                 </p>
             </div>
 
@@ -176,7 +179,9 @@ export default function ConsequencesForm({
                                                 htmlFor={`journey-consequence-${index}`}
                                                 className="text-xs"
                                             >
-                                                Consequence
+                                                {text(
+                                                    'legend:forms.journey.consequences.fieldLabel'
+                                                )}
                                             </Label>
                                             <Textarea
                                                 id={`journey-consequence-${index}`}
@@ -193,12 +198,17 @@ export default function ConsequencesForm({
                                                         cancelEdit()
                                                     }
                                                 }}
-                                                placeholder="Someone in the party takes {tired-2}."
+                                                placeholder={text(
+                                                    'legend:forms.journey.consequences.fieldPlaceholder'
+                                                )}
                                             />
                                             <p className="text-xs text-muted-foreground">
-                                                Opening with{' '}
-                                                <em>New Challenge:</em> prints
-                                                that prefix in bold.
+                                                <Trans
+                                                    i18nKey="legend:forms.journey.consequences.fieldHint"
+                                                    components={{
+                                                        em: <em />,
+                                                    }}
+                                                />
                                             </p>
                                         </div>
 
@@ -209,7 +219,7 @@ export default function ConsequencesForm({
                                                 className="h-7 px-2.5 text-xs"
                                                 onClick={confirmEdit}
                                             >
-                                                Save
+                                                {text('actions.save')}
                                             </Button>
                                             <Button
                                                 type="button"
@@ -217,7 +227,7 @@ export default function ConsequencesForm({
                                                 className="h-7 px-0 text-xs"
                                                 onClick={cancelEdit}
                                             >
-                                                Cancel
+                                                {text('actions.cancel')}
                                             </Button>
                                         </div>
                                     </div>
@@ -233,7 +243,8 @@ export default function ConsequencesForm({
                                 className="mt-1 h-8 w-full justify-center gap-1.5 border-dashed px-2.5 text-xs"
                                 onClick={addPlaceholder}
                             >
-                                <Plus className="h-3.5 w-3.5" /> Add consequence
+                                <Plus className="h-3.5 w-3.5" />{' '}
+                                {text('legend:forms.journey.consequences.add')}
                             </Button>
                         </li>
                     </ul>
@@ -259,6 +270,7 @@ function SortableConsequenceItem({
     onRemove: () => void
     children?: React.ReactNode
 }) {
+    const text = useUiText()
     const {
         attributes,
         listeners,
@@ -291,11 +303,13 @@ function SortableConsequenceItem({
                       ? 'opacity-40 cursor-not-allowed hover:bg-transparent'
                       : 'cursor-grab active:cursor-grabbing'
               }`}
-                        aria-label="Drag to reorder"
+                        aria-label={text('actions.dragToReorder')}
                         title={
                             dragDisabled
-                                ? 'Finish editing to reorder'
-                                : 'Drag to reorder'
+                                ? text(
+                                      'legend:forms.journey.shared.dragDisabledTitle'
+                                  )
+                                : text('actions.dragToReorder')
                         }
                         disabled={dragDisabled}
                         {...(!dragDisabled ? attributes : {})}
@@ -319,7 +333,7 @@ function SortableConsequenceItem({
                         size="icon"
                         className="h-7 w-7"
                         onClick={onEdit}
-                        title="Edit"
+                        title={text('actions.edit')}
                     >
                         <Pencil className="h-3.5 w-3.5" />
                     </Button>
@@ -329,7 +343,7 @@ function SortableConsequenceItem({
                         size="icon"
                         className="h-7 w-7 text-destructive"
                         onClick={onRemove}
-                        title="Remove"
+                        title={text('actions.remove')}
                     >
                         <Trash2 className="h-3.5 w-3.5" />
                     </Button>

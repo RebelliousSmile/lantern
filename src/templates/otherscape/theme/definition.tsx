@@ -1,7 +1,7 @@
 import { createImageExportAction } from '@/core/templates/shell/imageExportAction'
-import { cloneValue } from '@/utils/clone'
+import { createTomlExportAction } from '@/core/templates/shell/tomlExportAction'
 import type { AnyTemplateDefinition } from '@/core/templates/types'
-import { toast } from 'sonner'
+import { cloneValue } from '@/utils/clone'
 import { ThemeAppearancePanel } from './editor/ThemeAppearancePanel'
 import { ThemeEditorPanel } from './editor/ThemeEditorPanel'
 import { ThemeImageExportSettings } from './editor/ThemeImageExportSettings'
@@ -22,7 +22,7 @@ const themeTemplate: AnyTemplateDefinition = {
     id: 'otherscape.theme',
     gameId: 'otherscape',
     gameLabel: ':Otherscape',
-    label: 'Theme',
+    label: 'otherscape:theme.label',
     implemented: true,
     contractKey: 'mist/otherscape/theme',
     createBlank: blankOtherscapeTheme,
@@ -32,11 +32,8 @@ const themeTemplate: AnyTemplateDefinition = {
     getTabTitle: (doc: OtherscapeTheme) => doc.title_tag.trim() || 'Theme',
     sections: themeSections,
     landing: {
-        description:
-            'A Theme is a card a character has made their own: a title tag, the theme type it belongs to, its power and weakness tags, the quest it sets, and the Upgrade and Decay tracks holding how far it has been played. Start blank, open the example, or import a TOML file.',
-        exampleLabel: 'Start with example',
-        blankLabel: 'Start blank',
-        importLabel: 'Import TOML',
+        newTitle: 'otherscape:theme.newTitle',
+        description: 'otherscape:theme.description',
     },
     io: {
         importToml: (tomlText: string) => {
@@ -55,7 +52,6 @@ const themeTemplate: AnyTemplateDefinition = {
         render: () => <ThemePreview />,
     },
     editor: {
-        emptyState: 'Click on the card to edit a specific section.',
         renderPanel: () => <ThemeEditorPanel />,
     },
     appearance: {
@@ -65,41 +61,12 @@ const themeTemplate: AnyTemplateDefinition = {
     },
     export: {
         actions: [
-            {
-                id: 'toml',
-                label: 'TOML',
-                buttonLabel: 'Export TOML',
-                description: 'Export the current theme data as TOML.',
-                run: ({
-                    doc,
-                    fileStem,
-                }: {
-                    doc: OtherscapeTheme
-                    fileStem: string
-                }) => {
-                    try {
-                        const toml = exportToTOML(doc)
-                        const blob = new Blob([toml], {
-                            type: 'text/plain;charset=utf-8',
-                        })
-                        const url = URL.createObjectURL(blob)
-                        const anchor = document.createElement('a')
-                        anchor.href = url
-                        anchor.download = `${fileStem}.toml`
-                        document.body.appendChild(anchor)
-                        anchor.click()
-                        anchor.remove()
-                        URL.revokeObjectURL(url)
-                        toast.success('Exported TOML.')
-                    } catch (errorAny: any) {
-                        toast.error(
-                            errorAny?.message || 'Failed to export TOML.'
-                        )
-                    }
-                },
-            },
+            createTomlExportAction({
+                exportToml: exportToTOML,
+                description: 'otherscape:theme.exportToml',
+            }),
             createImageExportAction({
-                description: 'Export the current theme card as PNG.',
+                description: 'otherscape:theme.exportPng',
                 renderSettings: () => <ThemeImageExportSettings />,
             }),
         ],

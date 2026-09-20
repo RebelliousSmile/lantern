@@ -1,3 +1,4 @@
+import type { ImportWarning } from '@/core/templates/types'
 import type { ThemeCardDocument } from './model'
 
 const STANDARD_THEMEBOOKS = new Set([
@@ -19,8 +20,8 @@ const STANDARD_THEMEBOOKS = new Set([
 
 export function computeCityOfMistThemeCardWarnings(
     themeCard: ThemeCardDocument
-): string[] {
-    const warnings: string[] = []
+): ImportWarning[] {
+    const warnings: ImportWarning[] = []
 
     if (
         themeCard.erosion &&
@@ -29,15 +30,17 @@ export function computeCityOfMistThemeCardWarnings(
             (themeCard.theme_type === 'logos' &&
                 themeCard.erosion.kind !== 'crack'))
     ) {
-        warnings.push(
-            `${themeCard.theme_type === 'mythos' ? 'Mythos' : 'Logos'} cards use ${themeCard.theme_type === 'mythos' ? 'Fade' : 'Crack'}, but this card carries ${themeCard.erosion.kind}.`
-        )
+        warnings.push({
+            key:
+                themeCard.theme_type === 'mythos'
+                    ? 'city:themeCard.warnings.mythosErosion'
+                    : 'city:themeCard.warnings.logosErosion',
+            values: { kind: themeCard.erosion.kind },
+        })
     }
 
     if (themeCard.theme_type === 'crew' && themeCard.erosion) {
-        warnings.push(
-            'Crew cards carry no erosion track, so this track will not print.'
-        )
+        warnings.push({ key: 'city:themeCard.warnings.crewErosion' })
     }
 
     const themebook = themeCard.themebook.trim().toLowerCase()
@@ -50,9 +53,13 @@ export function computeCityOfMistThemeCardWarnings(
             )
 
         if (invalidWeaknessLetters.length) {
-            warnings.push(
-                `${themeCard.themebook} has weakness questions A to D, but these tags cite other letters: ${invalidWeaknessLetters.join(', ')}.`
-            )
+            warnings.push({
+                key: 'city:themeCard.warnings.weaknessLetters',
+                values: {
+                    themebook: themeCard.themebook,
+                    letters: invalidWeaknessLetters.join(', '),
+                },
+            })
         }
     }
 

@@ -1,7 +1,7 @@
 import { createImageExportAction } from '@/core/templates/shell/imageExportAction'
-import { cloneValue } from '@/utils/clone'
+import { createTomlExportAction } from '@/core/templates/shell/tomlExportAction'
 import type { AnyTemplateDefinition } from '@/core/templates/types'
-import { toast } from 'sonner'
+import { cloneValue } from '@/utils/clone'
 import { CharacterTropeAppearancePanel } from './editor/CharacterTropeAppearancePanel'
 import { CharacterTropeEditorPanel } from './editor/CharacterTropeEditorPanel'
 import { CharacterTropeImageExportSettings } from './editor/CharacterTropeImageExportSettings'
@@ -22,7 +22,7 @@ const characterTropeTemplate: AnyTemplateDefinition = {
     id: 'otherscape.characterTrope',
     gameId: 'otherscape',
     gameLabel: ':Otherscape',
-    label: 'Character Trope',
+    label: 'otherscape:characterTrope.label',
     implemented: true,
     contractKey: 'mist/otherscape/character-trope',
     createBlank: blankOtherscapeCharacterTrope,
@@ -34,11 +34,8 @@ const characterTropeTemplate: AnyTemplateDefinition = {
         doc.name.trim() || 'Character Trope',
     sections: characterTropeSections,
     landing: {
-        description:
-            'A Character Trope is a ready-made character package: the theme kits it grants, the kits it offers a pick between, and the gear it starts with. Start blank, open the example, or import a TOML file.',
-        exampleLabel: 'Start with example',
-        blankLabel: 'Start blank',
-        importLabel: 'Import TOML',
+        newTitle: 'otherscape:characterTrope.newTitle',
+        description: 'otherscape:characterTrope.description',
     },
     io: {
         importToml: (tomlText: string) => {
@@ -58,7 +55,6 @@ const characterTropeTemplate: AnyTemplateDefinition = {
         render: () => <CharacterTropePreview />,
     },
     editor: {
-        emptyState: 'Click on the card to edit a specific section.',
         renderPanel: () => <CharacterTropeEditorPanel />,
     },
     appearance: {
@@ -68,42 +64,12 @@ const characterTropeTemplate: AnyTemplateDefinition = {
     },
     export: {
         actions: [
-            {
-                id: 'toml',
-                label: 'TOML',
-                buttonLabel: 'Export TOML',
-                description: 'Export the current character trope data as TOML.',
-                run: ({
-                    doc,
-                    fileStem,
-                }: {
-                    doc: OtherscapeCharacterTrope
-                    fileStem: string
-                }) => {
-                    try {
-                        const toml = exportToTOML(doc)
-                        const blob = new Blob([toml], {
-                            type: 'text/plain;charset=utf-8',
-                        })
-                        const url = URL.createObjectURL(blob)
-                        const anchor = document.createElement('a')
-                        anchor.href = url
-                        anchor.download = `${fileStem}.toml`
-                        document.body.appendChild(anchor)
-                        anchor.click()
-                        anchor.remove()
-                        URL.revokeObjectURL(url)
-                        toast.success('Exported TOML.')
-                    } catch (errorAny: any) {
-                        toast.error(
-                            errorAny?.message || 'Failed to export TOML.'
-                        )
-                    }
-                },
-            },
+            createTomlExportAction({
+                exportToml: exportToTOML,
+                description: 'otherscape:characterTrope.exportToml',
+            }),
             createImageExportAction({
-                description:
-                    'Export the current character trope preview as PNG.',
+                description: 'otherscape:characterTrope.exportPng',
                 renderSettings: () => <CharacterTropeImageExportSettings />,
             }),
         ],

@@ -46,7 +46,7 @@ Keep `view` to appearance and export concerns and `sheet` to editor selection. *
 
 ### 3. Import and export helpers
 
-In `toml.ts`, implement import and export against the contract's codec, resolved with `documentContracts.require('<contract>/<target>')` (or `nodeDocumentContracts` if the contract is Node-only) — that call is what actually validates, not the local `schema.ts`. Return warnings for soft issues that should not block an import. `warnings.ts` holds the warning logic when there is more than a line of it.
+In `toml.ts`, implement import and export against the contract's codec, resolved with `documentContracts.require('<contract>/<target>')` (or `nodeDocumentContracts` if the contract is Node-only) — that call is what actually validates, not the local `schema.ts`. Return warnings for soft issues that should not block an import. A warning is `{ key, values? }`, a translation key and its interpolation values, never an English sentence. `warnings.ts` holds the warning logic when there is more than a line of it.
 
 Watch the passthrough trap: an import that spreads `payload.meta` (or any sub-object) straight into the document carries fields the schema never declared into the store. Pick the fields you mean.
 
@@ -68,6 +68,8 @@ In `editor/`, build the panel that resolves `sheet.target`, the forms it needs, 
 
 Two vocabularies that are easy to conflate: `sheet.target.kind` decides _which form opens_ and is per template; the `SectionId` list in `metadata.ts` drives the appearance panel's show/hide toggles and the definition's `sections`. They are different lists.
 
+**The editor follows the UI language; the preview does not.** Every label, placeholder, button, `title`, `aria-label` and option label in `editor/` goes through `t()` from `useTranslation('<ns>')`, while the preview, the PNG and the values written into `doc` stay English. When a select stores a value in the document, translate its displayed label only. A preview that needs a registry label reads it with `translateEnglish`, never `t()`.
+
 Every clickable preview region needs a matching editor target — a field with no way to open its form is unreachable. A collection heading/add affordance targets the collection; a rendered row targets its current array index. Keep those targets distinct so users can add an item without losing the ability to edit one exact item.
 
 ### 6. Register it
@@ -76,13 +78,17 @@ Every clickable preview region needs a matching editor target — a field with n
 
 For a published PbtA specialized target such as `pbta/masks-playbook`, create a dedicated template boundary and bind its import/export directly to that contract key. Do not route a specialized document through the generic `pbta/playbook` interchange template.
 
+Every piece of text the definition carries (label, description, landing copy, section names, export action descriptions) is a `UiText` (`src/i18n/text.ts`), not a string: a key into the game's namespace, written as `'<ns>:<template>.<field>'`. Add each key to `src/i18n/locales/en/<ns>.ts` and to `src/i18n/locales/fr/<ns>.ts`; the French file is typed against the English one, so a key missing from it fails the build. Take French game terms from `src/i18n/glossary/<game>.md`, and generic editor words (Add, Remove, Name, …) from `common`'s `actions` and `fields`.
+
 Then add the module to `src/core/templates/registry.tsx`. Adding a template to a game that already exists needs no other edit — `templatesByGame` is a fold over `templateRegistry` that groups by `gameId` on first occurrence. A load-time loop (`registry.tsx:45-47`) calls `documentContracts.require(template.contractKey)` for every template, so a typo'd `contractKey` fails immediately at load rather than at the first export.
+
+Registering the module also publishes the template's **capability tokens**, which is how a schema package learns what this app can open. `src/core/capabilities.ts` folds `templateRegistry` into `LANTERN_CAPABILITIES`, emitting two shapes and no others: `edit:<contractId>` for a whole contract (`edit:pbta`) and `edit:<contractKey>` for one document of it (`edit:pbta/playbook`). A provider's `cross-tool-provider.json` declares the tokens it expects under `capabilities.lantern`, a pack may restate the claim under `requirements.lantern`, and `npm run assert:contracts` fails on any token this app does not publish. Shipping a template is what adds a token — never edit that file to add one by hand, and do not invent a second family (`import:`, `render:`), since nothing declares or reads one.
 
 ## Export actions
 
 Export actions are the extension point beyond the shell's own chrome. Each declares `id`, `label`, `description`, an optional `renderSettings`, and `run(context)`, and uses the given context rather than reaching back into global state.
 
-Every module ships a TOML action and the shared `createImageExportAction` (`src/core/templates/shell/imageExportAction.ts`), imported by every game's `definition.tsx` rather than reimplemented. Call it with `{ description, renderSettings }`; it captures the live preview node with `@zumer/snapdom` at the view's `exportPrefs.scale`, handles the missing-node and capture-failure toasts, and downloads `<fileStem>@<scale>x.png`. Write a new export action only for a genuinely different format — do not fork this one.
+Every module ships the shared `createTomlExportAction` (`src/core/templates/shell/tomlExportAction.ts`) and the shared `createImageExportAction` (`src/core/templates/shell/imageExportAction.ts`), imported by every game's `definition.tsx` rather than reimplemented. Errors from either reach the user through `formatError` (`src/i18n/formatError.ts`); do not toast a raw `error.message`. Call the image action with `{ description, renderSettings }`; it captures the live preview node with `@zumer/snapdom` at the view's `exportPrefs.scale`, handles the missing-node and capture-failure toasts, and downloads `<fileStem>@<scale>x.png`. Write a new export action only for a genuinely different format — do not fork this one.
 
 ## Adding a whole game
 
@@ -94,6 +100,9 @@ The one real cost that remains:
 
 - a new scope root class, applied to every preview wrapper of that game (see the memory bank's
   `design.md`, "One scope root per game")
+- a new translation namespace: `locales/en/<ns>.ts` and `locales/fr/<ns>.ts`, registered in
+  `src/i18n/namespaces.ts` and in the `resources` of `src/i18n/index.ts`, plus a
+  `glossary/<game>.md` for its French terms
 
 ## Verification checklist
 
@@ -106,6 +115,7 @@ The one real cost that remains:
 - TOML round-trips: export, re-import, compare
 - PNG export works, including at a non-default scale — remote fonts only embed once loaded
 - reloading the page restores the tab
+- switching the language to French translates the editor forms and leaves the preview and PNG in English
 - opening a document of another game in a second tab leaves both previews correct
 - `npx prettier --write ./src/templates/<game>/<object>` — format the module, not the tree
 - `npm run lint` passes

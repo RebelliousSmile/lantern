@@ -2,6 +2,7 @@ import { SystemMarkdownScope } from '@/components/markdown/SystemMarkdownScope'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { useUiText } from '@/i18n/text'
 import { renderLitmInline } from '@/utils/markdown'
 import { formatPower, formatWeakness } from '@/utils/tags'
 import {
@@ -31,11 +32,6 @@ const FORMAT: Record<TagField, (name: string) => string> = {
     weakness: formatWeakness,
 }
 
-const FIELD_LABEL: Record<TagField, string> = {
-    power: 'Power tags',
-    weakness: 'Weakness tags',
-}
-
 const PLACEHOLDERS: Record<TagField, string[]> = {
     power: [
         'reads a body like a schematic',
@@ -58,6 +54,7 @@ export default function TagsForm({
     focusIndex?: number
     autoCreate?: boolean
 }) {
+    const text = useUiText()
     const { otherscapeThemeKit, addTag, removeTagAt, replaceTagAt, moveTag } =
         useOtherscapeThemeKitStore()
 
@@ -142,7 +139,7 @@ export default function TagsForm({
 
         const next = raw.trim()
         if (!next) {
-            setError('Please enter a value.')
+            setError(text('otherscape:forms.themeKit.tags.emptyValueError'))
             return
         }
 
@@ -154,10 +151,10 @@ export default function TagsForm({
         <div className="space-y-2.5">
             <div className="flex items-baseline justify-between gap-2">
                 <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                    {FIELD_LABEL[field]}
+                    {text(`otherscape:forms.themeKit.tags.fieldLabel.${field}`)}
                 </p>
                 <p className="text-xs text-muted-foreground">
-                    Write tags bare, without braces.
+                    {text('otherscape:forms.themeKit.tags.hint')}
                 </p>
             </div>
 
@@ -193,7 +190,9 @@ export default function TagsForm({
                                                 htmlFor={`os-theme-kit-tag-${field}-${index}`}
                                                 className="text-xs"
                                             >
-                                                Tag
+                                                {text(
+                                                    'otherscape:forms.themeKit.tags.tagLabel'
+                                                )}
                                             </Label>
                                             <Input
                                                 id={`os-theme-kit-tag-${field}-${index}`}
@@ -214,7 +213,9 @@ export default function TagsForm({
                                                         cancelEdit()
                                                     }
                                                 }}
-                                                placeholder="reads a body like a schematic"
+                                                placeholder={text(
+                                                    'otherscape:forms.themeKit.tags.tagInputPlaceholder'
+                                                )}
                                             />
                                         </div>
 
@@ -225,7 +226,7 @@ export default function TagsForm({
                                                 className="h-7 px-2.5 text-xs"
                                                 onClick={confirmEdit}
                                             >
-                                                Save
+                                                {text('actions.save')}
                                             </Button>
                                             <Button
                                                 type="button"
@@ -233,7 +234,7 @@ export default function TagsForm({
                                                 className="h-7 px-0 text-xs"
                                                 onClick={cancelEdit}
                                             >
-                                                Cancel
+                                                {text('actions.cancel')}
                                             </Button>
                                         </div>
                                     </div>
@@ -249,7 +250,8 @@ export default function TagsForm({
                                 className="mt-1 h-8 w-full justify-center gap-1.5 border-dashed px-2.5 text-xs"
                                 onClick={addPlaceholder}
                             >
-                                <Plus className="h-3.5 w-3.5" /> Add tag
+                                <Plus className="h-3.5 w-3.5" />{' '}
+                                {text('otherscape:forms.themeKit.tags.addTag')}
                             </Button>
                         </li>
                     </ul>
@@ -277,6 +279,7 @@ function SortableTagItem({
     onRemove: () => void
     children?: React.ReactNode
 }) {
+    const text = useUiText()
     const {
         attributes,
         listeners,
@@ -309,11 +312,13 @@ function SortableTagItem({
                       ? 'opacity-40 cursor-not-allowed hover:bg-transparent'
                       : 'cursor-grab active:cursor-grabbing'
               }`}
-                        aria-label="Drag to reorder"
+                        aria-label={text('actions.dragToReorder')}
                         title={
                             dragDisabled
-                                ? 'Finish editing to reorder'
-                                : 'Drag to reorder'
+                                ? text(
+                                      'otherscape:forms.themeKit.tags.finishEditingToReorder'
+                                  )
+                                : text('actions.dragToReorder')
                         }
                         disabled={dragDisabled}
                         {...(!dragDisabled ? attributes : {})}
@@ -343,7 +348,7 @@ function SortableTagItem({
                         size="icon"
                         className="h-7 w-7"
                         onClick={onEdit}
-                        title="Edit"
+                        title={text('actions.edit')}
                     >
                         <Pencil className="h-3.5 w-3.5" />
                     </Button>
@@ -353,7 +358,7 @@ function SortableTagItem({
                         size="icon"
                         className="h-7 w-7 text-destructive"
                         onClick={onRemove}
-                        title="Remove"
+                        title={text('actions.remove')}
                     >
                         <Trash2 className="h-3.5 w-3.5" />
                     </Button>
