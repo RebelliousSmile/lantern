@@ -19,6 +19,10 @@ import {
     removeAtPath,
     setAtPath,
 } from '../src/core/editor-schema/path'
+import {
+    LANTERN_CAPABILITIES,
+    unknownCapabilities,
+} from '../src/core/capabilities'
 import { normalizeContractManifests } from './contractManifests.mjs'
 import { collectionAdapterFor } from '../src/templates/pbta/specialized/collectionAdapters'
 import {
@@ -526,6 +530,87 @@ function assertPbtaCollectionAdapters() {
     )
 }
 
+type DeclaredPack = {
+    dialect: string
+    id: string
+    file: string
+    lantern: string[]
+    targets: string[]
+}
+
+type DeclaredProvider = {
+    contractId: string
+    packageName: string
+    provider: string
+    descriptorFile: string
+    capabilities: string[]
+    packs: DeclaredPack[]
+}
+
+type ProviderDescriptors = {
+    published: DeclaredProvider[]
+    unpublished: string[]
+}
+
+/*
+ * The fifth layer: a provider's own declarations, confronted with the capability surface.
+ *
+ * A schema package states in its `cross-tool-provider.json` what it expects this app to implement,
+ * and a PbtA pack restates the claim for itself. Before this layer those strings were checked
+ * against nothing. Reading them is `tools/providerDescriptors.mjs`' job; deciding what an unknown
+ * token costs is this one's, and the two verdicts differ on purpose:
+ *
+ *   - an unknown token in `capabilities.lantern`, or in a pack's `requirements.lantern`, fails the
+ *     run: it is a claim on Lantern that Lantern does not honour;
+ *   - a pack's `documents[].target` with no matching `edit:<contractKey>` is only reported. A pack
+ *     may legitimately carry a document addressed to another consumer — `schema-pbta/packs/salvage-run`
+ *     names `salvage-run-playbook` today and asks nothing of Lantern beyond `edit:pbta`. A pack that
+ *     does want the fine guarantee declares `edit:pbta/salvage-run-playbook`, and the first rule
+ *     refuses that until the template ships.
+ */
+function assertDeclaredCapabilities(descriptors: ProviderDescriptors): string {
+    const perProvider: string[] = []
+    const uneditable: string[] = []
+
+    for (const provider of descriptors.published) {
+        for (const token of unknownCapabilities(provider.capabilities)) {
+            assert.fail(
+                `Provider "${provider.provider}" declares capabilities.lantern token "${token}", ` +
+                    `which this build of Lantern does not publish. Known tokens: ${LANTERN_CAPABILITIES.join(', ')}`
+            )
+        }
+
+        let targets = 0
+        for (const pack of provider.packs) {
+            for (const token of unknownCapabilities(pack.lantern)) {
+                assert.fail(
+                    `Pack "${pack.id}" of provider "${provider.provider}" requires Lantern token ` +
+                        `"${token}", which this build does not publish: ${pack.file}`
+                )
+            }
+
+            for (const target of pack.targets) {
+                targets += 1
+                const key = `${provider.contractId}/${target}`
+                if (!LANTERN_CAPABILITIES.includes(`edit:${key}`)) {
+                    uneditable.push(`${pack.id}:${key}`)
+                }
+            }
+        }
+
+        perProvider.push(
+            `${provider.contractId} ${provider.capabilities.length} declared across ` +
+                `${provider.packs.length} packs / ${targets} targets`
+        )
+    }
+
+    return (
+        `Declared capabilities: ${perProvider.join(' · ') || 'none'}; ` +
+        `not editable here: ${uneditable.join(' · ') || 'none'}; ` +
+        `no descriptor published: ${descriptors.unpublished.join(' · ') || 'none'}.`
+    )
+}
+
 async function main() {
     /* Handed down by the calling script: the bundle runs from a temp directory and resolves nothing. */
     const handed = process.env.LANTERN_CONTRACT_MANIFESTS
@@ -536,6 +621,13 @@ async function main() {
     const cases = normalizeContractManifests(
         JSON.parse(handed)
     ) as NormalizedCase[]
+
+    const declared = process.env.LANTERN_PROVIDER_DESCRIPTORS
+    assert.ok(
+        declared,
+        'LANTERN_PROVIDER_DESCRIPTORS was not passed to the harness'
+    )
+    const descriptors = JSON.parse(declared) as ProviderDescriptors
 
     /* The witness that exists to carry `0`, `false`, empty lists and quoted keys. */
     assert.ok(
@@ -559,6 +651,7 @@ async function main() {
     assertOverlayIdentity()
     assertEditorSchemaPaths()
     assertPbtaCollectionAdapters()
+    const declaredLine = assertDeclaredCapabilities(descriptors)
 
     const perContract = [...tally.entries()].map(([contractId, counts]) => {
         const targets = nodeDocumentContracts.byContract(contractId).length
@@ -567,7 +660,8 @@ async function main() {
     process.stdout.write(
         `Published codecs: ${perContract.join(' · ')}.\n` +
             `Lantern modules: ${covered.join(' · ') || 'none'}.\n` +
-            `Uncovered by a Lantern module: ${uncovered.join(' · ') || 'none'}.\n`
+            `Uncovered by a Lantern module: ${uncovered.join(' · ') || 'none'}.\n` +
+            `${declaredLine}\n`
     )
 }
 
