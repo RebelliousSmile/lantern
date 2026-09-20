@@ -5,6 +5,32 @@ All notable changes to this project are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.14.0] - 2026-09-20
+
+### Added
+
+- **French interface, with a language selector.** The whole shell and every editor form is
+  translated: six i18next namespaces (`common` plus one per game), a `Languages` menu on the
+  sidebar footer, and a per-game glossary fixing the French terms. The printed sheet is
+  deliberately untouched — previews, exported PNG filenames and the values written into a
+  document stay English whatever the interface language.
+- **A published capability surface.** `src/core/capabilities.ts` folds the template registry into
+  one `edit:` token family at two granularities, `edit:<contractId>` and `edit:<contractKey>`, and
+  `unknownCapabilities` names what a caller asks for that this build does not publish. A token is
+  added by shipping a template, never by editing the file.
+- **Provider declarations are now asserted.** `npm run assert:contracts` gained a fifth layer that
+  reads each schema package's `cross-tool-provider.json` and refuses any `capabilities.lantern`
+  token — or any pack requirement — this build does not implement. A provider whose released
+  tarball carries no descriptor is reported rather than failing the run.
+
+### Changed
+
+- **Schema packages repinned** to `schema-pbta` v5.5.0 and `schema-in-the-mist` v1.3.3, the two
+  releases that ship the cross-tool descriptor. `schema-adrenaline` stays at v2.0.0, whose tarball
+  predates it.
+- **Zod validation messages follow the interface language**, through a single global `z.config`
+  call, so an import error in French reads in French without any change in the schema packages.
+
 ## [v0.13.0] - 2026-09-18
 
 ### Added
