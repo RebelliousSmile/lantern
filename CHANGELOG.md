@@ -5,6 +5,12 @@ All notable changes to this project are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.15.1] - 2026-09-21
+
+### Fixed
+
+- **npm CI lockfile.** `package-lock.json` now pins `schema-pbta` v8.0.0, matching the manifest.
+
 ## [v0.15.0] - 2026-09-21
 
 ### Added
