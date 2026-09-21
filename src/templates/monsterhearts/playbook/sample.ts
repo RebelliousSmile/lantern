@@ -16,10 +16,6 @@ export const getSampleMonsterheartsPlaybook = () => ({
             heading: 'Opening',
             paragraphs: ['Every promise has an echo.'],
         },
-        playAdvice: {
-            heading: 'Playing the Echo',
-            paragraphs: ['Repeat what matters.'],
-        },
         identity: {
             heading: 'Identity',
             paragraphs: ['Choose the promise that made you.'],
@@ -39,10 +35,6 @@ export const getSampleMonsterheartsPlaybook = () => ({
             paragraphs: [
                 'Demand that everyone repeats the story you want told.',
             ],
-        },
-        mcGuidance: {
-            heading: 'For the MC',
-            paragraphs: ['Ask what the echo changes.'],
         },
     },
     moves: [

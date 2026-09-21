@@ -11,6 +11,7 @@ import {
     replaceCollectionItems,
 } from '@/templates/pbta/specialized/collectionPolicy'
 import { ChevronDown, ChevronUp, X } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { getPbtaCollectionPresentation } from 'schema-pbta'
 import { useMonsterheartsSheet, useMonsterheartsStore } from '../hooks'
 import type { MonsterheartsEditorial, MonsterheartsPlaybook } from '../model'
@@ -211,6 +212,124 @@ function MonsterheartsMovesEditor({
 
 void MonsterheartsMovesEditor
 
+function MonsterheartsConditionsEditor() {
+    const { playbook, setPlaybook } = useMonsterheartsStore()
+    const { t } = useTranslation()
+    const conditions = playbook.conditions
+    const updateAt = (
+        index: number,
+        condition: MonsterheartsPlaybook['conditions'][number]
+    ) =>
+        setPlaybook({
+            conditions: conditions.map((current, currentIndex) =>
+                currentIndex === index ? condition : current
+            ),
+        })
+    const moveAt = (index: number, offset: number) => {
+        const target = index + offset
+        if (target < 0 || target >= conditions.length) return
+        const next = [...conditions]
+        ;[next[index], next[target]] = [next[target], next[index]]
+        setPlaybook({ conditions: next })
+    }
+
+    return (
+        <div className="space-y-2">
+            {conditions.map((condition, index) => (
+                <div key={index} className="space-y-2 rounded-md border p-2">
+                    <div className="flex items-center gap-1">
+                        <div className="flex-1" />
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon-sm"
+                            aria-label={t('actions.moveUp')}
+                            onClick={() => moveAt(index, -1)}
+                        >
+                            <ChevronUp className="h-3.5 w-3.5" />
+                        </Button>
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon-sm"
+                            aria-label={t('actions.moveDown')}
+                            onClick={() => moveAt(index, 1)}
+                        >
+                            <ChevronDown className="h-3.5 w-3.5" />
+                        </Button>
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon-sm"
+                            aria-label={t('actions.removeItem')}
+                            onClick={() => {
+                                setPlaybook({
+                                    conditions: conditions.filter(
+                                        (_, currentIndex) =>
+                                            currentIndex !== index
+                                    ),
+                                })
+                            }}
+                        >
+                            <X className="h-3.5 w-3.5" />
+                        </Button>
+                    </div>
+                    <Label>
+                        {t('pbta:monsterhearts.fields.name')}
+                        <Input
+                            value={condition.name}
+                            onChange={(event) =>
+                                updateAt(index, {
+                                    ...condition,
+                                    name: event.target.value,
+                                })
+                            }
+                        />
+                    </Label>
+                    <Label>
+                        {t('pbta:monsterhearts.fields.description')}
+                        <Input
+                            value={condition.description ?? ''}
+                            onChange={(event) => {
+                                const description = event.target.value
+                                if (description)
+                                    updateAt(index, {
+                                        ...condition,
+                                        description,
+                                    })
+                                else {
+                                    const next = { ...condition }
+                                    delete next.description
+                                    updateAt(index, next)
+                                }
+                            }}
+                        />
+                    </Label>
+                </div>
+            ))}
+            <Button
+                type="button"
+                variant="secondary"
+                size="sm"
+                onClick={() => {
+                    setPlaybook({
+                        conditions: [
+                            ...conditions,
+                            {
+                                name: t(
+                                    'pbta:monsterhearts.defaults.condition'
+                                ),
+                            },
+                        ],
+                    })
+                }}
+            >
+                {t('actions.add')} {t('pbta:monsterhearts.sections.conditions')}
+            </Button>
+        </div>
+    )
+}
+
 export function MonsterheartsPlaybookEditorPanel() {
     const { sheet } = useMonsterheartsSheet()
     const { playbook, setPlaybook } = useMonsterheartsStore()
@@ -258,6 +377,7 @@ export function MonsterheartsPlaybookEditorPanel() {
         return (
             <div className="space-y-5">
                 {Object.entries(playbook.editorial).map(([key, block]) => (
+                    key === 'progression' ? null :
                     <fieldset key={key} className="space-y-2">
                         <legend className="font-semibold">
                             {block.heading}
@@ -297,12 +417,10 @@ export function MonsterheartsPlaybookEditorPanel() {
     }
     if (sheet.target === 'moves')
         return <MonsterheartsCollection path="moves" />
-    if (
-        sheet.target === 'conditions' ||
-        sheet.target === 'advancement' ||
-        sheet.target === 'advances'
-    )
+    if (sheet.target === 'advances' || sheet.target === 'ascendants')
         return <MonsterheartsCollection path={sheet.target} />
+    if (sheet.target === 'conditions')
+        return <MonsterheartsConditionsEditor />
     const key = sheet.target
     const value = (playbook as Record<string, unknown>)[key]
     return (
@@ -318,6 +436,7 @@ export function MonsterheartsPlaybookEditorPanel() {
 
 function MonsterheartsCollection({ path }: { path: string }) {
     const { playbook, setPlaybook } = useMonsterheartsStore()
+    const { t } = useTranslation()
     const presentation = getPbtaCollectionPresentation(
         'monsterhearts-playbook',
         path
@@ -330,10 +449,43 @@ function MonsterheartsCollection({ path }: { path: string }) {
                 Invalid published collection configuration.
             </p>
         )
+    const collectionLabels = {
+        moves: t('pbta:monsterhearts.sections.moves'),
+        ascendants: t('pbta:monsterhearts.sections.ascendants'),
+        conditions: t('pbta:monsterhearts.sections.conditions'),
+        advances: t('pbta:monsterhearts.sections.advances'),
+    }
+    const fieldLabels = {
+        label: 'pbta:monsterhearts.fields.label',
+        trigger: 'pbta:monsterhearts.fields.trigger',
+        checked: 'pbta:monsterhearts.fields.checked',
+        moveType: 'pbta:monsterhearts.fields.moveType',
+        name: 'pbta:monsterhearts.fields.name',
+        value: 'pbta:monsterhearts.fields.value',
+        description: 'pbta:monsterhearts.fields.description',
+    } as const
+    const localizedPresentation = {
+        ...presentation,
+        label:
+            collectionLabels[path as keyof typeof collectionLabels] ??
+            presentation.label,
+    }
+    const labelFor = (id: string, fallback: string) => {
+        const key = fieldLabels[id as keyof typeof fieldLabels]
+        return key ? t(key) : fallback
+    }
+    const createItem = (entry: typeof presentation, _items: unknown[]) => {
+        if (entry.path === 'conditions') {
+            return { name: t('pbta:monsterhearts.defaults.condition') }
+        }
+        return undefined
+    }
     return (
         <PublishedCollectionEditor
-            presentation={presentation}
+            presentation={localizedPresentation}
             items={items}
+            labelFor={labelFor}
+            createItem={createItem}
             onChange={(next) =>
                 setPlaybook(
                     replaceCollectionItems(

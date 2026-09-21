@@ -4,17 +4,15 @@ import type { MonsterheartsPlaybook as Published } from 'schema-pbta'
 export type EditorialBlock = { heading: string; paragraphs: string[] }
 export type MonsterheartsEditorial = Record<
     | 'opening'
-    | 'playAdvice'
     | 'identity'
     | 'progression'
     | 'darkestSelf'
-    | 'sexMove'
-    | 'mcGuidance',
+    | 'sexMove',
     EditorialBlock
 >
 export type MonsterheartsPlaybook = Omit<
     Published,
-    'strings' | 'conditions' | 'harm'
+    'strings' | 'conditions' | 'harm' | 'editorial'
 > & {
     strings: { max: number; starting: number }
     conditions: Array<{ name: string; description?: string }>
@@ -22,11 +20,11 @@ export type MonsterheartsPlaybook = Omit<
     editorial: MonsterheartsEditorial
 }
 export type SectionId =
-    | 'strings'
+    | 'stats'
+    | 'ascendants'
     | 'conditions'
     | 'editorial'
     | 'moves'
-    | 'advancement'
     | 'advances'
     | 'harm'
 export type ViewState = {
@@ -37,11 +35,11 @@ export type ViewState = {
 }
 export type SheetState = { open: boolean; target: SectionId | 'basic' | null }
 export const sections: Array<{ id: SectionId; label: TranslationKey }> = [
-    { id: 'strings', label: 'pbta:monsterhearts.sections.strings' },
+    { id: 'stats', label: 'pbta:monsterhearts.sections.stats' },
+    { id: 'ascendants', label: 'pbta:monsterhearts.sections.ascendants' },
     { id: 'conditions', label: 'pbta:monsterhearts.sections.conditions' },
     { id: 'editorial', label: 'pbta:monsterhearts.sections.editorial' },
     { id: 'moves', label: 'pbta:monsterhearts.sections.moves' },
-    { id: 'advancement', label: 'pbta:monsterhearts.sections.advancement' },
     { id: 'advances', label: 'pbta:monsterhearts.sections.advances' },
     { id: 'harm', label: 'pbta:monsterhearts.sections.harm' },
 ]
@@ -72,11 +70,9 @@ export const blankPlaybook = (): MonsterheartsPlaybook => ({
     harm: 0,
     editorial: {
         opening: section('Opening', ['Introduce this skin.']),
-        playAdvice: section('Playing the skin', ['Describe its choices.']),
         identity: section('Identity', ['Choose who this skin is.']),
         progression: section('Progression', ['Take an original advance.']),
         darkestSelf: section('Darkest Self', ['Describe its demands.']),
         sexMove: section('Sex Move', ['Describe an intimate consequence.']),
-        mcGuidance: section('For the MC', ['Describe guidance for the MC.']),
     },
 })

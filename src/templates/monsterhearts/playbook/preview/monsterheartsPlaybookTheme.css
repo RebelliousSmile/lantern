@@ -4,7 +4,7 @@
 }
 .monsterhearts-doc .monsterhearts-sheet {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(var(--mh-columns), minmax(0, 1fr));
     gap: 1.2rem 1.8rem;
     box-sizing: border-box;
     background: #fff;
@@ -44,6 +44,12 @@
 .monsterhearts-doc .mh-column {
     min-width: 0;
 }
+.monsterhearts-doc .mh-region + .mh-region {
+    margin-top: 0.95rem;
+}
+.monsterhearts-doc .mh-fallback {
+    grid-column: 1 / -1;
+}
 .monsterhearts-doc .mh-section-title {
     margin-bottom: 0.5rem;
     font-size: 1.25rem;
@@ -71,7 +77,7 @@
     letter-spacing: 0.02em;
     text-transform: uppercase;
 }
-.monsterhearts-doc .mh-actions + .mh-editorial {
+.monsterhearts-doc .mh-column > section + .mh-editorial {
     margin-top: 1.2rem;
 }
 .monsterhearts-doc .mh-stat-block {
@@ -85,10 +91,13 @@
     padding: 0;
     list-style: none;
 }
-.monsterhearts-doc .mh-checklist li {
+.monsterhearts-doc .mh-checklist li,
+.monsterhearts-doc .mh-conditions li {
     position: relative;
-    padding-left: 1.2rem;
     line-height: 1.25;
+}
+.monsterhearts-doc .mh-checklist li {
+    padding-left: 1.2rem;
 }
 .monsterhearts-doc .mh-checklist li::before,
 .monsterhearts-doc .mh-harm span {
@@ -103,7 +112,21 @@
     left: 0;
     content: '';
 }
+.monsterhearts-doc .mh-checklist li.is-checked::before {
+    background: currentColor;
+}
 .monsterhearts-doc .mh-checklist span {
+    display: block;
+    font-size: 0.85rem;
+}
+.monsterhearts-doc .mh-conditions {
+    display: grid;
+    gap: 0.3rem;
+    margin: 0.35rem 0 0;
+    padding: 0;
+    list-style: none;
+}
+.monsterhearts-doc .mh-conditions span {
     display: block;
     font-size: 0.85rem;
 }

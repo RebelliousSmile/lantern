@@ -237,4 +237,8 @@ async function main() {
     }
 }
 
-await main()
+void main().catch((error: unknown) => {
+    process.nextTick(() => {
+        throw error
+    })
+})

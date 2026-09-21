@@ -1,4 +1,5 @@
 import { templateRegistry } from './templates/registry'
+import { getPbtaMonsterheartsPlaybookPresentation } from 'schema-pbta'
 
 /* The capability surface: what Lantern tells the outside world it can do.
 
@@ -9,7 +10,7 @@ import { templateRegistry } from './templates/registry'
    checked against nothing — a provider could name any token at all and no build
    would notice. This is the vocabulary they are confronted with.
 
-   There is exactly one token family, `edit:`, at two granularities:
+   `edit:` is derived from the registry at two granularities:
 
      edit:<contractId>    the whole contract, e.g. `edit:pbta`
      edit:<contractKey>   one document of it, e.g. `edit:pbta/playbook`
@@ -19,10 +20,9 @@ import { templateRegistry } from './templates/registry'
    cannot drift from them. A token is therefore added by shipping a template,
    and never by editing this file.
 
-   No `import:`, `export:` or `render:` family is emitted. No provider declares
-   one, nothing would read one, and an unread constant that looks authoritative
-   is how `gameThemeRegistry.backgroundMode` ended up describing a rendering the
-   CSS decides on its own.
+   Published presentation capabilities are derived from the contract API that
+   Lantern actually consumes. No unsupported `import:`, `export:` or `render:`
+   family is emitted.
 
    The `implemented` filter below is an extension point rather than live
    behaviour: nothing sets the flag to `false` today, so every registry entry
@@ -39,6 +39,10 @@ function deriveCapabilities(): readonly string[] {
 
         const separator = key.indexOf('/')
         if (separator > 0) tokens.add(`edit:${key.slice(0, separator)}`)
+    }
+
+    if (getPbtaMonsterheartsPlaybookPresentation('monsterhearts-playbook')) {
+        tokens.add('presentation:pbta-layout')
     }
 
     return Object.freeze([...tokens].sort())

@@ -6,6 +6,7 @@ import { cloneValue } from '../src/utils/clone'
 const storage = new Map<string, string>()
 Object.defineProperty(globalThis, 'window', {
     value: {
+        navigator: { language: 'en-US' },
         localStorage: {
             getItem: (key: string) => storage.get(key) ?? null,
             setItem: (key: string, value: string) => storage.set(key, value),
@@ -47,6 +48,93 @@ assert.deepEqual(JSON.parse(storage.get(GAME_PACKS_STORAGE_KEY) ?? '{}'), {
 })
 
 const { useWorkspaceStore } = await import('../src/core/workspace/store')
+storage.set(
+    'mist:workspace:v1',
+    JSON.stringify({
+        version: 1,
+        tabs: [
+            {
+                id: 'incomplete-monsterhearts',
+                templateId: 'monsterhearts.playbook',
+                title: 'Incomplete skin',
+                mode: 'editing',
+                createdAt: 1,
+                updatedAt: 1,
+                doc: { editorial: { opening: { heading: 'Opening' } } },
+                view: {},
+                sheet: {},
+            },
+        ],
+        tabOrder: ['incomplete-monsterhearts'],
+        activeTabId: 'incomplete-monsterhearts',
+    })
+)
+useWorkspaceStore.getState().hydrateWorkspace()
+const restoredTab = useWorkspaceStore.getState().tabs[0]
+assert.deepEqual(
+    (restoredTab.doc as { editorial: { opening: { paragraphs: string[] } } })
+        .editorial.opening.paragraphs,
+    ['Introduce this skin.'],
+    'workspace hydration restores absent nested document fields'
+)
+assert.equal(
+    (restoredTab.view as { zoom: number }).zoom,
+    1,
+    'workspace hydration restores absent view fields'
+)
+assert.equal(
+    (restoredTab.sheet as { open: boolean }).open,
+    false,
+    'workspace hydration restores absent sheet fields'
+)
+
+const { getAdvanceCheckClass, getMoveHeart } = await import(
+    '../src/templates/monsterhearts/playbook/preview/MonsterheartsPlaybookPreview'
+)
+const { getMonsterheartsRegionLayout } = await import(
+    '../src/templates/monsterhearts/playbook/preview/MonsterheartsPlaybookPreview'
+)
+const { PBTA_MONSTERHEARTS_PLAYBOOK_PRESENTATION } = await import('schema-pbta')
+const { LANTERN_CAPABILITIES } = await import('../src/core/capabilities')
+const { sections: monsterheartsSections } = await import(
+    '../src/templates/monsterhearts/playbook/model'
+)
+assert.ok(
+    monsterheartsSections.some((section) => section.id === 'stats'),
+    'Monsterhearts stats are exposed as a preview and editor section'
+)
+assert.equal(getMoveHeart(false), '♡', 'unchecked moves render an empty heart')
+assert.equal(getMoveHeart(true), '♥', 'checked moves render a filled heart')
+assert.equal(
+    getAdvanceCheckClass(true),
+    'is-checked',
+    'checked advances use the checklist marker instead of a second glyph'
+)
+const monsterheartsLayout = getMonsterheartsRegionLayout()
+assert.deepEqual(
+    monsterheartsLayout.columns,
+    PBTA_MONSTERHEARTS_PLAYBOOK_PRESENTATION.columns,
+    'Monsterhearts preview uses the published region columns'
+)
+assert.ok(
+    LANTERN_CAPABILITIES.includes('presentation:pbta-layout'),
+    'Lantern publishes the PbtA layout capability it consumes'
+)
+assert.deepEqual(
+    [monsterheartsLayout.header, ...monsterheartsLayout.columns.flat(), ...monsterheartsLayout.trailing].sort(),
+    [...PBTA_MONSTERHEARTS_PLAYBOOK_PRESENTATION.canonicalOrder].sort(),
+    'every published Monsterhearts region renders once'
+)
+const monsterheartsFallback = getMonsterheartsRegionLayout({
+    ...PBTA_MONSTERHEARTS_PLAYBOOK_PRESENTATION,
+    columns: [['game-identity']],
+})
+assert.deepEqual(
+    monsterheartsFallback.trailing,
+    PBTA_MONSTERHEARTS_PLAYBOOK_PRESENTATION.canonicalOrder.slice(1),
+    'unplaced regions follow the published canonical order after the grid'
+)
+
 const tabId = useWorkspaceStore.getState().createTab('pbta.playbook')
 assert.ok(tabId, 'an enabled template opens before its pack is hidden')
 assert.ok(

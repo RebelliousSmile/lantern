@@ -72,6 +72,42 @@ function applyOrder(tabs: AnyWorkspaceTab[], tabOrder: string[]) {
     return [...ordered, ...missing]
 }
 
+function restoreMissing<T>(defaults: T, value: unknown): T {
+    if (value === undefined) return cloneValue(defaults)
+
+    if (Array.isArray(defaults)) {
+        return (Array.isArray(value) ? value : cloneValue(defaults)) as T
+    }
+
+    if (
+        defaults !== null &&
+        typeof defaults === 'object' &&
+        value !== null &&
+        typeof value === 'object' &&
+        !Array.isArray(value)
+    ) {
+        const restored: Record<string, unknown> = { ...(value as object) }
+        for (const [key, defaultValue] of Object.entries(defaults)) {
+            restored[key] = restoreMissing(defaultValue, restored[key])
+        }
+        return restored as T
+    }
+
+    return value as T
+}
+
+function restorePersistedTab(tab: AnyWorkspaceTab): AnyWorkspaceTab {
+    const template = templateById.get(tab.templateId)
+    if (!template) return tab
+
+    return {
+        ...tab,
+        doc: restoreMissing(template.createBlank(), tab.doc),
+        view: restoreMissing(template.createInitialView(), tab.view),
+        sheet: restoreMissing(template.createInitialSheet(), tab.sheet),
+    }
+}
+
 function withTouched(
     tab: AnyWorkspaceTab,
     patch: Partial<AnyWorkspaceTab>
@@ -104,7 +140,9 @@ function migrateLegacyChallenge(): WorkspaceSnapshot | null {
     try {
         const template = templateRegistry.find((entry) => {
             const migration = entry.legacyWorkspaceMigration
-            return migration && window.localStorage.getItem(migration.storageKey)
+            return (
+                migration && window.localStorage.getItem(migration.storageKey)
+            )
         })
         const migration = template?.legacyWorkspaceMigration
         if (!template || !migration) return null
@@ -165,13 +203,14 @@ function readWorkspaceSnapshot(): WorkspaceSnapshot | null {
                 typeof tab?.updatedAt === 'number'
         )
 
-        const tabOrder = applyOrder(tabs, parsed.tabOrder)
+        const restoredTabs = tabs.map(restorePersistedTab)
+        const tabOrder = applyOrder(restoredTabs, parsed.tabOrder)
         const hasActive =
             parsed.activeTabId != null && tabOrder.includes(parsed.activeTabId)
 
         return {
             version: 1,
-            tabs,
+            tabs: restoredTabs,
             tabOrder,
             activeTabId: hasActive ? parsed.activeTabId : null,
         }
@@ -333,6 +372,7 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => {
                     activeTabId: persisted.activeTabId,
                     hydrated: true,
                 })
+                persistSnapshot(persisted)
                 return
             }
 
@@ -350,7 +390,6 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => {
 
             set({ hydrated: true })
         },
-
     }
 })
 

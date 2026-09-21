@@ -5,6 +5,22 @@ All notable changes to this project are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.15.0] - 2026-09-21
+
+### Added
+
+- **Monsterhearts skin editor.** Conditions can have a direct optional description, Ascendants
+  accept a name and value, stat ranges expose independent minimum/current/maximum values, and the
+  inspector identifies the edited section.
+- **Published Monsterhearts layout.** The preview consumes schema-pbta v8's canonical regions and
+  columns, with a canonical fallback stream for unplaced regions and a matching declared capability.
+
+### Changed
+
+- **French Monsterhearts terminology.** The interface uses *Mue*, *Ascendants*, *Conditions*,
+  *Dégâts* and *Progressions*.
+- **schema-pbta** is pinned to v8.0.0.
+
 ## [v0.14.0] - 2026-09-20
 
 ### Added

@@ -37,12 +37,12 @@ const manifests = resolveContractManifests(import.meta.url)
 const mistCases = normalizeManifest('mist', manifests.mist)
 
 const work = mkdtempSync(path.join(tmpdir(), 'lantern-cross-repo-'))
-const bundle = path.join(work, 'cross-repo.mjs')
+const bundle = path.join(work, 'cross-repo.cjs')
 /* The bundle sandboxes `obsidian` behind this stub, matching the Handbook's own harness pattern. */
 const obsidianStub = path.join(work, 'obsidian-stub.mjs')
 writeFileSync(
     obsidianStub,
-    `export class Notice {}\nexport class Menu {}\nexport class MenuItem {}\nexport class Editor {}\nexport class Plugin {}\nexport class PluginSettingTab {}\nexport class Setting {}\nexport class Modal {}\nexport class ItemView {}\nexport function setIcon() {}\n`
+    `export class Notice {}\nexport class Menu {}\nexport class MenuItem {}\nexport class Editor {}\nexport class TFile {}\nexport class Plugin {}\nexport class PluginSettingTab {}\nexport class Setting {}\nexport class Modal {}\nexport class ItemView {}\nexport function setIcon() {}\n`
 )
 try {
     buildSync({
@@ -50,9 +50,10 @@ try {
         outfile: bundle,
         bundle: true,
         platform: 'node',
-        format: 'esm',
+        format: 'cjs',
         target: 'node20',
         alias: { '@': path.join(here, '..', 'src'), obsidian: obsidianStub },
+        loader: { '.css': 'empty' },
         logLevel: 'warning',
     })
     const run = spawnSync(process.execPath, [bundle], {

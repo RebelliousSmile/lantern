@@ -3,6 +3,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { cn } from '@/utils/cn'
 import { ChevronDown, ChevronUp, Plus, Trash2 } from 'lucide-react'
 import { getAtPath, joinPath } from './path'
 import type {
@@ -19,6 +20,7 @@ type Props = {
     value: Record<string, unknown>
     onChange: (value: Record<string, unknown>) => void
     path?: EditorPath
+    className?: string
 }
 
 function visible(
@@ -49,9 +51,15 @@ function replaceAt(
     }
 }
 
-export function SchemaEditor({ schema, value, onChange, path = [] }: Props) {
+export function SchemaEditor({
+    schema,
+    value,
+    onChange,
+    path = [],
+    className,
+}: Props) {
     return (
-        <div className="space-y-4">
+        <div className={cn(className ?? 'space-y-4')}>
             {schema.fields.map((descriptor) =>
                 visible(descriptor, value) ? (
                     <Field

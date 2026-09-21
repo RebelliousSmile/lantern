@@ -3,7 +3,12 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { SchemaEditor } from '@/core/editor-schema/SchemaEditor'
 import { inferObject } from '@/core/editor-schema/inferSchema'
+import type {
+    EditorDescriptor,
+    ObjectDescriptor,
+} from '@/core/editor-schema/types'
 import { ChevronDown, ChevronUp, X } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import {
     PBTA_COLLECTION_ITEM_EDITORS,
     getPbtaCollectionPresentation,
@@ -18,6 +23,51 @@ export type CollectionAdapterProps = {
     presentation: PbtaCollectionPresentation
     items: unknown[]
     onChange: (items: unknown[]) => void
+    labelFor?: (id: string, fallback: string) => string
+    createItem?: (
+        presentation: PbtaCollectionPresentation,
+        items: unknown[]
+    ) => unknown | undefined
+}
+
+function localizeDescriptor(
+    descriptor: EditorDescriptor,
+    labelFor: NonNullable<CollectionAdapterProps['labelFor']>
+): EditorDescriptor {
+    const label = labelFor(descriptor.id, descriptor.label)
+    if (descriptor.kind === 'object')
+        return {
+            ...descriptor,
+            label,
+            fields: descriptor.fields.map((field) =>
+                localizeDescriptor(field, labelFor)
+            ),
+        }
+    if (descriptor.kind === 'collection')
+        return {
+            ...descriptor,
+            label,
+            item: localizeDescriptor(descriptor.item, labelFor),
+        }
+    if (descriptor.kind === 'variant')
+        return {
+            ...descriptor,
+            label,
+            options: descriptor.options.map((option) => ({
+                ...option,
+                fields: option.fields.map((field) =>
+                    localizeDescriptor(field, labelFor)
+                ),
+            })),
+        }
+    return { ...descriptor, label }
+}
+
+function localizeObjectDescriptor(
+    descriptor: ObjectDescriptor,
+    labelFor: NonNullable<CollectionAdapterProps['labelFor']>
+): ObjectDescriptor {
+    return localizeDescriptor(descriptor, labelFor) as ObjectDescriptor
 }
 
 function blankItem(
@@ -74,9 +124,28 @@ function GenericCollectionAdapter({
     presentation,
     items,
     onChange,
+    labelFor,
+    createItem,
 }: CollectionAdapterProps) {
+    const { t } = useTranslation()
     const mutable = presentation.cardinality === 'mutable'
     const checked = presentation.itemCapabilities?.includes('checked') === true
+    const compact = presentation.itemEditor === 'pbta-ascendant'
+    const schemaFor = (item: Record<string, unknown>) => {
+        const schema = inferObject(presentation.label, item)
+        const localized = labelFor
+            ? localizeObjectDescriptor(schema, labelFor)
+            : schema
+
+        return checked
+            ? {
+                  ...localized,
+                  fields: localized.fields.filter(
+                      (field) => field.id !== 'checked'
+                  ),
+              }
+            : localized
+    }
     const update = (index: number, item: unknown) =>
         onChange(
             items.map((current, currentIndex) =>
@@ -106,7 +175,10 @@ function GenericCollectionAdapter({
                                         (item as { checked?: boolean })
                                             .checked === true
                                     }
-                                    aria-label={`${presentation.label} acquired`}
+                                    aria-label={labelFor?.(
+                                        'checked',
+                                        t('pbta:monsterhearts.fields.checked')
+                                    )}
                                     onCheckedChange={(value) => {
                                         const next = {
                                             ...(item as Record<
@@ -127,7 +199,7 @@ function GenericCollectionAdapter({
                                     type="button"
                                     variant="ghost"
                                     size="icon-sm"
-                                    aria-label="Move up"
+                                    aria-label={t('actions.moveUp')}
                                     onClick={() => move(index, -1)}
                                 >
                                     <ChevronUp className="h-3.5 w-3.5" />
@@ -136,7 +208,7 @@ function GenericCollectionAdapter({
                                     type="button"
                                     variant="ghost"
                                     size="icon-sm"
-                                    aria-label="Move down"
+                                    aria-label={t('actions.moveDown')}
                                     onClick={() => move(index, 1)}
                                 >
                                     <ChevronDown className="h-3.5 w-3.5" />
@@ -148,7 +220,7 @@ function GenericCollectionAdapter({
                                 type="button"
                                 variant="ghost"
                                 size="icon-sm"
-                                aria-label={`Remove ${presentation.label}`}
+                                aria-label={t('actions.removeItem')}
                                 onClick={() =>
                                     onChange(
                                         items.filter(
@@ -173,12 +245,14 @@ function GenericCollectionAdapter({
                       typeof item === 'object' &&
                       !Array.isArray(item) ? (
                         <SchemaEditor
-                            schema={inferObject(
-                                presentation.label,
-                                item as Record<string, unknown>
-                            )}
+                            schema={schemaFor(item as Record<string, unknown>)}
                             value={item as Record<string, unknown>}
                             onChange={(next) => update(index, next)}
+                            className={
+                                compact
+                                    ? 'grid grid-cols-[minmax(0,1fr)_5.5rem] gap-2'
+                                    : undefined
+                            }
                         />
                     ) : (
                         <p className="text-sm text-destructive">
@@ -193,10 +267,14 @@ function GenericCollectionAdapter({
                     variant="secondary"
                     size="sm"
                     onClick={() =>
-                        onChange([...items, blankItem(presentation, items)])
+                        onChange([
+                            ...items,
+                            createItem?.(presentation, items) ??
+                                blankItem(presentation, items),
+                        ])
                     }
                 >
-                    Add {presentation.label}
+                    {t('actions.add')} {presentation.label}
                 </Button>
             )}
         </div>

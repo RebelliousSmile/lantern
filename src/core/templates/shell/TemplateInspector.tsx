@@ -5,17 +5,25 @@ import {
     AccordionTrigger,
 } from '@/components/ui/accordion'
 import { SidebarContent, SidebarFooter } from '@/components/ui/sidebar'
-import { useActiveTemplate } from '@/core/workspace/selectors'
+import { useUiText } from '@/i18n/text'
+import { useActiveTab, useActiveTemplate } from '@/core/workspace/selectors'
 import { useTranslation } from 'react-i18next'
 import { TemplateExportPanel } from './TemplateExportPanel'
 
 export function TemplateInspector() {
     const { t } = useTranslation()
     const activeTemplate = useActiveTemplate()
+    const activeTab = useActiveTab()
+    const text = useUiText()
 
     if (!activeTemplate || !activeTemplate.implemented) {
         return null
     }
+    const target = (activeTab?.sheet as { target?: string } | undefined)
+        ?.target
+    const activeSection = activeTemplate.sections.find(
+        (section) => section.id === target
+    )
 
     return (
         // The shared inspector keeps layout and accordions consistent while
@@ -30,6 +38,9 @@ export function TemplateInspector() {
                     <AccordionItem value="editor">
                         <AccordionTrigger className="py-3 text-sm">
                             {t('inspector.editor')}
+                            {activeSection
+                                ? ` · ${text(activeSection.label)}`
+                                : ''}
                         </AccordionTrigger>
                         <AccordionContent className="pb-3">
                             <div className="[&_input[data-slot=input]]:text-xs [&_textarea[data-slot=textarea]]:text-xs [&_textarea[data-slot=textarea]]:leading-snug">
