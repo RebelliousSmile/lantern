@@ -95,6 +95,7 @@ const { getMonsterheartsRegionLayout } = await import(
     '../src/templates/monsterhearts/playbook/preview/MonsterheartsPlaybookPreview'
 )
 const { PBTA_MONSTERHEARTS_PLAYBOOK_PRESENTATION } = await import('schema-pbta')
+const { PBTA_MONSTERHEARTS_APPEARANCE_ASSET_URLS } = await import('schema-pbta')
 const { LANTERN_CAPABILITIES } = await import('../src/core/capabilities')
 const { sections: monsterheartsSections } = await import(
     '../src/templates/monsterhearts/playbook/model'
@@ -112,27 +113,40 @@ assert.equal(
 )
 const monsterheartsLayout = getMonsterheartsRegionLayout()
 assert.deepEqual(
-    monsterheartsLayout.columns,
-    PBTA_MONSTERHEARTS_PLAYBOOK_PRESENTATION.columns,
-    'Monsterhearts preview uses the published region columns'
+    monsterheartsLayout.rows,
+    PBTA_MONSTERHEARTS_PLAYBOOK_PRESENTATION.rows,
+    'Monsterhearts preview uses the published region rows'
 )
 assert.ok(
     LANTERN_CAPABILITIES.includes('presentation:pbta-layout'),
     'Lantern publishes the PbtA layout capability it consumes'
 )
 assert.deepEqual(
-    [monsterheartsLayout.header, ...monsterheartsLayout.columns.flat(), ...monsterheartsLayout.trailing].sort(),
+    [
+        monsterheartsLayout.header,
+        ...monsterheartsLayout.rows.flat(2),
+        ...monsterheartsLayout.trailing,
+    ].sort(),
     [...PBTA_MONSTERHEARTS_PLAYBOOK_PRESENTATION.canonicalOrder].sort(),
     'every published Monsterhearts region renders once'
 )
 const monsterheartsFallback = getMonsterheartsRegionLayout({
     ...PBTA_MONSTERHEARTS_PLAYBOOK_PRESENTATION,
-    columns: [['game-identity']],
+    rows: [[['game-identity']]],
 })
 assert.deepEqual(
     monsterheartsFallback.trailing,
     PBTA_MONSTERHEARTS_PLAYBOOK_PRESENTATION.canonicalOrder.slice(1),
     'unplaced regions follow the published canonical order after the grid'
+)
+assert.ok(
+    PBTA_MONSTERHEARTS_APPEARANCE_ASSET_URLS.assets['game-mark'],
+    'Monsterhearts appearance assets expose browser-consumer URLs'
+)
+assert.ok(
+    PBTA_MONSTERHEARTS_APPEARANCE_ASSET_URLS.variants['drowned-lake']
+        .assetOverrides['variant-mark'],
+    'Monsterhearts drowned-lake appearance exposes its published asset override'
 )
 
 const tabId = useWorkspaceStore.getState().createTab('pbta.playbook')
