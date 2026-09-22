@@ -121,14 +121,19 @@ function MonsterheartsStatsEditor() {
                             key={name}
                             className="grid grid-cols-[4rem_repeat(3,minmax(0,1fr))] items-center gap-1"
                         >
-                            <span className="truncate text-sm font-medium" title={name}>
+                            <span
+                                className="truncate text-sm font-medium"
+                                title={name}
+                            >
                                 {name}
                             </span>
                             <StatBoundInput
                                 name={name}
                                 field="minimum"
                                 value={bounds.minimum}
-                                onChange={(next) => updateBound('minimum', next)}
+                                onChange={(next) =>
+                                    updateBound('minimum', next)
+                                }
                             />
                             <Input
                                 type="number"
@@ -156,7 +161,9 @@ function MonsterheartsStatsEditor() {
                                 name={name}
                                 field="maximum"
                                 value={bounds.maximum}
-                                onChange={(next) => updateBound('maximum', next)}
+                                onChange={(next) =>
+                                    updateBound('maximum', next)
+                                }
                             />
                         </div>
                     )

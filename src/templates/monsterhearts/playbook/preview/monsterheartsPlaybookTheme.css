@@ -1,16 +1,28 @@
 .monsterhearts-doc {
-    color: #221c20;
-    font-family: 'PT Serif', Georgia, serif;
+    color: var(--monsterhearts-title-ink, #221c20);
+    font-family: var(--monsterhearts-title-font, 'PT Serif', Georgia, serif);
 }
 .monsterhearts-doc .monsterhearts-sheet {
     display: grid;
-    grid-template-columns: repeat(var(--mh-columns), minmax(0, 1fr));
-    gap: 1.2rem 1.8rem;
+    gap: 1.2rem;
     box-sizing: border-box;
     background: #fff;
     padding: 1.5rem;
     width: 1123px;
     min-height: 794px;
+}
+.monsterhearts-doc[data-appearance-variant='drowned-lake']
+    .monsterhearts-sheet {
+    background: #111217;
+}
+.monsterhearts-doc .mh-layout {
+    display: grid;
+    gap: 2.4rem;
+}
+.monsterhearts-doc .mh-row {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--pbta-column-gap, 2.4rem);
 }
 .monsterhearts-doc button {
     cursor: pointer;
@@ -22,10 +34,18 @@
     text-align: left;
 }
 .monsterhearts-doc .mh-header {
-    grid-column: 1 / -1;
+    position: relative;
     border-bottom: 1px solid currentColor;
     padding-bottom: 0.7rem;
     text-align: center;
+}
+.monsterhearts-doc .mh-game-mark {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 2.8rem;
+    height: 2.8rem;
+    object-fit: contain;
 }
 .monsterhearts-doc .mh-header h1,
 .monsterhearts-doc h2 {
@@ -48,7 +68,23 @@
     margin-top: 0.95rem;
 }
 .monsterhearts-doc .mh-fallback {
-    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--pbta-column-gap, 2.4rem);
+}
+.monsterhearts-doc .mh-portrait {
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--pbta-column-rule, currentColor);
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    color: #746b71;
+    font-style: italic;
+}
+.monsterhearts-doc .mh-portrait img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 .monsterhearts-doc .mh-section-title {
     margin-bottom: 0.5rem;
@@ -147,14 +183,21 @@
 }
 @media (max-width: 680px) {
     .monsterhearts-doc .monsterhearts-sheet {
-        grid-template-columns: 1fr;
         padding: 1rem;
         width: 100%;
         min-height: 0;
+    }
+    .monsterhearts-doc .mh-row,
+    .monsterhearts-doc .mh-fallback {
+        grid-template-columns: 1fr;
     }
 }
 @media print {
     .monsterhearts-doc .monsterhearts-sheet {
         box-shadow: none;
+    }
+    .monsterhearts-doc .mh-row,
+    .monsterhearts-doc .mh-fallback {
+        grid-template-columns: 1fr;
     }
 }
