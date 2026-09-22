@@ -84,7 +84,7 @@ importers:
         specifier: ^1.1.1
         version: 1.1.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       dompurify:
-        specifier: ^3.2.6
+        specifier: ^3.4.15
         version: 3.4.15
       i18next:
         specifier: ^26.4.2
@@ -114,17 +114,17 @@ importers:
         specifier: ^4.7.1
         version: 4.13.1(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       react-router-dom:
-        specifier: ^6.30.1
-        version: 6.30.6(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        specifier: ^7.18.4
+        version: 7.18.4(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       schema-adrenaline:
         specifier: https://github.com/RebelliousSmile/schema-adrenaline/releases/download/v2.0.0/schema-adrenaline-2.0.0.tgz
-        version: https://github.com/RebelliousSmile/schema-adrenaline/releases/download/v2.0.0/schema-adrenaline-2.0.0.tgz
+        version: https://release-assets.githubusercontent.com/github-production-release-asset/1360458351/fc34c053-c596-44f8-8b58-80500b7624c5?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-22T21%3A06%3A02Z&rscd=attachment%3B+filename%3Dschema-adrenaline-2.0.0.tgz&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-22T20%3A05%3A38Z&ske=2026-09-22T21%3A06%3A02Z&sks=b&skv=2018-11-09&sig=cZkerLou1%2Btk9TgykhqeEu39ahKlQ9FlWijRISt8RTA%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc5MDEwNzk3NCwibmJmIjoxNzkwMTA3Njc0LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.1e_B8GnCHSQskDQBxQVKsL8EeHx9WPZweLUpOgoew5M&response-content-disposition=attachment%3B%20filename%3Dschema-adrenaline-2.0.0.tgz&response-content-type=application%2Foctet-stream
       schema-in-the-mist:
         specifier: https://github.com/RebelliousSmile/schema-in-the-mist/releases/download/v1.3.4/schema-in-the-mist-1.3.4.tgz
-        version: https://github.com/RebelliousSmile/schema-in-the-mist/releases/download/v1.3.4/schema-in-the-mist-1.3.4.tgz
+        version: https://release-assets.githubusercontent.com/github-production-release-asset/1359242827/75e787ae-32f5-4dfa-a14e-67a86ed23a4c?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-22T21%3A04%3A04Z&rscd=attachment%3B+filename%3Dschema-in-the-mist-1.3.4.tgz&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-22T20%3A03%3A50Z&ske=2026-09-22T21%3A04%3A04Z&sks=b&skv=2018-11-09&sig=N3inl9nPseyIjmgxFuCEMOynqOuQ6qrTtYnP7e5%2FNUA%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc5MDEwNzk3NCwibmJmIjoxNzkwMTA3Njc0LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.1e_B8GnCHSQskDQBxQVKsL8EeHx9WPZweLUpOgoew5M&response-content-disposition=attachment%3B%20filename%3Dschema-in-the-mist-1.3.4.tgz&response-content-type=application%2Foctet-stream
       schema-pbta:
-        specifier: https://github.com/RebelliousSmile/schema-pbta/releases/download/v8.0.0/schema-pbta-8.0.0.tgz
-        version: https://github.com/RebelliousSmile/schema-pbta/releases/download/v8.0.0/schema-pbta-8.0.0.tgz
+        specifier: https://github.com/RebelliousSmile/schema-pbta/releases/download/v8.4.1/schema-pbta-8.4.1.tgz
+        version: https://github.com/RebelliousSmile/schema-pbta/releases/download/v8.4.1/schema-pbta-8.4.1.tgz
       smol-toml:
         specifier: 1.8.0
         version: 1.8.0
@@ -1429,10 +1429,6 @@ packages:
 
   '@radix-ui/rect@1.1.3':
     resolution: {integrity: sha512-JtyZR+mqgBibTo8xea3B6ZRmzZiM/YeVBtUkas6zMuXjAlfIFIW2FgqeM9eLyvEaYX66vr6DJMK+4U6LV0KhNw==}
-
-  '@remix-run/router@1.23.4':
-    resolution: {integrity: sha512-q7j5geK7xs3UJSdm9/iytUNclBnLmYx1EnSeCFXHPeutdqgIMeFeHtUZgS3EhlKxdBEAu8OwtJCwmLrEzpSs7Q==}
-    engines: {node: '>=14.0.0'}
 
   '@rolldown/pluginutils@1.0.0-rc.3':
     resolution: {integrity: sha512-eybk3TjzzzV97Dlj5c+XrBFW57eTNhzod66y9HrBlzJ6NsCrWCp/2kaPS3K9wJmurBC0Tdw4yPjXKZqlznim3Q==}
@@ -3537,18 +3533,22 @@ packages:
       react: ^18.0.0 || ^19.0.0
       react-dom: ^18.0.0 || ^19.0.0
 
-  react-router-dom@6.30.6:
-    resolution: {integrity: sha512-0RHKZz7wwffvkU+2MFVT2NnjK44ssLEV+m0CAJaS2Ksmorrwj7WxH00jO0SOCW26/tINUnJHToXblDs33I38YQ==}
-    engines: {node: '>=14.0.0'}
+  react-router-dom@7.18.4:
+    resolution: {integrity: sha512-yrfmJHIpDG7taCpqKjT1G5B6q3O2K+RN8/fgNf0lTjCwiPbQ0ei6vXX9ZjQR+7ld8Tr7Z5xmyMnZ8YJrphWQUw==}
+    engines: {node: '>=20.0.0'}
     peerDependencies:
-      react: '>=16.8'
-      react-dom: '>=16.8'
+      react: '>=18'
+      react-dom: '>=18'
 
-  react-router@6.30.6:
-    resolution: {integrity: sha512-5HfK7k5im7LTOB0EqCQmfvy4C13G92Ssj1VTmouTK3AJvyjKTnFuCV0vcMAD/JS+JC4DvDIBRrlAeJIFjh5VWg==}
-    engines: {node: '>=14.0.0'}
+  react-router@7.18.4:
+    resolution: {integrity: sha512-PUPQcMhMGRAslLcvtlPz/kmzBEWPhLdgLFrL7pLNepBL6dX0lWj4WD2cUYVgYCuT3jxvghYFg81cDTj44DhetQ==}
+    engines: {node: '>=20.0.0'}
     peerDependencies:
-      react: '>=16.8'
+      react: '>=18'
+      react-dom: '>=18'
+    peerDependenciesMeta:
+      react-dom:
+        optional: true
 
   react-style-singleton@2.2.3:
     resolution: {integrity: sha512-b6jSvxvVnyptAiLjbkWLE/lOnR4lfTtDAl+eUC7RZy+QQWc6wRzIV2CE6xBuMmDxc2qIihtDCZD5NPOFl7fRBQ==}
@@ -3638,17 +3638,17 @@ packages:
   scheduler@0.28.0:
     resolution: {integrity: sha512-juorfCmIkIw8tT+p5BXSm6PJjQF/ycEYmKyzURCIt/RaZIhL+PulbQ9Yu2z1HdOJDdqDTlxA1+xKBmHXJsczAw==}
 
-  schema-adrenaline@https://github.com/RebelliousSmile/schema-adrenaline/releases/download/v2.0.0/schema-adrenaline-2.0.0.tgz:
-    resolution: {tarball: https://github.com/RebelliousSmile/schema-adrenaline/releases/download/v2.0.0/schema-adrenaline-2.0.0.tgz, integrity: sha512-xCGT7BcTcZkt2koba+rKIIkXGQhLlKaLEYttxos9b60ULZa34lIFbm4PmOHcFfTiCxR/FYJdqScavkksl53Lmw==}
+  schema-adrenaline@https://release-assets.githubusercontent.com/github-production-release-asset/1360458351/fc34c053-c596-44f8-8b58-80500b7624c5?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-22T21%3A06%3A02Z&rscd=attachment%3B+filename%3Dschema-adrenaline-2.0.0.tgz&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-22T20%3A05%3A38Z&ske=2026-09-22T21%3A06%3A02Z&sks=b&skv=2018-11-09&sig=cZkerLou1%2Btk9TgykhqeEu39ahKlQ9FlWijRISt8RTA%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc5MDEwNzk3NCwibmJmIjoxNzkwMTA3Njc0LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.1e_B8GnCHSQskDQBxQVKsL8EeHx9WPZweLUpOgoew5M&response-content-disposition=attachment%3B%20filename%3Dschema-adrenaline-2.0.0.tgz&response-content-type=application%2Foctet-stream:
+    resolution: {tarball: https://release-assets.githubusercontent.com/github-production-release-asset/1360458351/fc34c053-c596-44f8-8b58-80500b7624c5?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-22T21%3A06%3A02Z&rscd=attachment%3B+filename%3Dschema-adrenaline-2.0.0.tgz&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-22T20%3A05%3A38Z&ske=2026-09-22T21%3A06%3A02Z&sks=b&skv=2018-11-09&sig=cZkerLou1%2Btk9TgykhqeEu39ahKlQ9FlWijRISt8RTA%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc5MDEwNzk3NCwibmJmIjoxNzkwMTA3Njc0LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.1e_B8GnCHSQskDQBxQVKsL8EeHx9WPZweLUpOgoew5M&response-content-disposition=attachment%3B%20filename%3Dschema-adrenaline-2.0.0.tgz&response-content-type=application%2Foctet-stream}
     version: 2.0.0
 
-  schema-in-the-mist@https://github.com/RebelliousSmile/schema-in-the-mist/releases/download/v1.3.4/schema-in-the-mist-1.3.4.tgz:
-    resolution: {tarball: https://github.com/RebelliousSmile/schema-in-the-mist/releases/download/v1.3.4/schema-in-the-mist-1.3.4.tgz, integrity: sha512-Lyl/bLaYOf+Zw454Vi0IVA9C2HBs+fLd7rVCezIk5Cb7XuUvrgN0wajPsTtuCzhbTYK00tWNWAj2HYtBdP94zQ==}
+  schema-in-the-mist@https://release-assets.githubusercontent.com/github-production-release-asset/1359242827/75e787ae-32f5-4dfa-a14e-67a86ed23a4c?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-22T21%3A04%3A04Z&rscd=attachment%3B+filename%3Dschema-in-the-mist-1.3.4.tgz&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-22T20%3A03%3A50Z&ske=2026-09-22T21%3A04%3A04Z&sks=b&skv=2018-11-09&sig=N3inl9nPseyIjmgxFuCEMOynqOuQ6qrTtYnP7e5%2FNUA%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc5MDEwNzk3NCwibmJmIjoxNzkwMTA3Njc0LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.1e_B8GnCHSQskDQBxQVKsL8EeHx9WPZweLUpOgoew5M&response-content-disposition=attachment%3B%20filename%3Dschema-in-the-mist-1.3.4.tgz&response-content-type=application%2Foctet-stream:
+    resolution: {tarball: https://release-assets.githubusercontent.com/github-production-release-asset/1359242827/75e787ae-32f5-4dfa-a14e-67a86ed23a4c?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-22T21%3A04%3A04Z&rscd=attachment%3B+filename%3Dschema-in-the-mist-1.3.4.tgz&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-22T20%3A03%3A50Z&ske=2026-09-22T21%3A04%3A04Z&sks=b&skv=2018-11-09&sig=N3inl9nPseyIjmgxFuCEMOynqOuQ6qrTtYnP7e5%2FNUA%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc5MDEwNzk3NCwibmJmIjoxNzkwMTA3Njc0LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.1e_B8GnCHSQskDQBxQVKsL8EeHx9WPZweLUpOgoew5M&response-content-disposition=attachment%3B%20filename%3Dschema-in-the-mist-1.3.4.tgz&response-content-type=application%2Foctet-stream}
     version: 1.3.4
 
-  schema-pbta@https://github.com/RebelliousSmile/schema-pbta/releases/download/v8.0.0/schema-pbta-8.0.0.tgz:
-    resolution: {tarball: https://github.com/RebelliousSmile/schema-pbta/releases/download/v8.0.0/schema-pbta-8.0.0.tgz, integrity: sha512-6fifr38+39rNrdc5O9K2SJXZFtTXDDNhmaEj+RyoyV+lVU3jqmKZVzLZhpXrCd8nnEEqTIt3jkzoxurHNagoHQ==}
-    version: 8.0.0
+  schema-pbta@https://github.com/RebelliousSmile/schema-pbta/releases/download/v8.4.1/schema-pbta-8.4.1.tgz:
+    resolution: {tarball: https://release-assets.githubusercontent.com/github-production-release-asset/1360458602/6a0c5c88-7d46-42da-9cd8-035f423aab53?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-22T21%3A05%3A16Z&rscd=attachment%3B+filename%3Dschema-pbta-8.4.1.tgz&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-22T20%3A04%3A44Z&ske=2026-09-22T21%3A05%3A16Z&sks=b&skv=2018-11-09&sig=0TkVyr89QyVpHOBAvLHAzgkByGY5LB%2FAP1Lytfte0rk%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc5MDEwNzk3NCwibmJmIjoxNzkwMTA3Njc0LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.1e_B8GnCHSQskDQBxQVKsL8EeHx9WPZweLUpOgoew5M&response-content-disposition=attachment%3B%20filename%3Dschema-pbta-8.4.1.tgz&response-content-type=application%2Foctet-stream}
+    version: 8.4.1
 
   semver@6.3.1:
     resolution: {integrity: sha512-BR7VvDCVHO+q2xBEWskxS6DJE1qRnb7DxzUrogb71CWoSficBxYsiAGd+Kl0mmq/MprG9yArRkyrQxTO6XjMzA==}
@@ -3666,6 +3666,9 @@ packages:
   serve-static@2.2.1:
     resolution: {integrity: sha512-xRXBn0pPqQTVQiC8wyQrKs2MOlX24zQ0POGaj0kultvoOCstBQM5yvOhAVSUwOMjQtTvsPWoNCHfPGwaaQJhTw==}
     engines: {node: '>= 18'}
+
+  set-cookie-parser@2.7.2:
+    resolution: {integrity: sha512-oeM1lpU/UvhTxw+g3cIfxXHyJRc/uidd3yK1P242gzHds0udQBYzs3y8j4gCCW+ZJ7ad0yctld8RYO+bdurlvw==}
 
   set-cookie-parser@3.1.2:
     resolution: {integrity: sha512-5/r/lTwbJ3zQ+qwdUFZYeRNqda7P5HD8zQKqlSjdGt1/S0cjLAphHusj4Y58ahDtWn/g32xrIS58/ikOvwl0Lw==}
@@ -5421,8 +5424,6 @@ snapshots:
       '@types/react-dom': 19.3.0(@types/react@19.3.0)
 
   '@radix-ui/rect@1.1.3': {}
-
-  '@remix-run/router@1.23.4': {}
 
   '@rolldown/pluginutils@1.0.0-rc.3': {}
 
@@ -7511,17 +7512,19 @@ snapshots:
       react: 19.3.0
       react-dom: 19.3.0(react@19.3.0)
 
-  react-router-dom@6.30.6(react-dom@19.3.0(react@19.3.0))(react@19.3.0):
+  react-router-dom@7.18.4(react-dom@19.3.0(react@19.3.0))(react@19.3.0):
     dependencies:
-      '@remix-run/router': 1.23.4
       react: 19.3.0
       react-dom: 19.3.0(react@19.3.0)
-      react-router: 6.30.6(react@19.3.0)
+      react-router: 7.18.4(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
 
-  react-router@6.30.6(react@19.3.0):
+  react-router@7.18.4(react-dom@19.3.0(react@19.3.0))(react@19.3.0):
     dependencies:
-      '@remix-run/router': 1.23.4
+      cookie: 1.1.1
       react: 19.3.0
+      set-cookie-parser: 2.7.2
+    optionalDependencies:
+      react-dom: 19.3.0(react@19.3.0)
 
   react-style-singleton@2.2.3(@types/react@19.3.0)(react@19.3.0):
     dependencies:
@@ -7656,17 +7659,17 @@ snapshots:
 
   scheduler@0.28.0: {}
 
-  schema-adrenaline@https://github.com/RebelliousSmile/schema-adrenaline/releases/download/v2.0.0/schema-adrenaline-2.0.0.tgz:
+  schema-adrenaline@https://release-assets.githubusercontent.com/github-production-release-asset/1360458351/fc34c053-c596-44f8-8b58-80500b7624c5?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-22T21%3A06%3A02Z&rscd=attachment%3B+filename%3Dschema-adrenaline-2.0.0.tgz&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-22T20%3A05%3A38Z&ske=2026-09-22T21%3A06%3A02Z&sks=b&skv=2018-11-09&sig=cZkerLou1%2Btk9TgykhqeEu39ahKlQ9FlWijRISt8RTA%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc5MDEwNzk3NCwibmJmIjoxNzkwMTA3Njc0LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.1e_B8GnCHSQskDQBxQVKsL8EeHx9WPZweLUpOgoew5M&response-content-disposition=attachment%3B%20filename%3Dschema-adrenaline-2.0.0.tgz&response-content-type=application%2Foctet-stream:
     dependencies:
       smol-toml: 1.8.0
       zod: 4.6.5
 
-  schema-in-the-mist@https://github.com/RebelliousSmile/schema-in-the-mist/releases/download/v1.3.4/schema-in-the-mist-1.3.4.tgz:
+  schema-in-the-mist@https://release-assets.githubusercontent.com/github-production-release-asset/1359242827/75e787ae-32f5-4dfa-a14e-67a86ed23a4c?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-09-22T21%3A04%3A04Z&rscd=attachment%3B+filename%3Dschema-in-the-mist-1.3.4.tgz&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-09-22T20%3A03%3A50Z&ske=2026-09-22T21%3A04%3A04Z&sks=b&skv=2018-11-09&sig=N3inl9nPseyIjmgxFuCEMOynqOuQ6qrTtYnP7e5%2FNUA%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc5MDEwNzk3NCwibmJmIjoxNzkwMTA3Njc0LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.1e_B8GnCHSQskDQBxQVKsL8EeHx9WPZweLUpOgoew5M&response-content-disposition=attachment%3B%20filename%3Dschema-in-the-mist-1.3.4.tgz&response-content-type=application%2Foctet-stream:
     dependencies:
       smol-toml: 1.8.0
       zod: 4.6.5
 
-  schema-pbta@https://github.com/RebelliousSmile/schema-pbta/releases/download/v8.0.0/schema-pbta-8.0.0.tgz:
+  schema-pbta@https://github.com/RebelliousSmile/schema-pbta/releases/download/v8.4.1/schema-pbta-8.4.1.tgz:
     dependencies:
       smol-toml: 1.8.0
       zod: 4.6.5
@@ -7699,6 +7702,8 @@ snapshots:
       send: 1.2.1
     transitivePeerDependencies:
       - supports-color
+
+  set-cookie-parser@2.7.2: {}
 
   set-cookie-parser@3.1.2: {}
 
