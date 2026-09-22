@@ -31,6 +31,10 @@ export function useMonsterheartsView() {
     const view = {
         ...defaultView,
         ...(tab?.view ?? {}),
+        statBounds: {
+            ...defaultView.statBounds,
+            ...(tab?.view?.statBounds ?? {}),
+        },
         hidden: { ...defaultView.hidden, ...(tab?.view?.hidden ?? {}) },
         exportPrefs: {
             ...defaultView.exportPrefs,
@@ -39,6 +43,8 @@ export function useMonsterheartsView() {
     }
     return {
         ...view,
+        setStatBounds: (statBounds: ViewState['statBounds']) =>
+            tab && patch(tab.id, { statBounds }),
         setHidden: (id: keyof ViewState['hidden'], value: boolean) =>
             tab && patch(tab.id, { hidden: { ...view.hidden, [id]: value } }),
         setExportPrefs: (scale: 1 | 2 | 3) =>

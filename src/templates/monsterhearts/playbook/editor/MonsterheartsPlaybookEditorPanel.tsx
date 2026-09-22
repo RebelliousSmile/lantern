@@ -3,20 +3,168 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import { SchemaEditor } from '@/core/editor-schema/SchemaEditor'
-import { inferObject } from '@/core/editor-schema/inferSchema'
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from '@/components/ui/tooltip'
 import { PublishedCollectionEditor } from '@/templates/pbta/specialized/collectionAdapters'
 import {
     collectionItems,
     replaceCollectionItems,
 } from '@/templates/pbta/specialized/collectionPolicy'
 import { ChevronDown, ChevronUp, X } from 'lucide-react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { getPbtaCollectionPresentation } from 'schema-pbta'
-import { useMonsterheartsSheet, useMonsterheartsStore } from '../hooks'
+import {
+    useMonsterheartsSheet,
+    useMonsterheartsStore,
+    useMonsterheartsView,
+} from '../hooks'
 import type { MonsterheartsEditorial, MonsterheartsPlaybook } from '../model'
 
 type MonsterheartsMove = MonsterheartsPlaybook['moves'][number]
+
+function StatBoundInput({
+    name,
+    field,
+    value,
+    onChange,
+}: {
+    name: string
+    field: 'minimum' | 'maximum'
+    value: number
+    onChange: (value: number) => void
+}) {
+    const { t } = useTranslation()
+    const [unlocked, setUnlocked] = useState(false)
+    const [showHint, setShowHint] = useState(false)
+    const hint = t('pbta:monsterhearts.fields.boundsLocked')
+
+    return (
+        <Tooltip
+            open={showHint && !unlocked}
+            onOpenChange={(open) => {
+                if (!open) setShowHint(false)
+            }}
+        >
+            <TooltipTrigger asChild>
+                <Input
+                    type="number"
+                    className="min-w-0"
+                    value={value}
+                    readOnly={!unlocked}
+                    aria-label={`${name} — ${t(`pbta:monsterhearts.fields.${field}`)}`}
+                    aria-readonly={!unlocked}
+                    onClick={() => !unlocked && setShowHint(true)}
+                    onDoubleClick={() => {
+                        setUnlocked((previous) => !previous)
+                        setShowHint(false)
+                    }}
+                    onKeyDown={(event) => {
+                        if (event.key === 'Enter') {
+                            event.preventDefault()
+                            setUnlocked((previous) => !previous)
+                            setShowHint(false)
+                        }
+                    }}
+                    onBlur={() => setShowHint(false)}
+                    onChange={(event) => {
+                        const next = Number(event.target.value)
+                        if (event.target.value !== '' && Number.isInteger(next))
+                            onChange(next)
+                    }}
+                />
+            </TooltipTrigger>
+            <TooltipContent>{hint}</TooltipContent>
+        </Tooltip>
+    )
+}
+
+function MonsterheartsStatsEditor() {
+    const { playbook, setPlaybook } = useMonsterheartsStore()
+    const { statBounds, setStatBounds } = useMonsterheartsView()
+    const { t } = useTranslation()
+
+    return (
+        <TooltipProvider>
+            <div className="space-y-2">
+                <div className="grid grid-cols-[4rem_repeat(3,minmax(0,1fr))] gap-1 text-xs text-muted-foreground">
+                    <span />
+                    <span>{t('pbta:monsterhearts.fields.minimum')}</span>
+                    <span>{t('pbta:monsterhearts.fields.value')}</span>
+                    <span>{t('pbta:monsterhearts.fields.maximum')}</span>
+                </div>
+                {Object.entries(playbook.stats).map(([name, value]) => {
+                    const bounds = statBounds[name] ?? {
+                        minimum: -1,
+                        maximum: 3,
+                    }
+                    const updateBound = (
+                        field: 'minimum' | 'maximum',
+                        next: number
+                    ) =>
+                        setStatBounds({
+                            ...statBounds,
+                            [name]: {
+                                ...bounds,
+                                [field]:
+                                    field === 'minimum'
+                                        ? Math.min(next, bounds.maximum)
+                                        : Math.max(next, bounds.minimum),
+                            },
+                        })
+                    return (
+                        <div
+                            key={name}
+                            className="grid grid-cols-[4rem_repeat(3,minmax(0,1fr))] items-center gap-1"
+                        >
+                            <span className="truncate text-sm font-medium" title={name}>
+                                {name}
+                            </span>
+                            <StatBoundInput
+                                name={name}
+                                field="minimum"
+                                value={bounds.minimum}
+                                onChange={(next) => updateBound('minimum', next)}
+                            />
+                            <Input
+                                type="number"
+                                className="min-w-0"
+                                min={bounds.minimum}
+                                max={bounds.maximum}
+                                value={value}
+                                aria-label={`${name} — ${t('pbta:monsterhearts.fields.value')}`}
+                                onChange={(event) => {
+                                    if (event.target.value === '') return
+                                    const next = Number(event.target.value)
+                                    if (!Number.isInteger(next)) return
+                                    setPlaybook({
+                                        stats: {
+                                            ...playbook.stats,
+                                            [name]: Math.min(
+                                                bounds.maximum,
+                                                Math.max(bounds.minimum, next)
+                                            ),
+                                        },
+                                    })
+                                }}
+                            />
+                            <StatBoundInput
+                                name={name}
+                                field="maximum"
+                                value={bounds.maximum}
+                                onChange={(next) => updateBound('maximum', next)}
+                            />
+                        </div>
+                    )
+                })}
+            </div>
+        </TooltipProvider>
+    )
+}
 
 function blankMove(checked = false): MonsterheartsMove {
     return {
@@ -333,6 +481,7 @@ function MonsterheartsConditionsEditor() {
 export function MonsterheartsPlaybookEditorPanel() {
     const { sheet } = useMonsterheartsSheet()
     const { playbook, setPlaybook } = useMonsterheartsStore()
+    const { t } = useTranslation()
     if (!sheet.open || !sheet.target)
         return (
             <p className="text-sm text-muted-foreground">
@@ -376,61 +525,66 @@ export function MonsterheartsPlaybookEditorPanel() {
 
         return (
             <div className="space-y-5">
-                {Object.entries(playbook.editorial).map(([key, block]) => (
-                    key === 'progression' ? null :
-                    <fieldset key={key} className="space-y-2">
-                        <legend className="font-semibold">
-                            {block.heading}
-                        </legend>
-                        <Label>
-                            Title
-                            <Input
-                                value={block.heading}
-                                onChange={(event) =>
-                                    updateBlock(
-                                        key as keyof MonsterheartsEditorial,
-                                        { heading: event.target.value }
-                                    )
-                                }
-                            />
-                        </Label>
-                        <Label>
-                            Text
-                            <Textarea
-                                value={block.paragraphs.join('\n\n')}
-                                onChange={(event) =>
-                                    updateBlock(
-                                        key as keyof MonsterheartsEditorial,
-                                        {
-                                            paragraphs: event.target.value
-                                                .split(/\n\s*\n/)
-                                                .filter(Boolean),
-                                        }
-                                    )
-                                }
-                            />
-                        </Label>
-                    </fieldset>
-                ))}
+                {Object.entries(playbook.editorial).map(([key, block]) =>
+                    key === 'progression' ? null : (
+                        <fieldset key={key} className="space-y-2">
+                            <legend className="font-semibold">
+                                {block.heading}
+                            </legend>
+                            <Label>
+                                Title
+                                <Input
+                                    value={block.heading}
+                                    onChange={(event) =>
+                                        updateBlock(
+                                            key as keyof MonsterheartsEditorial,
+                                            { heading: event.target.value }
+                                        )
+                                    }
+                                />
+                            </Label>
+                            <Label>
+                                Text
+                                <Textarea
+                                    value={block.paragraphs.join('\n\n')}
+                                    onChange={(event) =>
+                                        updateBlock(
+                                            key as keyof MonsterheartsEditorial,
+                                            {
+                                                paragraphs: event.target.value
+                                                    .split(/\n\s*\n/)
+                                                    .filter(Boolean),
+                                            }
+                                        )
+                                    }
+                                />
+                            </Label>
+                        </fieldset>
+                    )
+                )}
             </div>
         )
     }
     if (sheet.target === 'moves')
         return <MonsterheartsCollection path="moves" />
+    if (sheet.target === 'stats') return <MonsterheartsStatsEditor />
     if (sheet.target === 'advances' || sheet.target === 'ascendants')
         return <MonsterheartsCollection path={sheet.target} />
-    if (sheet.target === 'conditions')
-        return <MonsterheartsConditionsEditor />
-    const key = sheet.target
-    const value = (playbook as Record<string, unknown>)[key]
+    if (sheet.target === 'conditions') return <MonsterheartsConditionsEditor />
     return (
-        <SchemaEditor
-            schema={inferObject(key, value as Record<string, unknown>)}
-            value={(value as Record<string, unknown>) ?? {}}
-            onChange={(next) =>
-                setPlaybook({ [key]: next } as Partial<typeof playbook>)
-            }
-        />
+        <Label className="grid gap-1 text-sm">
+            {t('pbta:monsterhearts.sections.harm')}
+            <Input
+                type="number"
+                min={0}
+                value={playbook.harm}
+                onChange={(event) => {
+                    const next = Number(event.target.value)
+                    if (Number.isInteger(next) && next >= 0)
+                        setPlaybook({ harm: next })
+                }}
+            />
+        </Label>
     )
 }
 
@@ -474,7 +628,7 @@ function MonsterheartsCollection({ path }: { path: string }) {
         const key = fieldLabels[id as keyof typeof fieldLabels]
         return key ? t(key) : fallback
     }
-    const createItem = (entry: typeof presentation, _items: unknown[]) => {
+    const createItem = (entry: typeof presentation) => {
         if (entry.path === 'conditions') {
             return { name: t('pbta:monsterhearts.defaults.condition') }
         }

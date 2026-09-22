@@ -3,11 +3,7 @@ import type { MonsterheartsPlaybook as Published } from 'schema-pbta'
 
 export type EditorialBlock = { heading: string; paragraphs: string[] }
 export type MonsterheartsEditorial = Record<
-    | 'opening'
-    | 'identity'
-    | 'progression'
-    | 'darkestSelf'
-    | 'sexMove',
+    'opening' | 'identity' | 'progression' | 'darkestSelf' | 'sexMove',
     EditorialBlock
 >
 export type MonsterheartsPlaybook = Omit<
@@ -30,6 +26,7 @@ export type SectionId =
 export type ViewState = {
     zoom: number
     previewWidth: number
+    statBounds: Record<string, { minimum: number; maximum: number }>
     hidden: Record<SectionId, boolean>
     exportPrefs: { scale: 1 | 2 | 3 }
 }
@@ -46,6 +43,12 @@ export const sections: Array<{ id: SectionId; label: TranslationKey }> = [
 export const defaultView: ViewState = {
     zoom: 1,
     previewWidth: 1123,
+    statBounds: Object.fromEntries(
+        ['hot', 'cold', 'volatile', 'dark'].map((name) => [
+            name,
+            { minimum: -1, maximum: 3 },
+        ])
+    ),
     hidden: Object.fromEntries(sections.map(({ id }) => [id, false])) as Record<
         SectionId,
         boolean

@@ -5,6 +5,15 @@ All notable changes to this project are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.15.2] - 2026-09-22
+
+### Fixed
+
+- **Monsterhearts characteristic editor.** Each characteristic shows its minimum, current value,
+  and maximum on one line. A click on a locked bound explains that a double click unlocks it.
+- **Monsterhearts harm editor.** Harm remains a numeric field and no longer reaches the generic
+  object editor.
+
 ## [v0.15.1] - 2026-09-21
 
 ### Fixed

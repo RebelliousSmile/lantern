@@ -70,8 +70,10 @@ const pbta: ResourceShape<typeof en> = {
             conditions: 'Aucune condition pour le moment.',
         },
         fields: {
+            minimum: 'Minimum',
             starting: 'Départ',
             maximum: 'Maximum',
+            boundsLocked: 'Double-cliquez pour déverrouiller cette valeur.',
             value: 'Valeur',
             label: 'Libellé',
             trigger: 'Déclencheur',

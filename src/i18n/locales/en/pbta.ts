@@ -67,8 +67,10 @@ const pbta = {
             conditions: 'None yet.',
         },
         fields: {
+            minimum: 'Minimum',
             starting: 'Starting',
             maximum: 'Maximum',
+            boundsLocked: 'Double-click to unlock this value.',
             value: 'Value',
             label: 'Label',
             trigger: 'Trigger',
