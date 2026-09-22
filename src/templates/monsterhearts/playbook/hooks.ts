@@ -49,6 +49,9 @@ export function useMonsterheartsView() {
             tab && patch(tab.id, { hidden: { ...view.hidden, [id]: value } }),
         setExportPrefs: (scale: 1 | 2 | 3) =>
             tab && patch(tab.id, { exportPrefs: { scale } }),
+        setAppearanceVariant: (
+            appearanceVariant: ViewState['appearanceVariant']
+        ) => tab && patch(tab.id, { appearanceVariant }),
     }
 }
 export function useMonsterheartsSheet() {

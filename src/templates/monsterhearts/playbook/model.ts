@@ -29,6 +29,7 @@ export type ViewState = {
     statBounds: Record<string, { minimum: number; maximum: number }>
     hidden: Record<SectionId, boolean>
     exportPrefs: { scale: 1 | 2 | 3 }
+    appearanceVariant: 'base' | 'drowned-lake'
 }
 export type SheetState = { open: boolean; target: SectionId | 'basic' | null }
 export const sections: Array<{ id: SectionId; label: TranslationKey }> = [
@@ -54,6 +55,7 @@ export const defaultView: ViewState = {
         boolean
     >,
     exportPrefs: { scale: 2 },
+    appearanceVariant: 'base',
 }
 export const defaultSheet: SheetState = { open: false, target: null }
 const section = (heading: string, paragraphs: string[]) => ({

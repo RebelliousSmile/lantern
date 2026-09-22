@@ -1,6 +1,8 @@
 import type { CSSProperties, ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
+    PBTA_MONSTERHEARTS_APPEARANCE,
+    PBTA_MONSTERHEARTS_APPEARANCE_ASSET_URLS,
     PBTA_MONSTERHEARTS_PLAYBOOK_PRESENTATION,
     type PbtaMonsterheartsPlaybookPresentation,
     type PbtaMonsterheartsRegionId,
@@ -21,13 +23,13 @@ export function getMonsterheartsRegionLayout(
     presentation: PbtaMonsterheartsPlaybookPresentation = PBTA_MONSTERHEARTS_PLAYBOOK_PRESENTATION
 ) {
     const header = 'game-identity' as const
-    const columns = presentation.columns ?? [
-        presentation.canonicalOrder.filter((id) => id !== header),
+    const rows = presentation.rows ?? [
+        [presentation.canonicalOrder.filter((id) => id !== header)],
     ]
-    const placed = new Set(columns.flat())
+    const placed = new Set(rows.flat(2))
     return {
         header,
-        columns,
+        rows,
         trailing: presentation.canonicalOrder.filter(
             (id) => id !== header && !placed.has(id)
         ),
@@ -61,10 +63,18 @@ export function MonsterheartsPlaybookPreview() {
     const ascendants = playbook.ascendants ?? []
     const gear = playbook.gear ?? []
     const layout = getMonsterheartsRegionLayout()
+    const appearance =
+        PBTA_MONSTERHEARTS_APPEARANCE.variants.find(
+            (variant) => variant.id === view.appearanceVariant
+        ) ?? PBTA_MONSTERHEARTS_APPEARANCE.variants[0]
+    const assetUrls = PBTA_MONSTERHEARTS_APPEARANCE_ASSET_URLS
+    const variantOverrides = assetUrls.variants[appearance.id].assetOverrides
+    const variantMark =
+        ('variant-mark' in variantOverrides
+            ? variantOverrides['variant-mark']
+            : undefined) ?? assetUrls.assets['variant-mark']
 
-    const renderRegion = (
-        id: PbtaMonsterheartsRegionId
-    ): ReactNode | null => {
+    const renderRegion = (id: PbtaMonsterheartsRegionId): ReactNode | null => {
         switch (id) {
             case 'monsterhearts-opening':
                 return isVisible('editorial') ? (
@@ -115,8 +125,12 @@ export function MonsterheartsPlaybookPreview() {
                                         key={`${'ref' in move ? move.ref : move.name}-${index}`}
                                     >
                                         <h2>
-                                            {getMoveHeart(move.checked === true)}{' '}
-                                            {'ref' in move ? move.ref : move.name}
+                                            {getMoveHeart(
+                                                move.checked === true
+                                            )}{' '}
+                                            {'ref' in move
+                                                ? move.ref
+                                                : move.name}
                                         </h2>
                                         {'ref' in move ? null : (
                                             <p>{move.description}</p>
@@ -131,6 +145,23 @@ export function MonsterheartsPlaybookPreview() {
                         </div>
                     </section>
                 ) : null
+            case 'playbook-portrait':
+                return (
+                    <button
+                        type="button"
+                        className="mh-portrait"
+                        onClick={() => open('basic')}
+                    >
+                        {playbook.playbookImage ? (
+                            <img
+                                src={playbook.playbookImage}
+                                alt={`Portrait of ${playbook.name}`}
+                            />
+                        ) : (
+                            <span>Portrait of {playbook.name}</span>
+                        )}
+                    </button>
+                )
             case 'relationships':
                 return isVisible('ascendants') ? (
                     <button
@@ -145,7 +176,9 @@ export function MonsterheartsPlaybookPreview() {
                                     <li key={`${ascendant.name}-${index}`}>
                                         <strong>{ascendant.name}</strong>
                                         <span>
-                                            {t('pbta:monsterhearts.fields.value')}{' '}
+                                            {t(
+                                                'pbta:monsterhearts.fields.value'
+                                            )}{' '}
                                             {ascendant.value}
                                         </span>
                                     </li>
@@ -167,21 +200,35 @@ export function MonsterheartsPlaybookPreview() {
                                 className="mh-stat-block"
                                 onClick={() => open('conditions')}
                             >
-                                <h2>{t('pbta:monsterhearts.sections.conditions')}</h2>
+                                <h2>
+                                    {t(
+                                        'pbta:monsterhearts.sections.conditions'
+                                    )}
+                                </h2>
                                 {playbook.conditions.length ? (
                                     <ul className="mh-conditions">
-                                        {playbook.conditions.map((condition) => (
-                                            <li key={condition.name}>
-                                                <strong>{condition.name}</strong>
-                                                {condition.description && (
-                                                    <span>{condition.description}</span>
-                                                )}
-                                            </li>
-                                        ))}
+                                        {playbook.conditions.map(
+                                            (condition) => (
+                                                <li key={condition.name}>
+                                                    <strong>
+                                                        {condition.name}
+                                                    </strong>
+                                                    {condition.description && (
+                                                        <span>
+                                                            {
+                                                                condition.description
+                                                            }
+                                                        </span>
+                                                    )}
+                                                </li>
+                                            )
+                                        )}
                                     </ul>
                                 ) : (
                                     <p className="mh-empty">
-                                        {t('pbta:monsterhearts.empty.conditions')}
+                                        {t(
+                                            'pbta:monsterhearts.empty.conditions'
+                                        )}
                                     </p>
                                 )}
                             </button>
@@ -197,7 +244,9 @@ export function MonsterheartsPlaybookPreview() {
                                     <span
                                         key={index}
                                         className={
-                                            index < playbook.harm ? 'is-marked' : ''
+                                            index < playbook.harm
+                                                ? 'is-marked'
+                                                : ''
                                         }
                                     />
                                 ))}
@@ -213,7 +262,9 @@ export function MonsterheartsPlaybookPreview() {
                             {gear.map((item, index) => (
                                 <li key={`${item.name}-${index}`}>
                                     <strong>{item.name}</strong>
-                                    {item.description && <span>{item.description}</span>}
+                                    {item.description && (
+                                        <span>{item.description}</span>
+                                    )}
                                 </li>
                             ))}
                         </ul>
@@ -241,13 +292,16 @@ export function MonsterheartsPlaybookPreview() {
                             className="mh-section-title"
                             onClick={() => open('advances')}
                         >
-                            {t('pbta:monsterhearts.sections.advances')} □ □ □ □ □
+                            {t('pbta:monsterhearts.sections.advances')} □ □ □ □
+                            □
                         </button>
                         <ul className="mh-checklist">
                             {playbook.advances.map((advance, index) => (
                                 <li
                                     key={`${advance.label}-${index}`}
-                                    className={getAdvanceCheckClass(advance.checked)}
+                                    className={getAdvanceCheckClass(
+                                        advance.checked
+                                    )}
                                 >
                                     {advance.label}
                                 </li>
@@ -261,11 +315,13 @@ export function MonsterheartsPlaybookPreview() {
     }
 
     return (
-        <div className="monsterhearts-doc">
-            <article
-                className="monsterhearts-sheet"
-                style={{ '--mh-columns': layout.columns.length } as CSSProperties}
-            >
+        <div
+            className="monsterhearts-doc"
+            data-appearance-variant={appearance.id}
+            style={appearance.tokens as CSSProperties}
+        >
+            <style>{`@font-face { font-family: 'IM Fell English'; src: url('${assetUrls.fonts['IM Fell English']}') format('woff2'); } @font-face { font-family: 'Averia Serif Libre'; src: url('${assetUrls.fonts['Averia Serif Libre']}') format('woff2'); }`}</style>
+            <article className="monsterhearts-sheet">
                 <button
                     type="button"
                     className="mh-header"
@@ -273,25 +329,40 @@ export function MonsterheartsPlaybookPreview() {
                 >
                     <h1>{playbook.name}</h1>
                     <p>{playbook.description}</p>
+                    <img
+                        className="mh-game-mark"
+                        src={
+                            appearance.id === 'drowned-lake'
+                                ? variantMark
+                                : assetUrls.assets['game-mark']
+                        }
+                        alt=""
+                    />
                 </button>
-                {layout.columns.map((column, index) => (
-                    <div className="mh-column" key={index}>
-                        {column.map((id) => (
-                            <div className="mh-region" key={id}>
-                                {renderRegion(id)}
-                            </div>
-                        ))}
-                    </div>
-                ))}
-                {layout.trailing.length > 0 && (
-                    <div className="mh-fallback">
-                        {layout.trailing.map((id) => (
-                            <div className="mh-region" key={id}>
-                                {renderRegion(id)}
-                            </div>
-                        ))}
-                    </div>
-                )}
+                <div className="mh-layout">
+                    {layout.rows.map((row, rowIndex) => (
+                        <div className="mh-row" key={rowIndex}>
+                            {row.map((column, columnIndex) => (
+                                <div className="mh-column" key={columnIndex}>
+                                    {column.map((id) => (
+                                        <div className="mh-region" key={id}>
+                                            {renderRegion(id)}
+                                        </div>
+                                    ))}
+                                </div>
+                            ))}
+                        </div>
+                    ))}
+                    {layout.trailing.length > 0 && (
+                        <div className="mh-fallback">
+                            {layout.trailing.map((id) => (
+                                <div className="mh-region" key={id}>
+                                    {renderRegion(id)}
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
             </article>
         </div>
     )
