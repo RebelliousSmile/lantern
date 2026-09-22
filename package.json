@@ -5,6 +5,7 @@
     "type": "module",
     "scripts": {
         "dev": "vite",
+        "typecheck": "tsc -b",
         "build": "tsc -b && vite build",
         "start": "node server.mjs",
         "lint": "eslint .",
@@ -12,7 +13,8 @@
         "preview": "vite preview",
         "assert:contracts": "node tools/assert-contracts.mjs",
         "assert:workspace": "node tools/assert-workspace.mjs",
-        "assert:cross-repo": "node tools/assert-cross-repo.mjs"
+        "assert:cross-repo": "node tools/assert-cross-repo.mjs",
+        "check": "npm run lint && npm run typecheck && npm run build && npm run assert:contracts && npm run assert:workspace"
     },
     "dependencies": {
         "@dnd-kit/core": "^6.3.1",
