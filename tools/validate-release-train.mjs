@@ -89,6 +89,19 @@ if (required.length) {
     if (installed.version === candidate.version) pass('installed-version')
     else fail('installed-version', `installed ${installed.version}, expected ${candidate.version}`)
 
+    if (candidate.packageName === 'schema-in-the-mist') {
+        const contracts = spawnSync('npm', ['run', 'assert:contracts'], {
+            encoding: 'utf8',
+            shell: process.platform === 'win32',
+        })
+        if (contracts.status === 0) pass('provider-contract')
+        else
+            fail(
+                'provider-contract',
+                'published Mist provider contract did not match Lantern without a local fallback'
+            )
+    }
+
     const vite = spawnSync('npm', ['run', 'build'], { encoding: 'utf8', shell: process.platform === 'win32' })
     const assets = existsSync('dist/assets') ? readdirSync('dist/assets') : []
     const preview = readFileSync('src/templates/monsterhearts/playbook/preview/MonsterheartsPlaybookPreview.tsx', 'utf8')
