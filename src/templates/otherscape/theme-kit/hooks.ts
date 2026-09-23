@@ -2,6 +2,7 @@ import { useActiveTemplateTab } from '@/core/workspace/selectors'
 import { getActiveTab, useWorkspaceStore } from '@/core/workspace/store'
 import type { WorkspaceTab } from '@/core/workspace/types'
 import { cloneValue } from '@/utils/clone'
+import { setVisibility, toggleVisibility } from '@/templates/shared/visibility'
 import type {
     OtherscapeThemeKit,
     OtherscapeThemeKitSheetState,
@@ -212,17 +213,11 @@ export function useOtherscapeThemeKitViewStore() {
         ) => patchView({ background }),
         toggleHidden: (id: SectionId) =>
             patchView({
-                hidden: {
-                    ...view.hidden,
-                    [id]: !view.hidden[id],
-                },
+                hidden: toggleVisibility(view.hidden, id),
             }),
         setHidden: (id: SectionId, value: boolean) =>
             patchView({
-                hidden: {
-                    ...view.hidden,
-                    [id]: value,
-                },
+                hidden: setVisibility(view.hidden, id, value),
             }),
         setAutoHideEmpty: (autoHideEmpty: boolean) =>
             patchView({ autoHideEmpty }),
