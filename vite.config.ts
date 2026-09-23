@@ -15,6 +15,17 @@ export default defineConfig({
     __APP_VERSION__: JSON.stringify(version),
   },
   plugins: [react(), tailwindcss()],
+  build: {
+    manifest: true,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (!id.includes("node_modules")) return;
+          return "vendor";
+        },
+      },
+    },
+  },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),

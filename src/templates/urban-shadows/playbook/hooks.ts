@@ -44,7 +44,8 @@ export function useUrbanShadowsViewStore() {
     return {
         ...view,
         setHidden: (key: keyof ViewState['hidden'], value: boolean) =>
-            tab && patch(tab.id, { hidden: setVisibility(view.hidden, key, value) }),
+            tab &&
+            patch(tab.id, { hidden: setVisibility(view.hidden, key, value) }),
         setPreviewWidth: (previewWidth: number) =>
             tab && patch(tab.id, { previewWidth }),
         setExportPrefs: (exportPrefs: ViewState['exportPrefs']) =>

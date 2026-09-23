@@ -1,40 +1,17 @@
 import { createImageExportAction } from '@/core/templates/shell/imageExportAction'
 import { createTomlExportAction } from '@/core/templates/shell/tomlExportAction'
 import type { AnyTemplateDefinition } from '@/core/templates/types'
-import { cloneValue } from '@/utils/clone'
 import { PowerSetAppearancePanel } from './editor/PowerSetAppearancePanel'
 import { PowerSetEditorPanel } from './editor/PowerSetEditorPanel'
 import { PowerSetImageExportSettings } from './editor/PowerSetImageExportSettings'
+import descriptor from './descriptor'
 import { getOtherscapePowerSetPreviewWidth } from './hooks'
-import { powerSetSections } from './metadata'
-import {
-    blankOtherscapePowerSet,
-    defaultOtherscapePowerSetSheetState,
-    defaultOtherscapePowerSetView,
-    type OtherscapePowerSet,
-    type OtherscapePowerSetViewState,
-} from './model'
+import type { OtherscapePowerSet, OtherscapePowerSetViewState } from './model'
 import { PowerSetPreview } from './preview/PowerSetPreview'
-import { getSampleOtherscapePowerSet } from './sample'
 import { exportToTOML, importFromTOMLWithWarnings } from './toml'
 
 const powerSetTemplate: AnyTemplateDefinition = {
-    id: 'otherscape.powerSet',
-    gameId: 'otherscape',
-    gameLabel: ':Otherscape',
-    label: 'otherscape:powerSet.label',
-    implemented: true,
-    contractKey: 'mist/otherscape/power-set',
-    createBlank: blankOtherscapePowerSet,
-    createExample: getSampleOtherscapePowerSet,
-    createInitialView: () => cloneValue(defaultOtherscapePowerSetView),
-    createInitialSheet: () => cloneValue(defaultOtherscapePowerSetSheetState),
-    getTabTitle: (doc: OtherscapePowerSet) => doc.name.trim() || 'Power Set',
-    sections: powerSetSections,
-    landing: {
-        newTitle: 'otherscape:powerSet.newTitle',
-        description: 'otherscape:powerSet.description',
-    },
+    ...descriptor,
     io: {
         importToml: (tomlText: string) => {
             const { otherscapePowerSet, warnings } =

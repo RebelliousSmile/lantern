@@ -1,6 +1,5 @@
 import { getGameTheme } from '@/core/gameThemes'
 import { templateById } from '@/core/templates/registry'
-import { DEFAULT_TEMPLATE_PREVIEW_WIDTH } from '@/core/templates/types'
 import { useWorkspaceStore } from '@/core/workspace/store'
 import { useWorkspaceHydration } from '@/core/workspace/useWorkspaceHydration'
 import { useEffect } from 'react'
@@ -51,20 +50,12 @@ export function useAppShellState() {
         ? getGameTheme(activeTemplate.gameId)
         : null
 
-    const templatePreview = activeTemplate?.implemented
-        ? activeTemplate.preview.render()
-        : null
-
     const showDesktopInspector = Boolean(
         hydrated &&
             activeTab &&
             activeTemplate?.implemented &&
             activeTab.mode === 'editing'
     )
-
-    const maxWidth = activeTemplate?.implemented
-        ? activeTemplate.appearance.getPreviewWidth(activeTab?.view as never)
-        : DEFAULT_TEMPLATE_PREVIEW_WIDTH
 
     function startEditingWithExample() {
         if (!activeTab || !activeTemplate) return
@@ -88,9 +79,7 @@ export function useAppShellState() {
         activeTab,
         activeTemplate,
         activeGameTheme,
-        templatePreview,
         showDesktopInspector,
-        maxWidth,
         startEditingBlank,
         startEditingWithExample,
     }

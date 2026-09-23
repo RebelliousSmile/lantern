@@ -1,5 +1,6 @@
 import type { ImportWarning } from '@/core/templates/types'
-import { useActiveTab, useActiveTemplate } from '@/core/workspace/selectors'
+import { useResolvedTemplate } from '@/core/templates/TemplateModuleBoundary'
+import { useActiveTab } from '@/core/workspace/selectors'
 import { useWorkspaceStore } from '@/core/workspace/store'
 import i18n from '@/i18n'
 import { formatError } from '@/i18n/formatError'
@@ -36,7 +37,7 @@ const importedMessage = (name?: string) =>
 export default function ImportDialog({ open, onOpenChange }: Props) {
     const { t } = useTranslation()
     const activeTab = useActiveTab()
-    const activeTemplate = useActiveTemplate()
+    const activeTemplate = useResolvedTemplate()
 
     const replaceTabDoc = useWorkspaceStore((s) => s.replaceTabDoc)
     const setTabMode = useWorkspaceStore((s) => s.setTabMode)
