@@ -5,6 +5,13 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
+const monsterheartsPreview = readFileSync(
+    path.join(
+        root,
+        'src/templates/monsterhearts/playbook/preview/MonsterheartsPlaybookPreview.tsx'
+    ),
+    'utf8'
+)
 const manifest = JSON.parse(
     readFileSync(path.join(root, 'dist/.vite/manifest.json'), 'utf8')
 )
@@ -61,6 +68,10 @@ for (const source of templateModules) {
 
 emittedAsset('/monsterhearts/assets/images/thorn-heart.svg')
 emittedAsset('/monsterhearts/assets/variants/drowned-lake/zine-lake.svg')
+assert.match(monsterheartsPreview, /thorn-heart\.svg\?url&no-inline/, 'Monsterhearts must import the thorn heart as a Vite URL')
+assert.match(monsterheartsPreview, /zine-lake\.svg\?url&no-inline/, 'Drowned Lake must import its mark as a Vite URL')
+assert.match(monsterheartsPreview, /<img\s+className="mh-game-mark"\s+src=\{gameMark\}/, 'Monsterhearts must render the bundled game mark URL')
+assert.doesNotMatch(monsterheartsPreview, /src=\{(?:assetUrls|publishedGameMark)/, 'Monsterhearts must never render a published file: asset URL')
 
 console.log(
     `Template chunks verified: ${entrySize} byte entry, ${templateModules.length} lazy modules.`
