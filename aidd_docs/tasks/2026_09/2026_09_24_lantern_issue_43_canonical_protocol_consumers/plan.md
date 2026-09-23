@@ -1,6 +1,6 @@
 ---
 objective: "Lantern accepts the canonical protocol-1 consumer envelope while schema-pbta retains orchestration-only metadata outside consumer manifests."
-status: in-progress
+status: implemented
 ---
 
 # Plan: Accept canonical protocol-1 consumers in Lantern
