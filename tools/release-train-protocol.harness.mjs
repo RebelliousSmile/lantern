@@ -23,15 +23,11 @@ const manifest = {
             role: 'lantern',
             repository: 'RebelliousSmile/lantern',
             ref: head,
-            path: 'lantern',
-            proof: { interface: 'npm-run-release-train-assert', manifest: 'release-train.manifest.json' },
         },
         {
             role: 'handbook',
             repository: 'RebelliousSmile/obsidian-handbook',
             ref: 'c'.repeat(40),
-            path: 'handbook',
-            proof: { interface: 'npm-run-release-train-assert', manifest: 'release-train.manifest.json' },
         },
     ],
 }
@@ -45,6 +41,8 @@ assert.deepEqual(frozenInstallCommand('isolated-store'), {
 assert.throws(() => parseProtocolOne({ ...manifest, protocol: 2 }), /protocol must be 1/)
 assert.throws(() => parseProtocolOne({ ...manifest, consumers: [manifest.consumers[0]] }), /Lantern and Handbook exactly once/)
 assert.throws(() => parseProtocolOne({ ...manifest, candidate: { ...candidate, integrity: 'sha256-invalid' } }), /SHA-512 SRI/)
+assert.throws(() => parseProtocolOne({ ...manifest, consumers: [{ ...manifest.consumers[0], path: 'lantern' }, manifest.consumers[1]] }), /unexpected or missing fields/)
+assert.throws(() => parseProtocolOne({ ...manifest, consumers: [{ ...manifest.consumers[0], proof: { interface: 'npm-run-release-train-assert', manifest: 'release-train.manifest.json' } }, manifest.consumers[1]] }), /unexpected or missing fields/)
 assert.throws(() => selectLanternConsumer({ ...manifest, consumers: [{ ...manifest.consumers[0], ref: 'd'.repeat(40) }, manifest.consumers[1]] }), /does not match checked-out HEAD/)
 
 assert.deepEqual(

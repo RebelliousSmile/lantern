@@ -45,16 +45,11 @@ function candidate(raw) {
 
 function consumer(raw, index) {
     const value = object(raw, `consumers[${index}]`)
-    exactKeys(value, ['role', 'repository', 'ref', 'path', 'proof'], `consumers[${index}]`)
+    exactKeys(value, ['role', 'repository', 'ref'], `consumers[${index}]`)
     assert.ok(ROLES.includes(value.role), `consumers[${index}].role must be lantern or handbook`)
     assert.equal(value.repository, REPOSITORIES[value.role], `consumers[${index}] has the wrong repository`)
     assert.match(text(value.ref, `consumers[${index}].ref`), COMMIT, `consumers[${index}].ref must be a full commit SHA`)
-    assert.match(text(value.path, `consumers[${index}].path`), /^[a-z][a-z0-9-]*$/, `consumers[${index}].path must be a safe workspace path`)
-    const proof = object(value.proof, `consumers[${index}].proof`)
-    exactKeys(proof, ['interface', 'manifest'], `consumers[${index}].proof`)
-    assert.equal(proof.interface, 'npm-run-release-train-assert', `consumers[${index}] uses an unsupported proof interface`)
-    assert.match(text(proof.manifest, `consumers[${index}].proof.manifest`), /^[a-z][a-z0-9.-]*(?:\/[a-z][a-z0-9.-]*)*\.json$/, `consumers[${index}].proof.manifest must be a safe JSON path`)
-    return value
+    return { role: value.role, repository: value.repository, ref: value.ref }
 }
 
 export function parseProtocolOne(raw) {
