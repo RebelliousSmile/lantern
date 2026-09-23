@@ -124,6 +124,11 @@ const common: ResourceShape<typeof en> = {
         png: 'PNG',
         exportPng: 'Exporter le PNG',
     },
+    workspace: {
+        persistenceFailed:
+            'L’enregistrement a échoué. Votre travail actuel n’est pas conservé.',
+        exportRescueCopy: 'Exporter une copie de secours',
+    },
     feedback: {
         title: 'Envoyer un retour sur Discord',
         description:
