@@ -20,7 +20,7 @@
         "validate:release-train": "node tools/validate-release-train.mjs",
         "release-train:assert": "node tools/release-train-assert.mjs",
         "prepare:schema-pbta-candidate": "node tools/prepare-schema-pbta-candidate.mjs",
-        "check": "npm run lint && npm run typecheck && npm run build && npm run assert:contracts && npm run assert:workspace"
+        "check": "npm run lint && npm run typecheck && npm run assert:template-chunks && npm run assert:contracts && npm run assert:workspace"
     },
     "dependencies": {
         "@dnd-kit/core": "^6.3.1",
