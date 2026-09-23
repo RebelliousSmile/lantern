@@ -2,6 +2,24 @@ import assert from 'node:assert/strict'
 import { migrateLegacyChallengeWorkspace } from '../src/templates/legend-in-the-mist/challenge/legacyWorkspaceMigration'
 import { getSampleLegendInTheMistChallenge } from '../src/templates/legend-in-the-mist/challenge/sample'
 import { cloneValue } from '../src/utils/clone'
+import {
+    mergeVisibility,
+    setVisibility,
+    toggleVisibility,
+} from '../src/templates/shared/visibility'
+
+const visibilityDefaults = { moves: false, gear: true }
+const mergedVisibility = mergeVisibility(visibilityDefaults, { moves: true })
+assert.deepEqual(mergedVisibility, { moves: true, gear: true })
+assert.deepEqual(visibilityDefaults, { moves: false, gear: true })
+assert.deepEqual(toggleVisibility(mergedVisibility, 'gear'), {
+    moves: true,
+    gear: false,
+})
+assert.deepEqual(setVisibility(mergedVisibility, 'moves', false), {
+    moves: false,
+    gear: true,
+})
 
 const storage = new Map<string, string>()
 Object.defineProperty(globalThis, 'window', {

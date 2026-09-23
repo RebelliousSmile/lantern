@@ -1,5 +1,6 @@
 import { useActiveTemplateTab } from '@/core/workspace/selectors'
 import { useWorkspaceStore } from '@/core/workspace/store'
+import { setVisibility } from '@/templates/shared/visibility'
 import {
     blankPlaybook,
     defaultSheet,
@@ -46,7 +47,7 @@ export function useMonsterheartsView() {
         setStatBounds: (statBounds: ViewState['statBounds']) =>
             tab && patch(tab.id, { statBounds }),
         setHidden: (id: keyof ViewState['hidden'], value: boolean) =>
-            tab && patch(tab.id, { hidden: { ...view.hidden, [id]: value } }),
+            tab && patch(tab.id, { hidden: setVisibility(view.hidden, id, value) }),
         setExportPrefs: (scale: 1 | 2 | 3) =>
             tab && patch(tab.id, { exportPrefs: { scale } }),
         setAppearanceVariant: (
