@@ -1,7 +1,6 @@
 /* global Buffer, console, fetch, process */
 import { createHash } from 'node:crypto'
-import { existsSync, mkdtempSync, readFileSync, readdirSync, rmSync } from 'node:fs'
-import { tmpdir } from 'node:os'
+import { existsSync, readFileSync, readdirSync } from 'node:fs'
 import { isAbsolute, join, relative, resolve, sep } from 'node:path'
 import { spawnSync } from 'node:child_process'
 
@@ -79,9 +78,7 @@ if (required.length) {
         else fail('archive', 'archive SHA-256 or SRI differs from candidate')
     }
 
-    const store = mkdtempSync(join(tmpdir(), 'lantern-release-train-store-'))
-    const frozen = spawnSync('pnpm', ['install', '--frozen-lockfile', '--ignore-scripts', '--store-dir', store], { encoding: 'utf8', shell: process.platform === 'win32' })
-    rmSync(store, { recursive: true, force: true })
+    const frozen = spawnSync('npm', ['ci', '--ignore-scripts', '--no-audit', '--no-fund'], { encoding: 'utf8', shell: process.platform === 'win32' })
     if (frozen.status === 0) pass('frozen-install')
     else fail('frozen-install', 'pnpm frozen install did not materialize the committed Lantern graph')
 
