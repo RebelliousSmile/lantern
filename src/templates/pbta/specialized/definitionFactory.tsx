@@ -5,14 +5,10 @@ import { SchemaEditor } from '@/core/editor-schema/SchemaEditor'
 import { inferObject } from '@/core/editor-schema/inferSchema'
 import { getAtPath } from '@/core/editor-schema/path'
 import { createTomlExportAction } from '@/core/templates/shell/tomlExportAction'
-import type {
-    AnyTemplateDefinition,
-    TemplateSectionDefinition,
-} from '@/core/templates/types'
+import type { AnyTemplateDefinition } from '@/core/templates/types'
 import { useActiveTemplateTab } from '@/core/workspace/selectors'
 import { useWorkspaceStore } from '@/core/workspace/store'
-import { translateEnglish, useUiText, type UiText } from '@/i18n/text'
-import { PBTA_COLLECTION_PRESENTATIONS } from 'schema-pbta'
+import { translateEnglish, useUiText } from '@/i18n/text'
 import {
     collectionAdapterFor,
     PublishedCollectionEditor,
@@ -23,20 +19,13 @@ import {
     replaceCollectionItems,
 } from './collectionPolicy'
 import './specializedPlaybookTheme.css'
-
-type Document = Record<string, unknown>
-type View = { hidden: Record<string, boolean>; previewWidth: number }
-type Sheet = { open: boolean; target: string | 'basic' | null }
-type Config = {
-    id: string
-    gameId: string
-    gameLabel: string
-    label: UiText
-    newTitle: UiText
-    contractKey: string
-    sections: Array<{ id: string; label: UiText }>
-    blank: Document
-}
+import type {
+    SpecializedPlaybookConfig as Config,
+    SpecializedPlaybookDocument as Document,
+    SpecializedPlaybookSheet as Sheet,
+    SpecializedPlaybookView as View,
+} from './staticDefinitionFactory'
+import { createSpecializedPlaybookStaticDefinition } from './staticDefinitionFactory'
 
 function humanize(label: string) {
     return label.replace(/([a-z])([A-Z])/g, '$1 $2')
@@ -143,29 +132,19 @@ function PlaybookValue({ value }: { value: unknown }) {
 }
 
 export function createSpecializedPlaybookTemplate(
-    config: Config
+    config: Config,
+    staticDefinition = createSpecializedPlaybookStaticDefinition(config)
 ): AnyTemplateDefinition {
     const clone = <T,>(value: T): T => structuredClone(value)
     const target = config.contractKey.replace(/^pbta\//, '') as Parameters<
         typeof collectionFor
     >[0]
-    const collectionSections = PBTA_COLLECTION_PRESENTATIONS.filter(
-        (presentation) =>
-            presentation.target === target &&
-            !presentation.path.includes('[]') &&
-            !config.sections.some(({ id }) => id === presentation.path)
-    ).map(({ path, label }) => ({ id: path, label: { text: label } }))
-    const sections: TemplateSectionDefinition[] = [
-        ...config.sections,
-        ...collectionSections,
-    ]
+    const { sections } = staticDefinition
+    const contract = documentContracts.require<Document>(config.contractKey)
     /* The sheet is document output: it prints English whatever the UI language. */
     const printedLabel = () => translateEnglish(config.label)
-    const defaultView = (): View => ({
-        previewWidth: 1123,
-        hidden: Object.fromEntries(sections.map(({ id }) => [id, false])),
-    })
-    const defaultSheet = (): Sheet => ({ open: false, target: null })
+    const defaultView = staticDefinition.createInitialView
+    const defaultSheet = staticDefinition.createInitialSheet
     function useTab() {
         return useActiveTemplateTab<Document, View, Sheet>(config.id)
     }
@@ -348,27 +327,8 @@ export function createSpecializedPlaybookTemplate(
             </div>
         )
     }
-    const contract = documentContracts.require<Document>(config.contractKey)
     return {
-        id: config.id,
-        gameId: config.gameId,
-        gameLabel: config.gameLabel,
-        label: config.label,
-        implemented: true,
-        contractKey: config.contractKey,
-        createBlank: () => clone(config.blank),
-        createExample: () => clone(config.blank),
-        createInitialView: defaultView,
-        createInitialSheet: defaultSheet,
-        getTabTitle: (doc) => String(doc.name || printedLabel()),
-        sections,
-        landing: {
-            newTitle: config.newTitle,
-            description: {
-                key: 'pbta:specialized.description',
-                values: { game: config.gameLabel },
-            },
-        },
+        ...staticDefinition,
         io: {
             importToml: (text) => ({
                 doc: contract.parseToml(text),
@@ -390,7 +350,7 @@ export function createSpecializedPlaybookTemplate(
         export: {
             actions: [
                 createTomlExportAction({
-                    exportToml: (doc: Document) => contract.stringifyToml(doc),
+                    exportToml: (doc) => contract.stringifyToml(doc),
                     description: 'pbta:playbook.exportToml',
                 }),
             ],

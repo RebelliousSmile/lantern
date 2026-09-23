@@ -1,43 +1,19 @@
 import { createImageExportAction } from '@/core/templates/shell/imageExportAction'
 import { createTomlExportAction } from '@/core/templates/shell/tomlExportAction'
 import type { AnyTemplateDefinition } from '@/core/templates/types'
-import { cloneValue } from '@/utils/clone'
 import { GameDefinitionAppearancePanel } from './editor/GameDefinitionAppearancePanel'
 import { GameDefinitionEditorPanel } from './editor/GameDefinitionEditorPanel'
 import { GameDefinitionImageExportSettings } from './editor/GameDefinitionImageExportSettings'
 import { getGameDefinitionPreviewWidth } from './hooks'
-import { gameDefinitionSections } from './metadata'
-import {
-    blankGameDefinition,
-    defaultGameDefinitionSheetState,
-    defaultGameDefinitionView,
-    type GameDefinitionViewState,
-    type PbtaGameDefinition,
-} from './model'
+import type { GameDefinitionViewState } from './model'
 import { GameDefinitionPreview } from './preview/GameDefinitionPreview'
-import { getSamplePbtaGameDefinition } from './sample'
+import staticDefinition from './static'
 import { exportToTOML, importFromTOMLWithWarnings } from './toml'
 
 const gameDefinitionTemplate: AnyTemplateDefinition = {
-    id: 'pbta.gameDefinition',
-    gameId: 'apocalypse-world',
-    gameLabel: 'Apocalypse World',
-    label: 'pbta:gameDefinition.label',
-    implemented: true,
-    contractKey: 'pbta/game-definition',
-    createBlank: blankGameDefinition,
-    createExample: getSamplePbtaGameDefinition,
-    createInitialView: () => cloneValue(defaultGameDefinitionView),
-    createInitialSheet: () => cloneValue(defaultGameDefinitionSheetState),
-    getTabTitle: (doc: PbtaGameDefinition) =>
-        doc.name.trim() || 'Game Definition',
-    sections: gameDefinitionSections,
-    landing: {
-        newTitle: 'pbta:gameDefinition.newTitle',
-        description: 'pbta:gameDefinition.description',
-    },
+    ...staticDefinition,
     io: {
-        importToml: (tomlText: string) => {
+        importToml: (tomlText) => {
             const { gameDefinition, warnings } =
                 importFromTOMLWithWarnings(tomlText)
             return {
@@ -46,7 +22,7 @@ const gameDefinitionTemplate: AnyTemplateDefinition = {
                 previewName: gameDefinition.name || 'Imported Game Definition',
             }
         },
-        exportToml: (doc: PbtaGameDefinition) => exportToTOML(doc),
+        exportToml: exportToTOML,
     },
     preview: {
         getRootSelector: (tabId: string) => `[data-preview-root="${tabId}"]`,

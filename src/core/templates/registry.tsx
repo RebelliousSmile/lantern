@@ -1,32 +1,32 @@
-import { documentContracts } from '@/contracts/registry'
 import { inferObject } from '@/core/editor-schema/inferSchema'
-import adrenalineMonstreTemplate from '@/templates/adrenaline/monstre/definition'
-import adrenalinePjTemplate from '@/templates/adrenaline/pj/definition'
-import adrenalinePnjTemplate from '@/templates/adrenaline/pnj/definition'
-import cityCustomMoveTemplate from '@/templates/city-of-mist/custom-move/definition'
-import dangerTemplate from '@/templates/city-of-mist/danger/definition'
-import cityThemeCardTemplate from '@/templates/city-of-mist/theme-card/definition'
-import cityThemeKitTemplate from '@/templates/city-of-mist/theme-kit/definition'
-import challengeTemplate from '@/templates/legend-in-the-mist/challenge/definition'
-import journeyTemplate from '@/templates/legend-in-the-mist/journey/definition'
-import storyThemeTemplate from '@/templates/legend-in-the-mist/story-theme/definition'
-import themeKitTemplate from '@/templates/legend-in-the-mist/theme-kit/definition'
-import masksPlaybookTemplate from '@/templates/masks/playbook/definition'
-import monsterOfTheWeekPlaybookTemplate from '@/templates/monster-of-the-week/playbook/definition'
-import monsterheartsPlaybookTemplate from '@/templates/monsterhearts/playbook/definition'
-import otherscapeChallengeTemplate from '@/templates/otherscape/challenge/definition'
-import otherscapeCharacterTropeTemplate from '@/templates/otherscape/character-trope/definition'
-import otherscapeLoadoutItemTemplate from '@/templates/otherscape/loadout-item/definition'
-import otherscapePowerSetTemplate from '@/templates/otherscape/power-set/definition'
-import otherscapeThemeKitTemplate from '@/templates/otherscape/theme-kit/definition'
-import otherscapeThemeTemplate from '@/templates/otherscape/theme/definition'
-import gameDefinitionTemplate from '@/templates/pbta/game-definition/definition'
-import playbookTemplate from '@/templates/pbta/playbook/definition'
-import theSprawlPlaybookTemplate from '@/templates/the-sprawl/playbook/definition'
-import urbanShadowsPlaybookTemplate from '@/templates/urban-shadows/playbook/definition'
-import { type AnyTemplateDefinition, type GameId } from './types'
+import { templateLoaders } from './templateLoader'
+import adrenalineMonstreTemplate from '@/templates/adrenaline/monstre/descriptor'
+import adrenalinePjTemplate from '@/templates/adrenaline/pj/descriptor'
+import adrenalinePnjTemplate from '@/templates/adrenaline/pnj/descriptor'
+import { customMoveDescriptor as cityCustomMoveTemplate } from '@/templates/city-of-mist/custom-move/descriptor'
+import { dangerDescriptor as dangerTemplate } from '@/templates/city-of-mist/danger/descriptor'
+import { themeCardDescriptor as cityThemeCardTemplate } from '@/templates/city-of-mist/theme-card/descriptor'
+import { themeKitDescriptor as cityThemeKitTemplate } from '@/templates/city-of-mist/theme-kit/descriptor'
+import { challengeDescriptor as challengeTemplate } from '@/templates/legend-in-the-mist/challenge/descriptor'
+import { journeyDescriptor as journeyTemplate } from '@/templates/legend-in-the-mist/journey/descriptor'
+import { storyThemeDescriptor as storyThemeTemplate } from '@/templates/legend-in-the-mist/story-theme/descriptor'
+import { themeKitDescriptor as themeKitTemplate } from '@/templates/legend-in-the-mist/theme-kit/descriptor'
+import masksPlaybookTemplate from '@/templates/masks/playbook/static'
+import monsterOfTheWeekPlaybookTemplate from '@/templates/monster-of-the-week/playbook/static'
+import monsterheartsPlaybookTemplate from '@/templates/monsterhearts/playbook/static'
+import otherscapeChallengeTemplate from '@/templates/otherscape/challenge/descriptor'
+import otherscapeCharacterTropeTemplate from '@/templates/otherscape/character-trope/descriptor'
+import otherscapeLoadoutItemTemplate from '@/templates/otherscape/loadout-item/descriptor'
+import otherscapePowerSetTemplate from '@/templates/otherscape/power-set/descriptor'
+import otherscapeThemeKitTemplate from '@/templates/otherscape/theme-kit/descriptor'
+import otherscapeThemeTemplate from '@/templates/otherscape/theme/descriptor'
+import gameDefinitionTemplate from '@/templates/pbta/game-definition/static'
+import playbookTemplate from '@/templates/pbta/playbook/static'
+import theSprawlPlaybookTemplate from '@/templates/the-sprawl/playbook/static'
+import urbanShadowsPlaybookTemplate from '@/templates/urban-shadows/playbook/static'
+import { type AnyStaticTemplateDefinition, type GameId } from './types'
 
-export const templateRegistry: AnyTemplateDefinition[] = [
+export const templateRegistry: AnyStaticTemplateDefinition[] = [
     adrenalinePjTemplate,
     adrenalinePnjTemplate,
     adrenalineMonstreTemplate,
@@ -54,15 +54,13 @@ export const templateRegistry: AnyTemplateDefinition[] = [
 ]
 
 /*
- * Every template's contract key has to resolve, and it has to resolve here
- * rather than at the first import or export: a fifteenth module pointing at
- * nothing must fail the run with its key named, not ship and break on a user's
- * document. `require` throws with the key and the known ones.
+ * The entry registry is deliberately contract-codec free. Definitions validate
+ * their own contract when their lazy module evaluates; importing every codec
+ * here would put every game schema back in the initial bundle.
  */
 for (const template of templateRegistry) {
-    documentContracts.require(template.contractKey)
-    if (!template.editor.schema) {
-        template.editor.schema = inferObject(
+    if (!template.editorSchema) {
+        template.editorSchema = inferObject(
             template.id,
             template.createBlank() as Record<string, unknown>
         )
@@ -72,7 +70,7 @@ for (const template of templateRegistry) {
 export type GameGroup = {
     gameId: GameId
     gameLabel: string
-    templates: AnyTemplateDefinition[]
+    templates: AnyStaticTemplateDefinition[]
 }
 
 /*
@@ -102,10 +100,10 @@ export const templatesByGame: GameGroup[] = (() => {
 })()
 
 export function assertTemplateRegistryIntegrity(
-    templates: readonly AnyTemplateDefinition[],
+    templates: readonly AnyStaticTemplateDefinition[],
     groups: readonly GameGroup[],
-    requireContract: (key: string) => unknown = (key) =>
-        documentContracts.require(key)
+    requireContract: (key: string) => unknown = () => true,
+    loaders: Readonly<Record<string, unknown>> = templateLoaders
 ) {
     const ids = new Set<string>()
     for (const template of templates) {
@@ -116,6 +114,9 @@ export function assertTemplateRegistryIntegrity(
                 `template registry contains duplicate id: ${template.id}`
             )
         ids.add(template.id)
+        if (!loaders[template.id]) {
+            throw new Error(`template ${template.id} has no lazy module loader`)
+        }
         if (!template.gameId || !template.gameLabel)
             throw new Error(
                 `template ${template.id} has an incomplete game identity`

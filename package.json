@@ -13,6 +13,7 @@
         "preview": "vite preview",
         "assert:contracts": "node tools/assert-contracts.mjs",
         "assert:workspace": "node tools/assert-workspace.mjs",
+        "assert:template-chunks": "npm run build && node tools/assert-template-chunks.mjs",
         "assert:visibility-protocol": "node tools/assert-visibility-protocol.mjs",
         "assert:cross-repo": "node tools/assert-cross-repo.mjs",
         "assert:consumer-schema-pins": "node tools/assert-consumer-schema-pins.mjs",

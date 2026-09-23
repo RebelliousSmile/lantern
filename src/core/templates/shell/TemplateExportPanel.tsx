@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { useActiveTab, useActiveTemplate } from '@/core/workspace/selectors'
+import { useResolvedTemplate } from '@/core/templates/TemplateModuleBoundary'
+import { useActiveTab } from '@/core/workspace/selectors'
 import { formatError } from '@/i18n/formatError'
 import { translateEnglish, useUiText } from '@/i18n/text'
 import { slugify } from '@/utils/strings'
@@ -30,7 +31,7 @@ export function TemplateExportPanel() {
     const { t } = useTranslation()
     const text = useUiText()
     const activeTab = useActiveTab()
-    const activeTemplate = useActiveTemplate()
+    const activeTemplate = useResolvedTemplate()
     const [activeActionId, setActiveActionId] = useState<string | null>(null)
     const [busyActionId, setBusyActionId] = useState<string | null>(null)
 

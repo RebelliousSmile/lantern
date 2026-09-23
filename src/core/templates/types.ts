@@ -119,3 +119,32 @@ export type TemplateDefinition<
 }
 
 export type AnyTemplateDefinition = TemplateDefinition<any, any, any>
+
+/**
+ * The part of a template needed before its editor and preview code load. It is
+ * intentionally free of React factories so the sidebar and workspace can stay
+ * in the entry chunk.
+ */
+export type StaticTemplateDefinition<
+    TDoc = unknown,
+    TView = unknown,
+    TSheet = unknown,
+> = Omit<
+    TemplateDefinition<TDoc, TView, TSheet>,
+    'preview' | 'editor' | 'appearance' | 'export' | 'io'
+> & {
+    /** The editor schema is data and belongs with the entry-chunk descriptor. */
+    editorSchema?: TemplateEditorSchema
+}
+
+export type AnyStaticTemplateDefinition = StaticTemplateDefinition<any, any, any>
+
+/** Render factories supplied by a lazily imported template module. */
+export type TemplateRenderDefinition<
+    TDoc = unknown,
+    TView = unknown,
+    TSheet = unknown,
+> = Pick<
+    TemplateDefinition<TDoc, TView, TSheet>,
+    'preview' | 'editor' | 'appearance' | 'export'
+>

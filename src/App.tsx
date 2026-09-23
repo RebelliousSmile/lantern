@@ -1,6 +1,11 @@
 import { AppSidebar } from '@/components/sidebar/app-sidebar'
 import { SidebarProvider } from '@/components/ui/sidebar'
 import { Toaster } from '@/components/ui/sonner'
+import {
+    TemplateModuleBoundary,
+    useResolvedTemplate,
+} from '@/core/templates/TemplateModuleBoundary'
+import { DEFAULT_TEMPLATE_PREVIEW_WIDTH } from '@/core/templates/types'
 import { useWorkspaceStore } from '@/core/workspace/store'
 import { useTranslation } from 'react-i18next'
 import AppDesktopInspector from './app/AppDesktopInspector'
@@ -58,30 +63,57 @@ export default function App() {
                     </div>
                 )}
 
-                <main
-                    className="mist-app-main mx-auto min-h-[calc(100svh-4rem)] w-full min-w-0 overflow-x-hidden px-4 py-6 sm:px-6"
-                    style={{ maxWidth: `${shell.maxWidth}px` }}
+                <TemplateModuleBoundary
+                    template={shell.activeTemplate}
+                    fallback={<TemplateLoadingState />}
+                    errorFallback={<TemplateLoadFailedState />}
                 >
-                    <AppMainContent
-                        activeGameThemeId={shell.activeGameTheme?.id}
-                        activeTab={shell.activeTab}
-                        activeTemplate={shell.activeTemplate}
-                        hydrated={shell.hydrated}
-                        mobileInspectorOpen={ui.desktopInspectorOpen}
-                        templatePreview={shell.templatePreview}
-                        onOpenImport={() => ui.setImportOpen(true)}
-                        onStartBlank={shell.startEditingBlank}
-                        onStartExample={shell.startEditingWithExample}
-                        onToggleMobileInspector={() =>
-                            ui.setDesktopInspectorOpen(!ui.desktopInspectorOpen)
-                        }
-                    />
-                </main>
+                    <TemplateContent shell={shell} ui={ui} />
+                </TemplateModuleBoundary>
             </div>
+
+            <Toaster richColors closeButton position="top-center" expand />
+        </SidebarProvider>
+    )
+}
+
+type TemplateContentProps = {
+    shell: ReturnType<typeof useAppShellState>
+    ui: ReturnType<typeof useAppShellUi>
+}
+
+function TemplateContent({ shell, ui }: TemplateContentProps) {
+    const activeTemplate = useResolvedTemplate()
+    const maxWidth = activeTemplate
+        ? activeTemplate.appearance.getPreviewWidth(shell.activeTab?.view)
+        : DEFAULT_TEMPLATE_PREVIEW_WIDTH
+    const templatePreview = activeTemplate?.preview.render() ?? null
+
+    return (
+        <>
+            <main
+                className="mist-app-main mx-auto min-h-[calc(100svh-4rem)] w-full min-w-0 overflow-x-hidden px-4 py-6 sm:px-6"
+                style={{ maxWidth: `${maxWidth}px` }}
+            >
+                <AppMainContent
+                    activeGameThemeId={shell.activeGameTheme?.id}
+                    activeTab={shell.activeTab}
+                    activeTemplate={activeTemplate}
+                    hydrated={shell.hydrated}
+                    mobileInspectorOpen={ui.desktopInspectorOpen}
+                    templatePreview={templatePreview}
+                    onOpenImport={() => ui.setImportOpen(true)}
+                    onStartBlank={shell.startEditingBlank}
+                    onStartExample={shell.startEditingWithExample}
+                    onToggleMobileInspector={() =>
+                        ui.setDesktopInspectorOpen(!ui.desktopInspectorOpen)
+                    }
+                />
+            </main>
 
             {shell.hydrated &&
                 shell.activeTab &&
-                shell.activeTemplate?.implemented &&
+                activeTemplate &&
                 shell.activeTab.mode === 'landing' && (
                     <ImportDialog
                         open={ui.importOpen}
@@ -89,14 +121,28 @@ export default function App() {
                     />
                 )}
 
-            {shell.showDesktopInspector && (
+            {shell.showDesktopInspector && activeTemplate && (
                 <AppDesktopInspector
                     open={ui.desktopInspectorOpen}
                     onOpenChange={ui.setDesktopInspectorOpen}
                 />
             )}
+        </>
+    )
+}
 
-            <Toaster richColors closeButton position="top-center" expand />
-        </SidebarProvider>
+function TemplateLoadingState() {
+    return (
+        <main className="mist-app-main mx-auto flex min-h-[calc(100svh-4rem)] w-full min-w-0 items-center justify-center px-4 py-6 text-sm text-muted-foreground sm:px-6">
+            Loading template...
+        </main>
+    )
+}
+
+function TemplateLoadFailedState() {
+    return (
+        <main className="mist-app-main mx-auto flex min-h-[calc(100svh-4rem)] w-full min-w-0 items-center justify-center px-4 py-6 text-sm text-muted-foreground sm:px-6">
+            Unable to load this template. Select another tab to continue.
+        </main>
     )
 }

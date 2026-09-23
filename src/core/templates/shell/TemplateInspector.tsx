@@ -5,14 +5,15 @@ import {
     AccordionTrigger,
 } from '@/components/ui/accordion'
 import { SidebarContent, SidebarFooter } from '@/components/ui/sidebar'
+import { useResolvedTemplate } from '@/core/templates/TemplateModuleBoundary'
 import { useUiText } from '@/i18n/text'
-import { useActiveTab, useActiveTemplate } from '@/core/workspace/selectors'
+import { useActiveTab } from '@/core/workspace/selectors'
 import { useTranslation } from 'react-i18next'
 import { TemplateExportPanel } from './TemplateExportPanel'
 
 export function TemplateInspector() {
     const { t } = useTranslation()
-    const activeTemplate = useActiveTemplate()
+    const activeTemplate = useResolvedTemplate()
     const activeTab = useActiveTab()
     const text = useUiText()
 

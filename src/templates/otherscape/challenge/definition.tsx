@@ -1,40 +1,17 @@
 import { createImageExportAction } from '@/core/templates/shell/imageExportAction'
 import { createTomlExportAction } from '@/core/templates/shell/tomlExportAction'
 import type { AnyTemplateDefinition } from '@/core/templates/types'
-import { cloneValue } from '@/utils/clone'
 import { ChallengeAppearancePanel } from './editor/ChallengeAppearancePanel'
 import { ChallengeEditorPanel } from './editor/ChallengeEditorPanel'
 import { ChallengeImageExportSettings } from './editor/ChallengeImageExportSettings'
+import descriptor from './descriptor'
 import { getOtherscapeChallengePreviewWidth } from './hooks'
-import { challengeSections } from './metadata'
-import {
-    blankOtherscapeChallenge,
-    defaultOtherscapeChallengeSheetState,
-    defaultOtherscapeChallengeView,
-    type OtherscapeChallenge,
-    type OtherscapeChallengeViewState,
-} from './model'
+import type { OtherscapeChallenge, OtherscapeChallengeViewState } from './model'
 import { ChallengePreview } from './preview/ChallengePreview'
-import { getSampleOtherscapeChallenge } from './sample'
 import { exportToTOML, importFromTOMLWithWarnings } from './toml'
 
 const challengeTemplate: AnyTemplateDefinition = {
-    id: 'otherscape.challenge',
-    gameId: 'otherscape',
-    gameLabel: ':Otherscape',
-    label: 'otherscape:challenge.label',
-    implemented: true,
-    contractKey: 'mist/otherscape/challenge',
-    createBlank: blankOtherscapeChallenge,
-    createExample: getSampleOtherscapeChallenge,
-    createInitialView: () => cloneValue(defaultOtherscapeChallengeView),
-    createInitialSheet: () => cloneValue(defaultOtherscapeChallengeSheetState),
-    getTabTitle: (doc: OtherscapeChallenge) => doc.name.trim() || 'Challenge',
-    sections: challengeSections,
-    landing: {
-        newTitle: 'otherscape:challenge.newTitle',
-        description: 'otherscape:challenge.description',
-    },
+    ...descriptor,
     io: {
         importToml: (tomlText: string) => {
             const { otherscapeChallenge, warnings } =
