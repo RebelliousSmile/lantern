@@ -64,10 +64,20 @@ if (required.length) {
                 lines.slice(index, index + 4).some((value) => value.includes(`integrity: ${candidate.integrity}`)) &&
                 lines.slice(index, index + 4).some((value) => value.trim() === `version: ${candidate.version}`)
             )
-        if (importer?.[1] === candidate.archiveUrl && packageEntry)
-            pass('pnpm-resolution')
-        else fail('pnpm-resolution', 'pnpm importer URL or resolved package version/SRI differs from candidate')
+    if (importer?.[1] === candidate.archiveUrl && packageEntry)
+        pass('pnpm-resolution')
+    else fail('pnpm-resolution', 'pnpm importer URL or resolved package version/SRI differs from candidate')
     } else pass('pnpm-resolution')
+
+    const response = await fetch(candidate.archiveUrl)
+    if (!response.ok) fail('archive', `download failed with ${response.status}`)
+    else {
+        const bytes = Buffer.from(await response.arrayBuffer())
+        const sha256 = createHash('sha256').update(bytes).digest('hex')
+        const integrity = `sha512-${createHash('sha512').update(bytes).digest('base64')}`
+        if (sha256 === candidate.sha256 && integrity === candidate.integrity) pass('archive')
+        else fail('archive', 'archive SHA-256 or SRI differs from candidate')
+    }
 
     const store = mkdtempSync(join(tmpdir(), 'lantern-release-train-store-'))
     const frozen = spawnSync('pnpm', ['install', '--frozen-lockfile', '--ignore-scripts', '--store-dir', store], { encoding: 'utf8', shell: process.platform === 'win32' })
@@ -86,15 +96,6 @@ if (required.length) {
     if (vite.status === 0 && assets.length > 0 && pbtaProof) pass('vite-build')
     else fail('vite-build', 'production Vite build did not retain the provider surface')
 
-    const response = await fetch(candidate.archiveUrl)
-    if (!response.ok) fail('archive', `download failed with ${response.status}`)
-    else {
-        const bytes = Buffer.from(await response.arrayBuffer())
-        const sha256 = createHash('sha256').update(bytes).digest('hex')
-        const integrity = `sha512-${createHash('sha512').update(bytes).digest('base64')}`
-        if (sha256 === candidate.sha256 && integrity === candidate.integrity) pass('archive')
-        else fail('archive', 'archive SHA-256 or SRI differs from candidate')
-    }
 }
 
 const result = {
