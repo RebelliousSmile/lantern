@@ -15,6 +15,7 @@
         "assert:workspace": "node tools/assert-workspace.mjs",
         "assert:visibility-protocol": "node tools/assert-visibility-protocol.mjs",
         "assert:cross-repo": "node tools/assert-cross-repo.mjs",
+        "assert:consumer-schema-pins": "node tools/assert-consumer-schema-pins.mjs",
         "validate:release-train": "node tools/validate-release-train.mjs",
         "release-train:assert": "node tools/validate-release-train.mjs",
         "prepare:schema-pbta-candidate": "node tools/prepare-schema-pbta-candidate.mjs",
