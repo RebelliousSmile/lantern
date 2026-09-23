@@ -4,13 +4,9 @@ import { createHash } from 'node:crypto'
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { selectLanternConsumer } from './release-train-protocol.mjs'
 
-const arguments_ = process.argv.slice(2).filter((value) => value !== '--')
-if (arguments_.length !== 1) throw new Error('release-train assertion requires exactly one manifest path')
-
-const manifestPath = resolve(arguments_[0])
-const evidencePath = `${manifestPath}.evidence.json`
 const root = process.cwd()
 const checks = []
 
@@ -53,7 +49,31 @@ function assertRepositoryUnchanged(before) {
     check('repository-clean', before === 0 && after.status === 0, 'proof changed a tracked Lantern file')
 }
 
+export function createEvidence({ candidate, consumer, installed, lock, journeyChecks }) {
+    return {
+        protocol: 1,
+        status: 'passed',
+        candidate,
+        consumer: {
+            role: consumer.role,
+            repository: consumer.repository,
+            ref: consumer.ref,
+            resolved: {
+                version: installed.version,
+                releaseUrl: candidate.releaseUrl,
+                integrity: candidate.integrity,
+            },
+        },
+        lock,
+        journey: { id: 'vite-frozen-install', status: 'passed', checks: journeyChecks },
+    }
+}
+
 async function main() {
+    const arguments_ = process.argv.slice(2).filter((value) => value !== '--')
+    if (arguments_.length !== 1) throw new Error('release-train assertion requires exactly one manifest path')
+    const manifestPath = resolve(arguments_[0])
+    const evidencePath = `${manifestPath}.evidence.json`
     const { candidate, consumer } = selectLanternConsumer(JSON.parse(readFileSync(manifestPath, 'utf8')), root)
     const before = spawnSync('git', ['diff', '--quiet'], { cwd: root, shell: process.platform === 'win32' }).status
     const lock = packageResolution(candidate)
@@ -71,28 +91,14 @@ async function main() {
     run('npm', ['run', 'assert:template-chunks'], 'vite-journey')
     assertRepositoryUnchanged(before)
 
-    const evidence = {
-        protocol: 1,
-        status: 'passed',
-        candidate,
-        consumer: {
-            role: consumer.role,
-            repository: consumer.repository,
-            ref: consumer.ref,
-            resolved: {
-                version: installed.version,
-                releaseUrl: candidate.releaseUrl,
-                integrity: candidate.integrity,
-            },
-        },
-        lock,
-        journey: { id: 'vite-frozen-install', status: 'passed', checks },
-    }
+    const evidence = createEvidence({ candidate, consumer, installed, lock, journeyChecks: checks })
     writeFileSync(evidencePath, `${JSON.stringify(evidence, null, 2)}\n`)
     console.log(JSON.stringify(evidence))
 }
 
-main().catch((error) => {
-    console.error(error.message)
-    process.exitCode = 1
-})
+if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+    main().catch((error) => {
+        console.error(error.message)
+        process.exitCode = 1
+    })
+}

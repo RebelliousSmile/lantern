@@ -1,6 +1,7 @@
 /* global console */
 import assert from 'node:assert/strict'
 import { spawnSync } from 'node:child_process'
+import { createEvidence } from './release-train-assert.mjs'
 import { parseProtocolOne, selectLanternConsumer } from './release-train-protocol.mjs'
 
 const head = spawnSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).stdout.trim()
@@ -41,5 +42,28 @@ assert.throws(() => parseProtocolOne({ ...manifest, protocol: 2 }), /protocol mu
 assert.throws(() => parseProtocolOne({ ...manifest, consumers: [manifest.consumers[0]] }), /Lantern and Handbook exactly once/)
 assert.throws(() => parseProtocolOne({ ...manifest, candidate: { ...candidate, integrity: 'sha256-invalid' } }), /SHA-512 SRI/)
 assert.throws(() => selectLanternConsumer({ ...manifest, consumers: [{ ...manifest.consumers[0], ref: 'd'.repeat(40) }, manifest.consumers[1]] }), /does not match checked-out HEAD/)
+
+assert.deepEqual(
+    createEvidence({
+        candidate,
+        consumer: manifest.consumers[0],
+        installed: { version: candidate.version },
+        lock: { file: 'pnpm-lock.yaml', releaseUrl: candidate.releaseUrl, integrity: candidate.integrity },
+        journeyChecks: ['package-declaration', 'vite-journey'],
+    }),
+    {
+        protocol: 1,
+        status: 'passed',
+        candidate,
+        consumer: {
+            role: 'lantern',
+            repository: 'RebelliousSmile/lantern',
+            ref: head,
+            resolved: { version: candidate.version, releaseUrl: candidate.releaseUrl, integrity: candidate.integrity },
+        },
+        lock: { file: 'pnpm-lock.yaml', releaseUrl: candidate.releaseUrl, integrity: candidate.integrity },
+        journey: { id: 'vite-frozen-install', status: 'passed', checks: ['package-declaration', 'vite-journey'] },
+    }
+)
 
 console.log('Release-train protocol-1 parser verified.')
