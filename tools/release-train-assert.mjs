@@ -32,7 +32,7 @@ function packageResolution(candidate) {
     const escapedUrl = candidate.releaseUrl.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
     const escapedIntegrity = candidate.integrity.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
     check('lock-importer', new RegExp(`schema-pbta:\\r?\\n\\s+specifier: ${escapedUrl}\\r?\\n\\s+version: ${escapedUrl}`).test(lock), 'pnpm importer does not declare the candidate URL')
-    check('lock-resolution', new RegExp(`schema-pbta@${escapedUrl}:\\r?\\n\\s+resolution: \\{tarball: ${escapedUrl}, integrity: ${escapedIntegrity}\\}`).test(lock), 'pnpm resolution does not declare the candidate URL and SRI')
+    check('lock-resolution', new RegExp(`schema-pbta@${escapedUrl}:\\r?\\n\\s+resolution: \\{tarball: ${escapedUrl}, integrity: ${escapedIntegrity}\\}\\r?\\n\\s+version: ${candidate.version.replaceAll('.', '\\.')}`).test(lock), 'pnpm resolution does not declare the candidate URL, version and SRI')
     return { file: 'pnpm-lock.yaml', releaseUrl: candidate.releaseUrl, integrity: candidate.integrity }
 }
 
