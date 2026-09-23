@@ -1,7 +1,7 @@
 /* global Buffer, console, fetch, process */
-/* eslint-disable no-regex-spaces */
 import { createHash } from 'node:crypto'
-import { existsSync, readFileSync, readdirSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdtempSync, readFileSync, readdirSync, rmSync } from 'node:fs'
+import { tmpdir } from 'node:os'
 import { isAbsolute, join, relative, resolve, sep } from 'node:path'
 import { spawnSync } from 'node:child_process'
 
@@ -12,6 +12,11 @@ if (relative(resolve('.'), manifestPath).startsWith(`..${sep}`)) throw new Error
 const trainManifest = JSON.parse(readFileSync(manifestPath, 'utf8'))
 const root = process.cwd()
 const candidate = {
+    packageName:
+        trainManifest.candidate?.packageName ??
+        /RebelliousSmile\/(schema-[^/]+)\/releases\//.exec(
+            trainManifest.candidate?.releaseUrl ?? ''
+        )?.[1],
     archiveUrl: trainManifest.candidate?.releaseUrl,
     version: trainManifest.candidate?.finalTag?.replace(/^v/, ''),
     sha256: trainManifest.candidate?.sha256,
@@ -37,10 +42,10 @@ if (required.length) {
 } else {
     const manifest = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'))
     const npmLock = JSON.parse(readFileSync(join(root, 'package-lock.json'), 'utf8'))
-    const npmPackage = npmLock.packages?.['node_modules/schema-pbta']
-    const declared = manifest.dependencies?.['schema-pbta']
+    const npmPackage = npmLock.packages?.[`node_modules/${candidate.packageName}`]
+    const declared = manifest.dependencies?.[candidate.packageName]
 
-    if (declared === candidate.archiveUrl && npmLock.packages?.['']?.dependencies?.['schema-pbta'] === candidate.archiveUrl)
+    if (declared === candidate.archiveUrl && npmLock.packages?.['']?.dependencies?.[candidate.packageName] === candidate.archiveUrl)
         pass('npm-declaration')
     else fail('npm-declaration', 'package.json and package-lock root must declare the candidate archive')
 
@@ -50,11 +55,12 @@ if (required.length) {
 
     if (existsSync(join(root, 'pnpm-lock.yaml'))) {
         const pnpm = readFileSync(join(root, 'pnpm-lock.yaml'), 'utf8')
-        const importer = /^      schema-pbta:\r?\n        specifier: (.+)\r?\n        version: (.+)$/m.exec(pnpm)
+        const escaped = candidate.packageName.replace('-', '\\-')
+        const importer = new RegExp(`^      ${escaped}:\\r?\\n        specifier: (.+)\\r?\\n        version: (.+)$`, 'm').exec(pnpm)
         const packageEntry = pnpm
             .split(/\r?\n/)
             .some((line, index, lines) =>
-                line.startsWith('  schema-pbta@') &&
+                line.startsWith(`  ${candidate.packageName}@`) &&
                 lines.slice(index, index + 4).some((value) => value.includes(`integrity: ${candidate.integrity}`)) &&
                 lines.slice(index, index + 4).some((value) => value.trim() === `version: ${candidate.version}`)
             )
@@ -63,15 +69,22 @@ if (required.length) {
         else fail('pnpm-resolution', 'pnpm importer URL or resolved package version/SRI differs from candidate')
     } else pass('pnpm-resolution')
 
-    const installed = JSON.parse(readFileSync(join(root, 'node_modules', 'schema-pbta', 'package.json'), 'utf8'))
+    const store = mkdtempSync(join(tmpdir(), 'lantern-release-train-store-'))
+    const frozen = spawnSync('pnpm', ['install', '--frozen-lockfile', '--ignore-scripts', '--store-dir', store], { encoding: 'utf8', shell: process.platform === 'win32' })
+    rmSync(store, { recursive: true, force: true })
+    if (frozen.status === 0) pass('frozen-install')
+    else fail('frozen-install', 'pnpm frozen install did not materialize the committed Lantern graph')
+
+    const installed = JSON.parse(readFileSync(join(root, 'node_modules', candidate.packageName, 'package.json'), 'utf8'))
     if (installed.version === candidate.version) pass('installed-version')
     else fail('installed-version', `installed ${installed.version}, expected ${candidate.version}`)
 
     const vite = spawnSync('npm', ['run', 'build'], { encoding: 'utf8', shell: process.platform === 'win32' })
     const assets = existsSync('dist/assets') ? readdirSync('dist/assets') : []
     const preview = readFileSync('src/templates/monsterhearts/playbook/preview/MonsterheartsPlaybookPreview.tsx', 'utf8')
-    if (vite.status === 0 && assets.length > 0 && preview.includes('PBTA_MONSTERHEARTS_APPEARANCE_ASSET_URLS') && preview.includes("'drowned-lake'")) pass('vite-build')
-    else fail('vite-build', 'production Vite build did not retain published appearance resources')
+    const pbtaProof = candidate.packageName !== 'schema-pbta' || (preview.includes('PBTA_MONSTERHEARTS_APPEARANCE_ASSET_URLS') && preview.includes("'drowned-lake'"))
+    if (vite.status === 0 && assets.length > 0 && pbtaProof) pass('vite-build')
+    else fail('vite-build', 'production Vite build did not retain the provider surface')
 
     const response = await fetch(candidate.archiveUrl)
     if (!response.ok) fail('archive', `download failed with ${response.status}`)
@@ -89,6 +102,5 @@ const result = {
     candidate,
     checks,
 }
-if (result.ok) writeFileSync(`${manifestPath}.evidence.json`, `${JSON.stringify({ status: 'passed', artifact: candidate, consumer: trainManifest.consumer, checks }, null, 2)}\n`)
 console.log(JSON.stringify(result))
 process.exitCode = result.ok ? 0 : 1

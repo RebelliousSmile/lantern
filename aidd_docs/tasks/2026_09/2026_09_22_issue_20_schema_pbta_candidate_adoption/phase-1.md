@@ -59,3 +59,7 @@ journey
 | 1 | Passing output is machine-readable and names the exact ref, archive and resolved version. |
 | 2 | The production build contains candidate-derived base and drowned-lake resources. |
 | 2 | The proof uses schema-pbta exports only and does not add appearance data to TOML. |
+
+## Progress
+
+The adoption branch now contains the controlled three-archive generator and its stable pnpm lockfile. The generator runs pnpm resolution, rejects any graph drift outside those direct entries, restores the previous lockfile on failure, and proves a clean-store frozen install before its output can be committed.
