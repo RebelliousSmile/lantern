@@ -10,6 +10,29 @@ const manifest = JSON.parse(
 )
 const entry = Object.values(manifest).find((chunk) => chunk.isEntry)
 
+function emittedAsset(sourceSuffix) {
+    const entry = Object.entries(manifest).find(([source]) =>
+        source.endsWith(sourceSuffix)
+    )
+    assert.ok(entry, `Vite manifest is missing ${sourceSuffix}`)
+
+    const [, asset] = entry
+    assert.match(
+        asset.file,
+        /^assets\/.+\.svg$/,
+        `${sourceSuffix} must be emitted as a served SVG asset`
+    )
+    assert.equal(
+        asset.file.includes('file:'),
+        false,
+        `${sourceSuffix} must never resolve to a file: URI`
+    )
+    assert.ok(
+        statSync(path.join(root, 'dist', asset.file)).size > 0,
+        `${sourceSuffix} output is empty`
+    )
+}
+
 assert.ok(entry, 'Vite manifest has an application entry')
 assert.ok(entry.file, 'Vite entry has an output file')
 
@@ -35,6 +58,9 @@ for (const source of templateModules) {
         `${source} must remain a dynamic entry`
     )
 }
+
+emittedAsset('/monsterhearts/assets/images/thorn-heart.svg')
+emittedAsset('/monsterhearts/assets/variants/drowned-lake/zine-lake.svg')
 
 console.log(
     `Template chunks verified: ${entrySize} byte entry, ${templateModules.length} lazy modules.`

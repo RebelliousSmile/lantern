@@ -1,5 +1,9 @@
 import type { CSSProperties, ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
+import averiaSerifLibreUrl from 'schema-pbta/packs/monsterhearts/assets/fonts/averia-serif-libre-latin-700-normal.woff2'
+import imFellEnglishUrl from 'schema-pbta/packs/monsterhearts/assets/fonts/im-fell-english-latin-400-normal.woff2'
+import gameMarkUrl from 'schema-pbta/packs/monsterhearts/assets/images/thorn-heart.svg?url&no-inline'
+import drownedLakeMarkUrl from 'schema-pbta/packs/monsterhearts/assets/variants/drowned-lake/zine-lake.svg?url&no-inline'
 import {
     PBTA_MONSTERHEARTS_APPEARANCE,
     PBTA_MONSTERHEARTS_APPEARANCE_ASSET_URLS,
@@ -18,6 +22,29 @@ export const getMoveHeart = (checked: boolean) => (checked ? '♥' : '♡')
 
 export const getAdvanceCheckClass = (checked: boolean | undefined) =>
     checked ? 'is-checked' : undefined
+
+const viteAssetUrls = new Map([
+    [
+        PBTA_MONSTERHEARTS_APPEARANCE_ASSET_URLS.fonts['IM Fell English'],
+        imFellEnglishUrl,
+    ],
+    [
+        PBTA_MONSTERHEARTS_APPEARANCE_ASSET_URLS.fonts['Averia Serif Libre'],
+        averiaSerifLibreUrl,
+    ],
+    [
+        PBTA_MONSTERHEARTS_APPEARANCE_ASSET_URLS.assets['game-mark'],
+        gameMarkUrl,
+    ],
+    [
+        PBTA_MONSTERHEARTS_APPEARANCE_ASSET_URLS.assets['variant-mark'],
+        drownedLakeMarkUrl,
+    ],
+])
+
+function viteAssetUrl(publishedUrl: string) {
+    return viteAssetUrls.get(publishedUrl) ?? publishedUrl
+}
 
 export function getMonsterheartsRegionLayout(
     presentation: PbtaMonsterheartsPlaybookPresentation = PBTA_MONSTERHEARTS_PLAYBOOK_PRESENTATION
@@ -69,10 +96,13 @@ export function MonsterheartsPlaybookPreview() {
         ) ?? PBTA_MONSTERHEARTS_APPEARANCE.variants[0]
     const assetUrls = PBTA_MONSTERHEARTS_APPEARANCE_ASSET_URLS
     const variantOverrides = assetUrls.variants[appearance.id].assetOverrides
-    const variantMark =
-        ('variant-mark' in variantOverrides
-            ? variantOverrides['variant-mark']
-            : undefined) ?? assetUrls.assets['variant-mark']
+    const publishedGameMark =
+        appearance.id === 'drowned-lake'
+            ? (('variant-mark' in variantOverrides
+                  ? variantOverrides['variant-mark']
+                  : undefined) ?? assetUrls.assets['variant-mark'])
+            : assetUrls.assets['game-mark']
+    const gameMark = viteAssetUrl(publishedGameMark)
 
     const renderRegion = (id: PbtaMonsterheartsRegionId): ReactNode | null => {
         switch (id) {
@@ -320,7 +350,7 @@ export function MonsterheartsPlaybookPreview() {
             data-appearance-variant={appearance.id}
             style={appearance.tokens as CSSProperties}
         >
-            <style>{`@font-face { font-family: 'IM Fell English'; src: url('${assetUrls.fonts['IM Fell English']}') format('woff2'); } @font-face { font-family: 'Averia Serif Libre'; src: url('${assetUrls.fonts['Averia Serif Libre']}') format('woff2'); }`}</style>
+            <style>{`@font-face { font-family: 'IM Fell English'; src: url('${viteAssetUrl(assetUrls.fonts['IM Fell English'])}') format('woff2'); } @font-face { font-family: 'Averia Serif Libre'; src: url('${viteAssetUrl(assetUrls.fonts['Averia Serif Libre'])}') format('woff2'); }`}</style>
             <article className="monsterhearts-sheet">
                 <button
                     type="button"
@@ -331,11 +361,7 @@ export function MonsterheartsPlaybookPreview() {
                     <p>{playbook.description}</p>
                     <img
                         className="mh-game-mark"
-                        src={
-                            appearance.id === 'drowned-lake'
-                                ? variantMark
-                                : assetUrls.assets['game-mark']
-                        }
+                        src={gameMark}
                         alt=""
                     />
                 </button>
