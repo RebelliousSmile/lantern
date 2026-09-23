@@ -35,7 +35,9 @@ function readCandidates() {
             ) {
                 fail(`invalid stable release URL or SRI for ${name}`)
             }
-            return [name, { url, integrity }]
+            const version = url.match(/-(\d+\.\d+\.\d+)\.tgz$/)?.[1]
+            if (!version) fail(`candidate URL must name a SemVer archive for ${name}`)
+            return [name, { url, integrity, version }]
         })
     )
 }
@@ -49,14 +51,14 @@ function replaceDirectEntry(lock, name, candidate) {
     let normalized = lock.replace(importer, `$1${candidate.url}$2${candidate.url}`)
 
     const packageEntry = new RegExp(
-        `(  ${escaped}@)[^\\r\\n]+:(\\r?\\n    resolution: \\{tarball: )[^,}\\r\\n]+(?:, integrity: [^}\\r\\n]+)?(\\})`
+        `(  ${escaped}@)[^\\r\\n]+:(\\r?\\n    resolution: \\{tarball: )[^,}\\r\\n]+(?:, integrity: [^}\\r\\n]+)?(\\}\\r?\\n    version: )[^\\r\\n]+`
     )
     if (!packageEntry.test(normalized)) {
         fail(`pnpm lock misses ${name} package entry`)
     }
     normalized = normalized.replace(
         packageEntry,
-        `$1${candidate.url}:$2${candidate.url}, integrity: ${candidate.integrity}$3`
+        `$1${candidate.url}:$2${candidate.url}, integrity: ${candidate.integrity}$3${candidate.version}`
     )
 
     const snapshots = new RegExp(`(  ${escaped}@)[^\\r\\n]+:(?=\\r?\\n)`, 'g')
@@ -67,7 +69,7 @@ function replaceDirectEntry(lock, name, candidate) {
 function normalize(lock, candidates) {
     return SCHEMA_PACKAGES.reduce(
         (current, name) => replaceDirectEntry(current, name, candidates[name]),
-        lock
+        lock.replace(/\r\n/g, '\n')
     )
 }
 

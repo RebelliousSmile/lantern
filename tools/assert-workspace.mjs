@@ -11,6 +11,6 @@ const here = path.dirname(fileURLToPath(import.meta.url))
 const work = mkdtempSync(path.join(tmpdir(), 'lantern-workspace-'))
 const bundle = path.join(work, 'workspace.mjs')
 try {
-    buildSync({ entryPoints: ['tools/assertWorkspace.harness.mts'], outfile: bundle, bundle: true, platform: 'node', format: 'esm', target: 'node20', alias: { '@': path.join(here, '..', 'src') }, loader: { '.css': 'empty' }, logLevel: 'warning' })
+    buildSync({ entryPoints: ['tools/assertWorkspace.harness.mts'], outfile: bundle, bundle: true, platform: 'node', format: 'esm', target: 'node20', alias: { '@': path.join(here, '..', 'src') }, loader: { '.css': 'empty', '.svg': 'empty', '.woff2': 'empty' }, logLevel: 'warning' })
     assert.equal(spawnSync(process.execPath, [bundle], { stdio: 'inherit' }).status, 0)
 } finally { rmSync(work, { recursive: true, force: true }) }
