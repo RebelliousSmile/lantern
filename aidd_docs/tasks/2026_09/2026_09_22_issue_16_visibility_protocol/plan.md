@@ -1,6 +1,6 @@
 ---
 objective: "All template view hooks use one typed visibility protocol without changing their persisted view semantics."
-status: in-progress
+status: implemented
 ---
 
 # Plan: Extract the shared visibility protocol

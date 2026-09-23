@@ -13,6 +13,7 @@
         "preview": "vite preview",
         "assert:contracts": "node tools/assert-contracts.mjs",
         "assert:workspace": "node tools/assert-workspace.mjs",
+        "assert:visibility-protocol": "node tools/assert-visibility-protocol.mjs",
         "assert:cross-repo": "node tools/assert-cross-repo.mjs",
         "check": "npm run lint && npm run typecheck && npm run build && npm run assert:contracts && npm run assert:workspace"
     },
