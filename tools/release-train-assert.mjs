@@ -12,7 +12,7 @@ if (manifest?.provider?.repository === 'RebelliousSmile/schema-adrenaline') {
     console.log(JSON.stringify(await assertSchemaAdrenalineReleaseTrain(manifestPath)))
 } else if (manifest?.candidate?.packageName === 'schema-in-the-mist' || String(manifest?.candidate?.releaseUrl).includes('/schema-in-the-mist/')) {
     if (manifest?.consumer?.role !== 'lantern' || manifest.consumer.repository !== 'RebelliousSmile/lantern') throw new Error('release-train manifest does not identify Lantern')
-    const validated = spawnSync(process.execPath, ['tools/validate-release-train.mjs', manifestPath], { stdio: 'inherit', shell: process.platform === 'win32' })
+    const validated = spawnSync(process.execPath, ['tools/validate-release-train.mjs', manifestPath], { stdio: 'inherit' })
     if (validated.status !== 0) throw new Error('schema-in-the-mist candidate proof failed')
     const candidate = manifest.candidate
     const evidence = {
