@@ -123,6 +123,11 @@ const common = {
         png: 'PNG',
         exportPng: 'Export PNG',
     },
+    workspace: {
+        persistenceFailed:
+            'Saving failed. Your current work is not persisted.',
+        exportRescueCopy: 'Export rescue copy',
+    },
     feedback: {
         title: 'Send feedback on Discord',
         description:

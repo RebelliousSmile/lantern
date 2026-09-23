@@ -11,6 +11,7 @@ type WorkspaceState = {
     tabOrder: string[]
     activeTabId: string | null
     hydrated: boolean
+    persistenceError: string | null
 
     createTab: (templateId: string) => string | null
     closeTab: (tabId: string) => string | null
@@ -52,14 +53,16 @@ function toSnapshot(
 
 function persistSnapshot(
     state: Pick<WorkspaceState, 'tabs' | 'tabOrder' | 'activeTabId'>
-) {
-    if (typeof window === 'undefined') return
+): string | null {
+    if (typeof window === 'undefined') return null
 
     try {
         const serialized = JSON.stringify(toSnapshot(state))
         window.localStorage.setItem(WORKSPACE_STORAGE_KEY, serialized)
+        return null
     } catch (error) {
         console.warn('Workspace persistence failed:', error)
+        return error instanceof Error ? error.message : 'Storage unavailable'
     }
 }
 
@@ -230,8 +233,8 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => {
                 ...state,
                 ...patch,
             }
-            persistSnapshot(next)
-            return patch
+            const persistenceError = persistSnapshot(next)
+            return { ...patch, persistenceError }
         })
     }
 
@@ -240,6 +243,7 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => {
         tabOrder: [],
         activeTabId: null,
         hydrated: false,
+        persistenceError: null,
 
         createTab: (templateId) => {
             const template = templateById.get(templateId)
@@ -366,25 +370,27 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => {
 
             const persisted = readWorkspaceSnapshot()
             if (persisted) {
+                const persistenceError = persistSnapshot(persisted)
                 set({
                     tabs: persisted.tabs,
                     tabOrder: persisted.tabOrder,
                     activeTabId: persisted.activeTabId,
                     hydrated: true,
+                    persistenceError,
                 })
-                persistSnapshot(persisted)
                 return
             }
 
             const migrated = migrateLegacyChallenge()
             if (migrated) {
+                const persistenceError = persistSnapshot(migrated)
                 set({
                     tabs: migrated.tabs,
                     tabOrder: migrated.tabOrder,
                     activeTabId: migrated.activeTabId,
                     hydrated: true,
+                    persistenceError,
                 })
-                persistSnapshot(migrated)
                 return
             }
 

@@ -174,6 +174,28 @@ assert.ok(
     'hiding a pack does not close its open tab'
 )
 
+const originalSetItem = window.localStorage.setItem
+window.localStorage.setItem = () => {
+    throw new Error('Quota exceeded')
+}
+useWorkspaceStore.getState().updateTabDoc(tabId, (doc) => ({
+    ...(doc as Record<string, unknown>),
+    persistenceProbe: true,
+}))
+assert.equal(
+    useWorkspaceStore.getState().persistenceError,
+    'Quota exceeded',
+    'a failed workspace write marks the in-memory workspace unsaved'
+)
+assert.equal(
+    (useWorkspaceStore.getState().tabs.find((tab) => tab.id === tabId)?.doc as {
+        persistenceProbe?: boolean
+    }).persistenceProbe,
+    true,
+    'a failed workspace write preserves the current in-memory changes for export'
+)
+window.localStorage.setItem = originalSetItem
+
 storage.set(GAME_PACKS_STORAGE_KEY, '{not-json')
 assert.deepEqual(readGamePacks(), { disabled: [], open: [] })
 
