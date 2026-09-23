@@ -1,7 +1,7 @@
 /* global console */
 import assert from 'node:assert/strict'
 import { spawnSync } from 'node:child_process'
-import { createEvidence } from './release-train-assert.mjs'
+import { createEvidence, frozenInstallCommand } from './release-train-assert.mjs'
 import { parseProtocolOne, selectLanternConsumer } from './release-train-protocol.mjs'
 
 const head = spawnSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).stdout.trim()
@@ -38,6 +38,10 @@ const manifest = {
 
 assert.deepEqual(parseProtocolOne(manifest), manifest)
 assert.deepEqual(selectLanternConsumer(manifest), { candidate, consumer: manifest.consumers[0] })
+assert.deepEqual(frozenInstallCommand('isolated-store'), {
+    command: 'npx',
+    args: ['--yes', 'pnpm@10', 'install', '--frozen-lockfile', '--ignore-scripts', '--store-dir', 'isolated-store'],
+})
 assert.throws(() => parseProtocolOne({ ...manifest, protocol: 2 }), /protocol must be 1/)
 assert.throws(() => parseProtocolOne({ ...manifest, consumers: [manifest.consumers[0]] }), /Lantern and Handbook exactly once/)
 assert.throws(() => parseProtocolOne({ ...manifest, candidate: { ...candidate, integrity: 'sha256-invalid' } }), /SHA-512 SRI/)
