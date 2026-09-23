@@ -24,6 +24,13 @@ function run(command, args, id) {
     check(id, result.status === 0, result.stderr || result.stdout || `${command} failed`)
 }
 
+export function frozenInstallCommand(store) {
+    return {
+        command: 'npx',
+        args: ['--yes', 'pnpm@10', 'install', '--frozen-lockfile', '--ignore-scripts', '--store-dir', store],
+    }
+}
+
 function packageResolution(candidate) {
     const packageJson = JSON.parse(readFileSync(resolve(root, 'package.json'), 'utf8'))
     check('package-declaration', packageJson.dependencies?.['schema-pbta'] === candidate.releaseUrl, 'package.json does not declare the candidate URL')
@@ -81,7 +88,8 @@ async function main() {
 
     const store = mkdtempSync(resolve(tmpdir(), 'lantern-release-train-store-'))
     try {
-        run('pnpm', ['install', '--frozen-lockfile', '--ignore-scripts', '--store-dir', store], 'frozen-install')
+        const install = frozenInstallCommand(store)
+        run(install.command, install.args, 'frozen-install')
     } finally {
         rmSync(store, { recursive: true, force: true })
     }
