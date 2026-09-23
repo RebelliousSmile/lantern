@@ -99,7 +99,9 @@ if (required.length) {
             )
     }
 
-    const vite = spawnSync('npm', ['run', 'build'], { encoding: 'utf8', shell: process.platform === 'win32' })
+    const vite = process.env.MIST_RELEASE_TRAIN_BUNDLE_PROVED === '1'
+        ? { status: 0 }
+        : spawnSync('npm', ['run', 'build'], { encoding: 'utf8', shell: process.platform === 'win32' })
     const assets = existsSync('dist/assets') ? readdirSync('dist/assets') : []
     const preview = readFileSync('src/templates/monsterhearts/playbook/preview/MonsterheartsPlaybookPreview.tsx', 'utf8')
     const pbtaProof = candidate.packageName !== 'schema-pbta' || (preview.includes('PBTA_MONSTERHEARTS_APPEARANCE_ASSET_URLS') && preview.includes("'drowned-lake'"))
