@@ -9,6 +9,19 @@ import { selectLanternConsumer } from './release-train-protocol.mjs'
 
 const root = process.cwd()
 const checks = []
+const JOURNEYS = {
+    'schema-adrenaline': {
+        id: 'adrenaline-contract-vite-build',
+        commands: [
+            { command: 'npm', args: ['run', 'assert:contracts'], check: 'contract-journey' },
+            { command: 'npm', args: ['run', 'build'], check: 'vite-journey' },
+        ],
+    },
+    'schema-pbta': {
+        id: 'vite-frozen-install',
+        commands: [{ command: 'npm', args: ['run', 'assert:template-chunks'], check: 'vite-journey' }],
+    },
+}
 
 function check(id, assertion, message) {
     if (!assertion) throw new Error(`${id}: ${message}`)
@@ -31,15 +44,27 @@ export function frozenInstallCommand(store) {
     }
 }
 
-function packageResolution(candidate) {
-    const packageJson = JSON.parse(readFileSync(resolve(root, 'package.json'), 'utf8'))
-    check('package-declaration', packageJson.dependencies?.['schema-pbta'] === candidate.releaseUrl, 'package.json does not declare the candidate URL')
+export function providerJourney(provider) {
+    const journey = JOURNEYS[provider]
+    check('provider-assertion', journey, `release-train assertion does not support ${provider}`)
+    return journey
+}
 
-    const lock = readFileSync(resolve(root, 'pnpm-lock.yaml'), 'utf8')
+export function packageResolution(candidate, sources) {
+    const packageJson = sources?.packageJson ?? JSON.parse(readFileSync(resolve(root, 'package.json'), 'utf8'))
+    const pnpmLock = sources?.pnpmLock ?? readFileSync(resolve(root, 'pnpm-lock.yaml'), 'utf8')
+    const packageLock = sources?.packageLock ?? JSON.parse(readFileSync(resolve(root, 'package-lock.json'), 'utf8'))
+    const packageName = candidate.provider
+    check('package-declaration', packageJson.dependencies?.[packageName] === candidate.releaseUrl, `package.json does not declare the ${packageName} candidate URL`)
+
     const escapedUrl = candidate.releaseUrl.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
     const escapedIntegrity = candidate.integrity.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-    check('lock-importer', new RegExp(`schema-pbta:\\r?\\n\\s+specifier: ${escapedUrl}\\r?\\n\\s+version: ${escapedUrl}`).test(lock), 'pnpm importer does not declare the candidate URL')
-    check('lock-resolution', new RegExp(`schema-pbta@${escapedUrl}:\\r?\\n\\s+resolution: \\{tarball: ${escapedUrl}, integrity: ${escapedIntegrity}\\}\\r?\\n\\s+version: ${candidate.version.replaceAll('.', '\\.')}`).test(lock), 'pnpm resolution does not declare the candidate URL, version and SRI')
+    check('lock-importer', new RegExp(`${packageName}:\\r?\\n\\s+specifier: ${escapedUrl}\\r?\\n\\s+version: ${escapedUrl}`).test(pnpmLock), 'pnpm importer does not declare the candidate URL')
+    check('lock-resolution', new RegExp(`${packageName}@${escapedUrl}:\\r?\\n\\s+resolution: \\{tarball: ${escapedUrl}, integrity: ${escapedIntegrity}\\}\\r?\\n\\s+version: ${candidate.version.replaceAll('.', '\\.')}`).test(pnpmLock), 'pnpm resolution does not declare the candidate URL, version and SRI')
+
+    check('npm-lock-declaration', packageLock.packages?.['']?.dependencies?.[packageName] === candidate.releaseUrl, 'package-lock root does not declare the candidate URL')
+    const npmResolution = packageLock.packages?.[`node_modules/${packageName}`]
+    check('npm-lock-resolution', npmResolution?.resolved === candidate.releaseUrl && npmResolution?.version === candidate.version && npmResolution?.integrity === candidate.integrity, 'package-lock resolution does not declare the candidate URL, version and SRI')
     return { file: 'pnpm-lock.yaml', releaseUrl: candidate.releaseUrl, integrity: candidate.integrity }
 }
 
@@ -56,7 +81,7 @@ function assertRepositoryUnchanged(before) {
     check('repository-clean', before === 0 && after.status === 0, 'proof changed a tracked Lantern file')
 }
 
-export function createEvidence({ candidate, consumer, installed, lock, journeyChecks }) {
+export function createEvidence({ candidate, consumer, installed, lock, journeyId, journeyChecks }) {
     return {
         protocol: 1,
         status: 'passed',
@@ -72,7 +97,7 @@ export function createEvidence({ candidate, consumer, installed, lock, journeyCh
             },
         },
         lock,
-        journey: { id: 'vite-frozen-install', status: 'passed', checks: journeyChecks },
+        journey: { id: journeyId, status: 'passed', checks: journeyChecks },
     }
 }
 
@@ -82,6 +107,7 @@ async function main() {
     const manifestPath = resolve(arguments_[0])
     const evidencePath = `${manifestPath}.evidence.json`
     const { candidate, consumer } = selectLanternConsumer(JSON.parse(readFileSync(manifestPath, 'utf8')), root)
+    const journey = providerJourney(candidate.provider)
     const before = spawnSync('git', ['diff', '--quiet'], { cwd: root, shell: process.platform === 'win32' }).status
     const lock = packageResolution(candidate)
     await archive(candidate)
@@ -94,12 +120,12 @@ async function main() {
         rmSync(store, { recursive: true, force: true })
     }
 
-    const installed = JSON.parse(readFileSync(resolve(root, 'node_modules/schema-pbta/package.json'), 'utf8'))
+    const installed = JSON.parse(readFileSync(resolve(root, `node_modules/${candidate.provider}/package.json`), 'utf8'))
     check('installed-version', installed.version === candidate.version, `installed ${installed.version}, expected ${candidate.version}`)
-    run('npm', ['run', 'assert:template-chunks'], 'vite-journey')
+    for (const command of journey.commands) run(command.command, command.args, command.check)
     assertRepositoryUnchanged(before)
 
-    const evidence = createEvidence({ candidate, consumer, installed, lock, journeyChecks: checks })
+    const evidence = createEvidence({ candidate, consumer, installed, lock, journeyId: journey.id, journeyChecks: checks })
     writeFileSync(evidencePath, `${JSON.stringify(evidence, null, 2)}\n`)
     console.log(JSON.stringify(evidence))
 }

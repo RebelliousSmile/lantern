@@ -1,7 +1,7 @@
 /* global console */
 import assert from 'node:assert/strict'
 import { spawnSync } from 'node:child_process'
-import { createEvidence, frozenInstallCommand } from './release-train-assert.mjs'
+import { createEvidence, frozenInstallCommand, packageResolution, providerJourney } from './release-train-assert.mjs'
 import { parseProtocolOne, selectLanternConsumer } from './release-train-protocol.mjs'
 
 const head = spawnSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).stdout.trim()
@@ -19,6 +19,23 @@ const adrenalineCandidate = {
     ...pbtaCandidate,
     provider: 'schema-adrenaline',
     releaseUrl: 'https://github.com/RebelliousSmile/schema-adrenaline/releases/download/v9.9.9-rc.1/schema-adrenaline-9.9.9.tgz',
+}
+
+function packageSources(candidate) {
+    return {
+        packageJson: { dependencies: { [candidate.provider]: candidate.releaseUrl } },
+        pnpmLock: `${candidate.provider}:\n  specifier: ${candidate.releaseUrl}\n  version: ${candidate.releaseUrl}\n\n${candidate.provider}@${candidate.releaseUrl}:\n  resolution: {tarball: ${candidate.releaseUrl}, integrity: ${candidate.integrity}}\n  version: ${candidate.version}\n`,
+        packageLock: {
+            packages: {
+                '': { dependencies: { [candidate.provider]: candidate.releaseUrl } },
+                [`node_modules/${candidate.provider}`]: {
+                    version: candidate.version,
+                    resolved: candidate.releaseUrl,
+                    integrity: candidate.integrity,
+                },
+            },
+        },
+    }
 }
 const manifest = {
     protocol: 1,
@@ -45,6 +62,27 @@ assert.deepEqual(frozenInstallCommand('isolated-store'), {
     command: 'npx',
     args: ['--yes', 'pnpm@10', 'install', '--frozen-lockfile', '--ignore-scripts', '--store-dir', 'isolated-store'],
 })
+assert.deepEqual(providerJourney('schema-pbta'), {
+    id: 'vite-frozen-install',
+    commands: [{ command: 'npm', args: ['run', 'assert:template-chunks'], check: 'vite-journey' }],
+})
+assert.deepEqual(providerJourney('schema-adrenaline'), {
+    id: 'adrenaline-contract-vite-build',
+    commands: [
+        { command: 'npm', args: ['run', 'assert:contracts'], check: 'contract-journey' },
+        { command: 'npm', args: ['run', 'build'], check: 'vite-journey' },
+    ],
+})
+assert.throws(() => providerJourney('schema-unknown'), /does not support/)
+for (const candidate of [pbtaCandidate, adrenalineCandidate]) {
+    assert.deepEqual(packageResolution(candidate, packageSources(candidate)), {
+        file: 'pnpm-lock.yaml',
+        releaseUrl: candidate.releaseUrl,
+        integrity: candidate.integrity,
+    })
+}
+assert.throws(() => packageResolution(adrenalineCandidate, { ...packageSources(adrenalineCandidate), packageJson: { dependencies: { 'schema-adrenaline': 'file:../schema-adrenaline' } } }), /package.json/)
+assert.throws(() => packageResolution(adrenalineCandidate, { ...packageSources(adrenalineCandidate), packageLock: { packages: { '': { dependencies: { 'schema-adrenaline': adrenalineCandidate.releaseUrl } }, 'node_modules/schema-adrenaline': { version: adrenalineCandidate.version, resolved: 'file:../schema-adrenaline', integrity: adrenalineCandidate.integrity } } } }), /package-lock resolution/)
 assert.throws(() => parseProtocolOne({ ...manifest, protocol: 2 }), /protocol must be 1/)
 assert.throws(() => parseProtocolOne({ ...manifest, consumers: [manifest.consumers[0]] }), /Lantern and Handbook exactly once/)
 assert.throws(() => parseProtocolOne({ ...manifest, candidate: { ...pbtaCandidate, provider: 'schema-unknown' } }), /schema-adrenaline or schema-pbta/)
@@ -69,6 +107,7 @@ assert.deepEqual(
         consumer: manifest.consumers[0],
         installed: { version: pbtaCandidate.version },
         lock: { file: 'pnpm-lock.yaml', releaseUrl: pbtaCandidate.releaseUrl, integrity: pbtaCandidate.integrity },
+        journeyId: 'vite-frozen-install',
         journeyChecks: ['package-declaration', 'vite-journey'],
     }),
     {
@@ -84,6 +123,18 @@ assert.deepEqual(
         lock: { file: 'pnpm-lock.yaml', releaseUrl: pbtaCandidate.releaseUrl, integrity: pbtaCandidate.integrity },
         journey: { id: 'vite-frozen-install', status: 'passed', checks: ['package-declaration', 'vite-journey'] },
     }
+)
+
+assert.equal(
+    createEvidence({
+        candidate: adrenalineCandidate,
+        consumer: manifest.consumers[0],
+        installed: { version: adrenalineCandidate.version },
+        lock: { file: 'pnpm-lock.yaml', releaseUrl: adrenalineCandidate.releaseUrl, integrity: adrenalineCandidate.integrity },
+        journeyId: 'adrenaline-contract-vite-build',
+        journeyChecks: ['npm-lock-resolution', 'contract-journey', 'vite-journey'],
+    }).journey.id,
+    'adrenaline-contract-vite-build'
 )
 
 console.log('Release-train protocol-1 parser verified.')
