@@ -6,6 +6,7 @@ import { URL } from 'node:url'
 const COMMIT = /^[a-f0-9]{40}$/
 const SHA256 = /^[a-f0-9]{64}$/
 const SRI = /^sha512-[A-Za-z0-9+/]+={0,2}$/
+const PROVIDERS = new Set(['schema-adrenaline', 'schema-pbta'])
 const ROLES = ['handbook', 'lantern']
 const REPOSITORIES = {
     handbook: 'RebelliousSmile/obsidian-handbook',
@@ -30,16 +31,23 @@ function text(value, label) {
 function candidate(raw) {
     const value = object(raw, 'candidate')
     exactKeys(value, ['provider', 'releaseUrl', 'sha256', 'integrity', 'version', 'stagingTag', 'finalTag', 'providerCommit'], 'candidate')
-    assert.equal(value.provider, 'schema-pbta', 'candidate.provider must be schema-pbta')
-    assert.match(text(value.releaseUrl, 'candidate.releaseUrl'), /^https:\/\/github\.com\/RebelliousSmile\/schema-pbta\/releases\/download\//, 'candidate.releaseUrl must be a stable schema-pbta release URL')
-    assert.equal(new URL(value.releaseUrl).search, '', 'candidate.releaseUrl must not carry a signed query')
+    const provider = text(value.provider, 'candidate.provider')
+    assert.ok(PROVIDERS.has(provider), 'candidate.provider must be schema-adrenaline or schema-pbta')
+    const releaseUrl = new URL(text(value.releaseUrl, 'candidate.releaseUrl'))
     assert.match(text(value.sha256, 'candidate.sha256'), SHA256, 'candidate.sha256 must be SHA-256')
     assert.match(text(value.integrity, 'candidate.integrity'), SRI, 'candidate.integrity must be SHA-512 SRI')
     assert.match(text(value.version, 'candidate.version'), /^\d+\.\d+\.\d+$/, 'candidate.version must be SemVer')
     assert.equal(text(value.finalTag, 'candidate.finalTag'), `v${value.version}`, 'candidate.finalTag must match candidate.version')
     assert.match(text(value.stagingTag, 'candidate.stagingTag'), new RegExp(`^v${value.version.replaceAll('.', '\\.')}-rc\\.\\d+$`), 'candidate.stagingTag must stage candidate.version')
     assert.match(text(value.providerCommit, 'candidate.providerCommit'), COMMIT, 'candidate.providerCommit must be a full commit SHA')
-    assert.ok(value.releaseUrl.endsWith(`/releases/download/${value.stagingTag}/schema-pbta-${value.version}.tgz`), 'candidate.releaseUrl must name the staged candidate archive')
+    assert.equal(releaseUrl.protocol, 'https:', 'candidate.releaseUrl must use HTTPS')
+    assert.equal(releaseUrl.hostname, 'github.com', 'candidate.releaseUrl must use GitHub')
+    assert.equal(releaseUrl.port, '', 'candidate.releaseUrl must not specify a port')
+    assert.equal(releaseUrl.username, '', 'candidate.releaseUrl must not carry credentials')
+    assert.equal(releaseUrl.password, '', 'candidate.releaseUrl must not carry credentials')
+    assert.equal(releaseUrl.pathname, `/RebelliousSmile/${provider}/releases/download/${value.stagingTag}/${provider}-${value.version}.tgz`, 'candidate.releaseUrl must name the provider staged candidate archive')
+    assert.equal(releaseUrl.search, '', 'candidate.releaseUrl must not carry a signed query')
+    assert.equal(releaseUrl.hash, '', 'candidate.releaseUrl must not carry a fragment')
     return value
 }
 
