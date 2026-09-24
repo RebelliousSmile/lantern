@@ -1,6 +1,6 @@
 ---
 objective: "Lantern accepts, consumes, and proves the strict protocol-1 schema-adrenaline 2.5.0 candidate, including its canonical monster states, while preserving the schema-pbta path and forbidding local fallbacks."
-status: in-progress
+status: implemented
 ---
 
 # Plan: Accept schema-adrenaline protocol-1 candidates
