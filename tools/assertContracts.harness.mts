@@ -29,6 +29,17 @@ import {
     removeCollectionItem,
     replaceCollectionItems,
 } from '../src/templates/pbta/specialized/collectionPolicy'
+import {
+    addMonsterState,
+    monsterStates,
+    nextMonsterStateId,
+    removeMonsterState,
+    replaceMonsterState,
+    resolveMonsterProfile,
+    selectMonsterState,
+    type MonsterDocument,
+} from '../src/templates/adrenaline/monstre/states'
+import { upgradeLegacyAdrenalineRanges } from '../src/templates/adrenaline/shared/legacyRanges'
 
 /*
  * Two layers, run against every registered contract:
@@ -214,6 +225,91 @@ const describe = (losses: Delta[]) =>
             `${loss.path}: ${JSON.stringify(loss.before)} -> ${JSON.stringify(loss.after)}`
     )
 
+const record = (value: unknown): Record<string, unknown> => {
+    assert.ok(value && typeof value === 'object' && !Array.isArray(value))
+    return value as Record<string, unknown>
+}
+
+function assertExactLegacyMonsterMigration(before: unknown, after: unknown) {
+    const source = record(before)
+    const legacy = record(source.etatAlternatif)
+    const base = { ...source }
+    delete base.etatAlternatif
+    const delta = {
+        ...(legacy.caracteristiques
+            ? {
+                  caracteristiques: {
+                      ...record(base.caracteristiques),
+                      ...record(legacy.caracteristiques),
+                  },
+              }
+            : {}),
+        ...(legacy.zoneDeDetection
+            ? { zoneDeDetection: legacy.zoneDeDetection }
+            : {}),
+        ...(legacy.deplacement ? { deplacement: legacy.deplacement } : {}),
+        ...(legacy.actionsParRound !== undefined
+            ? { actionsParRound: legacy.actionsParRound }
+            : {}),
+        ...(legacy.notes ? { notes: legacy.notes } : {}),
+    }
+    const expected = {
+        ...base,
+        etats: [
+            {
+                id: 'alternatif-historique',
+                nom: legacy.nom,
+                ...(legacy.declencheurs
+                    ? { declencheurs: legacy.declencheurs }
+                    : {}),
+                delta,
+            },
+        ],
+    }
+    assert.deepStrictEqual(
+        after,
+        expected,
+        'the legacy monster must migrate to the exact published canonical state'
+    )
+
+    const migratedStates = record(after).etats
+    assert.ok(Array.isArray(migratedStates))
+    assert.equal(migratedStates.length, 1)
+    const migrated = record(migratedStates[0])
+    assert.equal(migrated.id, 'alternatif-historique')
+    assert.deepStrictEqual(migrated.declencheurs, legacy.declencheurs)
+    const migratedDelta = record(migrated.delta)
+    assert.deepStrictEqual(migratedDelta.caracteristiques, delta.caracteristiques)
+    assert.equal(migratedDelta.zoneDeDetection, legacy.zoneDeDetection)
+    assert.equal(migratedDelta.deplacement, legacy.deplacement)
+    assert.equal(migratedDelta.actionsParRound, legacy.actionsParRound)
+    assert.equal(migratedDelta.notes, legacy.notes)
+}
+
+function assertRawRoundTrip(
+    entry: NormalizedCase,
+    before: unknown,
+    after: unknown
+) {
+    const source = record(before)
+    if (
+        entry.contractId === 'adrenaline' &&
+        entry.target === 'monstre' &&
+        source.etatAlternatif !== undefined
+    ) {
+        assert.equal(source.etats, undefined)
+        assert.equal(source.etatActif, undefined)
+        assertExactLegacyMonsterMigration(before, after)
+        return
+    }
+    const losses = collectDeltas(before, after).filter(isLoss)
+    assert.deepStrictEqual(
+        describe(losses),
+        [],
+        `${entry.id}: the round trip dropped or altered a field`
+    )
+}
+
 function assertPublishedCodecs(cases: NormalizedCase[]) {
     const tally = new Map<string, { accepted: number; rejected: number }>()
 
@@ -237,15 +333,7 @@ function assertPublishedCodecs(cases: NormalizedCase[]) {
         assert.deepStrictEqual(codec.parse(rendered), parsed, entry.id)
 
         /* Witness-independent: `0`, `false`, an empty list and a quoted key all have to survive. */
-        const losses = collectDeltas(
-            codec.read(source),
-            codec.read(rendered)
-        ).filter(isLoss)
-        assert.deepStrictEqual(
-            describe(losses),
-            [],
-            `${entry.id}: the round trip dropped or altered a field`
-        )
+        assertRawRoundTrip(entry, codec.read(source), codec.read(rendered))
         counts.accepted += 1
     }
 
@@ -321,14 +409,10 @@ async function assertLanternModules(cases: NormalizedCase[]) {
             )
 
             const first = codec.exportToTOML(imported[key] as never)
-            const losses = collectDeltas(
+            assertRawRoundTrip(
+                witness,
                 parseToml(source),
                 parseToml(first)
-            ).filter(isLoss)
-            assert.deepStrictEqual(
-                describe(losses),
-                [],
-                `${witness.id}: the round trip dropped or altered a field`
             )
 
             const second = codec.exportToTOML(
@@ -530,6 +614,128 @@ function assertPbtaCollectionAdapters() {
     )
 }
 
+function assertMonsterStateHelpers() {
+    const base: MonsterDocument = {
+        nom: 'Rôdeur',
+        caracteristiques: {
+            for: { minimum: 0, current: 45, maximum: 45 },
+            con: { minimum: 0, current: 60, maximum: 60 },
+            dex: { minimum: 0, current: 25, maximum: 25 },
+            rap: { minimum: 0, current: 30, maximum: 30 },
+        },
+    }
+    const first = {
+        id: 'etat',
+        nom: 'Stimulé',
+        declencheurs: ['Un bruit violent'],
+        delta: {
+            deplacement: '12 m par action',
+            traitsSpeciaux: ['Ignore la douleur'],
+        },
+    }
+    const second = {
+        id: 'etat-2',
+        nom: 'Épuisé',
+        delta: { deplacement: '3 m par action' },
+    }
+    const source: MonsterDocument = {
+        ...base,
+        etats: [first, second],
+        etatActif: 'etat',
+    }
+
+    assert.equal(nextMonsterStateId(monsterStates(source)), 'etat-3')
+    const added = addMonsterState(source, 'Nouvel état')
+    assert.equal(added.ok, true)
+    if (!added.ok) assert.fail('the minimal state should be provider-valid')
+    assert.deepStrictEqual(monsterStates(added.document)[2], {
+        id: 'etat-3',
+        nom: 'Nouvel état',
+        delta: {},
+    })
+
+    const invalid = replaceMonsterState(source, 0, {
+        ...first,
+        id: 'Invalid ID',
+    })
+    assert.deepStrictEqual(invalid, { ok: false, error: 'invalid-state' })
+    assert.deepStrictEqual(monsterStates(source), [first, second])
+
+    const duplicate = replaceMonsterState(source, 0, {
+        ...first,
+        id: second.id,
+    })
+    assert.deepStrictEqual(duplicate, { ok: false, error: 'duplicate-id' })
+    assert.deepStrictEqual(monsterStates(source), [first, second])
+
+    const edited = replaceMonsterState(source, 0, {
+        ...first,
+        delta: { ...first.delta, deplacement: '15 m par action' },
+    })
+    assert.equal(edited.ok, true)
+    if (!edited.ok) assert.fail('the valid state edit should succeed')
+    assert.deepStrictEqual(
+        monsterStates(edited.document).map((state) => state.id),
+        ['etat', 'etat-2']
+    )
+    assert.deepStrictEqual(monsterStates(edited.document)[0].delta.traitsSpeciaux, [
+        'Ignore la douleur',
+    ])
+
+    const renamed = replaceMonsterState(source, 0, {
+        ...first,
+        id: 'stimule',
+    })
+    assert.equal(renamed.ok, true)
+    if (!renamed.ok) assert.fail('the valid state rename should succeed')
+    assert.equal(renamed.document.etatActif, 'stimule')
+
+    const removed = removeMonsterState(source, 0)
+    assert.equal(removed.etatActif, undefined)
+    assert.deepStrictEqual(
+        monsterStates(removed).map((state) => state.id),
+        ['etat-2']
+    )
+    assert.equal(selectMonsterState(source, 'base').etatActif, undefined)
+    assert.equal(selectMonsterState(base, 'etat').etatActif, undefined)
+
+    const resolved = resolveMonsterProfile(source)
+    assert.equal(resolved.nom, 'Rôdeur')
+    assert.equal(resolved.deplacement, '12 m par action')
+    assert.deepStrictEqual(resolved.traitsSpeciaux, ['Ignore la douleur'])
+}
+
+function assertLegacyRangeKeyPresence() {
+    const source = {
+        caracteristiques: { for: 45, con: 60, dex: 25, rap: 30 },
+        etatAlternatif: {
+            nom: 'Stimulé',
+            caracteristiques: { rap: 55, per: 50 },
+        },
+    }
+    const upgraded = upgradeLegacyAdrenalineRanges(source) as {
+        etatAlternatif: { caracteristiques: Record<string, unknown> }
+    }
+    const characteristics = upgraded.etatAlternatif.caracteristiques
+
+    assert.deepStrictEqual(Object.keys(characteristics), ['rap', 'per'])
+    assert.equal(Object.hasOwn(characteristics, 'for'), false)
+    assert.equal(Object.hasOwn(characteristics, 'con'), false)
+    assert.equal(Object.hasOwn(characteristics, 'dex'), false)
+    assert.equal(
+        Object.values(characteristics).some((value) => value === undefined),
+        false
+    )
+    assert.deepStrictEqual(characteristics, {
+        rap: { minimum: 0, current: 55, maximum: 55 },
+        per: { minimum: 0, current: 50, maximum: 50 },
+    })
+    assert.deepStrictEqual(source.etatAlternatif.caracteristiques, {
+        rap: 55,
+        per: 50,
+    })
+}
+
 type DeclaredPack = {
     dialect: string
     id: string
@@ -651,6 +857,8 @@ async function main() {
     assertOverlayIdentity()
     assertEditorSchemaPaths()
     assertPbtaCollectionAdapters()
+    assertMonsterStateHelpers()
+    assertLegacyRangeKeyPresence()
     const declaredLine = assertDeclaredCapabilities(descriptors)
 
     const perContract = [...tally.entries()].map(([contractId, counts]) => {

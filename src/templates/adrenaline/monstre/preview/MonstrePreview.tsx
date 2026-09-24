@@ -7,27 +7,35 @@ import {
 } from '../../shared/preview/SheetPrimitives'
 import '../../shared/preview/adrenalineTheme.css'
 import { blankMonstre } from '../sample'
+import {
+    monsterStates,
+    resolveMonsterProfile,
+    type MonsterDocument,
+} from '../states'
 
 export function MonstrePreview() {
     const { document, openSection } = useAdrenalineDocument(
         'adrenaline.monstre',
         blankMonstre() as unknown as Record<string, unknown>
     )
-    const stats = (document.caracteristiques ?? {}) as Record<string, unknown>
-    const alternate = (document.etatAlternatif ?? {}) as Record<string, unknown>
-    const contagion = (document.contagion ?? {}) as Record<string, unknown>
-    const health = (document.sante ?? {}) as Record<string, unknown>
-    const protections = (document.protections ?? {}) as Record<string, unknown>
-    const equipment = (document.equipement ?? {}) as Record<string, unknown>
-    const narrative = (document.narratif ?? {}) as Record<string, unknown>
-    const meta = (document.meta ?? {}) as Record<string, unknown>
+    const profile = resolveMonsterProfile(document) as MonsterDocument
+    const states = monsterStates(document)
+    const activeId = String(document.etatActif ?? 'base')
+    const activeState = states.find((state) => state.id === activeId)
+    const stats = (profile.caracteristiques ?? {}) as Record<string, unknown>
+    const contagion = (profile.contagion ?? {}) as Record<string, unknown>
+    const health = (profile.sante ?? {}) as Record<string, unknown>
+    const protections = (profile.protections ?? {}) as Record<string, unknown>
+    const equipment = (profile.equipement ?? {}) as Record<string, unknown>
+    const narrative = (profile.narratif ?? {}) as Record<string, unknown>
+    const meta = (profile.meta ?? {}) as Record<string, unknown>
     const list = (value: unknown) => (Array.isArray(value) ? value : [])
     return (
         <article className="adr-doc adr-card mx-auto w-full max-w-[620px] overflow-hidden">
             <AdrenalineHeader
                 eyebrow="Système Adrenaline · Monstre"
-                title={String(document.nom ?? 'Monstre sans nom')}
-                aside={<span>ND {String(document.niveauDeDanger ?? '—')}</span>}
+                title={String(profile.nom ?? 'Monstre sans nom')}
+                aside={<span>ND {String(profile.niveauDeDanger ?? '—')}</span>}
             />
             <button
                 type="button"
@@ -37,9 +45,9 @@ export function MonstrePreview() {
                 <AdrenalineSection title="Corps et instinct">
                     <p className="m-0">
                         {[
-                            document.typeDeCorps,
-                            document.instinct,
-                            document.description,
+                            profile.typeDeCorps,
+                            profile.instinct,
+                            profile.description,
                         ]
                             .filter(Boolean)
                             .join(' · ') || 'À décrire'}
@@ -76,8 +84,8 @@ export function MonstrePreview() {
                 <AdrenalineSection title="Comportement et traits">
                     <p className="m-0">
                         {[
-                            ...list(document.comportement),
-                            ...list(document.traitsSpeciaux),
+                            ...list(profile.comportement),
+                            ...list(profile.traitsSpeciaux),
                         ].join(' · ') || 'Aucun trait'}
                     </p>
                 </AdrenalineSection>
@@ -89,7 +97,7 @@ export function MonstrePreview() {
             >
                 <AdrenalineSection title="Compétences">
                     <p className="m-0">
-                        {list(document.competences)
+                        {list(profile.competences)
                             .map((entry) =>
                                 String(
                                     (entry as Record<string, unknown>).nom ??
@@ -128,11 +136,15 @@ export function MonstrePreview() {
             <button
                 type="button"
                 className="block w-full text-left"
-                onClick={() => openSection('alternate')}
+                onClick={() => openSection('states')}
             >
-                <AdrenalineSection title="État alternatif">
+                <AdrenalineSection title="États">
                     <p className="m-0">
-                        {String(alternate.nom ?? 'Aucun état alternatif')}
+                        Profil actif : {activeState?.nom ?? 'profil de base'}
+                    </p>
+                    <p className="m-0">
+                        États disponibles :{' '}
+                        {states.map((state) => state.nom).join(' · ') || 'aucun'}
                     </p>
                 </AdrenalineSection>
             </button>

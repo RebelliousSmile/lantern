@@ -1,4 +1,13 @@
+import { Button } from '@/components/ui/button'
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select'
 import { useUiText, type TranslationKey } from '@/i18n/text'
+import { useState } from 'react'
 import {
     CharacteristicsFields,
     EquipmentFields,
@@ -18,6 +27,16 @@ import {
 } from '../../shared/editor/FieldPrimitives'
 import { useAdrenalineDocument } from '../../shared/hooks'
 import { blankMonstre } from '../sample'
+import {
+    addMonsterState,
+    monsterStates,
+    removeMonsterState,
+    replaceMonsterState,
+    selectMonsterState,
+    type MonsterDocument,
+    type MonsterState,
+    type MonsterStateResult,
+} from '../states'
 
 type Entry = Record<string, unknown>
 const record = (value: unknown): Entry =>
@@ -49,6 +68,7 @@ const creatureFields: [string, TranslationKey][] = [
 
 export function MonstreEditorPanel() {
     const text = useUiText()
+    const [stateError, setStateError] = useState<string | null>(null)
     const { document, update } = useAdrenalineDocument(
         'adrenaline.monstre',
         blankMonstre() as unknown as Record<string, unknown>
@@ -57,8 +77,45 @@ export function MonstreEditorPanel() {
         update((next) => {
             next[key] = value
         })
-    const alternate = record(document.etatAlternatif)
     const contagion = record(document.contagion)
+    const states = monsterStates(document)
+    const commitStateDocument = (replacement: MonsterDocument) => {
+        update((next) => {
+            if ('etats' in replacement) next.etats = replacement.etats
+            else delete next.etats
+            if ('etatActif' in replacement)
+                next.etatActif = replacement.etatActif
+            else delete next.etatActif
+            delete next.etatAlternatif
+        })
+        setStateError(null)
+    }
+    const commitStateResult = (result: MonsterStateResult) => {
+        if (result.ok) {
+            commitStateDocument(result.document)
+            return
+        }
+        setStateError(
+            text(
+                result.error === 'duplicate-id'
+                    ? 'adrenaline:monstre.form.duplicateStateId'
+                    : 'adrenaline:monstre.form.invalidState'
+            )
+        )
+    }
+    const replaceState = (index: number, state: MonsterState) =>
+        commitStateResult(replaceMonsterState(document, index, state))
+    const setOptionalDeltaString = (
+        index: number,
+        state: MonsterState,
+        key: 'zoneDeDetection' | 'deplacement' | 'notes',
+        value: string
+    ) => {
+        const delta = { ...state.delta }
+        if (value.trim()) delta[key] = value
+        else delete delta[key]
+        replaceState(index, { ...state, delta })
+    }
     return (
         <div className="space-y-6 p-1">
             <section className="grid gap-2">
@@ -152,59 +209,224 @@ export function MonstreEditorPanel() {
             </section>
             <section className="grid gap-2">
                 <h3 className="font-semibold">
-                    {text('adrenaline:monstre.form.alternateStateHeading')}
+                    {text('adrenaline:monstre.form.statesHeading')}
                 </h3>
-                <TextField
-                    label={text('fields.name')}
-                    value={String(alternate.nom ?? '')}
-                    onChange={(nom) =>
-                        set('etatAlternatif', { ...alternate, nom })
+                <label className="grid gap-1 text-sm">
+                    <span>{text('adrenaline:monstre.form.activeState')}</span>
+                    <Select
+                        value={String(document.etatActif ?? 'base')}
+                        onValueChange={(stateId) =>
+                            commitStateDocument(
+                                selectMonsterState(document, stateId)
+                            )
+                        }
+                    >
+                        <SelectTrigger>
+                            <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="base">
+                                {text('adrenaline:monstre.form.baseState')}
+                            </SelectItem>
+                            {states.map((state) => (
+                                <SelectItem key={state.id} value={state.id}>
+                                    {state.nom}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </label>
+                {states.map((state, index) => {
+                    const delta = state.delta
+                    const triggers = state.declencheurs ?? []
+                    return (
+                        <div
+                            className="grid gap-2 rounded border p-3"
+                            key={state.id}
+                        >
+                            <TextField
+                                label={text('adrenaline:monstre.form.stateId')}
+                                value={state.id}
+                                onChange={(id) =>
+                                    replaceState(index, { ...state, id })
+                                }
+                            />
+                            <TextField
+                                label={text('fields.name')}
+                                value={state.nom}
+                                onChange={(nom) =>
+                                    replaceState(index, { ...state, nom })
+                                }
+                            />
+                            <div className="grid gap-2">
+                                <span className="text-sm">
+                                    {text('adrenaline:monstre.form.triggers')}
+                                </span>
+                                {triggers.map((trigger, triggerIndex) => (
+                                    <div
+                                        className="flex gap-2"
+                                        key={`${triggerIndex}-${trigger}`}
+                                    >
+                                        <div className="flex-1">
+                                            <TextField
+                                                label={text(
+                                                    'adrenaline:monstre.form.trigger'
+                                                )}
+                                                value={trigger}
+                                                onChange={(value) =>
+                                                    replaceState(index, {
+                                                        ...state,
+                                                        declencheurs:
+                                                            triggers.map(
+                                                                (entry, at) =>
+                                                                    at ===
+                                                                    triggerIndex
+                                                                        ? value
+                                                                        : entry
+                                                            ),
+                                                    })
+                                                }
+                                            />
+                                        </div>
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            onClick={() =>
+                                                replaceState(index, {
+                                                    ...state,
+                                                    declencheurs:
+                                                        triggers.filter(
+                                                            (_, at) =>
+                                                                at !==
+                                                                triggerIndex
+                                                        ),
+                                                })
+                                            }
+                                        >
+                                            {text('actions.remove')}
+                                        </Button>
+                                    </div>
+                                ))}
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    onClick={() =>
+                                        replaceState(index, {
+                                            ...state,
+                                            declencheurs: [
+                                                ...triggers,
+                                                text(
+                                                    'adrenaline:monstre.form.newTrigger'
+                                                ),
+                                            ],
+                                        })
+                                    }
+                                >
+                                    {text('actions.add')}
+                                </Button>
+                            </div>
+                            <CharacteristicsFields
+                                value={
+                                    delta.caracteristiques ??
+                                    document.caracteristiques
+                                }
+                                onChange={(caracteristiques) =>
+                                    replaceState(index, {
+                                        ...state,
+                                        delta: {
+                                            ...delta,
+                                            caracteristiques:
+                                                caracteristiques as MonsterState['delta']['caracteristiques'],
+                                        },
+                                    })
+                                }
+                            />
+                            <TextField
+                                label={text(
+                                    'adrenaline:monstre.form.detectionRange'
+                                )}
+                                value={String(delta.zoneDeDetection ?? '')}
+                                onChange={(value) =>
+                                    setOptionalDeltaString(
+                                        index,
+                                        state,
+                                        'zoneDeDetection',
+                                        value
+                                    )
+                                }
+                            />
+                            <TextField
+                                label={text('adrenaline:monstre.form.movement')}
+                                value={String(delta.deplacement ?? '')}
+                                onChange={(value) =>
+                                    setOptionalDeltaString(
+                                        index,
+                                        state,
+                                        'deplacement',
+                                        value
+                                    )
+                                }
+                            />
+                            <NumberField
+                                label={text(
+                                    'adrenaline:monstre.form.actionsPerRound'
+                                )}
+                                value={Number(delta.actionsParRound ?? 0)}
+                                onChange={(actionsParRound) =>
+                                    replaceState(index, {
+                                        ...state,
+                                        delta: {
+                                            ...delta,
+                                            actionsParRound,
+                                        },
+                                    })
+                                }
+                            />
+                            <LongTextField
+                                label={text('fields.notes')}
+                                value={String(delta.notes ?? '')}
+                                onChange={(value) =>
+                                    setOptionalDeltaString(
+                                        index,
+                                        state,
+                                        'notes',
+                                        value
+                                    )
+                                }
+                            />
+                            <Button
+                                type="button"
+                                variant="outline"
+                                onClick={() =>
+                                    commitStateDocument(
+                                        removeMonsterState(document, index)
+                                    )
+                                }
+                            >
+                                {text('actions.remove')}
+                            </Button>
+                        </div>
+                    )
+                })}
+                {stateError ? (
+                    <p className="text-sm text-destructive" role="alert">
+                        {stateError}
+                    </p>
+                ) : null}
+                <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() =>
+                        commitStateResult(
+                            addMonsterState(
+                                document,
+                                text('adrenaline:monstre.form.newStateName')
+                            )
+                        )
                     }
-                />
-                <StringRows
-                    label={text('adrenaline:monstre.form.triggers')}
-                    values={strings(alternate.declencheurs)}
-                    onChange={(declencheurs) =>
-                        set('etatAlternatif', { ...alternate, declencheurs })
-                    }
-                />
-                <CharacteristicsFields
-                    value={alternate.caracteristiques}
-                    onChange={(caracteristiques) =>
-                        set('etatAlternatif', {
-                            ...alternate,
-                            caracteristiques,
-                        })
-                    }
-                />
-                <TextField
-                    label={text('adrenaline:monstre.form.detectionRange')}
-                    value={String(alternate.zoneDeDetection ?? '')}
-                    onChange={(zoneDeDetection) =>
-                        set('etatAlternatif', { ...alternate, zoneDeDetection })
-                    }
-                />
-                <TextField
-                    label={text('adrenaline:monstre.form.movement')}
-                    value={String(alternate.deplacement ?? '')}
-                    onChange={(deplacement) =>
-                        set('etatAlternatif', { ...alternate, deplacement })
-                    }
-                />
-                <NumberField
-                    label={text('adrenaline:monstre.form.actionsPerRound')}
-                    value={Number(alternate.actionsParRound ?? 0)}
-                    onChange={(actionsParRound) =>
-                        set('etatAlternatif', { ...alternate, actionsParRound })
-                    }
-                />
-                <LongTextField
-                    label={text('fields.notes')}
-                    value={String(alternate.notes ?? '')}
-                    onChange={(notes) =>
-                        set('etatAlternatif', { ...alternate, notes })
-                    }
-                />
+                >
+                    {text('adrenaline:monstre.form.addState')}
+                </Button>
             </section>
             <section className="grid gap-2">
                 <h3 className="font-semibold">

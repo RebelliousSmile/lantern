@@ -9,7 +9,9 @@ const toRange = (value: unknown): unknown =>
         : value
 
 const upgradeKeys = (record: DocumentRecord, keys: string[]) => {
-    for (const key of keys) record[key] = toRange(record[key])
+    for (const key of keys) {
+        if (Object.hasOwn(record, key)) record[key] = toRange(record[key])
+    }
 }
 
 const upgradeSkills = (value: unknown) => {
