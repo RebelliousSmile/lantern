@@ -5,6 +5,38 @@ All notable changes to this project are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.16.0] - 2026-09-24
+
+### Added
+
+- **Protocol-1 release-train evidence.** Lantern parses declared release manifests, verifies the
+  committed consumer graph, dispatches provider-specific assertions for schema-pbta,
+  schema-in-the-mist and schema-adrenaline, and emits a shared evidence envelope for downstream
+  release decisions.
+- **Canonical Adrenaline monster states.** The monster editor and preview consume the provider's
+  canonical state model, including legacy range migration and schema-backed resolution.
+- **Published Monsterhearts presentation.** Playbook previews now render the presentation contract
+  supplied by schema-pbta, with workspace assertions covering the integration.
+- **Project checks in CI.** The repository runs its validation suite automatically on proposed
+  changes.
+
+### Changed
+
+- **Template renderers load on demand.** Static descriptors remain available to the shell while
+  editor and preview modules are split into lazy Vite chunks.
+- **Visibility handling uses one shared protocol** across PbtA, City of Mist, Legend in the Mist,
+  :Otherscape, Monsterhearts and Urban Shadows templates.
+- **Schema candidates and dependency locks** were refreshed for the coordinated provider release,
+  including schema-pbta v8.4.2-rc.1 and schema-adrenaline v2.4.0 candidates.
+
+### Fixed
+
+- **Workspace persistence failures are visible** instead of being silently swallowed.
+- **Release-train reproducibility.** Frozen installs provision pnpm, canonical consumer envelopes
+  are accepted, provider pins are asserted, and candidate lock integrity stays synchronized.
+- **Bundled presentation assets.** Contract assertions and Monsterhearts previews resolve their
+  Vite-managed assets correctly.
+
 ## [v0.15.2] - 2026-09-22
 
 ### Fixed
