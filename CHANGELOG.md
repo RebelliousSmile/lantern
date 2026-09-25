@@ -5,6 +5,23 @@ All notable changes to this project are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.16.1] - 2026-09-25
+
+### Added
+
+- **Auditable Lantern releases.** Version tags now build a deterministic production archive,
+  publish per-file and bundle digests, and verify the GitHub Release attachments against the
+  tagged commit.
+- **Runnable Monsterhearts asset evidence.** The PbtA release-train journey syntax-checks and
+  preview-serves every referenced JavaScript chunk together with both fonts and both marks.
+
+### Fixed
+
+- **Browser-only PbtA exports.** Lantern consumes Monsterhearts appearance URLs through the
+  explicit browser subpath while retaining Vite ownership of emitted assets.
+- **Release identity drift.** Package metadata, npm lock roots, changelog headings, tags, commits,
+  bundles, and evidence are checked as one versioned contract.
+
 ## [v0.16.0] - 2026-09-24
 
 ### Added
@@ -64,8 +81,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
-- **French Monsterhearts terminology.** The interface uses *Mue*, *Ascendants*, *Conditions*,
-  *Dégâts* and *Progressions*.
+- **French Monsterhearts terminology.** The interface uses _Mue_, _Ascendants_, _Conditions_,
+  _Dégâts_ and _Progressions_.
 - **schema-pbta** is pinned to v8.0.0.
 
 ## [v0.14.0] - 2026-09-20
@@ -225,7 +242,6 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - The City of Mist themebook title rule sat across the capitals instead of under them.
 - The themebook keyword sat off the baseline of the header's small caps.
-
 
 ## [v0.5.0] - 2026-09-09
 

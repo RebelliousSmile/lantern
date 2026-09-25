@@ -1,0 +1,91 @@
+name: Release
+
+on:
+    push:
+        tags:
+            - 'v*'
+
+permissions:
+    contents: write
+
+concurrency:
+    group: release-${{ github.ref }}
+    cancel-in-progress: false
+
+jobs:
+    release:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 24
+                  cache: npm
+
+            - name: Verify immutable tag identity
+              env:
+                  RELEASE_TAG: ${{ github.ref_name }}
+                  RELEASE_COMMIT: ${{ github.sha }}
+              run: |
+                  git fetch origin main
+                  test "$(git rev-list -n 1 "$RELEASE_TAG")" = "$RELEASE_COMMIT"
+                  git merge-base --is-ancestor "$RELEASE_COMMIT" origin/main
+
+            - name: Install and check
+              run: |
+                  npm ci
+                  npm run check
+
+            - name: Build deterministic release artifacts
+              env:
+                  RELEASE_TAG: ${{ github.ref_name }}
+                  RELEASE_COMMIT: ${{ github.sha }}
+              run: |
+                  npm run build
+                  BUNDLE="lantern-${RELEASE_TAG}.tar.gz"
+                  EVIDENCE="lantern-${RELEASE_TAG}.evidence.json"
+                  tar --sort=name --mtime='UTC 1970-01-01' --owner=0 --group=0 --numeric-owner -czf "$BUNDLE" dist
+                  node tools/assert-release-identity.mjs \
+                    --tag "$RELEASE_TAG" \
+                    --commit "$RELEASE_COMMIT" \
+                    --tag-commit "$(git rev-list -n 1 "$RELEASE_TAG")" \
+                    --bundle "$BUNDLE" \
+                    --evidence "$EVIDENCE" \
+                    --dist dist \
+                    --write-evidence
+
+            - name: Create or verify GitHub Release
+              env:
+                  GH_TOKEN: ${{ github.token }}
+                  RELEASE_TAG: ${{ github.ref_name }}
+                  RELEASE_COMMIT: ${{ github.sha }}
+              run: |
+                  BUNDLE="lantern-${RELEASE_TAG}.tar.gz"
+                  EVIDENCE="lantern-${RELEASE_TAG}.evidence.json"
+                  if ! gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+                    gh release create "$RELEASE_TAG" "$BUNDLE" "$EVIDENCE" \
+                      --verify-tag \
+                      --target "$RELEASE_COMMIT" \
+                      --title "$RELEASE_TAG" \
+                      --notes "Release notes: CHANGELOG.md#${RELEASE_TAG}"
+                  fi
+
+                  mkdir release-verification
+                  gh release download "$RELEASE_TAG" \
+                    --pattern "$BUNDLE" \
+                    --pattern "$EVIDENCE" \
+                    --dir release-verification
+                  gh release view "$RELEASE_TAG" \
+                    --json tagName,targetCommitish,isDraft,isPrerelease,assets \
+                    --jq '{tagName,targetCommitish,isDraft,isPrerelease,assets:[.assets[].name]}' \
+                    > release-verification/release.json
+                  node tools/assert-release-identity.mjs \
+                    --tag "$RELEASE_TAG" \
+                    --commit "$RELEASE_COMMIT" \
+                    --tag-commit "$(git rev-list -n 1 "$RELEASE_TAG")" \
+                    --bundle "release-verification/$BUNDLE" \
+                    --evidence "release-verification/$EVIDENCE" \
+                    --release release-verification/release.json \
+                    --dist dist
