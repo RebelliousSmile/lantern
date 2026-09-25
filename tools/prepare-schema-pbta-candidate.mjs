@@ -51,14 +51,14 @@ function replaceDirectEntry(lock, name, candidate) {
     let normalized = lock.replace(importer, `$1${candidate.url}$2${candidate.url}`)
 
     const packageEntry = new RegExp(
-        `(  ${escaped}@)[^\\r\\n]+:(\\r?\\n    resolution: \\{tarball: )[^,}\\r\\n]+(?:, integrity: [^}\\r\\n]+)?(\\}\\r?\\n    version: )[^\\r\\n]+`
+        `(  ${escaped}@)[^\\r\\n]+:(\\r?\\n    resolution: \\{)[^}\\r\\n]+(\\}\\r?\\n    version: )[^\\r\\n]+`
     )
     if (!packageEntry.test(normalized)) {
         fail(`pnpm lock misses ${name} package entry`)
     }
     normalized = normalized.replace(
         packageEntry,
-        `$1${candidate.url}:$2${candidate.url}, integrity: ${candidate.integrity}$3${candidate.version}`
+        `$1${candidate.url}:$2tarball: ${candidate.url}, integrity: ${candidate.integrity}$3${candidate.version}`
     )
 
     const snapshots = new RegExp(`(  ${escaped}@)[^\\r\\n]+:(?=\\r?\\n)`, 'g')
@@ -79,7 +79,8 @@ function runPnpm(args) {
         shell: process.platform === 'win32',
     })
     if (result.status !== 0) {
-        fail(`pnpm ${args.join(' ')} failed: ${result.stderr || result.stdout}`)
+        const detail = result.stderr || result.stdout || result.error?.message || result.signal
+        fail(`pnpm ${args.join(' ')} failed: ${detail || 'unknown failure'}`)
     }
 }
 
@@ -115,7 +116,14 @@ try {
         )
     }
     writeFileSync('pnpm-lock.yaml', normalized)
-    runPnpm(['install', '--frozen-lockfile', '--ignore-scripts', '--store-dir', store])
+    runPnpm([
+        'install',
+        '--lockfile-only',
+        '--frozen-lockfile',
+        '--ignore-scripts',
+        '--store-dir',
+        store,
+    ])
 } catch (error) {
     writeFileSync('pnpm-lock.yaml', lockBefore)
     throw error

@@ -113,7 +113,9 @@ const { getMonsterheartsRegionLayout } = await import(
     '../src/templates/monsterhearts/playbook/preview/MonsterheartsPlaybookPreview'
 )
 const { PBTA_MONSTERHEARTS_PLAYBOOK_PRESENTATION } = await import('schema-pbta')
-const { PBTA_MONSTERHEARTS_APPEARANCE_ASSET_URLS } = await import('schema-pbta')
+const { PBTA_MONSTERHEARTS_APPEARANCE_ASSET_URLS } = await import(
+    'schema-pbta/presentation/monsterhearts-appearance-assets'
+)
 const { LANTERN_CAPABILITIES } = await import('../src/core/capabilities')
 const { sections: monsterheartsSections } = await import(
     '../src/templates/monsterhearts/playbook/model'

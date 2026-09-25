@@ -6,11 +6,11 @@ import gameMarkUrl from 'schema-pbta/packs/monsterhearts/assets/images/thorn-hea
 import drownedLakeMarkUrl from 'schema-pbta/packs/monsterhearts/assets/variants/drowned-lake/zine-lake.svg?url&no-inline'
 import {
     PBTA_MONSTERHEARTS_APPEARANCE,
-    PBTA_MONSTERHEARTS_APPEARANCE_ASSET_URLS,
     PBTA_MONSTERHEARTS_PLAYBOOK_PRESENTATION,
     type PbtaMonsterheartsPlaybookPresentation,
     type PbtaMonsterheartsRegionId,
 } from 'schema-pbta'
+import { PBTA_MONSTERHEARTS_APPEARANCE_ASSET_URLS } from 'schema-pbta/presentation/monsterhearts-appearance-assets'
 import {
     useMonsterheartsSheet,
     useMonsterheartsStore,
