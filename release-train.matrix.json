@@ -1,0 +1,50 @@
+{
+    "protocol": 1,
+    "handbook": {
+        "repository": "RebelliousSmile/obsidian-handbook",
+        "ref": "cfc979879e4fbc1357353ad000ad2da9382259ce"
+    },
+    "providers": [
+        {
+            "provider": "schema-pbta",
+            "repository": "RebelliousSmile/schema-pbta",
+            "ref": "79882eeb1f99075da8018c6cc673421b905eee3e",
+            "manifests": [
+                {
+                    "path": "release-train/schema-pbta-v8.4.2.json",
+                    "validatorRef": "a0850db99919d6bc15946887764b145f45de0bed"
+                },
+                {
+                    "path": "release-train/schema-pbta-v8.4.3.json",
+                    "validatorRef": "79882eeb1f99075da8018c6cc673421b905eee3e"
+                }
+            ]
+        },
+        {
+            "provider": "schema-adrenaline",
+            "repository": "RebelliousSmile/schema-adrenaline",
+            "ref": "4296d3f281a268d814502951c0ff7864d0d39bc4",
+            "manifests": [
+                {
+                    "path": "release-train/schema-adrenaline-v2.4.0.json",
+                    "validatorRef": "05992bc2f2f6cd43f30618e157c55761890e43ea"
+                },
+                {
+                    "path": "release-train/schema-adrenaline-v2.5.0.json",
+                    "validatorRef": "4296d3f281a268d814502951c0ff7864d0d39bc4"
+                }
+            ]
+        },
+        {
+            "provider": "schema-in-the-mist",
+            "repository": "RebelliousSmile/schema-in-the-mist",
+            "ref": "22cd905312c2cf07506f3c7345749b6504ed48c8",
+            "manifests": [
+                {
+                    "path": "release-trains/v1.3.5.json",
+                    "validatorRef": "22cd905312c2cf07506f3c7345749b6504ed48c8"
+                }
+            ]
+        }
+    ]
+}
