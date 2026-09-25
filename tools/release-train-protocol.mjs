@@ -6,7 +6,11 @@ import { URL } from 'node:url'
 const COMMIT = /^[a-f0-9]{40}$/
 const SHA256 = /^[a-f0-9]{64}$/
 const SRI = /^sha512-[A-Za-z0-9+/]+={0,2}$/
-const PROVIDERS = new Set(['schema-adrenaline', 'schema-pbta'])
+const PROVIDERS = new Set([
+    'schema-adrenaline',
+    'schema-in-the-mist',
+    'schema-pbta',
+])
 const ROLES = ['handbook', 'lantern']
 const REPOSITORIES = {
     handbook: 'RebelliousSmile/obsidian-handbook',
@@ -32,7 +36,10 @@ function candidate(raw) {
     const value = object(raw, 'candidate')
     exactKeys(value, ['provider', 'releaseUrl', 'sha256', 'integrity', 'version', 'stagingTag', 'finalTag', 'providerCommit'], 'candidate')
     const provider = text(value.provider, 'candidate.provider')
-    assert.ok(PROVIDERS.has(provider), 'candidate.provider must be schema-adrenaline or schema-pbta')
+    assert.ok(
+        PROVIDERS.has(provider),
+        'candidate.provider must be schema-adrenaline, schema-in-the-mist or schema-pbta'
+    )
     const releaseUrl = new URL(text(value.releaseUrl, 'candidate.releaseUrl'))
     assert.match(text(value.sha256, 'candidate.sha256'), SHA256, 'candidate.sha256 must be SHA-256')
     assert.match(text(value.integrity, 'candidate.integrity'), SRI, 'candidate.integrity must be SHA-512 SRI')

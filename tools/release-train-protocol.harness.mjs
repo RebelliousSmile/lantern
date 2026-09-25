@@ -115,6 +115,12 @@ const finalArtifact = {
     integrity: pbtaCandidate.integrity,
     version: '1.3.5',
 }
+const mistCandidate = {
+    ...pbtaCandidate,
+    provider: 'schema-in-the-mist',
+    releaseUrl:
+        'https://github.com/RebelliousSmile/schema-in-the-mist/releases/download/v9.9.9-rc.1/schema-in-the-mist-9.9.9.tgz',
+}
 const finalManifest = { protocol: 2, artifact: finalArtifact, consumers: manifest.consumers }
 assert.deepEqual(selectLanternFinalConsumer(finalManifest), {
     artifact: finalArtifact,
@@ -138,6 +144,14 @@ assert.deepEqual(
 assert.deepEqual(
     selectLanternConsumer({ ...manifest, candidate: adrenalineCandidate }),
     { candidate: adrenalineCandidate, consumer: manifest.consumers[0] }
+)
+assert.deepEqual(parseProtocolOne({ ...manifest, candidate: mistCandidate }), {
+    ...manifest,
+    candidate: mistCandidate,
+})
+assert.deepEqual(
+    selectLanternConsumer({ ...manifest, candidate: mistCandidate }),
+    { candidate: mistCandidate, consumer: manifest.consumers[0] }
 )
 assert.deepEqual(frozenInstallCommand('isolated-store'), {
     command: 'npx',
@@ -172,6 +186,21 @@ assert.deepEqual(providerJourney('schema-adrenaline'), {
             check: 'contract-journey',
         },
         { command: 'npm', args: ['run', 'build'], check: 'vite-journey' },
+    ],
+})
+assert.deepEqual(providerJourney('schema-in-the-mist'), {
+    id: 'mist-contract-vite-build',
+    commands: [
+        {
+            command: 'npm',
+            args: ['run', 'assert:contracts'],
+            check: 'mist-contracts',
+        },
+        {
+            command: 'npm',
+            args: ['run', 'assert:template-chunks'],
+            check: 'mist-vite-assets',
+        },
     ],
 })
 assert.deepEqual(
@@ -222,7 +251,7 @@ const forcedPreview = new FakePreview('SIGKILL')
 assert.equal(await terminatePreview(forcedPreview, 5), 'SIGKILL')
 assert.deepEqual(forcedPreview.signals, ['SIGTERM', 'SIGKILL'])
 assert.throws(() => providerJourney('schema-unknown'), /does not support/)
-for (const candidate of [pbtaCandidate, adrenalineCandidate]) {
+for (const candidate of [pbtaCandidate, adrenalineCandidate, mistCandidate]) {
     assert.deepEqual(packageResolution(candidate, packageSources(candidate)), {
         file: 'pnpm-lock.yaml',
         releaseUrl: candidate.releaseUrl,
@@ -276,7 +305,7 @@ assert.throws(
             ...manifest,
             candidate: { ...pbtaCandidate, provider: 'schema-unknown' },
         }),
-    /schema-adrenaline or schema-pbta/
+    /schema-adrenaline, schema-in-the-mist or schema-pbta/
 )
 assert.throws(
     () =>
