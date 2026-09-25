@@ -6,11 +6,18 @@ import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { selectLanternConsumer } from './release-train-protocol.mjs'
+import { selectLanternConsumer, selectLanternFinalConsumer } from './release-train-protocol.mjs'
 
 const root = process.cwd()
 const checks = []
 const JOURNEYS = {
+    'schema-in-the-mist': {
+        id: 'mist-contract-vite-build',
+        commands: [
+            { command: 'npm', args: ['run', 'assert:contracts'], check: 'mist-contracts' },
+            { command: 'npm', args: ['run', 'assert:template-chunks'], check: 'mist-vite-assets' },
+        ],
+    },
     'schema-adrenaline': {
         id: 'adrenaline-contract-vite-build',
         commands: [
@@ -268,6 +275,26 @@ export function assertEvidenceShape(evidence) {
     return evidence
 }
 
+export function assertFinalEvidenceShape(evidence) {
+    exactKeys(evidence, ['protocol', 'status', 'artifact', 'consumer', 'lock', 'journey'], 'final evidence')
+    assert.equal(evidence.protocol, 2)
+    assert.equal(evidence.status, 'passed')
+    exactKeys(evidence.artifact, ['releaseUrl', 'sha256', 'integrity', 'version'], 'final evidence.artifact')
+    exactKeys(evidence.consumer, ['role', 'repository', 'ref'], 'final evidence.consumer')
+    assert.equal(evidence.consumer.role, 'lantern')
+    assert.equal(evidence.consumer.repository, 'RebelliousSmile/lantern')
+    assert.match(evidence.consumer.ref, /^[a-f0-9]{40}$/)
+    exactKeys(evidence.lock, ['file', 'releaseUrl', 'integrity'], 'final evidence.lock')
+    assert.equal(evidence.lock.releaseUrl, evidence.artifact.releaseUrl)
+    assert.equal(evidence.lock.integrity, evidence.artifact.integrity)
+    exactKeys(evidence.journey, ['id', 'status', 'checks'], 'final evidence.journey')
+    assert.equal(evidence.journey.id, JOURNEYS['schema-in-the-mist'].id)
+    assert.equal(evidence.journey.status, 'passed')
+    assert.ok(evidence.journey.checks.includes('mist-contracts'))
+    assert.ok(evidence.journey.checks.includes('mist-vite-assets'))
+    return evidence
+}
+
 async function main() {
     const arguments_ = process.argv.slice(2).filter((value) => value !== '--')
     if (arguments_.length !== 1)
@@ -276,10 +303,11 @@ async function main() {
         )
     const manifestPath = resolve(arguments_[0])
     const evidencePath = `${manifestPath}.evidence.json`
-    const { candidate, consumer } = selectLanternConsumer(
-        JSON.parse(readFileSync(manifestPath, 'utf8')),
-        root
-    )
+    const input = JSON.parse(readFileSync(manifestPath, 'utf8'))
+    const finalProof = input.protocol === 2
+    const selection = finalProof ? selectLanternFinalConsumer(input, root) : selectLanternConsumer(input, root)
+    const candidate = finalProof ? selection.artifact : selection.candidate
+    const consumer = selection.consumer
     const journey = providerJourney(candidate.provider)
     const before = spawnSync('git', ['diff', '--quiet'], {
         cwd: root,
@@ -316,14 +344,29 @@ async function main() {
         run(command.command, command.args, command.check)
     assertRepositoryUnchanged(before)
 
-    const evidence = createEvidence({
-        candidate,
-        consumer,
-        installed,
-        lock,
-        journeyId: journey.id,
-        journeyChecks: checks,
-    })
+    const evidence = finalProof
+        ? {
+              protocol: 2,
+              status: 'passed',
+              artifact: {
+                  releaseUrl: candidate.releaseUrl,
+                  sha256: candidate.sha256,
+                  integrity: candidate.integrity,
+                  version: installed.version,
+              },
+              consumer,
+              lock,
+              journey: { id: journey.id, status: 'passed', checks },
+          }
+        : createEvidence({
+              candidate,
+              consumer,
+              installed,
+              lock,
+              journeyId: journey.id,
+              journeyChecks: checks,
+          })
+    if (finalProof) assertFinalEvidenceShape(evidence)
     writeFileSync(evidencePath, `${JSON.stringify(evidence, null, 2)}\n`)
     console.log(JSON.stringify(evidence))
 }

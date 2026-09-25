@@ -10,6 +10,7 @@ import {
 } from './assert-template-chunks.mjs'
 import {
     assertEvidenceShape,
+    assertFinalEvidenceShape,
     createEvidence,
     frozenInstallCommand,
     packageResolution,
@@ -18,6 +19,7 @@ import {
 import {
     parseProtocolOne,
     selectLanternConsumer,
+    selectLanternFinalConsumer,
 } from './release-train-protocol.mjs'
 
 const head = spawnSync('git', ['rev-parse', 'HEAD'], {
@@ -106,6 +108,29 @@ assert.deepEqual(selectLanternConsumer(manifest), {
     candidate: pbtaCandidate,
     consumer: manifest.consumers[0],
 })
+const finalArtifact = {
+    provider: 'schema-in-the-mist',
+    releaseUrl: 'https://github.com/RebelliousSmile/schema-in-the-mist/releases/download/v1.3.5/schema-in-the-mist-1.3.5.tgz',
+    sha256: 'a'.repeat(64),
+    integrity: pbtaCandidate.integrity,
+    version: '1.3.5',
+}
+const finalManifest = { protocol: 2, artifact: finalArtifact, consumers: manifest.consumers }
+assert.deepEqual(selectLanternFinalConsumer(finalManifest), {
+    artifact: finalArtifact,
+    consumer: manifest.consumers[0],
+})
+assert.throws(() => selectLanternFinalConsumer({ ...finalManifest, artifact: { ...finalArtifact, releaseUrl: pbtaCandidate.releaseUrl } }), /canonical final URL/)
+assert.throws(() => selectLanternFinalConsumer({ ...finalManifest, consumers: [manifest.consumers[0]] }), /Lantern and Handbook/)
+assert.throws(() => selectLanternFinalConsumer({ ...finalManifest, consumers: [{ ...manifest.consumers[0], ref: 'd'.repeat(40) }, manifest.consumers[1]] }), /does not match checked-out HEAD/)
+assert.deepEqual(assertFinalEvidenceShape({
+    protocol: 2,
+    status: 'passed',
+    artifact: { releaseUrl: finalArtifact.releaseUrl, sha256: finalArtifact.sha256, integrity: finalArtifact.integrity, version: finalArtifact.version },
+    consumer: manifest.consumers[0],
+    lock: { file: 'pnpm-lock.yaml', releaseUrl: finalArtifact.releaseUrl, integrity: finalArtifact.integrity },
+    journey: { id: 'mist-contract-vite-build', status: 'passed', checks: ['mist-contracts', 'mist-vite-assets'] },
+}).protocol, 2)
 assert.deepEqual(
     parseProtocolOne({ ...manifest, candidate: adrenalineCandidate }),
     { ...manifest, candidate: adrenalineCandidate }

@@ -79,3 +79,24 @@ export function selectLanternConsumer(raw, cwd = process.cwd()) {
     assert.equal(head.stdout.trim(), lantern.ref, 'manifest Lantern ref does not match checked-out HEAD')
     return { candidate: manifest.candidate, consumer: lantern }
 }
+
+export function selectLanternFinalConsumer(raw, cwd = process.cwd()) {
+    const value = object(raw, 'final release train')
+    exactKeys(value, ['protocol', 'artifact', 'consumers'], 'final release train')
+    assert.equal(value.protocol, 2, 'final release train protocol must be 2')
+    const artifact = object(value.artifact, 'artifact')
+    exactKeys(artifact, ['provider', 'releaseUrl', 'sha256', 'integrity', 'version'], 'artifact')
+    assert.equal(artifact.provider, 'schema-in-the-mist', 'final proof must name Mist')
+    assert.match(text(artifact.version, 'artifact.version'), /^\d+\.\d+\.\d+$/, 'artifact.version must be SemVer')
+    assert.equal(artifact.releaseUrl, `https://github.com/RebelliousSmile/schema-in-the-mist/releases/download/v${artifact.version}/schema-in-the-mist-${artifact.version}.tgz`, 'artifact.releaseUrl must be the canonical final URL')
+    assert.match(text(artifact.sha256, 'artifact.sha256'), SHA256)
+    assert.match(text(artifact.integrity, 'artifact.integrity'), SRI)
+    assert.ok(Array.isArray(value.consumers) && value.consumers.length === ROLES.length, 'final consumers must name Lantern and Handbook')
+    const consumers = value.consumers.map(consumer)
+    assert.deepEqual(consumers.map(({ role }) => role).sort(), ROLES, 'final consumers must name Lantern and Handbook')
+    const lantern = consumers.find(({ role }) => role === 'lantern')
+    const head = spawnSync('git', ['rev-parse', 'HEAD'], { cwd, encoding: 'utf8' })
+    assert.equal(head.status, 0, 'could not resolve checked-out Lantern HEAD')
+    assert.equal(head.stdout.trim(), lantern.ref, 'final manifest Lantern ref does not match checked-out HEAD')
+    return { artifact, consumer: lantern }
+}
