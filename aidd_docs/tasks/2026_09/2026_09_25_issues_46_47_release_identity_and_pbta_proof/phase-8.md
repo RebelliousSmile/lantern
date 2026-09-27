@@ -2,28 +2,34 @@
 status: pending
 ---
 
-# Instruction: Immutable v0.16.1 publication after Adrenaline 2.6.0 promotion
+# Instruction: Final provider and consumer-pin convergence after Adrenaline 2.6.0 promotion
 
 ## Architecture projection
 
 > Tree of the final files. ✅ create · ✏️ modify · ❌ delete
 
 ```txt
-(no additional tracked product files)
-├── v0.16.1 🏷️ version tag on the clean converged main commit
-└── GitHub Release v0.16.1 📦 production bundle and machine-readable evidence created by release workflow
+.
+├── CHANGELOG.md ✏️ freeze the v0.16.1 date and final provider versions
+├── package.json ✏️ replace promoted candidates and add pin convergence plus the provider matrix to the default check
+├── package-lock.json ✏️ record final Mist PbtA and Adrenaline URLs versions and published SRIs
+├── pnpm-lock.yaml ✏️ record the identical final provider graph for frozen pnpm installs
+├── release-train.matrix.json ✏️ supply the single immutable Handbook ref used by local and CI pin checks
+└── tools
+    ├── assert-consumer-schema-pins.mjs ✏️ require exact final URL version and SRI agreement for Mist PbtA and Adrenaline
+    └── resolve-release-inputs.mjs ✅ materialize or verify registry-pinned provider and Handbook inputs for the shared default check
 ```
 
 ## User Journey
 
 ```mermaid
 flowchart TD
-  A[Clean converged v0.16.1 commit] --> B[Run complete release preflight]
-  B --> C[Create and push v0.16.1 tag]
-  C --> D[Release workflow rebuilds and attests output]
-  D --> E[Publish bundle and evidence]
-  E --> F[Verify tag release commit version and digests]
-  F --> G[Report immutable release evidence]
+  A[Providers promote proven bytes] --> B[Verify canonical final URLs and SRIs]
+  B --> C[Pin final graph in Lantern]
+  C --> D[Read immutable Handbook graph]
+  D --> E[Compare URL version channel and SRI]
+  E --> F[Run three-provider real-manifest matrix]
+  F --> G[Pass one converged default check]
 ```
 
 ## Test Scope
@@ -34,41 +40,43 @@ title: Test scope
 ---
 journey
   section Setup
-    clean main commit with final pins and v0.16.1 metadata => release preflight has one immutable target: 5: cli
+    canonical PbtA Mist and Adrenaline final archives plus immutable Handbook package and lock => both consumer graphs are available: 5: cli
   section Happy path
-    run frozen installs default checks and artifact journeys => release candidate passes without tracked changes: 5: cli
-    push v0.16.1 tag => workflow publishes bundle and evidence for the same full commit: 5: cli
-    inspect GitHub Release => tag package changelog application files and digests agree exactly: 5: cli
-  section Edge case - identity drift
-    change a pin version commit or artifact after preflight => release workflow rejects publication: 1: cli
-  section Teardown
-    complete release verification => disposable manifests stores and preview processes are absent and worktree is clean: 5: cli
+    install Lantern final graph from both locks => canonical Mist PbtA and Adrenaline bytes resolve exactly: 5: cli
+    compare both consumer graphs => all three packages use identical canonical final URLs versions and SRIs: 5: cli
+    run npm check => release identity pin convergence and all three real-manifest journeys pass by default: 5: cli
+  section Edge case - prerelease or divergence
+    retain an rc URL or change one consumer lock resolution => default check fails with the package and consumer that drifted: 1: cli
+  section Edge case - unavailable promotion
+    final URL digest or byte identity is missing => convergence stops before package or lock metadata changes: 1: cli
 ```
 
 ## Tasks to do
 
-### `1)` Prove the release commit
+### `1)` Converge on promoted final provider bytes
 
-> Freeze the exact main commit only after every provider and consumer gate passes.
+> Replace staged URLs only after each provider publishes the already-proven bytes canonically.
 
-1. Run frozen npm/pnpm installs, the complete default check, and all provider-specific artifact journeys on the clean v0.16.1 release state.
-2. Run a local release-build dry run to verify the evidence generator can content-address the application entry, executable chunks, both fonts, and both marks for the complete prospective release commit.
-3. Commit any documentary completion updates, rerun the preflight on the final clean main commit, and retain that full SHA as the only tag target; only the later workflow build and its digests are authoritative publication evidence.
+1. Verify the published PbtA v8.4.3 and Mist v1.3.5 final archives against provider SHA-256 and SRI. Require Adrenaline to promote the proven v2.6.0-rc.1 bytes unchanged at `v2.6.0/schema-adrenaline-2.6.0.tgz`; the v2.5.0 final-tag `candidate.tgz` and the v2.6.0 RC URL do not satisfy this gate.
+2. Replace Lantern's remaining PbtA and Adrenaline candidate URLs in `package.json`, npm lock, and pnpm lock with canonical final URLs and exact SRIs; retain Mist's existing final v1.3.5 pin and preserve unrelated graph entries.
+3. Coordinate the equivalent Handbook final pins under its own issue and freeze the v0.16.1 changelog date/provider identities only after both graphs are ready.
+4. Reject every promoted provider's `-rc` URL and retain earlier candidate evidence unchanged.
 
-### `2)` Publish and verify v0.16.1
+### `2)` Enforce canonical consumer pins by default
 
-> Let the enforced workflow create the GitHub Release, then verify its external identity.
+> Turn the existing optional two-package comparison into the release-channel convergence gate.
 
-1. Create and push the `v0.16.1` tag on the proven main commit using the repository's established tag convention.
-2. Require the release workflow to publish its freshly built production bundle and evidence, then verify Release name/tag/target, package and UI version, changelog, bundle digest, evidence commit, and absence of prerelease URLs.
-3. Report the final Lantern SHA and release evidence to the coordinating provider and Handbook issues.
-4. Leave deployment or restart of operator-managed Lantern instances outside repository automation.
+1. Resolve Handbook package and pnpm-lock metadata at the sole full commit SHA in `release-train.matrix.json`; reuse a local checkout only after verifying that SHA, otherwise fetch the exact public commit to a disposable location. Reject missing or mutable refs.
+2. For all three providers, require both consumers to declare the same canonical final archive URL and exact release version.
+3. Verify matching URL, version, and SRI in Lantern's npm and pnpm locks and Handbook's pnpm lock.
+4. Add this assertion and the three-provider real-manifest matrix to `npm run check` through one input-resolution entrypoint. Check and release workflows invoke that same gate and registry; remove duplicate build, contract, and served-asset invocations from the default check while retaining their standalone commands.
 
 ## Test acceptance criteria
 
 | Task | Acceptance criteria |
 | --- | --- |
-| 1 | The clean final commit passes frozen installs, the default Mist/PbtA/Adrenaline matrix, cross-consumer pin checks, and application artifact checks without changing tracked files. |
-| 1 | Lantern's release evidence identifies the executable chunks and four served Monsterhearts assets by path, size, and digest. |
-| 2 | `v0.16.1`, package/lock version, changelog entry, user-visible build version, GitHub Release, target commit, and attached artifact evidence agree exactly. |
-| 2 | The published GitHub Release is the repository's release evidence; no unsupported deployment record is claimed or required. |
+| 1 | Lantern and Handbook use canonical final URLs and published SRIs for Mist 1.3.5, PbtA 8.4.3, and Adrenaline 2.6.0; `v2.5.0/candidate.tgz` and all rc URLs are rejected. |
+| 1 | Frozen npm and pnpm installs materialize the final graph without unrelated resolution drift. |
+| 2 | `npm run check` fails when either consumer differs in URL, version, release channel, or lockfile SRI. |
+| 2 | The converged graph passes release identity, exact cross-consumer pins, and current Mist/PbtA/Adrenaline artifact journeys in the default check. |
+| 2 | Local checks and both workflows resolve identical pinned cross-repository inputs from one registry, without depending on an undeclared sibling checkout or repeating current-graph build and contract work for historical manifests. |

@@ -186,6 +186,11 @@ assert.deepEqual(providerJourney('schema-adrenaline'), {
             check: 'contract-journey',
         },
         { command: 'npm', args: ['run', 'build'], check: 'vite-journey' },
+        {
+            command: 'node',
+            args: ['tools/assert-template-chunks.mjs'],
+            check: 'executable-chunks',
+        },
     ],
 })
 assert.deepEqual(providerJourney('schema-in-the-mist'), {

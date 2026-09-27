@@ -1,8 +1,8 @@
 ---
-status: pending
+status: done
 ---
 
-# Instruction: Provider-owned Adrenaline 2.6.0 candidate proof
+# Instruction: Immutable Lantern proof-capable candidate checkpoint
 
 ## Architecture projection
 
@@ -10,20 +10,21 @@ status: pending
 
 ```txt
 .
-├── release-train.matrix.json ✏️ add the committed v2.6.0 manifest once the provider publishes it
+├── release-train.matrix.json ✏️ pin Handbook's published v2.6.0 candidate adoption SHA
 ├── tools
-│   └── release-train-assert.mjs ✏️ only if its current Adrenaline journey misses a required published-package check
-└── aidd_docs/tasks/2026_09/2026_09_25_issues_46_47_release_identity_and_pbta_proof/phase-6.md ✏️ record verified manifest and evidence refs
+│   ├── release-train-assert.mjs ✏️ run the served executable-chunk assertion after the Adrenaline Vite build
+│   └── release-train-protocol.harness.mjs ✏️ assert the exact Adrenaline journey checks
+└── aidd_docs/tasks/2026_09/2026_09_25_issues_46_47_release_identity_and_pbta_proof/phase-6.md ✏️ mark the proof-capable checkpoint done
 ```
 
 ## User Journey
 
 ```mermaid
 flowchart TD
-  A[Committed Lantern and Handbook candidate pins] --> B[Provider commits protocol-1 manifest]
-  B --> C[Checkout exact Lantern SHA]
-  C --> D[Prove archive lock frozen install and Vite journey]
-  D --> E[Return passed evidence to provider]
+  A[Published Lantern candidate adoption] --> B[Add executable-chunk proof]
+  B --> C[Run protocol harness and production checks]
+  C --> D[Commit and publish full proof-capable Lantern SHA]
+  D --> E[Provider can commit manifest naming both consumer SHAs]
 ```
 
 ## Test Scope
@@ -34,32 +35,28 @@ title: Test scope
 ---
 journey
   section Setup
-    provider manifest names both consumer SHAs => immutable proof inputs are available: 5: cli
+    candidate graph and Handbook SHA are immutable => proof code has stable inputs: 5: cli
   section Happy path
-    execute Lantern release train assertion at manifest SHA => passed protocol 1 evidence names exact candidate and checks: 5: cli
-    validate matrix with new provider manifest => current and historical provider inputs stay covered: 5: cli
-  section Edge case - mismatch
-    alter candidate digest URL version consumer SHA or lock => assertion rejects without passed evidence: 1: cli
-  section Teardown
-    remove disposable checkout and store => published consumer commit remains unchanged: 5: cli
+    run protocol harness and build assertions => Adrenaline journey includes contracts Vite and served chunks: 5: cli
+    publish clean Lantern main commit => provider can name one full proof-capable consumer SHA: 5: cli
+  section Edge case - premature final gate
+    candidate URL enters final-only convergence check => candidate checkpoint refuses that check without replacing the RC: 1: cli
 ```
 
 ## Tasks to do
 
-### `1)` Consume the provider manifest
+### `1)` Publish the consumer proof implementation before its manifest
 
-> Never manufacture a provider manifest or consumer identity locally.
+> Break the provider-manifest dependency cycle without changing provider-owned data.
 
-1. Require Handbook to correct its v2.6.0 candidate lock package-version field, verify its frozen graph, and supply its committed full SHA. Handbook owns those changes.
-2. Read the provider-committed v2.6.0 protocol-1 manifest naming the exact phase-5 Lantern SHA and Handbook SHA. Reject a mutable ref or changed archive identity.
-3. Run `release-train:assert` in a disposable checkout of the pinned Lantern commit and require passed SHA-256, SRI, installed version, lock, contract, Vite and executable-chunk checks before evidence is emitted.
-4. Add the published manifest to the immutable matrix registry with its provider validator ref; verify the matrix still covers the historical manifests and all three current journeys.
-5. Return the evidence path and full Lantern SHA to the provider. Wait for byte-identical final promotion before phase 7.
+1. Pin Handbook `de75bbcd8772415b69bf26394ba087b7874d8e9d` in the shared registry as the published candidate consumer ref.
+2. Add the served executable-chunk check to the Adrenaline protocol-1 journey and its harness, after the existing contract and Vite checks. Leave the final-only cross-consumer gate out of this candidate checkpoint.
+3. Run protocol tests, the production build, contracts, and served-chunk checks against the candidate graph; commit and publish the full Lantern SHA on `main` for the provider manifest.
 
 ## Test acceptance criteria
 
 | Task | Acceptance criteria |
 | --- | --- |
-| 1 | The provider-owned protocol-1 manifest names exact full Lantern and Handbook commits and the published v2.6.0-rc.1 archive identity. |
-| 1 | Lantern's consumer proof validates archive SHA-256/SRI, package version 2.6.0, both locks, frozen install, contracts and Vite journey before writing passed evidence. |
-| 1 | The matrix covers the new committed provider manifest without rewriting historical evidence or treating a local fixture as authoritative. |
+| 1 | The published Lantern commit retains the exact v2.6.0-rc.1 URL, version and SRI and pins Handbook's full candidate SHA. |
+| 1 | At that same Lantern commit, the Adrenaline journey includes contracts, Vite build and served executable chunks; protocol tests and default candidate checks pass. |
+| 1 | The commit has no final Adrenaline URL or final-only gate, and the provider can reference it immutably before writing its manifest. |

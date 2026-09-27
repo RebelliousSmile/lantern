@@ -27,6 +27,11 @@ const JOURNEYS = {
                 check: 'contract-journey',
             },
             { command: 'npm', args: ['run', 'build'], check: 'vite-journey' },
+            {
+                command: 'node',
+                args: ['tools/assert-template-chunks.mjs'],
+                check: 'executable-chunks',
+            },
         ],
     },
     'schema-pbta': {
