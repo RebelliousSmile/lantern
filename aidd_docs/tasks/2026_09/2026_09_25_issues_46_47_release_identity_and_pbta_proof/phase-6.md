@@ -2,28 +2,28 @@
 status: pending
 ---
 
-# Instruction: Immutable v0.16.1 publication
+# Instruction: Provider-owned Adrenaline 2.6.0 candidate proof
 
 ## Architecture projection
 
 > Tree of the final files. ✅ create · ✏️ modify · ❌ delete
 
 ```txt
-(no additional tracked product files)
-├── v0.16.1 🏷️ version tag on the clean converged main commit
-└── GitHub Release v0.16.1 📦 production bundle and machine-readable evidence created by release workflow
+.
+├── release-train.matrix.json ✏️ add the committed v2.6.0 manifest once the provider publishes it
+├── tools
+│   └── release-train-assert.mjs ✏️ only if its current Adrenaline journey misses a required published-package check
+└── aidd_docs/tasks/2026_09/2026_09_25_issues_46_47_release_identity_and_pbta_proof/phase-6.md ✏️ record verified manifest and evidence refs
 ```
 
 ## User Journey
 
 ```mermaid
 flowchart TD
-  A[Clean converged v0.16.1 commit] --> B[Run complete release preflight]
-  B --> C[Create and push v0.16.1 tag]
-  C --> D[Release workflow rebuilds and attests output]
-  D --> E[Publish bundle and evidence]
-  E --> F[Verify tag release commit version and digests]
-  F --> G[Report immutable release evidence]
+  A[Committed Lantern and Handbook candidate pins] --> B[Provider commits protocol-1 manifest]
+  B --> C[Checkout exact Lantern SHA]
+  C --> D[Prove archive lock frozen install and Vite journey]
+  D --> E[Return passed evidence to provider]
 ```
 
 ## Test Scope
@@ -34,41 +34,32 @@ title: Test scope
 ---
 journey
   section Setup
-    clean main commit with final pins and v0.16.1 metadata => release preflight has one immutable target: 5: cli
+    provider manifest names both consumer SHAs => immutable proof inputs are available: 5: cli
   section Happy path
-    run frozen installs default checks and artifact journeys => release candidate passes without tracked changes: 5: cli
-    push v0.16.1 tag => workflow publishes bundle and evidence for the same full commit: 5: cli
-    inspect GitHub Release => tag package changelog application files and digests agree exactly: 5: cli
-  section Edge case - identity drift
-    change a pin version commit or artifact after preflight => release workflow rejects publication: 1: cli
+    execute Lantern release train assertion at manifest SHA => passed protocol 1 evidence names exact candidate and checks: 5: cli
+    validate matrix with new provider manifest => current and historical provider inputs stay covered: 5: cli
+  section Edge case - mismatch
+    alter candidate digest URL version consumer SHA or lock => assertion rejects without passed evidence: 1: cli
   section Teardown
-    complete release verification => disposable manifests stores and preview processes are absent and worktree is clean: 5: cli
+    remove disposable checkout and store => published consumer commit remains unchanged: 5: cli
 ```
 
 ## Tasks to do
 
-### `1)` Prove the release commit
+### `1)` Consume the provider manifest
 
-> Freeze the exact main commit only after every provider and consumer gate passes.
+> Never manufacture a provider manifest or consumer identity locally.
 
-1. Run frozen npm/pnpm installs, the complete default check, and all provider-specific artifact journeys on the clean v0.16.1 release state.
-2. Run a local release-build dry run to verify the evidence generator can content-address the application entry, executable chunks, both fonts, and both marks for the complete prospective release commit.
-3. Commit any documentary completion updates, rerun the preflight on the final clean main commit, and retain that full SHA as the only tag target; only the later workflow build and its digests are authoritative publication evidence.
-
-### `2)` Publish and verify v0.16.1
-
-> Let the enforced workflow create the GitHub Release, then verify its external identity.
-
-1. Create and push the `v0.16.1` tag on the proven main commit using the repository's established tag convention.
-2. Require the release workflow to publish its freshly built production bundle and evidence, then verify Release name/tag/target, package and UI version, changelog, bundle digest, evidence commit, and absence of prerelease URLs.
-3. Report the final Lantern SHA and release evidence to the coordinating provider and Handbook issues.
-4. Leave deployment or restart of operator-managed Lantern instances outside repository automation.
+1. Require Handbook to correct its v2.6.0 candidate lock package-version field, verify its frozen graph, and supply its committed full SHA. Handbook owns those changes.
+2. Read the provider-committed v2.6.0 protocol-1 manifest naming the exact phase-5 Lantern SHA and Handbook SHA. Reject a mutable ref or changed archive identity.
+3. Run `release-train:assert` in a disposable checkout of the pinned Lantern commit and require passed SHA-256, SRI, installed version, lock, contract, Vite and executable-chunk checks before evidence is emitted.
+4. Add the published manifest to the immutable matrix registry with its provider validator ref; verify the matrix still covers the historical manifests and all three current journeys.
+5. Return the evidence path and full Lantern SHA to the provider. Wait for byte-identical final promotion before phase 7.
 
 ## Test acceptance criteria
 
 | Task | Acceptance criteria |
 | --- | --- |
-| 1 | The clean final commit passes frozen installs, the default Mist/PbtA/Adrenaline matrix, cross-consumer pin checks, and application artifact checks without changing tracked files. |
-| 1 | Lantern's release evidence identifies the executable chunks and four served Monsterhearts assets by path, size, and digest. |
-| 2 | `v0.16.1`, package/lock version, changelog entry, user-visible build version, GitHub Release, target commit, and attached artifact evidence agree exactly. |
-| 2 | The published GitHub Release is the repository's release evidence; no unsupported deployment record is claimed or required. |
+| 1 | The provider-owned protocol-1 manifest names exact full Lantern and Handbook commits and the published v2.6.0-rc.1 archive identity. |
+| 1 | Lantern's consumer proof validates archive SHA-256/SRI, package version 2.6.0, both locks, frozen install, contracts and Vite journey before writing passed evidence. |
+| 1 | The matrix covers the new committed provider manifest without rewriting historical evidence or treating a local fixture as authoritative. |

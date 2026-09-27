@@ -1,5 +1,5 @@
 ---
-objective: "Lantern proves the schema-pbta 8.4.3 browser-subpath candidate, converges every promoted schema dependency, validates all three provider trains by default, and publishes v0.16.1 with matching package, tag, changelog, GitHub Release, and artifact evidence."
+objective: "Lantern proves the schema-adrenaline 2.6.0 candidate on an immutable commit, converges all three schemas only after its promotion, validates the provider trains, and publishes v0.16.1 with matching release identity and artifact evidence."
 status: in-progress
 ---
 
@@ -20,8 +20,10 @@ status: in-progress
 | 2 | Runnable four-asset evidence | [`phase-2.md`](./phase-2.md) |
 | 3 | Lantern release identity contract | [`phase-3.md`](./phase-3.md) |
 | 4 | Three-provider real-manifest matrix | [`phase-4.md`](./phase-4.md) |
-| 5 | Final provider and consumer-pin convergence | [`phase-5.md`](./phase-5.md) |
-| 6 | Immutable v0.16.1 publication | [`phase-6.md`](./phase-6.md) |
+| 5 | Adrenaline 2.6.0 candidate adoption checkpoint | [`phase-5.md`](./phase-5.md) |
+| 6 | Provider-owned candidate proof | [`phase-6.md`](./phase-6.md) |
+| 7 | Final provider and consumer-pin convergence | [`phase-7.md`](./phase-7.md) |
+| 8 | Immutable v0.16.1 publication | [`phase-8.md`](./phase-8.md) |
 
 ## Resources
 
@@ -30,9 +32,10 @@ status: in-progress
 | [Lantern #46](https://github.com/RebelliousSmile/lantern/issues/46) | Defines release identity, canonical final pins, the default Mist/PbtA/Adrenaline matrix, and exact application-artifact evidence. |
 | [Lantern #47](https://github.com/RebelliousSmile/lantern/issues/47) | Defines the PbtA browser-only import, v8.4.3 candidate locks, four served assets, cleanup, and immutable candidate evidence. |
 | [schema-pbta #41](https://github.com/RebelliousSmile/schema-pbta/issues/41) | v8.4.3 is final; committed protocol-1 provenance contains Lantern's passed proof at `d3de6d8`. |
-| [schema-adrenaline #36](https://github.com/RebelliousSmile/schema-adrenaline/issues/36) | The v2.5.0 Release still exposes `candidate.tgz`, not the required canonical `schema-adrenaline-2.5.0.tgz`; both consumers must wait for the provider asset correction. |
+| [schema-adrenaline v2.6.0-rc.1](https://github.com/RebelliousSmile/schema-adrenaline/releases/tag/v2.6.0-rc.1) | The published candidate archive declares package version 2.6.0; its SHA-256 is `9dc51da464ae0caae7a44fcafb1e932656ab2612299430655055fae37716e212`. No v2.6.0 provider manifest or final archive exists yet. |
+| [schema-adrenaline #36](https://github.com/RebelliousSmile/schema-adrenaline/issues/36) | The older v2.5.0 final archive remains noncanonical. It does not substitute for a v2.6.0 candidate proof or promotion. |
 | [schema-in-the-mist #25](https://github.com/RebelliousSmile/schema-in-the-mist/issues/25) | The v1.3.5 final archive exists; the committed `release-trains/v1.3.5.json` is a provider-owned legacy envelope, and post-promotion consumer evidence remains to be completed. |
-| [Obsidian Handbook #63](https://github.com/RebelliousSmile/obsidian-handbook/issues/63) | Handbook main pins PbtA and Mist final URLs but Adrenaline's `v2.5.0/candidate.tgz`; its own final pin and load proof remain its responsibility. |
+| [Obsidian Handbook](https://github.com/RebelliousSmile/obsidian-handbook) | Its local candidate adoption points to v2.6.0-rc.1 with matching SRI, but the pnpm package entry still says version 2.5.0; Handbook owns that correction and its proof commit. |
 
 ## Decisions
 
@@ -49,3 +52,5 @@ status: in-progress
 | Execute implementation and release work on `main` without branches or worktrees. | The project's main-only execution rule applies to every phase, including the immutable candidate and release checkpoints. |
 | Include every committed real train manifest naming Lantern in one immutable input registry, with a single Handbook commit for pin checks. | The current set contains two PbtA manifests, two Adrenaline manifests, and one Mist manifest; historical refs remain historical, while the build, contracts, executable chunks, and four PbtA assets are checked once for the current graph. |
 | Separate real-manifest journey dispatch from immutable candidate resolution. | The default matrix can replay the current artifact journey selected by a real manifest after final convergence, while URL/lock/ref equality remains the provider-orchestrated assertion at that manifest's recorded consumer commit. |
+| Add a v2.6.0-rc.1 candidate checkpoint before final convergence; leave historical v2.5.0 evidence intact. | The user chose the new Adrenaline train. Its different bytes and version require new immutable Lantern and Handbook proofs before provider promotion. A candidate URL cannot satisfy #46's final-pin criterion. |
+| Let the provider publish the v2.6.0 protocol-1 manifest after both consumer commits, then add it to the pinned matrix. | The provider owns the manifest and promotion. Lantern must not invent consumer refs or treat an uncommitted local fixture as authoritative evidence. |
