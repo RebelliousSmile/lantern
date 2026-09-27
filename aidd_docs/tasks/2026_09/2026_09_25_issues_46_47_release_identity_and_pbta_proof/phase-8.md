@@ -1,5 +1,5 @@
 ---
-status: pending
+status: done
 ---
 
 # Instruction: Final provider and consumer-pin convergence after Adrenaline 2.6.0 promotion
@@ -50,6 +50,15 @@ journey
   section Edge case - unavailable promotion
     final URL digest or byte identity is missing => convergence stops before package or lock metadata changes: 1: cli
 ```
+
+## Progress
+
+- The published Adrenaline v2.6.0 archive was downloaded and verified against the RC's SHA-256 and SHA-512 SRI. Lantern's package declaration, npm lock, and pnpm lock now use the canonical final URL with the unchanged version and SRI.
+- Handbook's final adoption commit `12eb3ca46bda5a12a5d6310fca3523c4a724d509` declares the same three canonical final URLs as Lantern. Its pnpm lock has the matching URLs and published SRIs; the matrix now pins this exact SHA.
+- `npm run check` passed with Handbook pinned at `12eb3ca46bda5a12a5d6310fca3523c4a724d509`; it ran the consumer-pin comparison and the six-manifest provider matrix. The earlier transient Git partial-clone failure did not recur.
+- Lantern's consumer-owned protocol-2 final assertion now accepts the canonical Adrenaline v2.6.0 artifact as well as Mist, requires the Adrenaline contract, Vite, executable-chunk, archive, frozen-install, and lock checks, and retains the provider's closed evidence shape. The protocol harness and complete default check pass locally. The immutable final-proof run still requires a published Lantern commit and the provider's final record.
+- Disposable `npm ci --ignore-scripts --no-audit --no-fund` and `pnpm install --frozen-lockfile --ignore-scripts` both materialized PbtA 8.4.3, Mist 1.3.5, and Adrenaline 2.6.0. Their exact temporary directories were removed after validation.
+- The v0.16.1 changelog now records the three final provider pins and the 2026-09-27 convergence date. Publication remains phase 9.
 
 ## Tasks to do
 

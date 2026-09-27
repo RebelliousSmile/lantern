@@ -11,6 +11,7 @@ const PROVIDERS = new Set([
     'schema-in-the-mist',
     'schema-pbta',
 ])
+const FINAL_PROVIDERS = new Set(['schema-adrenaline', 'schema-in-the-mist'])
 const ROLES = ['handbook', 'lantern']
 const REPOSITORIES = {
     handbook: 'RebelliousSmile/obsidian-handbook',
@@ -93,9 +94,9 @@ export function selectLanternFinalConsumer(raw, cwd = process.cwd()) {
     assert.equal(value.protocol, 2, 'final release train protocol must be 2')
     const artifact = object(value.artifact, 'artifact')
     exactKeys(artifact, ['provider', 'releaseUrl', 'sha256', 'integrity', 'version'], 'artifact')
-    assert.equal(artifact.provider, 'schema-in-the-mist', 'final proof must name Mist')
+    assert.ok(FINAL_PROVIDERS.has(artifact.provider), 'final proof must name Adrenaline or Mist')
     assert.match(text(artifact.version, 'artifact.version'), /^\d+\.\d+\.\d+$/, 'artifact.version must be SemVer')
-    assert.equal(artifact.releaseUrl, `https://github.com/RebelliousSmile/schema-in-the-mist/releases/download/v${artifact.version}/schema-in-the-mist-${artifact.version}.tgz`, 'artifact.releaseUrl must be the canonical final URL')
+    assert.equal(artifact.releaseUrl, `https://github.com/RebelliousSmile/${artifact.provider}/releases/download/v${artifact.version}/${artifact.provider}-${artifact.version}.tgz`, 'artifact.releaseUrl must be the canonical final URL')
     assert.match(text(artifact.sha256, 'artifact.sha256'), SHA256)
     assert.match(text(artifact.integrity, 'artifact.integrity'), SRI)
     assert.ok(Array.isArray(value.consumers) && value.consumers.length === ROLES.length, 'final consumers must name Lantern and Handbook')

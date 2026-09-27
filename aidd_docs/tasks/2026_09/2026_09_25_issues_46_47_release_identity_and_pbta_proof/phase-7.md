@@ -1,5 +1,5 @@
 ---
-status: pending
+status: done
 ---
 
 # Instruction: Provider-owned Adrenaline 2.6.0 candidate proof
@@ -52,7 +52,14 @@ journey
 2. Read the provider-committed v2.6.0 protocol-1 manifest naming the exact phase-6 Lantern proof-capable SHA and Handbook SHA. Reject a mutable ref or changed archive identity.
 3. Run `release-train:assert` in a disposable checkout of the pinned Lantern commit and require passed SHA-256, SRI, installed version, lock, contract, Vite and executable-chunk checks before evidence is emitted.
 4. Add the published manifest to the immutable matrix registry with its provider validator ref; verify the matrix still covers the historical manifests and all three current journeys.
-5. Return the evidence path and full Lantern SHA to the provider. Wait for byte-identical final promotion before phase 7.
+5. Return the evidence path and full Lantern SHA to the provider. Wait for byte-identical final promotion before phase 8.
+
+## Verified result
+
+- The provider committed `release-train/schema-adrenaline-v2.6.0.json` at `f67cac079ca8c0150b6e507947a8ba8e95a4ca42`. It names Lantern `7935a9a9e1decc7577dedc8b79aec11be4fce9b6`, Handbook `de75bbcd8772415b69bf26394ba087b7874d8e9d`, and the v2.6.0-rc.1 candidate with SHA-256 `9dc51da464ae0caae7a44fcafb1e932656ab2612299430655055fae37716e212`.
+- [Provider release-train run 36326331903](https://github.com/RebelliousSmile/schema-adrenaline/actions/runs/36326331903) passed at that exact provider commit. Its `release-train-proofs` artifact contains passed `lantern-proof.json` and `handbook-proof.json`; Lantern's proof names archive SHA-256/SRI, frozen install, installed version, both locks, contracts, Vite, executable chunks, and clean repository.
+- The immutable Lantern matrix pins the provider commit and validates this sixth real manifest while retaining all five historical manifests. Its unit harness and the full `npm run check` passed after the final Handbook ref was pinned. An earlier transient Git partial-clone failure was cleared by the successful full run.
+- The final v2.6.0 release has not been published. Phase 8 remains pending.
 
 ## Test acceptance criteria
 

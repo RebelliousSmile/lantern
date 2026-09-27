@@ -5,7 +5,7 @@ All notable changes to this project are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [v0.16.1] - 2026-09-25
+## [v0.16.1] - 2026-09-27
 
 ### Added
 
@@ -17,6 +17,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- **Final provider pins.** Lantern and Handbook now resolve the canonical PbtA 8.4.3,
+  Mist 1.3.5, and Adrenaline 2.6.0 archives with matching lockfile integrity.
 - **Browser-only PbtA exports.** Lantern consumes Monsterhearts appearance URLs through the
   explicit browser subpath while retaining Vite ownership of emitted assets.
 - **Release identity drift.** Package metadata, npm lock roots, changelog headings, tags, commits,

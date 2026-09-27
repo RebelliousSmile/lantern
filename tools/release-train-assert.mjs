@@ -280,23 +280,34 @@ export function assertEvidenceShape(evidence) {
     return evidence
 }
 
-export function assertFinalEvidenceShape(evidence) {
+export function assertFinalEvidenceShape(evidence, provider) {
+    const journey = JOURNEYS[provider]
+    assert.ok(journey && ['schema-adrenaline', 'schema-in-the-mist'].includes(provider), 'unsupported final evidence provider')
     exactKeys(evidence, ['protocol', 'status', 'artifact', 'consumer', 'lock', 'journey'], 'final evidence')
     assert.equal(evidence.protocol, 2)
     assert.equal(evidence.status, 'passed')
     exactKeys(evidence.artifact, ['releaseUrl', 'sha256', 'integrity', 'version'], 'final evidence.artifact')
+    assert.equal(evidence.artifact.releaseUrl, `https://github.com/RebelliousSmile/${provider}/releases/download/v${evidence.artifact.version}/${provider}-${evidence.artifact.version}.tgz`, 'final evidence must name the canonical final URL')
     exactKeys(evidence.consumer, ['role', 'repository', 'ref'], 'final evidence.consumer')
     assert.equal(evidence.consumer.role, 'lantern')
     assert.equal(evidence.consumer.repository, 'RebelliousSmile/lantern')
     assert.match(evidence.consumer.ref, /^[a-f0-9]{40}$/)
     exactKeys(evidence.lock, ['file', 'releaseUrl', 'integrity'], 'final evidence.lock')
+    assert.equal(evidence.lock.file, 'pnpm-lock.yaml')
     assert.equal(evidence.lock.releaseUrl, evidence.artifact.releaseUrl)
     assert.equal(evidence.lock.integrity, evidence.artifact.integrity)
     exactKeys(evidence.journey, ['id', 'status', 'checks'], 'final evidence.journey')
-    assert.equal(evidence.journey.id, JOURNEYS['schema-in-the-mist'].id)
+    assert.equal(evidence.journey.id, journey.id)
     assert.equal(evidence.journey.status, 'passed')
-    assert.ok(evidence.journey.checks.includes('mist-contracts'))
-    assert.ok(evidence.journey.checks.includes('mist-vite-assets'))
+    assert.ok(Array.isArray(evidence.journey.checks), 'final evidence journey checks must be an array')
+    for (const { check } of journey.commands) {
+        assert.ok(evidence.journey.checks.includes(check), `final ${provider} evidence misses ${check}`)
+    }
+    if (provider === 'schema-adrenaline') {
+        for (const check of ['npm-lock-resolution', 'archive-sha256', 'archive-integrity', 'frozen-install', 'installed-version']) {
+            assert.ok(evidence.journey.checks.includes(check), `final Adrenaline evidence misses ${check}`)
+        }
+    }
     return evidence
 }
 
@@ -371,7 +382,7 @@ async function main() {
               journeyId: journey.id,
               journeyChecks: checks,
           })
-    if (finalProof) assertFinalEvidenceShape(evidence)
+    if (finalProof) assertFinalEvidenceShape(evidence, candidate.provider)
     writeFileSync(evidencePath, `${JSON.stringify(evidence, null, 2)}\n`)
     console.log(JSON.stringify(evidence))
 }

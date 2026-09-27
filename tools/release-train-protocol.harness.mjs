@@ -129,6 +129,27 @@ assert.deepEqual(selectLanternFinalConsumer(finalManifest), {
 assert.throws(() => selectLanternFinalConsumer({ ...finalManifest, artifact: { ...finalArtifact, releaseUrl: pbtaCandidate.releaseUrl } }), /canonical final URL/)
 assert.throws(() => selectLanternFinalConsumer({ ...finalManifest, consumers: [manifest.consumers[0]] }), /Lantern and Handbook/)
 assert.throws(() => selectLanternFinalConsumer({ ...finalManifest, consumers: [{ ...manifest.consumers[0], ref: 'd'.repeat(40) }, manifest.consumers[1]] }), /does not match checked-out HEAD/)
+const adrenalineFinalArtifact = {
+    ...finalArtifact,
+    provider: 'schema-adrenaline',
+    releaseUrl: 'https://github.com/RebelliousSmile/schema-adrenaline/releases/download/v2.6.0/schema-adrenaline-2.6.0.tgz',
+    sha256: '9dc51da464ae0caae7a44fcafb1e932656ab2612299430655055fae37716e212',
+    integrity: 'sha512-pDA1k811MHDtG9llOtJs1wp2/TcTSr1ebnyciaOqmxYTimhSj4ImdQFv8d1lUZ2z1EUjQQHFO1tuzJDZqmzlgA==',
+    version: '2.6.0',
+}
+const adrenalineFinalManifest = { ...finalManifest, artifact: adrenalineFinalArtifact }
+assert.deepEqual(selectLanternFinalConsumer(adrenalineFinalManifest), {
+    artifact: adrenalineFinalArtifact,
+    consumer: manifest.consumers[0],
+})
+assert.throws(() => selectLanternFinalConsumer({ ...adrenalineFinalManifest, artifact: { ...adrenalineFinalArtifact, releaseUrl: adrenalineCandidate.releaseUrl } }), /canonical final URL/)
+assert.throws(() => selectLanternFinalConsumer({ ...adrenalineFinalManifest, artifact: { ...adrenalineFinalArtifact, releaseUrl: `${adrenalineFinalArtifact.releaseUrl}?token=signed` } }), /canonical final URL/)
+assert.throws(() => selectLanternFinalConsumer({ ...adrenalineFinalManifest, artifact: { ...adrenalineFinalArtifact, provider: 'schema-pbta' } }), /Adrenaline or Mist/)
+assert.deepEqual(packageResolution(adrenalineFinalArtifact), {
+    file: 'pnpm-lock.yaml',
+    releaseUrl: adrenalineFinalArtifact.releaseUrl,
+    integrity: adrenalineFinalArtifact.integrity,
+})
 assert.deepEqual(assertFinalEvidenceShape({
     protocol: 2,
     status: 'passed',
@@ -136,7 +157,18 @@ assert.deepEqual(assertFinalEvidenceShape({
     consumer: manifest.consumers[0],
     lock: { file: 'pnpm-lock.yaml', releaseUrl: finalArtifact.releaseUrl, integrity: finalArtifact.integrity },
     journey: { id: 'mist-contract-vite-build', status: 'passed', checks: ['mist-contracts', 'mist-vite-assets'] },
-}).protocol, 2)
+}, 'schema-in-the-mist').protocol, 2)
+const adrenalineFinalEvidence = {
+    protocol: 2,
+    status: 'passed',
+    artifact: { releaseUrl: adrenalineFinalArtifact.releaseUrl, sha256: adrenalineFinalArtifact.sha256, integrity: adrenalineFinalArtifact.integrity, version: adrenalineFinalArtifact.version },
+    consumer: manifest.consumers[0],
+    lock: { file: 'pnpm-lock.yaml', releaseUrl: adrenalineFinalArtifact.releaseUrl, integrity: adrenalineFinalArtifact.integrity },
+    journey: { id: 'adrenaline-contract-vite-build', status: 'passed', checks: ['npm-lock-resolution', 'archive-sha256', 'archive-integrity', 'frozen-install', 'installed-version', 'contract-journey', 'vite-journey', 'executable-chunks'] },
+}
+assert.equal(assertFinalEvidenceShape(adrenalineFinalEvidence, 'schema-adrenaline').protocol, 2)
+assert.throws(() => assertFinalEvidenceShape({ ...adrenalineFinalEvidence, journey: { ...adrenalineFinalEvidence.journey, checks: adrenalineFinalEvidence.journey.checks.filter((check) => check !== 'executable-chunks') } }, 'schema-adrenaline'), /misses executable-chunks/)
+assert.throws(() => assertFinalEvidenceShape({ ...adrenalineFinalEvidence, lock: { ...adrenalineFinalEvidence.lock, integrity: 'sha512-wrong' } }, 'schema-adrenaline'), /Expected values to be strictly equal/)
 assert.deepEqual(
     parseProtocolOne({ ...manifest, candidate: adrenalineCandidate }),
     { ...manifest, candidate: adrenalineCandidate }
@@ -256,7 +288,7 @@ const forcedPreview = new FakePreview('SIGKILL')
 assert.equal(await terminatePreview(forcedPreview, 5), 'SIGKILL')
 assert.deepEqual(forcedPreview.signals, ['SIGTERM', 'SIGKILL'])
 assert.throws(() => providerJourney('schema-unknown'), /does not support/)
-for (const candidate of [pbtaCandidate, adrenalineCandidate, mistCandidate]) {
+for (const candidate of [pbtaCandidate, adrenalineCandidate, mistCandidate, adrenalineFinalArtifact]) {
     assert.deepEqual(packageResolution(candidate, packageSources(candidate)), {
         file: 'pnpm-lock.yaml',
         releaseUrl: candidate.releaseUrl,
@@ -575,4 +607,4 @@ assert.equal(
     'adrenaline-contract-vite-build'
 )
 
-console.log('Release-train protocol-1 parser verified.')
+console.log('Release-train protocol-1 and protocol-2 consumer proofs verified.')

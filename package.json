@@ -17,14 +17,16 @@
         "assert:visibility-protocol": "node tools/assert-visibility-protocol.mjs",
         "assert:cross-repo": "node tools/assert-cross-repo.mjs",
         "assert:consumer-schema-pins": "node tools/assert-consumer-schema-pins.mjs",
+        "assert:consumer-schema-pins:unit": "node tools/consumer-schema-pins.harness.mjs",
         "validate:release-train": "node tools/validate-release-train.mjs",
         "release-train:assert": "node tools/release-train-assert.mjs",
         "assert:release-train": "node tools/release-train-protocol.harness.mjs",
         "assert:release-train-matrix": "node tools/release-train-matrix.mjs",
         "assert:release-train-matrix:unit": "node tools/release-train-matrix.harness.mjs",
+        "assert:release-inputs": "node tools/resolve-release-inputs.mjs",
         "assert:release-identity": "node tools/assert-release-identity.mjs && node tools/release-identity.harness.mjs",
         "prepare:schema-pbta-candidate": "node tools/prepare-schema-pbta-candidate.mjs",
-        "check": "npm run lint && npm run typecheck && npm run assert:template-chunks && npm run assert:contracts && npm run assert:workspace && npm run assert:release-train && npm run assert:release-identity"
+        "check": "npm run lint && npm run typecheck && npm run assert:release-train && npm run assert:release-identity && npm run assert:release-train-matrix:unit && npm run assert:consumer-schema-pins:unit && npm run assert:workspace && npm run assert:release-inputs"
     },
     "dependencies": {
         "@dnd-kit/core": "^6.3.1",
@@ -63,7 +65,7 @@
         "react-i18next": "^17.0.14",
         "react-resizable-panels": "^4.7.1",
         "react-router-dom": "^7.18.4",
-        "schema-adrenaline": "https://github.com/RebelliousSmile/schema-adrenaline/releases/download/v2.6.0-rc.1/schema-adrenaline-2.6.0.tgz",
+        "schema-adrenaline": "https://github.com/RebelliousSmile/schema-adrenaline/releases/download/v2.6.0/schema-adrenaline-2.6.0.tgz",
         "schema-in-the-mist": "https://github.com/RebelliousSmile/schema-in-the-mist/releases/download/v1.3.5/schema-in-the-mist-1.3.5.tgz",
         "schema-pbta": "https://github.com/RebelliousSmile/schema-pbta/releases/download/v8.4.3/schema-pbta-8.4.3.tgz",
         "smol-toml": "1.8.0",

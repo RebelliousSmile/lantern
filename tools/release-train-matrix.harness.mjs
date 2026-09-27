@@ -7,7 +7,7 @@ const source = JSON.parse(readFileSync('release-train.matrix.json', 'utf8'))
 const matrix = parseMatrix(source)
 const coverage = journeyCoverage(matrix)
 
-assert.equal(coverage.length, 5)
+assert.equal(coverage.length, 6)
 assert.deepEqual(
     [...new Set(coverage.map(({ provider }) => provider))].sort(),
     ['schema-adrenaline', 'schema-in-the-mist', 'schema-pbta']
@@ -45,4 +45,4 @@ reject((input) => { input.providers[0].manifests.push(input.providers[0].manifes
 reject((input) => { input.providers[0].repository = 'RebelliousSmile/other' }, /unknown or wrong provider/)
 reject((input) => { input.providers[0].manifests[0].validatorRef = 'v8.4.2' }, /full commit/)
 
-console.log('Release train matrix covers five real manifests and rejects mutable, duplicate, or fixture inputs.')
+console.log('Release train matrix covers six real manifests and rejects mutable, duplicate, or fixture inputs.')
