@@ -1,0 +1,722 @@
+/*
+ * Fiche PJ Zombiology : transposition de la feuille Handbook (src/styles/adrenaline/_pj.scss),
+ * préfixe brumes-adrenaline-pj renommé adr-pj. Toutes les couleurs et polices sont des jetons du
+ * pack publié, posés sur la racine par PjPreview : aucune valeur en dur ici.
+ */
+
+/*\n * Chaque bloc est un bouton qui ouvre sa section d'édition : il ne garde rien du bouton natif.\n * Spécificité d'une classe, posée en tête : les règles de forme qui suivent l'emportent.\n */
+:where(button).adr-pj__block {
+    appearance: none;
+    cursor: pointer;
+    margin: 0;
+    border: 0;
+    background: none;
+    padding: 0;
+    color: inherit;
+    font: inherit;
+    text-align: start;
+}
+
+:where(button).adr-pj__block:focus-visible {
+    outline: 2px solid var(--adrenaline-rule);
+    outline-offset: 2px;
+}
+.adr-pj {
+    position: relative;
+    box-sizing: border-box;
+    container-type: inline-size;
+    margin-inline: auto;
+    background: var(--adrenaline-card-surface, var(--background-primary));
+    isolation: isolate;
+    padding: 12px;
+    width: min(100%, 68rem);
+    color: var(--text-normal);
+    font-size: 12px;
+    line-height: 1.3;
+    font-family: var(--font-text-theme);
+    overflow-wrap: anywhere;
+}
+.adr-pj *,
+.adr-pj *::before,
+.adr-pj *::after {
+    box-sizing: border-box;
+}
+
+.adr-pj--surface-paper-sheet::before {
+    position: absolute;
+    opacity: var(--adrenaline-page-texture-opacity, 0);
+    z-index: -1;
+    inset: 0;
+    background: var(--adrenaline-page-texture, none) center/cover;
+    pointer-events: none;
+    content: '';
+}
+
+.adr-pj--outer-rule {
+    border: 1px solid var(--adrenaline-rule);
+}
+
+.adr-pj__section {
+    min-width: 0;
+}
+
+.adr-pj__section + .adr-pj__section {
+    margin-block-start: 10px;
+}
+
+.adr-pj__section:not(.adr-pj--entete) {
+    border: 1px solid var(--adrenaline-rule);
+}
+
+.adr-pj h4.adr-pj__section-title {
+    margin: 0;
+    background: var(--adrenaline-band);
+    padding: 3px 8px;
+    color: var(--adrenaline-band-ink);
+    font-style: normal;
+    font-weight: 800;
+    font-size: 12px;
+    font-family: var(--font-header-theme);
+    letter-spacing: 0.04em;
+    text-align: center;
+    text-decoration: none;
+    text-transform: uppercase;
+}
+
+.adr-pj--titles-center h4.adr-pj__section-title {
+    text-align: center;
+}
+
+.adr-pj__section-body {
+    display: grid;
+    gap: 10px;
+    min-width: 0;
+}
+
+.adr-pj__section:not(.adr-pj--entete) > .adr-pj__section-body {
+    padding: 9px 10px 11px;
+}
+
+.adr-pj__columns-1 {
+    grid-template-columns: minmax(0, 1fr);
+}
+
+.adr-pj__columns-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.adr-pj__columns-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.adr-pj__block {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+}
+
+.adr-pj__col-1 {
+    grid-column: 1;
+}
+
+.adr-pj__row-1 {
+    grid-row: 1;
+}
+
+.adr-pj__col-span-1 {
+    grid-column-end: span 1;
+}
+
+.adr-pj__row-span-1 {
+    grid-row-end: span 1;
+}
+
+.adr-pj__col-2 {
+    grid-column: 2;
+}
+
+.adr-pj__row-2 {
+    grid-row: 2;
+}
+
+.adr-pj__col-span-2 {
+    grid-column-end: span 2;
+}
+
+.adr-pj__row-span-2 {
+    grid-row-end: span 2;
+}
+
+.adr-pj__col-3 {
+    grid-column: 3;
+}
+
+.adr-pj__row-3 {
+    grid-row: 3;
+}
+
+.adr-pj__col-span-3 {
+    grid-column-end: span 3;
+}
+
+.adr-pj__row-span-3 {
+    grid-row-end: span 3;
+}
+
+.adr-pj h5.adr-pj__block-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 6px;
+    margin: 0;
+    border-bottom: 1px solid var(--adrenaline-track-mark);
+    padding-bottom: 2px;
+    color: var(--adrenaline-rule);
+    font-style: normal;
+    font-weight: 800;
+    font-size: 10px;
+    font-family: var(--font-header-theme);
+    letter-spacing: 0.04em;
+    text-decoration: none;
+    text-transform: uppercase;
+}
+
+.adr-pj__subhead-trailing {
+    display: flex;
+    gap: 0;
+}
+
+.adr-pj__subhead-head {
+    min-width: 42px;
+    text-align: center;
+}
+
+.adr-pj__value {
+    min-width: 0;
+}
+
+.adr-pj--values-handwritten .adr-pj__value {
+    color: var(--adrenaline-handwritten-ink);
+    font-size: 1.15em;
+    line-height: 1.1;
+    font-family: 'Adrenaline Handwriting', var(--font-text-theme);
+}
+
+.adr-pj--values-end .adr-pj__metric-value,
+.adr-pj--values-end .adr-pj__unit-value {
+    text-align: center;
+}
+
+.adr-pj__note {
+    margin: 0;
+    font-style: italic;
+    font-size: 0.88em;
+}
+
+.adr-pj__write-line {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 5px;
+    min-width: 0;
+}
+
+.adr-pj__write-label {
+    color: var(--adrenaline-rule);
+    font-weight: 800;
+    font-size: 9px;
+    font-family: var(--font-header-theme);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.adr-pj__write-field {
+    flex: 1 1 7em;
+    border-bottom: 1px dotted var(--adrenaline-field-border);
+    min-width: 0;
+    min-height: 1.25em;
+}
+
+.adr-pj__metric-list {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.adr-pj__metric,
+.adr-pj__metric-heads {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 42px;
+    align-items: stretch;
+    min-width: 0;
+}
+
+.adr-pj__metric-2 {
+    grid-template-columns: minmax(0, 1fr) 42px 42px;
+}
+
+.adr-pj__metric {
+    border: 1px solid var(--adrenaline-field-border);
+}
+
+.adr-pj__metric-name {
+    align-self: center;
+    padding: 2px 5px;
+}
+
+.adr-pj__metric-value {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-left: 1px solid var(--adrenaline-field-border);
+    min-height: 20px;
+}
+
+.adr-pj__metric-head {
+    color: var(--adrenaline-rule);
+    font-weight: 800;
+    font-size: 7px;
+    font-family: var(--font-header-theme);
+    letter-spacing: 0.04em;
+    letter-spacing: 0;
+    text-align: center;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.adr-pj--entete > .adr-pj__section-body {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.35fr) minmax(0, 1.15fr);
+    grid-template-areas: 'nom brand params';
+    align-items: stretch;
+}
+
+.adr-pj--entete .adr-pj__nom {
+    grid-area: nom;
+}
+
+.adr-pj--entete .adr-pj__brand {
+    grid-area: brand;
+}
+
+.adr-pj--entete .adr-pj__parametres-jeu,
+.adr-pj--entete .adr-pj__px {
+    grid-area: params;
+}
+
+.adr-pj__form-name-card,
+.adr-pj__form-game-parameters {
+    gap: 0;
+    border: 1px solid var(--adrenaline-rule);
+    background: var(--adrenaline-card-surface, var(--background-primary));
+}
+
+.adr-pj__card-label {
+    display: block;
+    margin: 0;
+    background: var(--adrenaline-band);
+    padding: 2px 6px;
+    color: var(--adrenaline-band-ink);
+    font-weight: 800;
+    font-size: 10px;
+    font-family: var(--font-header-theme);
+    letter-spacing: 0.04em;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+.adr-pj__card-value {
+    display: flex;
+    flex: 1;
+    justify-content: center;
+    align-items: center;
+    padding: 6px;
+}
+
+.adr-pj__nom .adr-pj__card-value {
+    transform: rotate(-1deg);
+    font-size: 19px;
+    text-align: center;
+}
+
+.adr-pj__card-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    padding: 5px 48px 5px 6px;
+}
+
+.adr-pj__px {
+    align-self: stretch;
+    justify-self: end;
+    z-index: 1;
+    margin: 23px 5px 5px 0;
+    width: 38px;
+}
+
+.adr-pj__px .adr-pj__card-label {
+    padding-inline: 0;
+}
+
+.adr-pj__brand {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+    min-width: 0;
+    color: var(--adrenaline-rule);
+    text-align: center;
+}
+
+.adr-pj__brand-name {
+    font-weight: 900;
+    font-size: 25px;
+    line-height: 1;
+    font-family: var(--font-header-theme);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.adr-pj__brand-sheet {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+    font-weight: 800;
+    font-size: 10px;
+    font-family: var(--font-header-theme);
+    letter-spacing: 0.04em;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+}
+.adr-pj__brand-sheet::before,
+.adr-pj__brand-sheet::after {
+    flex: 1;
+    border-top: 1px solid currentColor;
+    content: '';
+}
+
+.adr-pj__formations-competences {
+    grid-column: 1/-1;
+}
+
+.adr-pj__block-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    min-width: 0;
+}
+
+.adr-pj__formation {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+}
+
+.adr-pj__identite .adr-pj__block-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+}
+
+.adr-pj__identity-column {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    min-width: 0;
+}
+
+.adr-pj__characteristic {
+    gap: 3px;
+    border: 0;
+}
+
+.adr-pj__characteristic .adr-pj__metric-name {
+    color: var(--adrenaline-rule);
+    font-weight: 800;
+    font-size: 9px;
+    font-family: var(--font-header-theme);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.adr-pj__characteristic .adr-pj__metric-value {
+    border: 1px solid var(--adrenaline-field-border);
+}
+
+.adr-pj__form-characteristic-rows .adr-pj__metric-heads {
+    grid-template-columns: minmax(0, 1fr) 42px 42px;
+    gap: 3px;
+}
+
+.adr-pj__ruled-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.adr-pj__ruled-line {
+    border-bottom: 1px dotted var(--adrenaline-field-border);
+    min-height: 1.25em;
+}
+
+.adr-pj__weapon-line,
+.adr-pj__unit-line {
+    display: grid;
+    align-items: end;
+    gap: 5px;
+    min-width: 0;
+}
+
+.adr-pj__weapon-line {
+    grid-template-columns: auto minmax(0, 1fr) 42px auto;
+}
+
+.adr-pj__unit-line {
+    grid-template-columns: auto minmax(0, 1fr) auto 32px;
+}
+
+.adr-pj__weapon-score,
+.adr-pj__weapon-damage,
+.adr-pj__unit-value {
+    border-bottom: 1px dotted var(--adrenaline-field-border);
+    min-height: 1.25em;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.adr-pj__unit {
+    color: var(--adrenaline-rule);
+    font-weight: 800;
+    font-size: 9px;
+    font-family: var(--font-header-theme);
+    letter-spacing: 0.04em;
+    text-align: end;
+    text-transform: uppercase;
+}
+
+.adr-pj--sante > .adr-pj__section-body {
+    grid-template-areas: 'stress sp sm' 'fatigue etats etats' 'malus etats etats';
+}
+
+.adr-pj--sante .adr-pj__stress {
+    grid-area: stress;
+}
+
+.adr-pj--sante .adr-pj__seuils-physiques {
+    grid-area: sp;
+}
+
+.adr-pj--sante .adr-pj__seuils-mentaux {
+    grid-area: sm;
+}
+
+.adr-pj--sante .adr-pj__fatigue {
+    grid-area: fatigue;
+}
+
+.adr-pj--sante .adr-pj__malus {
+    grid-area: malus;
+}
+
+.adr-pj--sante .adr-pj__etats-encaisses {
+    grid-area: etats;
+}
+
+.adr-pj__stress-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+}
+
+.adr-pj__stress-card {
+    border: 1px solid var(--adrenaline-band);
+}
+
+.adr-pj__stress-card .adr-pj__card-label {
+    font-size: 9px;
+}
+
+.adr-pj__stress-roll {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 2px 5px;
+    padding: 3px 5px;
+}
+.adr-pj__stress-roll + .adr-pj__stress-roll {
+    border-top: 1px solid var(--adrenaline-field-border);
+}
+
+.adr-pj__stress-die {
+    color: var(--adrenaline-rule);
+    font-family: var(--font-header-theme);
+    white-space: nowrap;
+}
+
+.adr-pj__stress-side {
+    flex: 1 0 auto;
+    font-weight: 700;
+    font-size: 7px;
+    font-family: var(--font-header-theme);
+    letter-spacing: 0.04em;
+    letter-spacing: 0;
+    text-align: end;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.adr-pj__dot-mark {
+    display: inline-block;
+    flex: none;
+    border: 1px solid var(--adrenaline-track-mark);
+    border-radius: 50%;
+    width: 10px;
+    height: 10px;
+}
+
+.adr-pj__dot-filled {
+    background: var(--adrenaline-handwritten-ink);
+}
+
+.adr-pj__tracks {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.adr-pj__track {
+    display: grid;
+    grid-template-columns: 17px minmax(0, 1fr);
+    border: 1px solid var(--adrenaline-rule);
+    min-height: 36px;
+}
+
+.adr-pj__track-label {
+    transform: rotate(180deg);
+    background: var(--adrenaline-band);
+    color: var(--adrenaline-band-ink);
+    font-weight: 800;
+    font-size: 8px;
+    font-family: var(--font-header-theme);
+    letter-spacing: 0.04em;
+    writing-mode: vertical-rl;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+.adr-pj__track-body {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 6px;
+    min-width: 0;
+}
+
+.adr-pj__track-line {
+    flex: 1;
+    border-bottom: 1px dotted var(--adrenaline-field-border);
+    min-width: 12px;
+}
+
+.adr-pj__track-value {
+    min-width: 42px;
+    text-align: center;
+}
+
+.adr-pj__track-period {
+    color: var(--adrenaline-rule);
+    font-weight: 800;
+    font-size: 8px;
+    font-family: var(--font-header-theme);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.adr-pj__track--fatigue {
+    border-color: var(--adrenaline-fatigue);
+}
+
+.adr-pj__track--fatigue .adr-pj__track-label {
+    background: var(--adrenaline-fatigue);
+    color: var(--adrenaline-fatigue-ink);
+}
+
+.adr-pj__condition-stack {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+}
+
+.adr-pj__condition-card {
+    display: grid;
+    grid-template-columns: 20px minmax(0, 1fr);
+    border: 1px solid var(--adrenaline-condition-border);
+}
+
+.adr-pj__condition-label {
+    transform: rotate(180deg);
+    background: var(--adrenaline-condition);
+    color: var(--adrenaline-band-ink);
+    font-weight: 800;
+    font-size: 8px;
+    font-family: var(--font-header-theme);
+    letter-spacing: 0.04em;
+    writing-mode: vertical-rl;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+.adr-pj__condition-body {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 5px 6px;
+    min-width: 0;
+}
+
+.adr-pj__condition-body .adr-pj__write-label {
+    font-size: 8px;
+}
+
+@container (max-width: 600px) {
+    .adr-pj__columns-3,
+    .adr-pj__block-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .adr-pj__block {
+        grid-row: auto;
+        grid-column: auto;
+    }
+    .adr-pj__formations-competences {
+        grid-column: 1/-1;
+    }
+    .adr-pj--entete > .adr-pj__section-body {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-areas: 'brand brand' 'nom params';
+    }
+    .adr-pj--sante > .adr-pj__section-body {
+        grid-template-areas: 'stress stress' 'sp sm' 'fatigue malus' 'etats etats';
+    }
+}
+@container (max-width: 420px) {
+    .adr-pj__columns-3,
+    .adr-pj__block-grid,
+    .adr-pj__identite .adr-pj__block-grid,
+    .adr-pj__condition-stack {
+        grid-template-columns: minmax(0, 1fr);
+    }
+    .adr-pj__block {
+        grid-column: 1;
+    }
+    .adr-pj--entete > .adr-pj__section-body {
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-areas: 'brand' 'nom' 'params';
+    }
+    .adr-pj--sante > .adr-pj__section-body {
+        grid-template-areas: 'stress' 'sp' 'sm' 'fatigue' 'malus' 'etats';
+    }
+}

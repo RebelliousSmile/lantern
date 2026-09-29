@@ -38,7 +38,13 @@ try {
         // DOM stub is needed, since nothing here renders a preview. The same is true for Vite-only
         // font and image URLs: exercise the React module shape without asking the Node bundle to
         // materialize browser assets.
-        loader: { '.css': 'empty', '.svg': 'empty', '.woff2': 'empty' },
+        loader: {
+            '.css': 'empty',
+            '.svg': 'empty',
+            '.woff2': 'empty',
+            '.webp': 'empty',
+            '.ttf': 'empty',
+        },
         logLevel: 'warning',
     })
     // The bundle runs from a temp directory, so it resolves neither the corpus packages nor the

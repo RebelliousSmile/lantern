@@ -144,7 +144,8 @@ export function MonstrePreview() {
                     </p>
                     <p className="m-0">
                         États disponibles :{' '}
-                        {states.map((state) => state.nom).join(' · ') || 'aucun'}
+                        {states.map((state) => state.nom).join(' · ') ||
+                            'aucun'}
                     </p>
                 </AdrenalineSection>
             </button>

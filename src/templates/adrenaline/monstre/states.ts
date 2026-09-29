@@ -111,6 +111,8 @@ export function selectMonsterState(
     return next
 }
 
-export function resolveMonsterProfile(document: MonsterDocument): MonstreResolu {
+export function resolveMonsterProfile(
+    document: MonsterDocument
+): MonstreResolu {
     return resoudreEtatMonstre(document as unknown as MonstreDocument)
 }
