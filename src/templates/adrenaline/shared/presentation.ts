@@ -11,6 +11,7 @@ import type {
     AdrenalinePresentationBlock,
     AdrenalinePresentationSection,
 } from 'schema-adrenaline/presentation'
+import type { PjSection } from './sections'
 
 /*
  * The published Handbook pack owns every colour, typeface and texture of the Adrenaline sheets.
@@ -130,7 +131,7 @@ export function appearanceClasses(presentation: AdrenalinePresentation) {
 }
 
 /* The edit sheet a block opens, read from the first document path it shows. */
-const editTargets: Record<string, string> = {
+export const editTargets = {
     nom: 'parameters',
     parametresDuJeu: 'parameters',
     formations: 'formations',
@@ -140,9 +141,11 @@ const editTargets: Record<string, string> = {
     protections: 'protections',
     sante: 'health',
     etatDePartie: 'health',
-}
+} as const
 
-export function editTarget(block: AdrenalinePresentationBlock): string {
+export function editTarget(block: AdrenalinePresentationBlock): PjSection {
     const root = block.paths[0]?.split('/')[1] ?? ''
-    return editTargets[root] ?? 'meta'
+    return (
+        (editTargets as Record<string, PjSection | undefined>)[root] ?? 'meta'
+    )
 }

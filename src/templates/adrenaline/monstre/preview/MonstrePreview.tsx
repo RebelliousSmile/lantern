@@ -6,6 +6,7 @@ import {
     currentValue,
 } from '../../shared/preview/SheetPrimitives'
 import '../../shared/preview/adrenalineTheme.css'
+import type { MonstreSection } from '../../shared/sections'
 import { blankMonstre } from '../sample'
 import {
     monsterStates,
@@ -14,7 +15,10 @@ import {
 } from '../states'
 
 export function MonstrePreview() {
-    const { document, openSection } = useAdrenalineDocument(
+    const { document, openSection } = useAdrenalineDocument<
+        Record<string, unknown>,
+        MonstreSection
+    >(
         'adrenaline.monstre',
         blankMonstre() as unknown as Record<string, unknown>
     )

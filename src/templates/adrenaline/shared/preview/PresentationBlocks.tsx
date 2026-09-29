@@ -4,6 +4,11 @@ import type {
     AdrenalinePresentationBlock,
     AdrenalinePresentationSection,
 } from 'schema-adrenaline/presentation'
+import {
+    formationColumns,
+    formationTypeLabel,
+    SKILL_LINES,
+} from '../formations'
 import { asRecord, at, lastSegment, sortedBlocks } from '../presentation'
 import { currentValue } from './SheetPrimitives'
 
@@ -181,18 +186,19 @@ function GameParameters({ block, source }: BlockProps) {
         <>
             <span className="adr-pj__card-label">{block.label}</span>
             <div className="adr-pj__card-fields">
-                {block.paths.map((pointer) => {
+                {block.paths.map((pointer, index) => {
                     const key = lastSegment(pointer)
                     const raw = text(at(source, pointer))
                     return (
                         <WriteLine
                             key={key}
                             label={
-                                PARAMETER_LABELS[key]
+                                block.rowLabels?.[index] ??
+                                (PARAMETER_LABELS[key]
                                     ? t(
                                           `pj.sheet.parameters.${PARAMETER_LABELS[key]}`
                                       )
-                                    : humanize(key)
+                                    : humanize(key))
                             }
                             value={
                                 PARAMETER_VALUES.includes(raw)
@@ -209,73 +215,103 @@ function GameParameters({ block, source }: BlockProps) {
 
 function FormationColumns({ block, source }: BlockProps) {
     const suffix = block.valueSuffix ?? ''
-    const characteristics = asRecord(source.caracteristiques) ?? {}
+    const fields = block.formationFields
+    const [nameKey, specialtyKey, scoreKey] = fields?.competence ?? [
+        'nom',
+        'specialite',
+        'pourcentage',
+    ]
+    const [typeKey, formationNameKey, formationScoreKey] = fields?.header ?? [
+        'type',
+        'nom',
+        'pourcentage',
+    ]
     return (
         <div className="adr-pj__block-grid">
-            {records(at(source, block.paths[0])).map((formation, index) => (
-                <div className="adr-pj__formation" key={index}>
-                    <Subhead
-                        label={t('pj.sheet.training')}
-                        trailing={[suffix]}
-                    />
-                    <div className="adr-pj__metric-list">
-                        <Metric
-                            name={`${humanize(String(formation.type ?? ''))} (${String(formation.nom ?? '')})`}
-                            values={[text(formation.pourcentage)]}
-                        />
-                    </div>
-                    <Subhead
-                        label={t('shared.skills.label')}
-                        trailing={[suffix]}
-                    />
-                    <div className="adr-pj__metric-list">
-                        {records(formation.competences).map(
-                            (competence, rank) => {
-                                const base = Number(
-                                    currentValue(competence.pourcentage)
-                                )
-                                const key = String(
-                                    competence.caracteristique ?? ''
-                                )
-                                const bonus = Number(
-                                    currentValue(characteristics[key])
-                                )
-                                const total =
-                                    key &&
-                                    Number.isFinite(bonus) &&
-                                    Number.isFinite(base)
-                                        ? String(base + bonus)
-                                        : text(competence.pourcentage)
-                                const name = competence.specialite
-                                    ? `${String(competence.nom)} · ${String(competence.specialite)}`
-                                    : String(competence.nom ?? '')
-                                const perks = strings(competence.avantages)
-                                return (
-                                    <div
-                                        className="adr-pj__competence"
-                                        key={rank}
-                                    >
-                                        <Metric name={name} values={[total]} />
-                                        {perks.length > 0 && (
-                                            <p className="adr-pj__note">
-                                                {t('pj.sheet.perk', {
-                                                    perks: perks.join(', '),
-                                                })}
-                                            </p>
-                                        )}
-                                        {typeof competence.notes === 'string' &&
-                                            competence.notes && (
+            {formationColumns(records(at(source, block.paths[0]))).map(
+                ({ type, formation }, index) => {
+                    const skills = records(formation?.competences)
+                    const lines: (Record<string, unknown> | undefined)[] = [
+                        ...skills,
+                    ]
+                    while (lines.length < SKILL_LINES) lines.push(undefined)
+                    const typeLabel = formationTypeLabel(
+                        String(formation?.[typeKey] ?? type)
+                    )
+                    return (
+                        <div className="adr-pj__formation" key={index}>
+                            <Subhead
+                                label={t('pj.sheet.training')}
+                                trailing={[suffix]}
+                            />
+                            <div className="adr-pj__metric-list">
+                                <div className="adr-pj__metric adr-pj__formation-head">
+                                    <span className="adr-pj__metric-name">
+                                        <span className="adr-pj__formation-type">
+                                            {typeLabel} (
+                                        </span>
+                                        <Value className="adr-pj__formation-name">
+                                            {text(formation?.[formationNameKey])}
+                                        </Value>
+                                        <span className="adr-pj__formation-type">
+                                            )
+                                        </span>
+                                    </span>
+                                    <Value className="adr-pj__metric-value">
+                                        {text(formation?.[formationScoreKey])}
+                                    </Value>
+                                </div>
+                            </div>
+                            <Subhead
+                                label={t('shared.skills.label')}
+                                trailing={[suffix]}
+                            />
+                            <div className="adr-pj__metric-list">
+                                {lines.map((competence, rank) => {
+                                    const specialty = text(
+                                        competence?.[specialtyKey]
+                                    )
+                                    const name = competence
+                                        ? `${text(competence[nameKey])}${specialty ? ` (${specialty})` : ''}`
+                                        : ''
+                                    const perks = strings(competence?.avantages)
+                                    return (
+                                        <div
+                                            className="adr-pj__competence"
+                                            key={rank}
+                                        >
+                                            <div className="adr-pj__metric">
+                                                <Value className="adr-pj__metric-name">
+                                                    {name}
+                                                </Value>
+                                                <Value className="adr-pj__metric-value">
+                                                    {text(
+                                                        competence?.[scoreKey]
+                                                    )}
+                                                </Value>
+                                            </div>
+                                            {perks.length > 0 && (
                                                 <p className="adr-pj__note">
-                                                    {competence.notes}
+                                                    {t('pj.sheet.perk', {
+                                                        perks: perks.join(', '),
+                                                    })}
                                                 </p>
                                             )}
-                                    </div>
-                                )
-                            }
-                        )}
-                    </div>
-                </div>
-            ))}
+                                            {typeof competence?.notes ===
+                                                'string' &&
+                                                competence.notes && (
+                                                    <p className="adr-pj__note">
+                                                        {competence.notes}
+                                                    </p>
+                                                )}
+                                        </div>
+                                    )
+                                })}
+                            </div>
+                        </div>
+                    )
+                }
+            )}
         </div>
     )
 }

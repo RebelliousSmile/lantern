@@ -4,6 +4,7 @@ import {
     defaultAdrenalineView,
     emptyAdrenalineSheetState,
 } from '../shared/model'
+import { pnjSections } from '../shared/sections'
 import { blankPnj, samplePnj } from './sample'
 
 const descriptor: StaticTemplateDefinition<
@@ -22,7 +23,7 @@ const descriptor: StaticTemplateDefinition<
     createInitialView: () => cloneValue(defaultAdrenalineView),
     createInitialSheet: () => cloneValue(emptyAdrenalineSheetState),
     getTabTitle: (doc) => (doc as { nom?: string }).nom?.trim() || 'PNJ',
-    sections: [{ id: 'document', label: 'adrenaline:sections.document' }],
+    sections: pnjSections,
     landing: {
         newTitle: 'adrenaline:pnj.newTitle',
         description: 'adrenaline:pnj.description',

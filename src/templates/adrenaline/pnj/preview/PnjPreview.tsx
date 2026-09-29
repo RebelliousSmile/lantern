@@ -6,13 +6,14 @@ import {
     currentValue,
 } from '../../shared/preview/SheetPrimitives'
 import '../../shared/preview/adrenalineTheme.css'
+import type { PnjSection } from '../../shared/sections'
 import { blankPnj } from '../sample'
 
 export function PnjPreview() {
-    const { document, openSection } = useAdrenalineDocument(
-        'adrenaline.pnj',
-        blankPnj() as unknown as Record<string, unknown>
-    )
+    const { document, openSection } = useAdrenalineDocument<
+        Record<string, unknown>,
+        PnjSection
+    >('adrenaline.pnj', blankPnj() as unknown as Record<string, unknown>)
     const stats = (document.caracteristiques ?? {}) as Record<string, unknown>
     const narrative = (document.narratif ?? {}) as Record<string, unknown>
     const identity = (document.identite ?? {}) as Record<string, unknown>

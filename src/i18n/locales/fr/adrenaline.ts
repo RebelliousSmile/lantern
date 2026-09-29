@@ -3,7 +3,22 @@ import type en from '../en/adrenaline'
 
 const adrenaline: ResourceShape<typeof en> = {
     sections: {
-        document: 'Document',
+        emptyState: 'Cliquez sur l’aperçu pour modifier une section précise.',
+        basic: 'En-tête',
+        parameters: 'Personnage et paramètres',
+        identity: 'Identité',
+        characteristics: 'Caractéristiques',
+        statistics: 'Caractéristiques',
+        health: 'Santé',
+        protections: 'Protections',
+        formations: 'Formations',
+        behaviour: 'Comportement et traits',
+        skills: 'Compétences',
+        equipment: 'Équipement',
+        states: 'États',
+        contagion: 'Contagion',
+        narrative: 'Narratif',
+        meta: 'Provenance',
     },
     appearance: {
         printedProportions:
@@ -40,6 +55,9 @@ const adrenaline: ResourceShape<typeof en> = {
             plusArmour: '+ Armure',
             character: 'Caractère',
             plusTrait: '+ Caractère',
+            toughnessPhysical: 'Solidité physique',
+            toughnessMental: 'Solidité mentale',
+            mentalShield: 'Bouclier mental',
             favourable: 'Favorable',
             unfavourable: 'Défavorable',
             adrenaline: 'Adrénaline',
@@ -124,7 +142,8 @@ const adrenaline: ResourceShape<typeof en> = {
         headings: {
             identity: 'Identité',
             characteristics: 'Caractéristiques',
-            health: 'Santé et protections',
+            health: 'Santé',
+            protections: 'Protections',
             equipment: 'Équipement',
             provenance: 'Provenance',
             narrative: 'Narratif',

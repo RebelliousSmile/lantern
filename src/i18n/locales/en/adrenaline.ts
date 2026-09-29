@@ -1,7 +1,22 @@
 /* English source of truth for this game family's templates; the French file is typed against it. */
 const adrenaline = {
     sections: {
-        document: 'Document',
+        emptyState: 'Click on the preview to edit a specific section.',
+        basic: 'Header',
+        parameters: 'Character and settings',
+        identity: 'Identity',
+        characteristics: 'Characteristics',
+        statistics: 'Characteristics',
+        health: 'Health',
+        protections: 'Protection',
+        formations: 'Trainings',
+        behaviour: 'Behaviour and traits',
+        skills: 'Skills',
+        equipment: 'Equipment',
+        states: 'States',
+        contagion: 'Contagion',
+        narrative: 'Narrative',
+        meta: 'Provenance',
     },
     appearance: {
         printedProportions:
@@ -38,6 +53,9 @@ const adrenaline = {
             plusArmour: '+ Armour',
             character: 'Character',
             plusTrait: '+ Trait',
+            toughnessPhysical: 'Physical toughness',
+            toughnessMental: 'Mental toughness',
+            mentalShield: 'Mental shield',
             favourable: 'Favourable',
             unfavourable: 'Unfavourable',
             adrenaline: 'Adrenaline',
@@ -123,7 +141,8 @@ const adrenaline = {
         headings: {
             identity: 'Identity',
             characteristics: 'Characteristics',
-            health: 'Health and protection',
+            health: 'Health',
+            protections: 'Protection',
             equipment: 'Equipment',
             provenance: 'Provenance',
             narrative: 'Narrative',

@@ -16,6 +16,7 @@ import {
 } from '../../shared/preview/PresentationBlocks'
 import '../../shared/preview/adrenalineTheme.css'
 import '../../shared/preview/presentationSheet.css'
+import type { PjSection } from '../../shared/sections'
 import { blankPj } from '../sample'
 
 /*
@@ -23,10 +24,10 @@ import { blankPj } from '../sample'
  * decorations and appearance all come from schema-adrenaline, colours and fonts from its pack.
  */
 export function PjPreview() {
-    const { document, openSection } = useAdrenalineDocument(
-        'adrenaline.pj',
-        blankPj() as unknown as Record<string, unknown>
-    )
+    const { document, openSection } = useAdrenalineDocument<
+        Record<string, unknown>,
+        PjSection
+    >('adrenaline.pj', blankPj() as unknown as Record<string, unknown>)
     const { appearance, sheet } = PJ_PRESENTATION
     useEffect(installAdrenalineFontFaces, [])
     return (

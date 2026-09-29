@@ -4,6 +4,7 @@ import {
     defaultAdrenalineView,
     emptyAdrenalineSheetState,
 } from '../shared/model'
+import { monstreSections } from '../shared/sections'
 import { blankMonstre, sampleMonstre } from './sample'
 
 const descriptor: StaticTemplateDefinition<
@@ -22,7 +23,7 @@ const descriptor: StaticTemplateDefinition<
     createInitialView: () => cloneValue(defaultAdrenalineView),
     createInitialSheet: () => cloneValue(emptyAdrenalineSheetState),
     getTabTitle: (doc) => (doc as { nom?: string }).nom?.trim() || 'Monstre',
-    sections: [{ id: 'document', label: 'adrenaline:sections.document' }],
+    sections: monstreSections,
     landing: {
         newTitle: 'adrenaline:monstre.newTitle',
         description: 'adrenaline:monstre.description',
