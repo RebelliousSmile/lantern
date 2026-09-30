@@ -11,9 +11,14 @@ import {
 } from '../../shared/editor/AdrenalineFields'
 import {
     RangedNumberField,
-    RecordRows,
     TextField,
 } from '../../shared/editor/FieldPrimitives'
+import {
+    FORMATION_TYPES,
+    formationColumns,
+    formationTypeLabel,
+    withFormation,
+} from '../../shared/formations'
 import { useAdrenalineDocument } from '../../shared/hooks'
 import type { PjSection } from '../../shared/sections'
 import { blankPj } from '../sample'
@@ -28,6 +33,12 @@ const records = (value: unknown): Entry[] =>
                   !Array.isArray(entry)
           )
         : []
+
+const blankFormation = (): Entry => ({
+    nom: '',
+    pourcentage: { minimum: 0, current: 0, maximum: 0 },
+    competences: [],
+})
 
 export function PjEditorPanel() {
     const text = useUiText()
@@ -120,59 +131,64 @@ export function PjEditorPanel() {
                     <h3 className="font-semibold">
                         {text('adrenaline:pj.form.trainingsHeading')}
                     </h3>
-                    <RecordRows
-                        label={text('adrenaline:shared.trainings.label')}
-                        values={records(document.formations)}
-                        create={() => ({
-                            type: '',
-                            nom: '',
-                            pourcentage: { minimum: 0, current: 0, maximum: 0 },
-                            competences: [],
-                        })}
-                        onChange={(formations) => set('formations', formations)}
-                    >
-                        {(formation, _, replace) => (
-                            <div className="grid gap-2">
-                                <div className="grid grid-cols-2 gap-2">
-                                    <TextField
-                                        label={text('adrenaline:shared.type')}
-                                        value={String(formation.type ?? '')}
-                                        onChange={(type) =>
-                                            replace({ ...formation, type })
-                                        }
-                                    />
-                                    <TextField
-                                        label={text('fields.name')}
-                                        value={String(formation.nom ?? '')}
-                                        onChange={(nom) =>
-                                            replace({ ...formation, nom })
-                                        }
-                                    />
-                                    <RangedNumberField
+                    {formationColumns(records(document.formations))
+                        .slice(0, FORMATION_TYPES.length)
+                        .map(({ type, formation = blankFormation() }) => {
+                            const replace = (next: Entry) =>
+                                set(
+                                    'formations',
+                                    withFormation(
+                                        records(document.formations),
+                                        type,
+                                        next
+                                    )
+                                )
+                            return (
+                                <fieldset
+                                    className="grid gap-2 rounded-md border p-3"
+                                    key={type}
+                                >
+                                    <legend className="px-1 text-sm font-semibold">
+                                        {formationTypeLabel(type)}
+                                    </legend>
+                                    <div className="grid grid-cols-2 gap-2">
+                                        <TextField
+                                            label={text(
+                                                'adrenaline:shared.trainings.title'
+                                            )}
+                                            value={String(formation.nom ?? '')}
+                                            onChange={(nom) =>
+                                                replace({ ...formation, nom })
+                                            }
+                                        />
+                                        <RangedNumberField
+                                            label={text(
+                                                'adrenaline:shared.percentage'
+                                            )}
+                                            value={formation.pourcentage}
+                                            onChange={(pourcentage) =>
+                                                replace({
+                                                    ...formation,
+                                                    pourcentage,
+                                                })
+                                            }
+                                        />
+                                    </div>
+                                    <SkillRows
                                         label={text(
-                                            'adrenaline:shared.percentage'
+                                            'adrenaline:shared.trainings.trainingSkills'
                                         )}
-                                        value={formation.pourcentage}
-                                        onChange={(pourcentage) =>
+                                        value={formation.competences}
+                                        onChange={(competences) =>
                                             replace({
                                                 ...formation,
-                                                pourcentage,
+                                                competences,
                                             })
                                         }
                                     />
-                                </div>
-                                <SkillRows
-                                    label={text(
-                                        'adrenaline:shared.trainings.trainingSkills'
-                                    )}
-                                    value={formation.competences}
-                                    onChange={(competences) =>
-                                        replace({ ...formation, competences })
-                                    }
-                                />
-                            </div>
-                        )}
-                    </RecordRows>
+                                </fieldset>
+                            )
+                        })}
                 </section>
             )}
             {target === 'equipment' && (

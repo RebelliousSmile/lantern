@@ -6,8 +6,8 @@ import {
     appearanceClasses,
     editTarget,
     installAdrenalineFontFaces,
+    sheetRows,
     sortedBlocks,
-    sortedSections,
 } from '../../shared/presentation'
 import {
     PresentationBlock,
@@ -37,25 +37,38 @@ export function PjPreview() {
             )}
             style={adrenalineSheetTokens}
         >
-            {sortedSections(PJ_PRESENTATION).map((section) => (
-                <PresentationSection key={section.id} section={section}>
-                    {sortedBlocks(section).map((block) => [
-                        block.form === 'game-parameters' ? (
-                            <PresentationBrand
-                                key={`${block.id}-brand`}
-                                sheetLabel={sheet.label}
-                                variant={appearance.variant}
-                            />
-                        ) : null,
-                        <PresentationBlock
-                            block={block}
-                            key={block.id}
-                            source={document}
-                            onOpen={() => openSection(editTarget(block))}
-                        />,
-                    ])}
-                </PresentationSection>
-            ))}
+            {sheetRows(PJ_PRESENTATION).map(({ id, sections }) => {
+                const rendered = sections.map(({ section, span }) => (
+                    <PresentationSection
+                        key={section.id}
+                        section={section}
+                        span={sections.length > 1 ? span : undefined}
+                    >
+                        {sortedBlocks(section).map((block) => [
+                            block.form === 'game-parameters' ? (
+                                <PresentationBrand
+                                    key={`${block.id}-brand`}
+                                    sheetLabel={sheet.label}
+                                    variant={appearance.variant}
+                                />
+                            ) : null,
+                            <PresentationBlock
+                                block={block}
+                                key={block.id}
+                                source={document}
+                                onOpen={() => openSection(editTarget(block))}
+                            />,
+                        ])}
+                    </PresentationSection>
+                ))
+                return sections.length > 1 ? (
+                    <div className={`adr-pj__row adr-pj--row-${id}`} key={id}>
+                        {rendered}
+                    </div>
+                ) : (
+                    rendered
+                )
+            })}
         </article>
     )
 }

@@ -117,6 +117,42 @@ export function sortedSections(
     return [...presentation.sections].sort((a, b) => a.order - b.order)
 }
 
+/*
+ * Two optional fields arrived with presentation 2.7.0: a section `row` shared with its neighbours,
+ * and a block `fieldRows`. They are read through these accessors so that a sheet published without
+ * them keeps its one-section-per-row layout.
+ */
+type SheetRowShare = { id: string; span: number }
+
+export type SheetRow = {
+    id: string
+    sections: { section: AdrenalinePresentationSection; span: number }[]
+}
+
+/** Consecutive sections sharing a published row, each with its share of the sheet in thirds. */
+export function sheetRows(presentation: AdrenalinePresentation): SheetRow[] {
+    const rows: SheetRow[] = []
+    for (const section of sortedSections(presentation)) {
+        const share = (section as { row?: SheetRowShare }).row
+        const last = rows[rows.length - 1]
+        if (share && last?.id === share.id)
+            last.sections.push({ section, span: share.span })
+        else
+            rows.push({
+                id: share?.id ?? '',
+                sections: [{ section, span: share?.span ?? 3 }],
+            })
+    }
+    return rows
+}
+
+/** Printed rows of a field grid, or none when the presentation does not publish them. */
+export function fieldRows(
+    block: AdrenalinePresentationBlock
+): readonly (readonly string[])[] | undefined {
+    return (block as { fieldRows?: readonly (readonly string[])[] }).fieldRows
+}
+
 /** Root classes derived from the published appearance. */
 export function appearanceClasses(presentation: AdrenalinePresentation) {
     const { appearance } = presentation

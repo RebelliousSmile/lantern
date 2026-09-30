@@ -196,6 +196,7 @@ const adrenaline: ResourceShape<typeof en> = {
         trainings: {
             label: 'Formations',
             trainingSkills: 'Compétences de formation',
+            title: 'Intitulé',
         },
         skills: {
             label: 'Compétences',

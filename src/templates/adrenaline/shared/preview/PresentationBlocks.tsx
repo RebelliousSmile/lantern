@@ -9,7 +9,13 @@ import {
     formationTypeLabel,
     SKILL_LINES,
 } from '../formations'
-import { asRecord, at, lastSegment, sortedBlocks } from '../presentation'
+import {
+    asRecord,
+    at,
+    fieldRows,
+    lastSegment,
+    sortedBlocks,
+} from '../presentation'
 import { currentValue } from './SheetPrimitives'
 
 /*
@@ -318,46 +324,56 @@ function FormationColumns({ block, source }: BlockProps) {
     )
 }
 
-const IDENTITY_COLUMNS: readonly (readonly (readonly [string, string])[])[] = [
-    [
-        ['nationalite', 'nationality'],
-        ['cheveux', 'hair'],
-        ['yeux', 'eyes'],
-        ['peau', 'skin'],
-        ['signesParticuliers', 'distinguishingMarks'],
-    ],
-    [
-        ['genre', 'gender'],
-        ['age', 'age'],
-        ['taille', 'height'],
-        ['poids', 'weight'],
-    ],
-]
+/* Field names stay with the consumer, their printed rows come from the presentation. */
+const IDENTITY_LABELS: Record<string, string> = {
+    nationalite: 'nationality',
+    cheveux: 'hair',
+    yeux: 'eyes',
+    peau: 'skin',
+    signesParticuliers: 'distinguishingMarks',
+    genre: 'gender',
+    age: 'age',
+    taille: 'height',
+    poids: 'weight',
+}
 
 function IdentityFields({ block, source }: BlockProps) {
     const identity = asRecord(at(source, block.paths[0])) ?? {}
+    const rows =
+        fieldRows(block) ?? Object.keys(IDENTITY_LABELS).map((key) => [key])
     return (
-        <div className="adr-pj__block-grid">
-            {IDENTITY_COLUMNS.map((fields, index) => (
-                <div className="adr-pj__identity-column" key={index}>
-                    {fields.map(([key, label]) => {
-                        const raw = identity[key]
-                        const age = text(raw)
-                        const shown = Array.isArray(raw)
-                            ? strings(raw).join(' · ')
-                            : key === 'age' && age
-                              ? t('pj.sheet.years', { age })
-                              : text(raw)
-                        return (
+        <div className="adr-pj__field-rows">
+            {rows.map((row) =>
+                row.map((key) => {
+                    const raw = identity[key]
+                    const age = text(raw)
+                    const shown = Array.isArray(raw)
+                        ? strings(raw).join(' · ')
+                        : key === 'age' && age
+                          ? t('pj.sheet.years', { age })
+                          : text(raw)
+                    const label = IDENTITY_LABELS[key]
+                    return (
+                        <div
+                            className={
+                                row.length === 1
+                                    ? 'adr-pj__field adr-pj__field--across'
+                                    : 'adr-pj__field'
+                            }
+                            key={key}
+                        >
                             <WriteLine
-                                key={key}
-                                label={t(`shared.identity.${label}`)}
+                                label={
+                                    label
+                                        ? t(`shared.identity.${label}`)
+                                        : humanize(key)
+                                }
                                 value={shown}
                             />
-                        )
-                    })}
-                </div>
-            ))}
+                        </div>
+                    )
+                })
+            )}
         </div>
     )
 }
@@ -801,13 +817,24 @@ export function PresentationBrand({
 
 export function PresentationSection({
     section,
+    span,
     children,
 }: {
     section: AdrenalinePresentationSection
+    /** Share of a published sheet row, in thirds; absent for a section alone on its row. */
+    span?: number
     children: ReactNode
 }) {
     return (
-        <section className={`adr-pj__section adr-pj--${section.id}`}>
+        <section
+            className={[
+                'adr-pj__section',
+                `adr-pj--${section.id}`,
+                span ? `adr-pj__span-${span}` : '',
+            ]
+                .filter(Boolean)
+                .join(' ')}
+        >
             {section.showTitle !== false && (
                 <h4 className="adr-pj__section-title">{section.label}</h4>
             )}

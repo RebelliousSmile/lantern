@@ -195,6 +195,7 @@ const adrenaline = {
         trainings: {
             label: 'Trainings',
             trainingSkills: 'Training skills',
+            title: 'Title',
         },
         skills: {
             label: 'Skills',
