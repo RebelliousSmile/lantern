@@ -1,4 +1,14 @@
+import { PersonnageJoueur } from 'schema-adrenaline'
+
 type DocumentRecord = Record<string, unknown>
+
+/*
+ * A PJ characteristic leaves creation at its creation value, which is both its floor and its current
+ * value, and may only grow up to the sheet's ceiling. The ceiling is read from the published schema.
+ */
+const PJ_CHARACTERISTIC_CEILING =
+    PersonnageJoueur.shape.caracteristiques.shape.for.shape.maximum.maxValue ??
+    Number.POSITIVE_INFINITY
 
 const isRecord = (value: unknown): value is DocumentRecord =>
     Boolean(value) && typeof value === 'object' && !Array.isArray(value)
@@ -8,9 +18,22 @@ const toRange = (value: unknown): unknown =>
         ? { minimum: 0, current: value, maximum: value }
         : value
 
-const upgradeKeys = (record: DocumentRecord, keys: string[]) => {
+const toCharacteristic = (value: unknown): unknown =>
+    typeof value === 'number'
+        ? {
+              minimum: value,
+              current: value,
+              maximum: Math.max(value, PJ_CHARACTERISTIC_CEILING),
+          }
+        : value
+
+const upgradeKeys = (
+    record: DocumentRecord,
+    keys: string[],
+    upgrade: (value: unknown) => unknown = toRange
+) => {
     for (const key of keys) {
-        if (Object.hasOwn(record, key)) record[key] = toRange(record[key])
+        if (Object.hasOwn(record, key)) record[key] = upgrade(record[key])
     }
 }
 
@@ -34,23 +57,22 @@ const upgradeEquipment = (value: unknown) => {
 /**
  * v1 exported the playable value as a scalar. v2 exports its lower bound,
  * current value and upper bound. A legacy scalar has no stated headroom, so
- * migration keeps it truthful: 0 ≤ n ≤ n.
+ * migration keeps it truthful: 0 ≤ n ≤ n — except a PJ characteristic, whose
+ * scalar is its creation value: n ≤ n ≤ the published ceiling.
  */
-export function upgradeLegacyAdrenalineRanges(value: unknown): unknown {
+export function upgradeLegacyAdrenalineRanges(
+    value: unknown,
+    target?: string
+): unknown {
     if (!isRecord(value)) return value
     const document = structuredClone(value)
 
     if (isRecord(document.caracteristiques)) {
-        upgradeKeys(document.caracteristiques, [
-            'for',
-            'con',
-            'dex',
-            'rap',
-            'log',
-            'vol',
-            'per',
-            'cha',
-        ])
+        upgradeKeys(
+            document.caracteristiques,
+            ['for', 'con', 'dex', 'rap', 'log', 'vol', 'per', 'cha'],
+            target === 'adrenaline/pj' ? toCharacteristic : toRange
+        )
     }
 
     if (isRecord(document.sante)) {

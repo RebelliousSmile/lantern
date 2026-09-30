@@ -4,7 +4,7 @@ import { upgradeLegacyAdrenalineRanges } from './legacyRanges'
 
 export function parseAdrenalineToml<TDocument>(key: string, source: string) {
     const contract = documentContracts.require<TDocument>(key)
-    const legacyDocument = upgradeLegacyAdrenalineRanges(parseToml(source))
+    const legacyDocument = upgradeLegacyAdrenalineRanges(parseToml(source), key)
     return contract.parseToml(
         contract.stringifyToml(legacyDocument as TDocument)
     )
