@@ -251,7 +251,9 @@ function FormationColumns({ block, source }: BlockProps) {
                                             {typeLabel} (
                                         </span>
                                         <Value className="adr-pj__formation-name">
-                                            {text(formation?.[formationNameKey])}
+                                            {text(
+                                                formation?.[formationNameKey]
+                                            )}
                                         </Value>
                                         <span className="adr-pj__formation-type">
                                             )
@@ -427,11 +429,17 @@ function RuledList({ block, source }: BlockProps) {
     })
 }
 
+const WEAPON_LINES = 2
+
 function WeaponLines({ block, source }: BlockProps) {
     const die =
         block.decoration?.kind === 'weapon-die' ? block.decoration.label : ''
-    const weapons = records(at(source, block.paths[0]))
-    return (weapons.length ? weapons : [undefined]).map((weapon, index) => (
+    /* The paper sheet prints two weapon lines per side: empty ones stay to be written on. */
+    const weapons: (Record<string, unknown> | undefined)[] = records(
+        at(source, block.paths[0])
+    )
+    while (weapons.length < WEAPON_LINES) weapons.push(undefined)
+    return weapons.map((weapon, index) => (
         <div className="adr-pj__weapon" key={index}>
             <div className="adr-pj__weapon-line">
                 <b className="adr-pj__write-label">{t('pj.sheet.weapon')}</b>

@@ -173,11 +173,13 @@ const adrenaline = {
         health: {
             physicalHeading: 'Physical health',
             mentalHeading: 'Mental health',
-            superficielBase: 'Superficial base',
-            legerBase: 'Light base',
-            graveBase: 'Serious base',
-            profondBase: 'Deep base',
-            covered: 'Covered',
+            superficiel: 'Superficial',
+            leger: 'Light',
+            grave: 'Serious',
+            profond: 'Deep',
+            base: 'Base',
+            plusArmour: '+ Armour',
+            plusTrait: '+ Trait',
         },
         protection: {
             physicalHeading: 'Physical protection',

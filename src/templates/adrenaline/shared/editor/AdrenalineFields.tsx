@@ -20,10 +20,10 @@ const stats: [string, TranslationKey][] = [
     ['cha', 'adrenaline:shared.characteristics.cha'],
 ]
 const wounds: [string, TranslationKey][] = [
-    ['superficiel', 'adrenaline:shared.health.superficielBase'],
-    ['leger', 'adrenaline:shared.health.legerBase'],
-    ['grave', 'adrenaline:shared.health.graveBase'],
-    ['profond', 'adrenaline:shared.health.profondBase'],
+    ['superficiel', 'adrenaline:shared.health.superficiel'],
+    ['leger', 'adrenaline:shared.health.leger'],
+    ['grave', 'adrenaline:shared.health.grave'],
+    ['profond', 'adrenaline:shared.health.profond'],
 ]
 const healthKindHeadingKeys: Record<'physique' | 'mental', TranslationKey> = {
     physique: 'adrenaline:shared.health.physicalHeading',
@@ -136,8 +136,8 @@ export function HealthFields({
                         <h4 className="font-medium capitalize">
                             {text(healthKindHeadingKeys[kind])}
                         </h4>
-                        <div className="grid grid-cols-2 gap-2">
-                            {wounds.map(([level, baseLabelKey]) => {
+                        <div className="grid gap-2">
+                            {wounds.map(([level, levelLabelKey]) => {
                                 const threshold = record(block[level])
                                 const set = (key: string, next: unknown) =>
                                     onChange({
@@ -151,9 +151,17 @@ export function HealthFields({
                                         },
                                     })
                                 return (
-                                    <div className="grid gap-1" key={level}>
+                                    <fieldset
+                                        className="grid grid-cols-2 gap-1 rounded border p-1 text-sm"
+                                        key={level}
+                                    >
+                                        <legend className="px-1 font-medium">
+                                            {text(levelLabelKey)}
+                                        </legend>
                                         <RangedNumberField
-                                            label={text(baseLabelKey)}
+                                            label={text(
+                                                'adrenaline:shared.health.base'
+                                            )}
                                             value={threshold.base}
                                             onChange={(next) =>
                                                 set('base', next)
@@ -161,14 +169,16 @@ export function HealthFields({
                                         />
                                         <RangedNumberField
                                             label={text(
-                                                'adrenaline:shared.health.covered'
+                                                kind === 'mental'
+                                                    ? 'adrenaline:shared.health.plusTrait'
+                                                    : 'adrenaline:shared.health.plusArmour'
                                             )}
                                             value={threshold.couvert}
                                             onChange={(next) =>
                                                 set('couvert', next)
                                             }
                                         />
-                                    </div>
+                                    </fieldset>
                                 )
                             })}
                         </div>

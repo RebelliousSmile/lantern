@@ -174,11 +174,13 @@ const adrenaline: ResourceShape<typeof en> = {
         health: {
             physicalHeading: 'Santé physique',
             mentalHeading: 'Santé mentale',
-            superficielBase: 'Superficiel base',
-            legerBase: 'Léger base',
-            graveBase: 'Grave base',
-            profondBase: 'Profond base',
-            covered: 'Couvert',
+            superficiel: 'Superficiel',
+            leger: 'Léger',
+            grave: 'Grave',
+            profond: 'Profond',
+            base: 'Base',
+            plusArmour: '+ Armure',
+            plusTrait: '+ Caractère',
         },
         protection: {
             physicalHeading: 'Protection physique',

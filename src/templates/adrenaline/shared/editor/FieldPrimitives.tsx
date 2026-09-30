@@ -39,6 +39,7 @@ export function NumberField({
             <span>{label}</span>
             <Input
                 type="number"
+                className="px-1.5 text-center tabular-nums [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                 value={value}
                 onChange={(event) => onChange(Number(event.target.value) || 0)}
             />
