@@ -201,6 +201,9 @@ const adrenaline: ResourceShape<typeof en> = {
         skills: {
             label: 'Compétences',
             specialty: 'Spécialité',
+            addSpecialty: 'Ajouter une spécialité',
+            removeSpecialty: 'Retirer la spécialité',
+            noCharacteristic: '—',
             characteristic: 'Caractéristique',
             total: 'Total',
             perks: 'Avantages',

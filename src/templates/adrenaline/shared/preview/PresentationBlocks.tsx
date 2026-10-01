@@ -222,11 +222,13 @@ function GameParameters({ block, source }: BlockProps) {
 function FormationColumns({ block, source }: BlockProps) {
     const suffix = block.valueSuffix ?? ''
     const fields = block.formationFields
-    const [nameKey, specialtyKey, scoreKey] = fields?.competence ?? [
+    /* Read by name, not by position: the published list grows (caracteristique since 2.7.0). */
+    const competenceFields: readonly string[] = fields?.competence ?? [
         'nom',
         'specialite',
         'pourcentage',
     ]
+    const printed = (key: string) => competenceFields.includes(key)
     const [typeKey, formationNameKey, formationScoreKey] = fields?.header ?? [
         'type',
         'nom',
@@ -276,11 +278,18 @@ function FormationColumns({ block, source }: BlockProps) {
                             />
                             <div className="adr-pj__metric-list">
                                 {lines.map((competence, rank) => {
-                                    const specialty = text(
-                                        competence?.[specialtyKey]
+                                    const specialty = printed('specialite')
+                                        ? text(competence?.specialite)
+                                        : ''
+                                    const characteristic = printed(
+                                        'caracteristique'
                                     )
+                                        ? text(
+                                              competence?.caracteristique
+                                          ).toUpperCase()
+                                        : ''
                                     const name = competence
-                                        ? `${text(competence[nameKey])}${specialty ? ` (${specialty})` : ''}`
+                                        ? `${text(competence.nom)}${specialty ? ` · ${specialty}` : ''}${characteristic ? ` (${characteristic})` : ''}`
                                         : ''
                                     const perks = strings(competence?.avantages)
                                     return (
@@ -294,7 +303,7 @@ function FormationColumns({ block, source }: BlockProps) {
                                                 </Value>
                                                 <Value className="adr-pj__metric-value">
                                                     {text(
-                                                        competence?.[scoreKey]
+                                                        competence?.pourcentage
                                                     )}
                                                 </Value>
                                             </div>

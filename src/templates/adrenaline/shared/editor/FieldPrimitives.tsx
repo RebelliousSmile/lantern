@@ -5,17 +5,25 @@ import { Textarea } from '@/components/ui/textarea'
 import { useUiText } from '@/i18n/text'
 import type { ReactNode } from 'react'
 
+/** A label above its input, or beside it when `inline` keeps a dense grid to one line per field. */
+const fieldLayout = (inline: boolean) =>
+    inline
+        ? 'grid grid-cols-[minmax(0,2fr)_minmax(0,3fr)] items-center gap-2 text-sm'
+        : 'grid gap-1 text-sm'
+
 export function TextField({
     label,
     value,
     onChange,
+    inline = false,
 }: {
     label: string
     value: string
     onChange: (value: string) => void
+    inline?: boolean
 }) {
     return (
-        <label className="grid gap-1 text-sm">
+        <label className={fieldLayout(inline)}>
             <span>{label}</span>
             <Input
                 value={value}
@@ -29,13 +37,15 @@ export function NumberField({
     label,
     value,
     onChange,
+    inline = false,
 }: {
     label: string
     value: number
     onChange: (value: number) => void
+    inline?: boolean
 }) {
     return (
-        <label className="grid gap-1 text-sm">
+        <label className={fieldLayout(inline)}>
             <span>{label}</span>
             <Input
                 type="number"
@@ -120,6 +130,36 @@ export function RangedNumberField({
                 />
             </div>
         </fieldset>
+    )
+}
+
+/**
+ * The one percentage the sheet prints: it sets the current value and its ceiling together, the
+ * floor is kept. Edit the three bounds with RangedNumberField where the sheet shows them.
+ */
+export function PercentageField({
+    label,
+    value,
+    onChange,
+}: {
+    label: string
+    value: unknown
+    onChange: (value: RangedValue) => void
+}) {
+    const range = rangedValue(value)
+    return (
+        <NumberField
+            label={label}
+            value={range.current}
+            onChange={(current) => {
+                const next = Math.max(range.minimum, current)
+                onChange({
+                    minimum: range.minimum,
+                    current: next,
+                    maximum: next,
+                })
+            }}
+        />
     )
 }
 

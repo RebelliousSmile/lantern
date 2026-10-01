@@ -9,10 +9,7 @@ import {
     ProtectionFields,
     SkillRows,
 } from '../../shared/editor/AdrenalineFields'
-import {
-    RangedNumberField,
-    TextField,
-} from '../../shared/editor/FieldPrimitives'
+import { PercentageField, TextField } from '../../shared/editor/FieldPrimitives'
 import {
     FORMATION_TYPES,
     formationColumns,
@@ -161,7 +158,7 @@ export function PjEditorPanel() {
                                                 replace({ ...formation, nom })
                                             }
                                         />
-                                        <RangedNumberField
+                                        <PercentageField
                                             label={text(
                                                 'adrenaline:shared.percentage'
                                             )}
@@ -175,6 +172,7 @@ export function PjEditorPanel() {
                                         />
                                     </div>
                                     <SkillRows
+                                        playerSheet
                                         label={text(
                                             'adrenaline:shared.trainings.trainingSkills'
                                         )}

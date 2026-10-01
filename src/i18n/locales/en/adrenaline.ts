@@ -200,6 +200,9 @@ const adrenaline = {
         skills: {
             label: 'Skills',
             specialty: 'Specialty',
+            addSpecialty: 'Add a specialty',
+            removeSpecialty: 'Remove the specialty',
+            noCharacteristic: '—',
             characteristic: 'Characteristic',
             total: 'Total',
             perks: 'Perks',

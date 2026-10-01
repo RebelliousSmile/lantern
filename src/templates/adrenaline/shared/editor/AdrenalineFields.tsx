@@ -1,7 +1,17 @@
+import { Button } from '@/components/ui/button'
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select'
 import { useUiText, type TranslationKey } from '@/i18n/text'
+import { CHARACTERISTIC_KEYS } from '../formations'
 import {
     LongTextField,
     NumberField,
+    PercentageField,
     RangedNumberField,
     RecordRows,
     StringRows,
@@ -94,6 +104,7 @@ export function IdentityFields({
                 {textFields.map(([key, labelKey]) => (
                     <TextField
                         key={key}
+                        inline
                         label={text(labelKey)}
                         value={String(current[key] ?? '')}
                         onChange={(next) =>
@@ -102,6 +113,7 @@ export function IdentityFields({
                     />
                 ))}
                 <NumberField
+                    inline
                     label={text('adrenaline:shared.identity.age')}
                     value={Number(current.age ?? 0)}
                     onChange={(age) => onChange({ ...current, age })}
@@ -298,14 +310,66 @@ export function ProtectionFields({
     )
 }
 
+const NO_CHARACTERISTIC = 'none'
+
+/** A skill's characteristic, picked among the published keys; none leaves it to the roll. */
+function CharacteristicSelect({
+    value,
+    onChange,
+}: {
+    value: unknown
+    onChange: (value: string | undefined) => void
+}) {
+    const text = useUiText()
+    const current =
+        typeof value === 'string' && CHARACTERISTIC_KEYS.includes(value)
+            ? value
+            : NO_CHARACTERISTIC
+    return (
+        <label className="grid gap-1 text-sm">
+            <span>{text('adrenaline:shared.skills.characteristic')}</span>
+            <Select
+                value={current}
+                onValueChange={(next) =>
+                    onChange(next === NO_CHARACTERISTIC ? undefined : next)
+                }
+            >
+                <SelectTrigger className="w-full">
+                    <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectItem value={NO_CHARACTERISTIC}>
+                        {text('adrenaline:shared.skills.noCharacteristic')}
+                    </SelectItem>
+                    {CHARACTERISTIC_KEYS.map((key) => (
+                        <SelectItem key={key} value={key}>
+                            {key.toUpperCase()}
+                        </SelectItem>
+                    ))}
+                </SelectContent>
+            </Select>
+        </label>
+    )
+}
+
+/** Drops a key instead of writing it empty: an empty enum value is not a valid document. */
+function without(entry: RecordValue, key: string): RecordValue {
+    const rest = { ...entry }
+    delete rest[key]
+    return rest
+}
+
 export function SkillRows({
     label,
     value,
     onChange,
+    playerSheet = false,
 }: {
     label: string
     value: unknown
     onChange: (value: RecordValue[]) => void
+    /** A PJ sheet keeps one percentage per skill and no pre-computed total. */
+    playerSheet?: boolean
 }) {
     const text = useUiText()
     const current = rows(value)
@@ -313,62 +377,124 @@ export function SkillRows({
         <RecordRows
             label={label}
             values={current}
-            create={() => ({
-                nom: '',
-                specialite: '',
-                pourcentage: { minimum: 0, current: 0, maximum: 0 },
-                caracteristique: '',
-                total: { minimum: 0, current: 0, maximum: 0 },
-                avantages: [],
-            })}
+            create={() =>
+                playerSheet
+                    ? {
+                          nom: '',
+                          pourcentage: { minimum: 0, current: 0, maximum: 0 },
+                          avantages: [],
+                      }
+                    : {
+                          nom: '',
+                          pourcentage: { minimum: 0, current: 0, maximum: 0 },
+                          total: { minimum: 0, current: 0, maximum: 0 },
+                          avantages: [],
+                      }
+            }
             onChange={onChange}
         >
-            {(entry, _, replace) => (
-                <div className="grid gap-2">
-                    <div className="grid grid-cols-2 gap-2">
-                        <TextField
-                            label={text('fields.name')}
-                            value={String(entry.nom ?? '')}
-                            onChange={(nom) => replace({ ...entry, nom })}
-                        />
-                        <TextField
-                            label={text('adrenaline:shared.skills.specialty')}
-                            value={String(entry.specialite ?? '')}
-                            onChange={(specialite) =>
-                                replace({ ...entry, specialite })
-                            }
-                        />
-                        <RangedNumberField
-                            label={text('adrenaline:shared.percentage')}
-                            value={entry.pourcentage}
-                            onChange={(pourcentage) =>
-                                replace({ ...entry, pourcentage })
-                            }
-                        />
-                        <TextField
-                            label={text(
-                                'adrenaline:shared.skills.characteristic'
+            {(entry, _, replace) => {
+                /* The speciality shows once asked for or filled, so most skills keep one name line. */
+                const hasSpecialty = typeof entry.specialite === 'string'
+                return (
+                    <div className="grid gap-2">
+                        <div className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-2">
+                            <TextField
+                                label={text('fields.name')}
+                                value={String(entry.nom ?? '')}
+                                onChange={(nom) => replace({ ...entry, nom })}
+                            />
+                            {!hasSpecialty && (
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    onClick={() =>
+                                        replace({ ...entry, specialite: '' })
+                                    }
+                                >
+                                    +{' '}
+                                    {text('adrenaline:shared.skills.specialty')}
+                                </Button>
                             )}
-                            value={String(entry.caracteristique ?? '')}
-                            onChange={(caracteristique) =>
-                                replace({ ...entry, caracteristique })
+                        </div>
+                        {hasSpecialty && (
+                            <div className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-2">
+                                <TextField
+                                    label={text(
+                                        'adrenaline:shared.skills.specialty'
+                                    )}
+                                    value={String(entry.specialite ?? '')}
+                                    onChange={(specialite) =>
+                                        replace({ ...entry, specialite })
+                                    }
+                                />
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    aria-label={text(
+                                        'adrenaline:shared.skills.removeSpecialty'
+                                    )}
+                                    title={text(
+                                        'adrenaline:shared.skills.removeSpecialty'
+                                    )}
+                                    onClick={() =>
+                                        replace(without(entry, 'specialite'))
+                                    }
+                                >
+                                    ×
+                                </Button>
+                            </div>
+                        )}
+                        <div className="grid grid-cols-2 gap-2">
+                            <CharacteristicSelect
+                                value={entry.caracteristique}
+                                onChange={(caracteristique) =>
+                                    replace(
+                                        caracteristique === undefined
+                                            ? without(entry, 'caracteristique')
+                                            : { ...entry, caracteristique }
+                                    )
+                                }
+                            />
+                            {playerSheet ? (
+                                <PercentageField
+                                    label={text('adrenaline:shared.percentage')}
+                                    value={entry.pourcentage}
+                                    onChange={(pourcentage) =>
+                                        replace({ ...entry, pourcentage })
+                                    }
+                                />
+                            ) : (
+                                <RangedNumberField
+                                    label={text('adrenaline:shared.percentage')}
+                                    value={entry.pourcentage}
+                                    onChange={(pourcentage) =>
+                                        replace({ ...entry, pourcentage })
+                                    }
+                                />
+                            )}
+                            {!playerSheet && (
+                                <RangedNumberField
+                                    label={text(
+                                        'adrenaline:shared.skills.total'
+                                    )}
+                                    value={entry.total}
+                                    onChange={(total) =>
+                                        replace({ ...entry, total })
+                                    }
+                                />
+                            )}
+                        </div>
+                        <StringRows
+                            label={text('adrenaline:shared.skills.perks')}
+                            values={strings(entry.avantages)}
+                            onChange={(avantages) =>
+                                replace({ ...entry, avantages })
                             }
-                        />
-                        <RangedNumberField
-                            label={text('adrenaline:shared.skills.total')}
-                            value={entry.total}
-                            onChange={(total) => replace({ ...entry, total })}
                         />
                     </div>
-                    <StringRows
-                        label={text('adrenaline:shared.skills.perks')}
-                        values={strings(entry.avantages)}
-                        onChange={(avantages) =>
-                            replace({ ...entry, avantages })
-                        }
-                    />
-                </div>
-            )}
+                )
+            }}
         </RecordRows>
     )
 }
