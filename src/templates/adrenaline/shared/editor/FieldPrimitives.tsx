@@ -197,7 +197,7 @@ export function StringRows({
         <div className="grid gap-2">
             <Label>{label}</Label>
             {values.map((value, index) => (
-                <div className="flex gap-2" key={`${index}-${value}`}>
+                <div className="flex gap-2" key={index}>
                     <Input
                         value={value}
                         onChange={(event) =>

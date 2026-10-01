@@ -689,7 +689,18 @@ function StatusFrames({ block, source }: BlockProps) {
             </div>
         )
     }
-    const malus = asRecord(found) ?? {}
+    const malus = asRecord(found)
+    if (!malus) {
+        // A free-text frame of the Malus block, such as Divers.
+        return (
+            <div className="adr-pj__tracks">
+                <Track label={block.label} modifier="frame">
+                    <Value className="adr-pj__track-text">{text(found)}</Value>
+                </Track>
+            </div>
+        )
+    }
+    // schema-adrenaline 2.6.0 still publishes the two counts physique and mental.
     return (
         <div className="adr-pj__tracks">
             {(['physique', 'mental'] as const).map((key) => (
@@ -701,7 +712,7 @@ function StatusFrames({ block, source }: BlockProps) {
                 >
                     <span className="adr-pj__track-line" />
                     <Value className="adr-pj__track-value">
-                        {text(malus[key], ' %')}
+                        {text(malus[key])}
                     </Value>
                 </Track>
             ))}
@@ -709,15 +720,16 @@ function StatusFrames({ block, source }: BlockProps) {
     )
 }
 
-function FatigueCircles({ block, source }: BlockProps) {
-    const fatigue = asRecord(at(source, block.paths[0])) ?? {}
+/* The yellow Choc box: five round circles, then five hour circles (published as `fatigue-circles` up to 2.6.0). */
+function ShockCircles({ block, source }: BlockProps) {
+    const shock = asRecord(at(source, block.paths[0])) ?? {}
     const groups =
         block.decoration?.kind === 'circle-groups'
             ? block.decoration.groups
             : []
     return (
         <div className="adr-pj__tracks">
-            <Track label={block.label} modifier="fatigue">
+            <Track label={block.label} modifier="choc">
                 {groups.map((group, index) => (
                     <span className="adr-pj__track-group" key={group.label}>
                         {index > 0 && <span className="adr-pj__track-line" />}
@@ -730,15 +742,44 @@ function FatigueCircles({ block, source }: BlockProps) {
                                 group.count,
                                 Math.max(
                                     0,
-                                    Number(
-                                        currentValue(fatigue[group.label])
-                                    ) || 0
+                                    Number(currentValue(shock[group.label])) ||
+                                        0
                                 )
                             )}
                         />
                     </span>
                 ))}
             </Track>
+        </div>
+    )
+}
+
+/* Total des malus: the printed scale, the current total circled. */
+function MalusScale({ block, source }: BlockProps) {
+    const decoration = (
+        block as {
+            decoration?: { kind?: unknown; from?: unknown; to?: unknown }
+        }
+    ).decoration
+    const scale = decoration?.kind === 'scale' ? decoration : undefined
+    const from = typeof scale?.from === 'number' ? scale.from : 1
+    const to = typeof scale?.to === 'number' ? scale.to : 10
+    const total = Number(currentValue(at(source, block.paths[0]))) || 0
+    const steps = Array.from(
+        { length: to - from + 1 },
+        (_, index) => from + index
+    )
+    return (
+        <div className="adr-pj__scale">
+            <span className="adr-pj__scale-label">{block.label}</span>
+            {steps.map((step) => (
+                <span
+                    className={`adr-pj__scale-step${step === total ? ' adr-pj__scale-step--current' : ''}`}
+                    key={step}
+                >
+                    {step}
+                </span>
+            ))}
         </div>
     )
 }
@@ -765,7 +806,9 @@ const FORMS: Partial<Record<string, (props: BlockProps) => ReactNode>> = {
     'stress-dice': StressDice,
     'threshold-rows': ThresholdRows,
     'status-frames': StatusFrames,
-    'fatigue-circles': FatigueCircles,
+    'fatigue-circles': ShockCircles,
+    'shock-circles': ShockCircles,
+    'malus-scale': MalusScale,
 }
 
 /* The cartouche prints its own banner label; formation columns print one subhead per column. */
@@ -773,7 +816,23 @@ const TITLED_ELSEWHERE = new Set([
     'name-card',
     'game-parameters',
     'formation-columns',
+    // The Malus column prints its labels on the band of each frame, as the paper sheet does.
+    'fatigue-circles',
+    'shock-circles',
+    'malus-scale',
 ])
+
+function titledElsewhere(
+    block: AdrenalinePresentationBlock,
+    source: BlockProps['source']
+) {
+    if (TITLED_ELSEWHERE.has(block.form ?? '')) return true
+    const pointer = block.paths[0]
+    if (block.form !== 'status-frames' || lastSegment(pointer) === 'etats')
+        return false
+    const found = at(source, pointer)
+    return !Array.isArray(found) && !asRecord(found)
+}
 
 function blockClasses(block: AdrenalinePresentationBlock) {
     const placement = block.placement
@@ -799,9 +858,7 @@ export function PresentationBlock({
     const Form = FORMS[block.form ?? ''] ?? Unknown
     return (
         <button className={blockClasses(block)} type="button" onClick={onOpen}>
-            {!TITLED_ELSEWHERE.has(block.form ?? '') && (
-                <Subhead label={block.label} />
-            )}
+            {!titledElsewhere(block, source) && <Subhead label={block.label} />}
             <Form block={block} source={source} />
         </button>
     )

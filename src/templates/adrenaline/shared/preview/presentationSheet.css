@@ -436,12 +436,21 @@
     min-width: 0;
 }
 
-/* Identity: the published rows, two fields side by side, a lone field across the block. */
+/* Identity: the published rows, two fields side by side, a lone field across the block.
+   Label and value share one line; the right column (gender, age, height, weight) holds a few characters. */
 .adr-pj__field-rows {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
     gap: 5px 12px;
     min-width: 0;
+}
+
+.adr-pj__field-rows .adr-pj__write-line {
+    flex-wrap: nowrap;
+}
+
+.adr-pj__field-rows .adr-pj__write-field {
+    flex: 1 1 0;
 }
 
 .adr-pj__field {
@@ -522,7 +531,9 @@
 }
 
 .adr-pj--sante > .adr-pj__section-body {
-    grid-template-areas: 'stress sp sm' 'fatigue etats etats' 'malus etats etats';
+    grid-template-areas:
+        'stress sp sm' 'choc etats etats' 'divers etats etats'
+        'total etats etats';
 }
 
 .adr-pj--sante .adr-pj__stress {
@@ -537,12 +548,19 @@
     grid-area: sm;
 }
 
+/* fatigue and malus: block ids published up to schema-adrenaline 2.6.0. */
+.adr-pj--sante .adr-pj__choc,
 .adr-pj--sante .adr-pj__fatigue {
-    grid-area: fatigue;
+    grid-area: choc;
 }
 
+.adr-pj--sante .adr-pj__divers,
 .adr-pj--sante .adr-pj__malus {
-    grid-area: malus;
+    grid-area: divers;
+}
+
+.adr-pj--sante .adr-pj__total-malus {
+    grid-area: total;
 }
 
 .adr-pj--sante .adr-pj__etats-encaisses {
@@ -660,13 +678,70 @@
     text-transform: uppercase;
 }
 
-.adr-pj__track--fatigue {
+/* Choc: the yellow box of the sheet (the pack's --adrenaline-fatigue tokens). */
+.adr-pj__track--choc {
     border-color: var(--adrenaline-fatigue);
 }
 
-.adr-pj__track--fatigue .adr-pj__track-label {
+.adr-pj__track--choc .adr-pj__track-label {
     background: var(--adrenaline-fatigue);
     color: var(--adrenaline-fatigue-ink);
+}
+
+/* Divers: a burgundy frame written freely. */
+.adr-pj__track--frame {
+    border-color: var(--adrenaline-condition-border);
+}
+
+.adr-pj__track--frame .adr-pj__track-label {
+    background: var(--adrenaline-condition);
+}
+
+.adr-pj__track-text {
+    flex: 1;
+    min-width: 0;
+    text-align: start;
+}
+
+/* Total des malus: the printed scale, the current total circled. */
+.adr-pj__scale {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 4px;
+    border-radius: 6px;
+    background: var(--adrenaline-card-surface, var(--background-primary));
+    padding: 4px 8px;
+}
+
+.adr-pj__scale-label {
+    max-width: 44px;
+    color: var(--adrenaline-rule);
+    font-weight: 800;
+    font-size: 7px;
+    line-height: 1.1;
+    font-family: var(--font-header-theme);
+    letter-spacing: 0.04em;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+.adr-pj__scale-step {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 20px;
+    height: 20px;
+    color: var(--adrenaline-rule);
+    font-weight: 800;
+    font-size: 15px;
+    font-family: var(--font-header-theme);
+}
+
+.adr-pj__scale-step--current {
+    border: 2px solid var(--adrenaline-handwritten-ink);
+    border-radius: 50%;
+    color: var(--adrenaline-handwritten-ink);
 }
 
 .adr-pj__condition-stack {
@@ -729,7 +804,7 @@
         grid-template-areas: 'brand brand' 'nom params';
     }
     .adr-pj--sante > .adr-pj__section-body {
-        grid-template-areas: 'stress stress' 'sp sm' 'fatigue malus' 'etats etats';
+        grid-template-areas: 'stress stress' 'sp sm' 'choc divers' 'total total' 'etats etats';
     }
 }
 @container (max-width: 420px) {
@@ -747,6 +822,6 @@
         grid-template-areas: 'brand' 'nom' 'params';
     }
     .adr-pj--sante > .adr-pj__section-body {
-        grid-template-areas: 'stress' 'sp' 'sm' 'fatigue' 'malus' 'etats';
+        grid-template-areas: 'stress' 'sp' 'sm' 'choc' 'divers' 'total' 'etats';
     }
 }
