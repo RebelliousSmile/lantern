@@ -2,7 +2,7 @@
     "protocol": 1,
     "handbook": {
         "repository": "RebelliousSmile/obsidian-handbook",
-        "ref": "12eb3ca46bda5a12a5d6310fca3523c4a724d509"
+        "ref": "ba9bfbf424a301413c86eb76e892e1436f953f59"
     },
     "providers": [
         {
@@ -23,7 +23,7 @@
         {
             "provider": "schema-adrenaline",
             "repository": "RebelliousSmile/schema-adrenaline",
-            "ref": "f67cac079ca8c0150b6e507947a8ba8e95a4ca42",
+            "ref": "cee99236883d3ace767e63f6fbb1a1ceaf17c35c",
             "manifests": [
                 {
                     "path": "release-train/schema-adrenaline-v2.4.0.json",
@@ -36,6 +36,10 @@
                 {
                     "path": "release-train/schema-adrenaline-v2.6.0.json",
                     "validatorRef": "f67cac079ca8c0150b6e507947a8ba8e95a4ca42"
+                },
+                {
+                    "path": "release-train/schema-adrenaline-v3.0.0.json",
+                    "validatorRef": "cee99236883d3ace767e63f6fbb1a1ceaf17c35c"
                 }
             ]
         },
