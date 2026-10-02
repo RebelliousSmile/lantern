@@ -5,20 +5,38 @@ All notable changes to this project are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [v0.16.1] - 2026-09-27
+## [v0.17.0] - 2026-10-02
+
+v0.16.1 was never tagged; its changes ship in this release.
 
 ### Added
 
+- **Zombiology PJ sheet from the published presentation.** The Adrenaline PJ preview reads its
+  sections, blocks, placements and appearance from schema-adrenaline instead of hand-written
+  markup: profile row with identity beside the characteristics, the three fixed formations, the
+  Malus column with Choc circles and the circled malus total, two lines per weapon side.
+- **Section-by-section sheet editing.** Clicking a preview section opens its editor section;
+  formations and skills come prefilled, the characteristic is picked among the published keys,
+  and the specialty field appears only once asked for or filled.
 - **Auditable Lantern releases.** Version tags now build a deterministic production archive,
   publish per-file and bundle digests, and verify the GitHub Release attachments against the
   tagged commit.
 - **Runnable Monsterhearts asset evidence.** The PbtA release-train journey syntax-checks and
   preview-serves every referenced JavaScript chunk together with both fonts and both marks.
 
+### Changed
+
+- **schema-adrenaline 3.0.0.** Lantern adopts the 3.x contract, where the formation type is no
+  longer optional, and registers its train manifest in the release-train matrix.
+
 ### Fixed
 
+- **PJ characteristics start at their creation value.** A legacy scalar characteristic is
+  migrated to its creation value, up to the ceiling of the published PJ schema, instead of 0.
+- **Readable sheet inputs.** Health thresholds are labelled as on the paper sheet, and number
+  inputs no longer hide their value behind spin buttons.
 - **Final provider pins.** Lantern and Handbook now resolve the canonical PbtA 8.4.3,
-  Mist 1.3.5, and Adrenaline 2.6.0 archives with matching lockfile integrity.
+  Mist 1.3.5, and Adrenaline 3.0.0 archives with matching lockfile integrity.
 - **Browser-only PbtA exports.** Lantern consumes Monsterhearts appearance URLs through the
   explicit browser subpath while retaining Vite ownership of emitted assets.
 - **Release identity drift.** Package metadata, npm lock roots, changelog headings, tags, commits,
