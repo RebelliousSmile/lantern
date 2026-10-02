@@ -145,7 +145,8 @@ assert.deepEqual(selectLanternFinalConsumer(adrenalineFinalManifest), {
 assert.throws(() => selectLanternFinalConsumer({ ...adrenalineFinalManifest, artifact: { ...adrenalineFinalArtifact, releaseUrl: adrenalineCandidate.releaseUrl } }), /canonical final URL/)
 assert.throws(() => selectLanternFinalConsumer({ ...adrenalineFinalManifest, artifact: { ...adrenalineFinalArtifact, releaseUrl: `${adrenalineFinalArtifact.releaseUrl}?token=signed` } }), /canonical final URL/)
 assert.throws(() => selectLanternFinalConsumer({ ...adrenalineFinalManifest, artifact: { ...adrenalineFinalArtifact, provider: 'schema-pbta' } }), /Adrenaline or Mist/)
-assert.deepEqual(packageResolution(adrenalineFinalArtifact), {
+/* Proven on sources built from the artifact: the checkout pins whatever the train adopted last. */
+assert.deepEqual(packageResolution(adrenalineFinalArtifact, packageSources(adrenalineFinalArtifact)), {
     file: 'pnpm-lock.yaml',
     releaseUrl: adrenalineFinalArtifact.releaseUrl,
     integrity: adrenalineFinalArtifact.integrity,

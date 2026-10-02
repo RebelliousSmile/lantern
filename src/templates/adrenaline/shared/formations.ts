@@ -5,11 +5,8 @@ import { PersonnageJoueur } from 'schema-adrenaline'
  * the columns are read from the enum, never listed here. A column exists before the document has
  * a formation of that type, so both the sheet and the editor show the empty frame to fill.
  */
-const formationType =
-    PersonnageJoueur.shape.formations.unwrap().element.shape.type
-export const FORMATION_TYPES: readonly string[] = (
-    'unwrap' in formationType ? formationType.unwrap() : formationType
-).options
+export const FORMATION_TYPES: readonly string[] =
+    PersonnageJoueur.shape.formations.unwrap().element.shape.type.options
 
 const skillCharacteristic = PersonnageJoueur.shape.formations
     .unwrap()
