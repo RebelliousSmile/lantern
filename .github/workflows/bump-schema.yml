@@ -42,12 +42,8 @@ jobs:
               with:
                   ref: main
 
-            # npm is the installer of this repository; pnpm only keeps the second lockfile
-            # the consumer pin assertion compares with Handbook's.
-            - uses: pnpm/action-setup@v4
-              with:
-                  version: 10.5.2
-
+            # No package manager rewrites a lockfile here: the bump edits both as text, with
+            # the SRI of the published archive, so pnpm is not even installed.
             - uses: actions/setup-node@v4
               with:
                   node-version: 24
