@@ -3,6 +3,8 @@ name: Check
 on:
     push:
     pull_request:
+    # For the pull requests a workflow opens, which GitHub does not check on its own.
+    workflow_dispatch:
 
 permissions:
     contents: read
