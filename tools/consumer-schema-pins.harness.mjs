@@ -1,7 +1,7 @@
 /* global Buffer, console */
 import assert from 'node:assert/strict'
 import { createHash } from 'node:crypto'
-import { assertConsumerSchemaPins } from './consumer-schema-pins.mjs'
+import { assertCandidateSchemaPins, assertConsumerSchemaPins } from './consumer-schema-pins.mjs'
 
 const archive = Buffer.from('immutable provider archive fixture')
 const integrity = `sha512-${createHash('sha512').update(archive).digest('base64')}`
@@ -93,6 +93,38 @@ await reject(
 await reject(
     () => {},
     /published final bytes/,
+    async () => ({ ok: true, arrayBuffer: async () => Uint8Array.from([1, 2, 3]).buffer })
+)
+
+// A tree that adopts a candidate: same locks, one pin moved to the candidate archive.
+const finalUrl = dependencies['schema-adrenaline']
+const candidateUrl = finalUrl.replace('/v2.5.0/', '/v2.5.0-rc.1/')
+const adopting = JSON.parse(JSON.stringify(sources).split(finalUrl).join(candidateUrl))
+const adopted = await assertCandidateSchemaPins(adopting, fetcher)
+assert.deepEqual(adopted.map((pin) => pin.candidate), [false, false, true])
+
+async function rejectCandidate(mutate, pattern, sourceFetch = fetcher) {
+    const input = JSON.parse(JSON.stringify(adopting))
+    mutate(input)
+    await assert.rejects(assertCandidateSchemaPins(input, sourceFetch), pattern)
+}
+
+await assert.rejects(assertCandidateSchemaPins(sources, fetcher), /no schema pin is a candidate/)
+await rejectCandidate(
+    (input) => { input.lanternPackage.dependencies['schema-adrenaline'] = candidateUrl.replace('schema-adrenaline-2.5.0.tgz', 'schema-adrenaline-2.5.1.tgz') },
+    /canonical final archive/
+)
+await rejectCandidate(
+    (input) => { input.lanternNpmLock.packages['node_modules/schema-adrenaline'].resolved = finalUrl },
+    /npm resolution differs/
+)
+await rejectCandidate(
+    (input) => { input.lanternPnpmLock = input.lanternPnpmLock.replace(integrity, 'sha512-wrong') },
+    /lock SRIs differ/
+)
+await rejectCandidate(
+    () => {},
+    /published bytes/,
     async () => ({ ok: true, arrayBuffer: async () => Uint8Array.from([1, 2, 3]).buffer })
 )
 

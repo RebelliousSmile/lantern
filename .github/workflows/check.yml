@@ -20,5 +20,12 @@ jobs:
                   cache: npm
             - name: Install frozen dependencies
               run: npm ci
+            # A tree pinned to a schema candidate cannot be released, so the release inputs cannot
+            # hold on it: it is checked as a candidate. The release workflow always runs `check`.
             - name: Check release identity and project
-              run: npm run check
+              run: |
+                  if node tools/assert-candidate-pins.mjs --detect; then
+                    npm run check:candidate
+                  else
+                    npm run check
+                  fi

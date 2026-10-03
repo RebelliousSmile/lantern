@@ -24,6 +24,40 @@ export function canonicalPin(pkg, name) {
     return { releaseUrl, version: match[1] }
 }
 
+/** The pin of `name` when it is a candidate archive, which carries the final version; else null. */
+export function candidatePin(pkg, name) {
+    const releaseUrl = pkg.dependencies?.[name]
+    assert.equal(typeof releaseUrl, 'string', `${pkg.name}: ${name} pin is missing`)
+    const match = releaseUrl.match(
+        new RegExp(`^https://github\\.com/RebelliousSmile/${name}/releases/download/v(\\d+\\.\\d+\\.\\d+)-rc\\.\\d+/${name}-\\1\\.tgz$`)
+    )
+    return match ? { releaseUrl, version: match[1] } : null
+}
+
+/**
+ * A tree that adopts a candidate is not releasable, so the release inputs cannot hold on it.
+ * What must hold is that every pin is a canonical archive, at least one of them a candidate,
+ * and that both lockfiles carry the SRI of the published bytes.
+ */
+export async function assertCandidateSchemaPins(sources, fetcher = fetch) {
+    const { lanternPackage, lanternNpmLock, lanternPnpmLock } = sources
+    const results = []
+    for (const name of PROVIDERS) {
+        const candidate = candidatePin(lanternPackage, name)
+        const pin = candidate ?? canonicalPin(lanternPackage, name)
+        const npmSRI = npmPin(lanternNpmLock, name, pin)
+        assert.equal(npmSRI, pnpmPin(lanternPnpmLock, name, pin, 'Lantern'), `${name} Lantern lock SRIs differ`)
+        const response = await fetcher(pin.releaseUrl)
+        assert.ok(response.ok, `${name} archive download failed: ${response.status}`)
+        const bytes = Buffer.from(await response.arrayBuffer())
+        const publishedSRI = `sha512-${createHash('sha512').update(bytes).digest('base64')}`
+        assert.equal(npmSRI, publishedSRI, `${name} lock SRI differs from published bytes`)
+        results.push({ name, version: pin.version, releaseUrl: pin.releaseUrl, candidate: candidate !== null })
+    }
+    assert.ok(results.some((result) => result.candidate), 'no schema pin is a candidate: run the release check instead')
+    return results
+}
+
 export function npmPin(lock, name, expected) {
     assert.equal(lock.packages?.['']?.dependencies?.[name], expected.releaseUrl, `Lantern npm importer differs for ${name}`)
     const entry = lock.packages?.[`node_modules/${name}`]
