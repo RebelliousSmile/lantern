@@ -1,0 +1,297 @@
+/*
+ * Carte compacte PNJ / créature : transposition de la carte Handbook
+ * (src/styles/adrenaline/_short-sheet.scss et _monstre.scss), préfixe brumes-adrenaline-card
+ * renommé adr-compact. Mise en page seulement : toutes les couleurs et polices sont des jetons du
+ * pack publié, posés sur la racine par l'aperçu. Aucune valeur en dur ici.
+ */
+
+/* Chaque bloc est un bouton qui ouvre sa section d'édition : il ne garde rien du bouton natif. */
+:where(button).adr-compact__block {
+    display: block;
+    appearance: none;
+    cursor: pointer;
+    margin: 0;
+    border: 0;
+    background: none;
+    width: 100%;
+    color: inherit;
+    font: inherit;
+    text-align: start;
+}
+
+:where(button).adr-compact__block:focus-visible {
+    outline: 2px solid var(--adrenaline-rule);
+    outline-offset: -2px;
+}
+
+.adr-compact {
+    --adrenaline-banner: var(--adrenaline-banner-garnet);
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    container-type: inline-size;
+    margin-inline: auto;
+    background: var(--background-primary);
+    width: min(100%, 36rem);
+    color: var(--text-normal);
+    font-size: 13px;
+    line-height: 1.25;
+    font-family: var(--font-text-theme);
+    overflow-wrap: anywhere;
+}
+.adr-compact *,
+.adr-compact *::before,
+.adr-compact *::after {
+    box-sizing: border-box;
+}
+.adr-compact--outer-rule {
+    border: 1px solid var(--adrenaline-rule);
+}
+.adr-compact--banner-blue {
+    --adrenaline-banner: var(--adrenaline-banner-blue);
+}
+.adr-compact--banner-orange {
+    --adrenaline-banner: var(--adrenaline-banner-orange);
+}
+
+/* A section is its title band, then its padded blocks: no rule between sections. */
+.adr-compact__section {
+    min-width: 0;
+}
+.adr-compact__section-title {
+    background: var(--adrenaline-section-band);
+    padding: 0.1rem 0.5rem;
+    color: var(--adrenaline-section-band-ink);
+    font-weight: 700;
+}
+details.adr-compact__section > summary {
+    cursor: pointer;
+}
+
+/* The banner: the category on the coloured line, then icon, name and danger level on the band. */
+.adr-compact__banner-category {
+    display: block;
+    background: var(--adrenaline-banner);
+    padding: 0.1rem 0.5rem;
+    color: var(--adrenaline-banner-ink);
+    font-weight: 700;
+    text-transform: uppercase;
+}
+.adr-compact__banner-identity {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: var(--adrenaline-section-band);
+    padding: 0.2rem 0.5rem;
+    color: var(--adrenaline-section-band-ink);
+}
+.adr-compact__banner-icon {
+    display: inline-flex;
+}
+.adr-compact__banner-icon svg {
+    width: 1.3em;
+    height: 1.3em;
+}
+.adr-compact__banner-name {
+    flex: 1 1 auto;
+    font-size: 1.2em;
+    text-transform: uppercase;
+}
+.adr-compact__banner-danger {
+    font-weight: 700;
+}
+.adr-compact__banner-note {
+    display: block;
+    padding: 0.1rem 0.5rem;
+    font-size: 0.85em;
+}
+
+/* Blocks, values typeset after their label. */
+.adr-compact__block {
+    padding: 0.2rem 0.5rem;
+}
+.adr-compact__layout-banner > .adr-compact__block {
+    padding: 0;
+}
+.adr-compact__paragraph,
+.adr-compact__inline-list,
+.adr-compact__combat-actions {
+    display: block;
+}
+.adr-compact__section-description .adr-compact__paragraph {
+    font-style: var(--adrenaline-emphasis-style, italic);
+}
+.adr-compact__list {
+    display: block;
+    margin-block-start: 0.15rem;
+    padding-inline-start: 1.1rem;
+}
+.adr-compact__list-item {
+    display: list-item;
+    list-style: disc;
+}
+.adr-compact__line {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 0.35rem;
+}
+/* A figure sits where the published `values.align` puts it; prose values follow their label. */
+.adr-compact--values-end .adr-compact__figure {
+    margin-inline-start: auto;
+    text-align: end;
+    white-space: nowrap;
+}
+.adr-compact__grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.12rem 0.5rem;
+}
+.adr-compact__cell {
+    display: flex;
+    gap: 0.3rem;
+}
+.adr-compact__thresholds {
+    display: grid;
+    grid-template-columns: 2.2rem repeat(4, minmax(0, 1fr));
+    gap: 0.4rem;
+}
+.adr-compact__track {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0 0.5rem;
+}
+.adr-compact__track .adr-compact__line-label {
+    min-width: 8.5rem;
+}
+.adr-compact__circles {
+    display: inline-flex;
+    gap: 0.18rem;
+}
+.adr-compact__circle-mark {
+    display: inline-block;
+    border: 1px solid var(--adrenaline-track, var(--adrenaline-rule));
+    border-radius: 50%;
+    width: 0.62rem;
+    height: 0.62rem;
+}
+.adr-compact__circle-bold {
+    border-width: 2px;
+    border-color: var(--adrenaline-track, var(--text-normal));
+}
+/* The two malus tracks take their colour from the pack; stress keeps the ink. */
+.adr-compact__track--shock {
+    --adrenaline-track: var(--adrenaline-malus-shock);
+}
+.adr-compact__track--wound {
+    --adrenaline-track: var(--adrenaline-malus-wound);
+}
+
+/* Skills and actions: the line, then the dice badge and its properties. */
+.adr-compact__skill,
+.adr-compact__action {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.15rem 0.4rem;
+}
+.adr-compact__skill-head {
+    display: flex;
+    flex: 1 0 100%;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0 0.35rem;
+}
+.adr-compact__skill + .adr-compact__skill,
+.adr-compact__action + .adr-compact__action {
+    margin-block-start: 0.15rem;
+}
+.adr-compact__follow-up {
+    display: flex;
+    flex-basis: 100%;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.15rem 0.4rem;
+    margin-inline-start: 0.9rem;
+}
+.adr-compact__damage {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.15rem 0.3rem;
+}
+.adr-compact__dice-badge {
+    border-radius: 0.2rem;
+    background: var(--adrenaline-dice-badge-bg);
+    padding: 0 0.3rem;
+    color: var(--adrenaline-dice-badge-ink);
+    font-weight: 700;
+}
+.adr-compact__damage-detail,
+.adr-compact__note {
+    font-size: 0.9em;
+}
+.adr-compact__trigger {
+    display: inline-block;
+    border-radius: 0.2rem;
+    background: var(--adrenaline-trigger-bg);
+    padding: 0 0.3rem;
+    color: var(--adrenaline-trigger-ink);
+    font-weight: 700;
+    font-size: 0.85em;
+}
+
+/* The creature prints its states on two cards: the principal one large, the secondary beside it. */
+.adr-compact__cards {
+    display: grid;
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+    border-top: 1px solid var(--adrenaline-rule);
+}
+.adr-compact__cards--single {
+    grid-template-columns: minmax(0, 1fr);
+}
+.adr-compact__state-card {
+    min-width: 0;
+}
+.adr-compact__state-card + .adr-compact__state-card {
+    border-inline-start: 1px solid var(--adrenaline-rule);
+}
+.adr-compact__state-card--secondaire {
+    font-size: 0.92em;
+}
+/* The secondary card is too narrow for four characteristics on a line. */
+.adr-compact__state-card--secondaire .adr-compact__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.adr-compact__form-state-header {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.15rem 0.3rem;
+}
+.adr-compact__state-name {
+    display: flex;
+    flex-basis: 100%;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0 0.5rem;
+    text-transform: uppercase;
+}
+.adr-compact__state-active {
+    font-size: 0.8em;
+}
+
+@container (max-width: 520px) {
+    .adr-compact__grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .adr-compact__thresholds {
+        grid-template-columns: 2.2rem repeat(2, minmax(0, 1fr));
+    }
+    .adr-compact__cards {
+        grid-template-columns: minmax(0, 1fr);
+    }
+    .adr-compact__state-card + .adr-compact__state-card {
+        border-top: 1px solid var(--adrenaline-rule);
+        border-inline-start: 0;
+    }
+}

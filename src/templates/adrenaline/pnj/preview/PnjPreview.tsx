@@ -1,153 +1,70 @@
+import { useEffect } from 'react'
+import {
+    PNJ_PRESENTATION,
+    type AdrenalinePresentation,
+    type AdrenalinePresentationBlock,
+} from 'schema-adrenaline/presentation'
 import { useAdrenalineDocument } from '../../shared/hooks'
 import {
-    AdrenalineHeader,
-    AdrenalineSection,
-    AdrenalineStatGrid,
-    currentValue,
-} from '../../shared/preview/SheetPrimitives'
-import '../../shared/preview/adrenalineTheme.css'
+    adrenalineSheetTokens,
+    installAdrenalineFontFaces,
+    sortedSections,
+} from '../../shared/presentation'
+import {
+    CompactSection,
+    compactCardClasses,
+} from '../../shared/preview/CompactCard'
+import '../../shared/preview/compactCard.css'
 import type { PnjSection } from '../../shared/sections'
 import { blankPnj } from '../sample'
 
+const PRESENTATION: AdrenalinePresentation = PNJ_PRESENTATION
+
+/* The edit sheet a block opens, read from the first document path it shows. */
+const editTargets: Record<string, PnjSection | undefined> = {
+    nom: 'basic',
+    categorie: 'basic',
+    niveauDeDanger: 'basic',
+    description: 'basic',
+    caracteristiques: 'statistics',
+    sante: 'health',
+    pistes: 'health',
+    etatDePartie: 'health',
+    protections: 'protections',
+    formations: 'formations',
+    competences: 'formations',
+    equipement: 'equipment',
+    narratif: 'narrative',
+}
+
+function editTarget(block: AdrenalinePresentationBlock): PnjSection {
+    return editTargets[block.paths[0]?.split('/')[1] ?? ''] ?? 'meta'
+}
+
+/*
+ * The card is laid out by the published presentation: sections, block order, forms and banner
+ * category all come from schema-adrenaline, colours and fonts from its pack.
+ */
 export function PnjPreview() {
     const { document, openSection } = useAdrenalineDocument<
         Record<string, unknown>,
         PnjSection
     >('adrenaline.pnj', blankPnj() as unknown as Record<string, unknown>)
-    const stats = (document.caracteristiques ?? {}) as Record<string, unknown>
-    const narrative = (document.narratif ?? {}) as Record<string, unknown>
-    const identity = (document.identite ?? {}) as Record<string, unknown>
-    const health = (document.sante ?? {}) as Record<string, unknown>
-    const protections = (document.protections ?? {}) as Record<string, unknown>
-    const equipment = (document.equipement ?? {}) as Record<string, unknown>
-    const formations = Array.isArray(document.formations)
-        ? (document.formations as Record<string, unknown>[])
-        : []
-    const skills = Array.isArray(document.competences)
-        ? (document.competences as Record<string, unknown>[])
-        : []
-    const meta = (document.meta ?? {}) as Record<string, unknown>
+    useEffect(installAdrenalineFontFaces, [])
     return (
-        <article className="adr-doc adr-card mx-auto w-full max-w-[620px] overflow-hidden">
-            <AdrenalineHeader
-                eyebrow="Système Adrenaline · PNJ"
-                title={String(document.nom ?? 'PNJ sans nom')}
-                aside={<span>ND {String(document.niveauDeDanger ?? '—')}</span>}
-            />
-            <button
-                className="block w-full text-left"
-                onClick={() => openSection('basic')}
-                type="button"
-            >
-                <AdrenalineSection title="Présentation">
-                    <p className="m-0">
-                        {String(document.description ?? 'À décrire')}
-                    </p>
-                </AdrenalineSection>
-            </button>
-            <button
-                className="block w-full text-left"
-                type="button"
-                onClick={() => openSection('identity')}
-            >
-                <AdrenalineSection title="Identité">
-                    <p className="m-0">
-                        {Object.values(identity)
-                            .filter(
-                                (value) =>
-                                    typeof value === 'string' ||
-                                    typeof value === 'number'
-                            )
-                            .join(' · ') || 'Non renseignée'}
-                    </p>
-                </AdrenalineSection>
-            </button>
-            <button
-                className="block w-full text-left"
-                onClick={() => openSection('statistics')}
-                type="button"
-            >
-                <AdrenalineSection title="Caractéristiques">
-                    <AdrenalineStatGrid
-                        values={Object.entries(stats).map(([label, value]) => ({
-                            label: label.toUpperCase(),
-                            value: currentValue(value),
-                        }))}
-                    />
-                </AdrenalineSection>
-            </button>
-            <button
-                className="block w-full text-left"
-                type="button"
-                onClick={() => openSection('health')}
-            >
-                <AdrenalineSection title="Santé">
-                    <p className="m-0">
-                        {Object.keys(health).join(' · ') || 'Non renseignée'}
-                    </p>
-                </AdrenalineSection>
-            </button>
-            <button
-                className="block w-full text-left"
-                type="button"
-                onClick={() => openSection('protections')}
-            >
-                <AdrenalineSection title="Protections">
-                    <p className="m-0">
-                        {Object.keys(protections).join(' · ') || 'Aucune'}
-                    </p>
-                </AdrenalineSection>
-            </button>
-            <button
-                className="block w-full text-left"
-                type="button"
-                onClick={() => openSection('formations')}
-            >
-                <AdrenalineSection title="Formations et compétences">
-                    <p className="m-0">
-                        {[...formations, ...skills]
-                            .map((entry) => String(entry.nom ?? 'Compétence'))
-                            .join(' · ') || 'Aucune'}
-                    </p>
-                </AdrenalineSection>
-            </button>
-            <button
-                className="block w-full text-left"
-                type="button"
-                onClick={() => openSection('equipment')}
-            >
-                <AdrenalineSection title="Équipement">
-                    <p className="m-0">
-                        {Array.isArray(equipment.possessions)
-                            ? equipment.possessions.join(' · ')
-                            : 'Aucun'}
-                    </p>
-                </AdrenalineSection>
-            </button>
-            <button
-                className="block w-full text-left"
-                onClick={() => openSection('narrative')}
-                type="button"
-            >
-                <AdrenalineSection title="Notes MJ">
-                    <p className="m-0">
-                        {String(narrative.role ?? 'Aucun rôle défini')}
-                    </p>
-                </AdrenalineSection>
-            </button>
-            <button
-                className="block w-full text-left"
-                type="button"
-                onClick={() => openSection('meta')}
-            >
-                <AdrenalineSection title="Provenance">
-                    <p className="m-0">
-                        {[meta.source, meta.page, meta.licence]
-                            .filter(Boolean)
-                            .join(' · ') || 'Non renseignée'}
-                    </p>
-                </AdrenalineSection>
-            </button>
+        <article
+            className={compactCardClasses(PRESENTATION, document)}
+            style={adrenalineSheetTokens}
+        >
+            {sortedSections(PRESENTATION).map((section) => (
+                <CompactSection
+                    key={section.id}
+                    presentation={PRESENTATION}
+                    section={section}
+                    source={document}
+                    onOpen={(block) => openSection(editTarget(block))}
+                />
+            ))}
         </article>
     )
 }

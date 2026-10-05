@@ -5,6 +5,19 @@ All notable changes to this project are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.18.0] - 2026-10-05
+
+### Added
+
+- **Compact NPC and creature cards.** The Adrenaline PNJ and creature previews draw the compact
+  card of the Zombiology booklets from the presentation published by schema-adrenaline: a banner
+  by category, then the published sections in order. Every value is shown as entered.
+
+### Changed
+
+- **schema-adrenaline 3.1.0.** Lantern adopts the additive 3.1.0 baseline, which publishes the
+  compact cards, the booklet callouts and the page tokens.
+
 ## [v0.17.0] - 2026-10-02
 
 v0.16.1 was never tagged; its changes ship in this release.
