@@ -5,6 +5,13 @@ All notable changes to this project are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.19.0] - 2026-10-06
+
+### Changed
+
+- Adopts schema-adrenaline 3.3.0, which publishes the colours of the scenario "Résumé"
+  card and a new dark surface for the note callout.
+
 ## [v0.18.0] - 2026-10-05
 
 ### Added
