@@ -5,6 +5,12 @@ All notable changes to this project are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.21.0] - 2026-10-07
+
+### Changed
+
+- Adopts the Urban Shadows 2E contract of schema-pbta: the playbook follows the published presentation, with the new fields (statuses, harm, scars, later advancement, corruption track). The editor does not display the new fields yet.
+
 ## [v0.20.0] - 2026-10-07
 
 ### Changed
