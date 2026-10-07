@@ -233,24 +233,22 @@ async function main() {
     }
 
     const assets = [
-        emittedAsset(
-            manifest,
-            '/monsterhearts/assets/fonts/im-fell-english-latin-400-normal.woff2',
-            'woff2'
-        ),
-        emittedAsset(
-            manifest,
-            '/monsterhearts/assets/fonts/averia-serif-libre-latin-700-normal.woff2',
-            'woff2'
+        ...[
+            'yellow-magician-latin-400-normal',
+            'el-messiri-latin-400-700-normal',
+            'averia-serif-libre-latin-700-normal',
+            'alice-latin-400-normal',
+            'im-fell-double-pica-latin-400-italic',
+        ].map((font) =>
+            emittedAsset(
+                manifest,
+                `/monsterhearts/assets/fonts/${font}.woff2`,
+                'woff2'
+            )
         ),
         emittedAsset(
             manifest,
             '/monsterhearts/assets/images/thorn-heart.svg',
-            'svg'
-        ),
-        emittedAsset(
-            manifest,
-            '/monsterhearts/assets/variants/drowned-lake/zine-lake.svg',
             'svg'
         ),
     ]
@@ -259,10 +257,10 @@ async function main() {
         /thorn-heart\.svg\?url&no-inline/,
         'Monsterhearts must import the thorn heart as a Vite URL'
     )
-    assert.match(
+    assert.doesNotMatch(
         monsterheartsPreview,
-        /zine-lake\.svg\?url&no-inline/,
-        'Drowned Lake must import its mark as a Vite URL'
+        /drowned-lake|zine-lake|im-fell-english/,
+        'Monsterhearts must not reference retired variant or font assets'
     )
     assert.match(
         monsterheartsPreview,

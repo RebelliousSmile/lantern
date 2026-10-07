@@ -84,7 +84,16 @@ const pbta: ResourceShape<typeof en> = {
         },
         defaults: {
             condition: 'Nouvel état',
+            play: 'Conseils pour jouer cette mue.',
         },
+        editor: {
+            hint: 'Cliquez sur une section de la mue pour la modifier.',
+            title: 'Titre',
+            text: 'Texte',
+            addPlay: 'Ajouter « Jouer la X »',
+            removePlay: 'Retirer « Jouer la X »',
+        },
+        portrait: 'Portrait de {{name}}',
     },
     urbanShadows: {
         sections: {

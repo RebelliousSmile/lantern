@@ -23,7 +23,9 @@ import {
     useMonsterheartsStore,
     useMonsterheartsView,
 } from '../hooks'
+import { MONSTERHEARTS_MAX_MOVES } from '../limits'
 import type { MonsterheartsEditorial, MonsterheartsPlaybook } from '../model'
+import { getMonsterheartsRegionLabel } from '../preview/MonsterheartsPlaybookPreview'
 
 type MonsterheartsMove = MonsterheartsPlaybook['moves'][number]
 
@@ -492,14 +494,14 @@ export function MonsterheartsPlaybookEditorPanel() {
     if (!sheet.open || !sheet.target)
         return (
             <p className="text-sm text-muted-foreground">
-                Click a skin section to edit it.
+                {t('pbta:monsterhearts.editor.hint')}
             </p>
         )
     if (sheet.target === 'basic')
         return (
             <div className="space-y-3">
                 <Label>
-                    Name
+                    {t('pbta:monsterhearts.fields.name')}
                     <Input
                         value={playbook.name}
                         onChange={(event) =>
@@ -508,7 +510,7 @@ export function MonsterheartsPlaybookEditorPanel() {
                     />
                 </Label>
                 <Label>
-                    Description
+                    {t('pbta:monsterhearts.fields.description')}
                     <Textarea
                         value={playbook.description}
                         onChange={(event) =>
@@ -521,7 +523,7 @@ export function MonsterheartsPlaybookEditorPanel() {
     if (sheet.target === 'editorial') {
         const updateBlock = (
             key: keyof MonsterheartsEditorial,
-            patch: Partial<MonsterheartsEditorial[keyof MonsterheartsEditorial]>
+            patch: Partial<NonNullable<MonsterheartsEditorial[keyof MonsterheartsEditorial]>>
         ) =>
             setPlaybook({
                 editorial: {
@@ -539,7 +541,7 @@ export function MonsterheartsPlaybookEditorPanel() {
                                 {block.heading}
                             </legend>
                             <Label>
-                                Title
+                                {t('pbta:monsterhearts.editor.title')}
                                 <Input
                                     value={block.heading}
                                     onChange={(event) =>
@@ -551,7 +553,7 @@ export function MonsterheartsPlaybookEditorPanel() {
                                 />
                             </Label>
                             <Label>
-                                Text
+                                {t('pbta:monsterhearts.editor.text')}
                                 <Textarea
                                     value={block.paragraphs.join('\n\n')}
                                     onChange={(event) =>
@@ -569,11 +571,49 @@ export function MonsterheartsPlaybookEditorPanel() {
                         </fieldset>
                     )
                 )}
+                {playbook.editorial.play ? (
+                    <Button
+                        type="button"
+                        variant="secondary"
+                        size="sm"
+                        onClick={() => {
+                            const { play, ...rest } = playbook.editorial
+                            void play
+                            setPlaybook({ editorial: rest })
+                        }}
+                    >
+                        {t('pbta:monsterhearts.editor.removePlay')}
+                    </Button>
+                ) : (
+                    <Button
+                        type="button"
+                        variant="secondary"
+                        size="sm"
+                        onClick={() =>
+                            updateBlock('play', {
+                                heading:
+                                    getMonsterheartsRegionLabel(
+                                        'monsterhearts-play'
+                                    ),
+                                paragraphs: [
+                                    t('pbta:monsterhearts.defaults.play'),
+                                ],
+                            })
+                        }
+                    >
+                        {t('pbta:monsterhearts.editor.addPlay')}
+                    </Button>
+                )}
             </div>
         )
     }
     if (sheet.target === 'moves')
-        return <MonsterheartsCollection path="moves" />
+        return (
+            <MonsterheartsCollection
+                path="moves"
+                maxItems={MONSTERHEARTS_MAX_MOVES}
+            />
+        )
     if (sheet.target === 'stats') return <MonsterheartsStatsEditor />
     if (sheet.target === 'advances' || sheet.target === 'ascendants')
         return <MonsterheartsCollection path={sheet.target} />
@@ -595,7 +635,13 @@ export function MonsterheartsPlaybookEditorPanel() {
     )
 }
 
-function MonsterheartsCollection({ path }: { path: string }) {
+function MonsterheartsCollection({
+    path,
+    maxItems,
+}: {
+    path: string
+    maxItems?: number
+}) {
     const { playbook, setPlaybook } = useMonsterheartsStore()
     const { t } = useTranslation()
     const presentation = getPbtaCollectionPresentation(
@@ -646,6 +692,7 @@ function MonsterheartsCollection({ path }: { path: string }) {
             presentation={localizedPresentation}
             items={items}
             labelFor={labelFor}
+            maxItems={maxItems}
             createItem={createItem}
             onChange={(next) =>
                 setPlaybook(

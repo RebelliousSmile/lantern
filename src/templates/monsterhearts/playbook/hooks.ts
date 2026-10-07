@@ -29,17 +29,22 @@ export function useMonsterheartsStore() {
 export function useMonsterheartsView() {
     const tab = useTab()
     const patch = useWorkspaceStore((s) => s.patchTabView)
+    /* Documents saved while the pack still had a second variant carry an
+       `appearanceVariant`; the pack now has only `base`, so it is dropped. */
+    const { appearanceVariant: _retired, ...stored } = (tab?.view ??
+        {}) as Partial<ViewState> & { appearanceVariant?: unknown }
+    void _retired
     const view = {
         ...defaultView,
-        ...(tab?.view ?? {}),
+        ...stored,
         statBounds: {
             ...defaultView.statBounds,
-            ...(tab?.view?.statBounds ?? {}),
+            ...(stored.statBounds ?? {}),
         },
-        hidden: { ...defaultView.hidden, ...(tab?.view?.hidden ?? {}) },
+        hidden: { ...defaultView.hidden, ...(stored.hidden ?? {}) },
         exportPrefs: {
             ...defaultView.exportPrefs,
-            ...(tab?.view?.exportPrefs ?? {}),
+            ...(stored.exportPrefs ?? {}),
         },
     }
     return {
@@ -51,9 +56,6 @@ export function useMonsterheartsView() {
             patch(tab.id, { hidden: setVisibility(view.hidden, id, value) }),
         setExportPrefs: (scale: 1 | 2 | 3) =>
             tab && patch(tab.id, { exportPrefs: { scale } }),
-        setAppearanceVariant: (
-            appearanceVariant: ViewState['appearanceVariant']
-        ) => tab && patch(tab.id, { appearanceVariant }),
     }
 }
 export function useMonsterheartsSheet() {

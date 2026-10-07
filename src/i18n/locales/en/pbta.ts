@@ -81,7 +81,16 @@ const pbta = {
         },
         defaults: {
             condition: 'New Condition',
+            play: 'Advice for playing this skin.',
         },
+        editor: {
+            hint: 'Click a skin section to edit it.',
+            title: 'Title',
+            text: 'Text',
+            addPlay: 'Add “Playing the X”',
+            removePlay: 'Remove “Playing the X”',
+        },
+        portrait: 'Portrait of {{name}}',
     },
     urbanShadows: {
         sections: {

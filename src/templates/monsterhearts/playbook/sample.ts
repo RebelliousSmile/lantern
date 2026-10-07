@@ -2,48 +2,54 @@ import { blankPlaybook } from './model'
 export const getSampleMonsterheartsPlaybook = () => ({
     ...blankPlaybook(),
     slug: 'the-echo',
-    name: 'The Echo',
-    description: 'An original skin haunted by every promise it repeats.',
+    name: 'L’Écho',
+    description: 'Une mue originale hantée par chaque promesse qu’elle répète.',
     strings: { max: 4, starting: 1 },
     conditions: [
         {
-            name: 'Exposed',
-            description: 'Everyone knows one secret you hoped to keep.',
+            name: 'Exposé',
+            description: 'Tout le monde connaît un secret que vous espériez garder.',
         },
     ],
     editorial: {
         opening: {
-            heading: 'Opening',
-            paragraphs: ['Every promise has an echo.'],
+            heading: 'Introduction',
+            paragraphs: ['Chaque promesse a son écho.'],
         },
         identity: {
-            heading: 'Identity',
-            paragraphs: ['Choose the promise that made you.'],
+            heading: 'Identité',
+            paragraphs: ['Choisissez la promesse qui vous a façonné.'],
         },
         progression: {
-            heading: 'Progression',
-            paragraphs: ['Take an original Echo move.'],
+            heading: 'Progressions',
+            paragraphs: ['Choisissez une action originale de l’Écho.'],
         },
         sexMove: {
-            heading: 'Sex Move',
+            heading: 'Action sexuelle',
             paragraphs: [
-                'When you share an intimate moment, each person says one truth they cannot take back.',
+                'Quand vous partagez un moment intime, chacun dit une vérité qu’il ne pourra pas reprendre.',
+            ],
+        },
+        play: {
+            heading: 'Jouer l’Écho',
+            paragraphs: [
+                'Laissez les autres finir vos phrases, puis faites-en une promesse.',
             ],
         },
         darkestSelf: {
-            heading: 'Darkest Self',
+            heading: 'Démon intérieur',
             paragraphs: [
-                'Demand that everyone repeats the story you want told.',
+                'Exigez que tout le monde répète l’histoire que vous voulez voir racontée.',
             ],
         },
     },
     moves: [
         {
-            name: 'Second Voice',
+            name: 'Seconde voix',
             moveType: 'skin',
-            description: 'When you repeat a rumour, ask what it changes.',
+            description: 'Quand vous répétez une rumeur, demandez ce qu’elle change.',
         },
     ],
-    advances: [{ label: 'Take an original Echo move.' }],
+    advances: [{ label: 'Choisissez une action originale de l’Écho.' }],
     harm: 0,
 })

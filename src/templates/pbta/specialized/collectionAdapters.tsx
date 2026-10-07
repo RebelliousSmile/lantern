@@ -24,6 +24,8 @@ export type CollectionAdapterProps = {
     items: unknown[]
     onChange: (items: unknown[]) => void
     labelFor?: (id: string, fallback: string) => string
+    /** Published upper bound on the item count; adding stops once reached. */
+    maxItems?: number
     createItem?: (
         presentation: PbtaCollectionPresentation,
         items: unknown[]
@@ -125,9 +127,11 @@ function GenericCollectionAdapter({
     items,
     onChange,
     labelFor,
+    maxItems,
     createItem,
 }: CollectionAdapterProps) {
     const { t } = useTranslation()
+    const full = maxItems !== undefined && items.length >= maxItems
     const mutable = presentation.cardinality === 'mutable'
     const checked = presentation.itemCapabilities?.includes('checked') === true
     const compact = presentation.itemEditor === 'pbta-ascendant'
@@ -266,6 +270,7 @@ function GenericCollectionAdapter({
                     type="button"
                     variant="secondary"
                     size="sm"
+                    disabled={full}
                     onClick={() =>
                         onChange([
                             ...items,

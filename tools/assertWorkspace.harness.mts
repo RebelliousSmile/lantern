@@ -92,7 +92,7 @@ const restoredTab = useWorkspaceStore.getState().tabs[0]
 assert.deepEqual(
     (restoredTab.doc as { editorial: { opening: { paragraphs: string[] } } })
         .editorial.opening.paragraphs,
-    ['Introduce this skin.'],
+    ['Présentez cette mue.'],
     'workspace hydration restores absent nested document fields'
 )
 assert.equal(
@@ -109,8 +109,12 @@ assert.equal(
 const { getAdvanceCheckClass, getMoveHeart } = await import(
     '../src/templates/monsterhearts/playbook/preview/MonsterheartsPlaybookPreview'
 )
-const { getMonsterheartsRegionLayout } = await import(
-    '../src/templates/monsterhearts/playbook/preview/MonsterheartsPlaybookPreview'
+const { getMonsterheartsRegionLayout, getMonsterheartsRegionLabel } =
+    await import(
+        '../src/templates/monsterhearts/playbook/preview/MonsterheartsPlaybookPreview'
+    )
+const { MONSTERHEARTS_MAX_MOVES } = await import(
+    '../src/templates/monsterhearts/playbook/limits'
 )
 const { PBTA_MONSTERHEARTS_PLAYBOOK_PRESENTATION } = await import('schema-pbta')
 const { PBTA_MONSTERHEARTS_APPEARANCE_ASSET_URLS } = await import(
@@ -163,10 +167,25 @@ assert.ok(
     PBTA_MONSTERHEARTS_APPEARANCE_ASSET_URLS.assets['game-mark'],
     'Monsterhearts appearance assets expose browser-consumer URLs'
 )
+assert.deepEqual(
+    Object.keys(PBTA_MONSTERHEARTS_APPEARANCE_ASSET_URLS.variants),
+    ['base'],
+    'Monsterhearts publishes a single base appearance'
+)
 assert.ok(
-    PBTA_MONSTERHEARTS_APPEARANCE_ASSET_URLS.variants['drowned-lake']
-        .assetOverrides['variant-mark'],
-    'Monsterhearts drowned-lake appearance exposes its published asset override'
+    monsterheartsLayout.rows.flat(2).includes('monsterhearts-play') &&
+        monsterheartsLayout.rows.flat(2).includes('ascendants-and-conditions'),
+    'Monsterhearts places the published play and ascendants-and-conditions regions'
+)
+assert.equal(
+    getMonsterheartsRegionLabel('monsterhearts-play'),
+    'Jouer la mue',
+    'region labels come from the published presentation'
+)
+assert.equal(
+    MONSTERHEARTS_MAX_MOVES,
+    6,
+    'the move limit is read from the published schema'
 )
 
 const tabId = useWorkspaceStore.getState().createTab('pbta.playbook')

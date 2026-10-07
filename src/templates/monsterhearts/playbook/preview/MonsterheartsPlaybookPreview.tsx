@@ -1,9 +1,11 @@
 import type { CSSProperties, ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
+import aliceUrl from 'schema-pbta/packs/monsterhearts/assets/fonts/alice-latin-400-normal.woff2'
 import averiaSerifLibreUrl from 'schema-pbta/packs/monsterhearts/assets/fonts/averia-serif-libre-latin-700-normal.woff2'
-import imFellEnglishUrl from 'schema-pbta/packs/monsterhearts/assets/fonts/im-fell-english-latin-400-normal.woff2'
+import elMessiriUrl from 'schema-pbta/packs/monsterhearts/assets/fonts/el-messiri-latin-400-700-normal.woff2'
+import imFellDoublePicaUrl from 'schema-pbta/packs/monsterhearts/assets/fonts/im-fell-double-pica-latin-400-italic.woff2'
+import yellowMagicianUrl from 'schema-pbta/packs/monsterhearts/assets/fonts/yellow-magician-latin-400-normal.woff2'
 import gameMarkUrl from 'schema-pbta/packs/monsterhearts/assets/images/thorn-heart.svg?url&no-inline'
-import drownedLakeMarkUrl from 'schema-pbta/packs/monsterhearts/assets/variants/drowned-lake/zine-lake.svg?url&no-inline'
 import {
     PBTA_MONSTERHEARTS_APPEARANCE,
     PBTA_MONSTERHEARTS_PLAYBOOK_PRESENTATION,
@@ -25,26 +27,38 @@ export const getAdvanceCheckClass = (checked: boolean | undefined) =>
 
 const viteAssetUrls = new Map([
     [
-        PBTA_MONSTERHEARTS_APPEARANCE_ASSET_URLS.fonts['IM Fell English'],
-        imFellEnglishUrl,
+        PBTA_MONSTERHEARTS_APPEARANCE_ASSET_URLS.fonts['Yellow Magician'],
+        yellowMagicianUrl,
     ],
+    [PBTA_MONSTERHEARTS_APPEARANCE_ASSET_URLS.fonts['El Messiri'], elMessiriUrl],
     [
         PBTA_MONSTERHEARTS_APPEARANCE_ASSET_URLS.fonts['Averia Serif Libre'],
         averiaSerifLibreUrl,
     ],
+    [PBTA_MONSTERHEARTS_APPEARANCE_ASSET_URLS.fonts['Alice'], aliceUrl],
+    [
+        PBTA_MONSTERHEARTS_APPEARANCE_ASSET_URLS.fonts['IM Fell Double Pica'],
+        imFellDoublePicaUrl,
+    ],
     [
         PBTA_MONSTERHEARTS_APPEARANCE_ASSET_URLS.assets['game-mark'],
         gameMarkUrl,
-    ],
-    [
-        PBTA_MONSTERHEARTS_APPEARANCE_ASSET_URLS.assets['variant-mark'],
-        drownedLakeMarkUrl,
     ],
 ])
 
 function viteAssetUrl(publishedUrl: string) {
     return viteAssetUrls.get(publishedUrl) ?? publishedUrl
 }
+
+/* Each face is declared with the weight and style the published stylesheet
+   gives it; El Messiri is one file covering the 400 to 700 range. */
+const fontFaces = [
+    { family: 'Yellow Magician', weight: '400', style: 'normal' },
+    { family: 'El Messiri', weight: '400 700', style: 'normal' },
+    { family: 'Averia Serif Libre', weight: '700', style: 'normal' },
+    { family: 'Alice', weight: '400', style: 'normal' },
+    { family: 'IM Fell Double Pica', weight: '400', style: 'italic' },
+] as const
 
 export function getMonsterheartsRegionLayout(
     presentation: PbtaMonsterheartsPlaybookPresentation = PBTA_MONSTERHEARTS_PLAYBOOK_PRESENTATION
@@ -62,6 +76,11 @@ export function getMonsterheartsRegionLayout(
         ),
     }
 }
+
+export const getMonsterheartsRegionLabel = (
+    id: PbtaMonsterheartsRegionId,
+    presentation: PbtaMonsterheartsPlaybookPresentation = PBTA_MONSTERHEARTS_PLAYBOOK_PRESENTATION
+) => presentation.regions.find((region) => region.id === id)?.label ?? id
 
 function EditorialBlock({
     block,
@@ -90,19 +109,11 @@ export function MonsterheartsPlaybookPreview() {
     const ascendants = playbook.ascendants ?? []
     const gear = playbook.gear ?? []
     const layout = getMonsterheartsRegionLayout()
-    const appearance =
-        PBTA_MONSTERHEARTS_APPEARANCE.variants.find(
-            (variant) => variant.id === view.appearanceVariant
-        ) ?? PBTA_MONSTERHEARTS_APPEARANCE.variants[0]
+    const label = (id: PbtaMonsterheartsRegionId) =>
+        getMonsterheartsRegionLabel(id)
+    const appearance = PBTA_MONSTERHEARTS_APPEARANCE.variants[0]
     const assetUrls = PBTA_MONSTERHEARTS_APPEARANCE_ASSET_URLS
-    const variantOverrides = assetUrls.variants[appearance.id].assetOverrides
-    const publishedGameMark =
-        appearance.id === 'drowned-lake'
-            ? (('variant-mark' in variantOverrides
-                  ? variantOverrides['variant-mark']
-                  : undefined) ?? assetUrls.assets['variant-mark'])
-            : assetUrls.assets['game-mark']
-    const gameMark = viteAssetUrl(publishedGameMark)
+    const gameMark = viteAssetUrl(assetUrls.assets['game-mark'])
 
     const renderRegion = (id: PbtaMonsterheartsRegionId): ReactNode | null => {
         switch (id) {
@@ -127,7 +138,7 @@ export function MonsterheartsPlaybookPreview() {
                         className="mh-stat-block"
                         onClick={() => open('stats')}
                     >
-                        <h2>{t('pbta:monsterhearts.sections.stats')}</h2>
+                        <h2>{label('stat-profiles')}</h2>
                         <p>
                             {Object.entries(playbook.stats)
                                 .map(
@@ -146,7 +157,7 @@ export function MonsterheartsPlaybookPreview() {
                             className="mh-section-title"
                             onClick={() => open('moves')}
                         >
-                            {t('pbta:monsterhearts.sections.moves')}
+                            {label('playbook-moves')}
                         </button>
                         <div className="mh-actions">
                             {playbook.moves.length ? (
@@ -185,45 +196,58 @@ export function MonsterheartsPlaybookPreview() {
                         {playbook.playbookImage ? (
                             <img
                                 src={playbook.playbookImage}
-                                alt={`Portrait of ${playbook.name}`}
+                                alt={t('pbta:monsterhearts.portrait', {
+                                    name: playbook.name,
+                                })}
                             />
                         ) : (
-                            <span>Portrait of {playbook.name}</span>
+                            <span>
+                                {t('pbta:monsterhearts.portrait', {
+                                    name: playbook.name,
+                                })}
+                            </span>
                         )}
                     </button>
                 )
-            case 'relationships':
-                return isVisible('ascendants') ? (
-                    <button
-                        type="button"
-                        className="mh-stat-block"
-                        onClick={() => open('ascendants')}
-                    >
-                        <h2>{t('pbta:monsterhearts.sections.ascendants')}</h2>
-                        {ascendants.length ? (
-                            <ul className="mh-conditions">
-                                {ascendants.map((ascendant, index) => (
-                                    <li key={`${ascendant.name}-${index}`}>
-                                        <strong>{ascendant.name}</strong>
-                                        <span>
-                                            {t(
-                                                'pbta:monsterhearts.fields.value'
-                                            )}{' '}
-                                            {ascendant.value}
-                                        </span>
-                                    </li>
-                                ))}
-                            </ul>
-                        ) : (
-                            <p className="mh-empty">
-                                {t('pbta:monsterhearts.empty.ascendants')}
-                            </p>
-                        )}
-                    </button>
-                ) : null
-            case 'conditions-and-harm':
+            case 'ascendants-and-conditions':
                 return (
                     <>
+                        {isVisible('ascendants') && (
+                            <button
+                                type="button"
+                                className="mh-stat-block"
+                                onClick={() => open('ascendants')}
+                            >
+                                <h2>
+                                    {t('pbta:monsterhearts.sections.ascendants')}
+                                </h2>
+                                {ascendants.length ? (
+                                    <ul className="mh-conditions">
+                                        {ascendants.map((ascendant, index) => (
+                                            <li
+                                                key={`${ascendant.name}-${index}`}
+                                            >
+                                                <strong>
+                                                    {ascendant.name}
+                                                </strong>
+                                                <span>
+                                                    {t(
+                                                        'pbta:monsterhearts.fields.value'
+                                                    )}{' '}
+                                                    {ascendant.value}
+                                                </span>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                ) : (
+                                    <p className="mh-empty">
+                                        {t(
+                                            'pbta:monsterhearts.empty.ascendants'
+                                        )}
+                                    </p>
+                                )}
+                            </button>
+                        )}
                         {isVisible('conditions') && (
                             <button
                                 type="button"
@@ -263,27 +287,26 @@ export function MonsterheartsPlaybookPreview() {
                                 )}
                             </button>
                         )}
-                        {isVisible('harm') && (
-                            <button
-                                type="button"
-                                className="mh-harm"
-                                onClick={() => open('harm')}
-                            >
-                                {t('pbta:monsterhearts.sections.harm')}{' '}
-                                {Array.from({ length: 4 }, (_, index) => (
-                                    <span
-                                        key={index}
-                                        className={
-                                            index < playbook.harm
-                                                ? 'is-marked'
-                                                : ''
-                                        }
-                                    />
-                                ))}
-                            </button>
-                        )}
                     </>
                 )
+            case 'harm-tracker':
+                return isVisible('harm') ? (
+                    <button
+                        type="button"
+                        className="mh-harm"
+                        onClick={() => open('harm')}
+                    >
+                        {label('harm-tracker')}{' '}
+                        {Array.from({ length: 4 }, (_, index) => (
+                            <span
+                                key={index}
+                                className={
+                                    index < playbook.harm ? 'is-marked' : ''
+                                }
+                            />
+                        ))}
+                    </button>
+                ) : null
             case 'gear':
                 return gear.length ? (
                     <section className="mh-stat-block">
@@ -314,6 +337,13 @@ export function MonsterheartsPlaybookPreview() {
                         onClick={() => open('editorial')}
                     />
                 ) : null
+            case 'monsterhearts-play':
+                return isVisible('editorial') && editorial.play ? (
+                    <EditorialBlock
+                        block={editorial.play}
+                        onClick={() => open('editorial')}
+                    />
+                ) : null
             case 'monsterhearts-progression':
                 return isVisible('advances') ? (
                     <section>
@@ -322,8 +352,7 @@ export function MonsterheartsPlaybookPreview() {
                             className="mh-section-title"
                             onClick={() => open('advances')}
                         >
-                            {t('pbta:monsterhearts.sections.advances')} □ □ □ □
-                            □
+                            {label('monsterhearts-progression')} □ □ □ □ □
                         </button>
                         <ul className="mh-checklist">
                             {playbook.advances.map((advance, index) => (
@@ -350,7 +379,14 @@ export function MonsterheartsPlaybookPreview() {
             data-appearance-variant={appearance.id}
             style={appearance.tokens as CSSProperties}
         >
-            <style>{`@font-face { font-family: 'IM Fell English'; src: url('${viteAssetUrl(assetUrls.fonts['IM Fell English'])}') format('woff2'); } @font-face { font-family: 'Averia Serif Libre'; src: url('${viteAssetUrl(assetUrls.fonts['Averia Serif Libre'])}') format('woff2'); }`}</style>
+            <style>
+                {fontFaces
+                    .map(
+                        ({ family, weight, style }) =>
+                            `@font-face { font-family: '${family}'; src: url('${viteAssetUrl(assetUrls.fonts[family])}') format('woff2'); font-weight: ${weight}; font-style: ${style}; font-display: swap; }`
+                    )
+                    .join(' ')}
+            </style>
             <article className="monsterhearts-sheet">
                 <button
                     type="button"

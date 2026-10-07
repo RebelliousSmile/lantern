@@ -5,7 +5,7 @@ export type EditorialBlock = { heading: string; paragraphs: string[] }
 export type MonsterheartsEditorial = Record<
     'opening' | 'identity' | 'progression' | 'darkestSelf' | 'sexMove',
     EditorialBlock
->
+> & { play?: EditorialBlock }
 export type MonsterheartsPlaybook = Omit<
     Published,
     'strings' | 'conditions' | 'harm' | 'editorial'
@@ -29,7 +29,6 @@ export type ViewState = {
     statBounds: Record<string, { minimum: number; maximum: number }>
     hidden: Record<SectionId, boolean>
     exportPrefs: { scale: 1 | 2 | 3 }
-    appearanceVariant: 'base' | 'drowned-lake'
 }
 export type SheetState = { open: boolean; target: SectionId | 'basic' | null }
 export const sections: Array<{ id: SectionId; label: TranslationKey }> = [
@@ -55,7 +54,6 @@ export const defaultView: ViewState = {
         boolean
     >,
     exportPrefs: { scale: 2 },
-    appearanceVariant: 'base',
 }
 export const defaultSheet: SheetState = { open: false, target: null }
 const section = (heading: string, paragraphs: string[]) => ({
@@ -63,21 +61,25 @@ const section = (heading: string, paragraphs: string[]) => ({
     paragraphs,
 })
 export const blankPlaybook = (): MonsterheartsPlaybook => ({
-    slug: 'untitled-skin',
-    name: 'Untitled Skin',
+    slug: 'mue-sans-titre',
+    name: 'Mue sans titre',
     game: 'monsterhearts',
-    description: 'An original Monsterhearts skin.',
+    description: 'Une mue originale pour Monsterhearts.',
     stats: { hot: 0, cold: 0, volatile: 0, dark: 0 },
     moves: [],
     strings: { max: 4, starting: 0 },
     conditions: [],
-    advances: [{ label: 'Take an original advance.' }],
+    advances: [{ label: 'Choisissez une progression originale.' }],
     harm: 0,
     editorial: {
-        opening: section('Opening', ['Introduce this skin.']),
-        identity: section('Identity', ['Choose who this skin is.']),
-        progression: section('Progression', ['Take an original advance.']),
-        darkestSelf: section('Darkest Self', ['Describe its demands.']),
-        sexMove: section('Sex Move', ['Describe an intimate consequence.']),
+        opening: section('Introduction', ['Présentez cette mue.']),
+        identity: section('Identité', ['Choisissez qui est cette mue.']),
+        progression: section('Progressions', [
+            'Choisissez une progression originale.',
+        ]),
+        darkestSelf: section('Démon intérieur', ['Décrivez ses exigences.']),
+        sexMove: section('Action sexuelle', [
+            'Décrivez une conséquence intime.',
+        ]),
     },
 })
