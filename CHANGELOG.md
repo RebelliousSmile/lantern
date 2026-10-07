@@ -5,6 +5,21 @@ All notable changes to this project are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.20.0] - 2026-10-07
+
+### Changed
+
+- **Monsterhearts: light only.** The playbook drops the Drowned Lake appearance; a document that
+  still carries it opens with the single base appearance.
+- **schema-pbta 9.** The playbook follows the published presentation: the merged "Ascendants &
+  conditions" region, the harm tracker, French region labels and the schema's maximum of six moves.
+- The booklet fonts (Yellow Magician, El Messiri, Alice, Averia Serif Libre, IM Fell Double Pica
+  Italic) come from the published pack.
+
+### Added
+
+- **Jouer la X.** The editor adds and removes the optional `editorial.play` section.
+
 ## [v0.19.0] - 2026-10-06
 
 ### Changed
