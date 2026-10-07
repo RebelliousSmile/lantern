@@ -2,13 +2,13 @@
     "protocol": 1,
     "handbook": {
         "repository": "RebelliousSmile/obsidian-handbook",
-        "ref": "385c0835e8dd750833c4f1f4e8776f29c4b8fa88"
+        "ref": "e3d33966eea59c861102ac2c611c36391606a4fb"
     },
     "providers": [
         {
             "provider": "schema-pbta",
             "repository": "RebelliousSmile/schema-pbta",
-            "ref": "79882eeb1f99075da8018c6cc673421b905eee3e",
+            "ref": "ec3a08ef312abaff4090d93e8d4c769957329e0d",
             "manifests": [
                 {
                     "path": "release-train/schema-pbta-v8.4.2.json",
@@ -17,6 +17,10 @@
                 {
                     "path": "release-train/schema-pbta-v8.4.3.json",
                     "validatorRef": "79882eeb1f99075da8018c6cc673421b905eee3e"
+                },
+                {
+                    "path": "release-train/schema-pbta-v9.0.0.json",
+                    "validatorRef": "ec3a08ef312abaff4090d93e8d4c769957329e0d"
                 }
             ]
         },
