@@ -1,0 +1,174 @@
+/*
+ * The Masks booklet in Lantern.
+ *
+ * The preview emits the same hooks as Handbook (`handbook-masks-*`,
+ * `data-face`, `data-column`, `data-region`, `data-primitive`), so the geometry
+ * follows the one schema-pbta keeps in `handbook/masks/assets/styles/layout.css`,
+ * rescoped from the Obsidian body class to `.masks-doc`. Colours come from the
+ * tokens of the published appearance contract.
+ */
+.masks-doc {
+    /* What the Obsidian theme gives Handbook. */
+    --text-normal: #1a1a24;
+    --text-faint: #5a5a68;
+    --background-modifier-border: #c9c9d3;
+    --masks-rule: #d7d7e0;
+    container-type: inline-size;
+    background: #fff;
+    width: 100%;
+    color: var(--text-normal);
+    font-size: 15px;
+    line-height: 1.3;
+    font-family: var(--masks-body-font, 'Crimson Pro', Georgia, serif);
+}
+.masks-doc .handbook-masks-playbook {
+    display: grid;
+    gap: 1.5rem;
+    padding: clamp(0.75rem, 2vw, 1.5rem);
+}
+.masks-doc .handbook-masks-region {
+    cursor: pointer;
+    min-width: 0;
+    padding-block: 0.3rem 0.5rem;
+    border-block-start: 1px solid var(--masks-rule);
+    order: var(--pbta-region-order);
+}
+.masks-doc .handbook-masks-region:hover,
+.masks-doc .handbook-masks-region:focus-visible {
+    outline: 1px dashed var(--masks-accent, currentColor);
+    outline-offset: 2px;
+}
+
+/* A face: two columns, the header across both. Below 840px they flow in one column. */
+.masks-doc .handbook-masks-face {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1rem 2rem;
+    padding: 1rem;
+    border: 0.12rem solid var(--masks-accent, var(--text-normal));
+}
+.masks-doc .handbook-masks-face > [data-region='masks-header'] {
+    border-block-end: 0.2rem solid var(--masks-gold, currentColor);
+}
+.masks-doc .handbook-masks-column {
+    display: grid;
+    align-content: start;
+    gap: 1rem;
+    min-width: 0;
+}
+@container (min-width: 840px) {
+    .masks-doc .handbook-masks-face {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .masks-doc .handbook-masks-face > [data-region='masks-header'] {
+        grid-column: 1 / -1;
+    }
+}
+
+.masks-doc h2,
+.masks-doc h3 {
+    margin: 0 0 0.3rem;
+    color: var(--masks-accent, inherit);
+    font-family: var(--masks-title-font, 'Arial Narrow', sans-serif);
+    font-weight: 400;
+    letter-spacing: 0.03em;
+}
+.masks-doc h3 {
+    font-family: var(--masks-heading-font, sans-serif);
+    font-size: 1rem;
+    text-transform: uppercase;
+}
+.masks-doc ul {
+    margin: 0;
+    padding-inline-start: 1.1rem;
+}
+.masks-doc .handbook-masks-checks {
+    list-style: none;
+    padding: 0;
+}
+.masks-doc .handbook-masks-checks li {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    align-items: baseline;
+}
+.masks-doc .handbook-masks-checks em {
+    flex-basis: 100%;
+    padding-inline-start: 1.6rem;
+    color: var(--text-faint);
+}
+.masks-doc input[type='checkbox'] {
+    margin: 0;
+    width: 1.1rem;
+    height: 1.1rem;
+}
+.masks-doc .handbook-masks-row {
+    display: flex;
+    gap: 0.5rem;
+}
+.masks-doc dd,
+.masks-doc dl {
+    margin: 0;
+}
+.masks-doc dt {
+    color: var(--masks-accent, inherit);
+    font-weight: 700;
+}
+
+/* A Label: its name, then one notch per value of its range. */
+.masks-doc .handbook-masks-label {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    justify-content: space-between;
+    text-transform: capitalize;
+}
+.masks-doc .handbook-masks-track {
+    display: flex;
+    gap: 0.2rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+.masks-doc .handbook-masks-track li {
+    display: grid;
+    place-items: center;
+    border: 0.12rem solid var(--masks-accent, currentColor);
+    border-radius: 999px;
+    width: 1.6rem;
+    height: 1.6rem;
+    font-size: 0.8rem;
+}
+.masks-doc .handbook-masks-track li[data-marked='true'] {
+    background: var(--masks-accent, currentColor);
+    color: #fff;
+}
+
+.masks-doc .handbook-masks-potential {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    margin-block-start: 0.4rem;
+}
+.masks-doc .handbook-masks-unlock {
+    display: flex;
+    gap: 0.4rem;
+    align-items: center;
+}
+.masks-doc figure {
+    margin: 0;
+    border: 0.12rem dashed var(--masks-rule);
+    min-height: 12rem;
+}
+.masks-doc figure img {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+/* Print order follows the canonical order of the contract. */
+@media print {
+    .masks-doc .handbook-masks-region {
+        break-inside: avoid;
+    }
+}
