@@ -9,6 +9,12 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from '@/components/ui/tooltip'
+import { SchemaEditor } from '@/core/editor-schema/SchemaEditor'
+import type {
+    EditorDescriptor,
+    ObjectDescriptor,
+    ScalarKind,
+} from '@/core/editor-schema/types'
 import { PublishedCollectionEditor } from '@/templates/pbta/specialized/collectionAdapters'
 import {
     collectionItems,
@@ -87,8 +93,9 @@ function StatBoundInput({
 
 function MonsterheartsStatsEditor() {
     const { playbook, setPlaybook } = useMonsterheartsStore()
-    const { statBounds, setStatBounds } = useMonsterheartsView()
+    const { statBounds } = useMonsterheartsView()
     const { t } = useTranslation()
+    const statRanges = playbook.statRanges ?? {}
 
     return (
         <TooltipProvider>
@@ -100,22 +107,40 @@ function MonsterheartsStatsEditor() {
                     <span>{t('pbta:monsterhearts.fields.maximum')}</span>
                 </div>
                 {Object.entries(playbook.stats).map(([name, value]) => {
-                    const bounds = statBounds[name] ?? {
-                        minimum: -1,
-                        maximum: 3,
+                    /* The published `statRanges` hold the bounds; a tab saved before reads its view. */
+                    const bounds = {
+                        minimum:
+                            statRanges[name]?.min ??
+                            statBounds[name]?.minimum ??
+                            -1,
+                        maximum:
+                            statRanges[name]?.max ??
+                            statBounds[name]?.maximum ??
+                            3,
                     }
                     const updateBound = (
                         field: 'minimum' | 'maximum',
                         next: number
                     ) =>
-                        setStatBounds({
-                            ...statBounds,
-                            [name]: {
-                                ...bounds,
-                                [field]:
+                        setPlaybook({
+                            statRanges: {
+                                ...statRanges,
+                                [name]:
                                     field === 'minimum'
-                                        ? Math.min(next, bounds.maximum)
-                                        : Math.max(next, bounds.minimum),
+                                        ? {
+                                              min: Math.min(
+                                                  next,
+                                                  bounds.maximum
+                                              ),
+                                              max: bounds.maximum,
+                                          }
+                                        : {
+                                              min: bounds.minimum,
+                                              max: Math.max(
+                                                  next,
+                                                  bounds.minimum
+                                              ),
+                                          },
                             },
                         })
                     return (
@@ -487,6 +512,145 @@ function MonsterheartsConditionsEditor() {
     )
 }
 
+/**
+ * The fields of the presentation contract that have no editor of their own,
+ * keyed by the path the contract gives them.
+ */
+function PublishedFields({ fields }: { fields: string[] }) {
+    const { playbook, setPlaybook } = useMonsterheartsStore()
+    const { t } = useTranslation()
+    const name = (key: string) =>
+        t(
+            `pbta:monsterhearts.fields.${key}` as 'pbta:monsterhearts.fields.name'
+        )
+    const scalar = (
+        id: string,
+        kind: ScalarKind = 'text',
+        label = name(id)
+    ): EditorDescriptor => ({ id, label, kind: 'scalar', scalar: kind })
+    const object = (
+        id: string,
+        fields: EditorDescriptor[],
+        label = name(id)
+    ): ObjectDescriptor => ({ id, label, kind: 'object', fields })
+    const list = (
+        id: string,
+        item: EditorDescriptor,
+        createEmpty: () => unknown
+    ): EditorDescriptor => ({
+        id,
+        label: name(id),
+        kind: 'collection',
+        item,
+        createEmpty,
+        reorderable: true,
+    })
+    const strings = (id: string, kind: ScalarKind = 'text') =>
+        list(id, scalar('item', kind), () => '')
+    const records = (id: string, fields: EditorDescriptor[]) =>
+        list(id, object('item', fields), () => ({}))
+    const known: Record<string, EditorDescriptor> = {
+        playbookImage: scalar('playbookImage'),
+        creation: records('creation', [
+            scalar('label'),
+            scalar('attribute'),
+            object('selection', [
+                scalar('min', 'number', name('minimum')),
+                scalar('max', 'number', name('maximum')),
+            ]),
+            records('options', [scalar('value'), scalar('label')]),
+        ]),
+        backstory: strings('backstory', 'textarea'),
+        statProfiles: records('statProfiles', [
+            scalar('key'),
+            scalar('label'),
+            object(
+                'stats',
+                Object.keys(playbook.stats).map((stat) =>
+                    scalar(stat, 'number', stat)
+                ),
+                t('pbta:monsterhearts.sections.stats')
+            ),
+        ]),
+        startingMoves: strings('startingMoves'),
+        strings: object(
+            'strings',
+            [
+                scalar('starting', 'number'),
+                scalar('max', 'number', name('maximum')),
+            ],
+            t('pbta:monsterhearts.sections.strings')
+        ),
+        gear: records('gear', [
+            scalar('name'),
+            scalar('equipmentType'),
+            scalar('description', 'textarea'),
+            scalar('quantity', 'number'),
+            strings('tags'),
+        ]),
+        'editorial.progression': object(
+            'editorial',
+            [
+                object(
+                    'progression',
+                    [
+                        scalar(
+                            'heading',
+                            'text',
+                            t('pbta:monsterhearts.editor.title')
+                        ),
+                        list(
+                            'paragraphs',
+                            scalar(
+                                'item',
+                                'textarea',
+                                t('pbta:monsterhearts.editor.text')
+                            ),
+                            () => ''
+                        ),
+                    ],
+                    t('pbta:monsterhearts.sections.advancement')
+                ),
+            ],
+            t('pbta:monsterhearts.sections.editorial')
+        ),
+    }
+    /* A creation option may be a bare string; the editor shows every option as value and label. */
+    const document = {
+        ...playbook,
+        creation: (playbook.creation ?? []).map((question) => ({
+            ...question,
+            options: (question.options ?? []).map((option) =>
+                typeof option === 'string'
+                    ? { value: option, label: option }
+                    : option
+            ),
+        })),
+    } as Record<string, unknown>
+
+    return (
+        <SchemaEditor
+            schema={{
+                id: 'root',
+                label: '',
+                kind: 'object',
+                fields: fields.map((field) => known[field]),
+            }}
+            value={document}
+            onChange={(next) => {
+                const patch: Record<string, unknown> = {}
+                for (const field of fields) {
+                    const key = field.split('.')[0]
+                    patch[key] = (next as Record<string, unknown>)[key]
+                }
+                /* An optional text left empty is absent from the document. */
+                if (patch.playbookImage === '') patch.playbookImage = undefined
+                setPlaybook(patch as Partial<MonsterheartsPlaybook>)
+            }}
+        />
+    )
+}
+
 export function MonsterheartsPlaybookEditorPanel() {
     const { sheet } = useMonsterheartsSheet()
     const { playbook, setPlaybook } = useMonsterheartsStore()
@@ -518,12 +682,17 @@ export function MonsterheartsPlaybookEditorPanel() {
                         }
                     />
                 </Label>
+                <PublishedFields fields={['playbookImage']} />
             </div>
         )
     if (sheet.target === 'editorial') {
         const updateBlock = (
             key: keyof MonsterheartsEditorial,
-            patch: Partial<NonNullable<MonsterheartsEditorial[keyof MonsterheartsEditorial]>>
+            patch: Partial<
+                NonNullable<
+                    MonsterheartsEditorial[keyof MonsterheartsEditorial]
+                >
+            >
         ) =>
             setPlaybook({
                 editorial: {
@@ -534,8 +703,18 @@ export function MonsterheartsPlaybookEditorPanel() {
 
         return (
             <div className="space-y-5">
-                {Object.entries(playbook.editorial).map(([key, block]) =>
-                    key === 'progression' ? null : (
+                {/* editorial.opening, editorial.identity, editorial.darkestSelf, editorial.sexMove, editorial.play */}
+                {(
+                    [
+                        'opening',
+                        'identity',
+                        'darkestSelf',
+                        'sexMove',
+                        'play',
+                    ] as const
+                ).map((key) => {
+                    const block = playbook.editorial[key]
+                    return !block ? null : (
                         <fieldset key={key} className="space-y-2">
                             <legend className="font-semibold">
                                 {block.heading}
@@ -545,10 +724,9 @@ export function MonsterheartsPlaybookEditorPanel() {
                                 <Input
                                     value={block.heading}
                                     onChange={(event) =>
-                                        updateBlock(
-                                            key as keyof MonsterheartsEditorial,
-                                            { heading: event.target.value }
-                                        )
+                                        updateBlock(key, {
+                                            heading: event.target.value,
+                                        })
                                     }
                                 />
                             </Label>
@@ -557,20 +735,18 @@ export function MonsterheartsPlaybookEditorPanel() {
                                 <Textarea
                                     value={block.paragraphs.join('\n\n')}
                                     onChange={(event) =>
-                                        updateBlock(
-                                            key as keyof MonsterheartsEditorial,
-                                            {
-                                                paragraphs: event.target.value
-                                                    .split(/\n\s*\n/)
-                                                    .filter(Boolean),
-                                            }
-                                        )
+                                        updateBlock(key, {
+                                            paragraphs: event.target.value
+                                                .split(/\n\s*\n/)
+                                                .filter(Boolean),
+                                        })
                                     }
                                 />
                             </Label>
                         </fieldset>
                     )
-                )}
+                })}
+                <PublishedFields fields={['creation', 'backstory']} />
                 {playbook.editorial.play ? (
                     <Button
                         type="button"
@@ -609,14 +785,37 @@ export function MonsterheartsPlaybookEditorPanel() {
     }
     if (sheet.target === 'moves')
         return (
-            <MonsterheartsCollection
-                path="moves"
-                maxItems={MONSTERHEARTS_MAX_MOVES}
-            />
+            <div className="space-y-5">
+                <MonsterheartsCollection
+                    path="moves"
+                    maxItems={MONSTERHEARTS_MAX_MOVES}
+                />
+                <PublishedFields fields={['startingMoves']} />
+            </div>
         )
-    if (sheet.target === 'stats') return <MonsterheartsStatsEditor />
-    if (sheet.target === 'advances' || sheet.target === 'ascendants')
-        return <MonsterheartsCollection path={sheet.target} />
+    if (sheet.target === 'stats')
+        return (
+            <div className="space-y-5">
+                {/* stats and statRanges, then the profiles offered at creation */}
+                <MonsterheartsStatsEditor />
+                <PublishedFields fields={['statProfiles']} />
+            </div>
+        )
+    if (sheet.target === 'advances')
+        return (
+            <div className="space-y-5">
+                <PublishedFields fields={['editorial.progression']} />
+                <MonsterheartsCollection path="advances" />
+            </div>
+        )
+    if (sheet.target === 'ascendants')
+        return (
+            <div className="space-y-5">
+                <PublishedFields fields={['strings']} />
+                <MonsterheartsCollection path="ascendants" />
+            </div>
+        )
+    if (sheet.target === 'gear') return <PublishedFields fields={['gear']} />
     if (sheet.target === 'conditions') return <MonsterheartsConditionsEditor />
     return (
         <Label className="grid gap-1 text-sm">

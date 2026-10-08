@@ -1,17 +1,17 @@
 import type { CSSProperties, ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
-import aliceUrl from 'schema-pbta/packs/monsterhearts/assets/fonts/alice-latin-400-normal.woff2'
-import averiaSerifLibreUrl from 'schema-pbta/packs/monsterhearts/assets/fonts/averia-serif-libre-latin-700-normal.woff2'
-import elMessiriUrl from 'schema-pbta/packs/monsterhearts/assets/fonts/el-messiri-latin-400-700-normal.woff2'
-import imFellDoublePicaUrl from 'schema-pbta/packs/monsterhearts/assets/fonts/im-fell-double-pica-latin-400-italic.woff2'
-import yellowMagicianUrl from 'schema-pbta/packs/monsterhearts/assets/fonts/yellow-magician-latin-400-normal.woff2'
-import gameMarkUrl from 'schema-pbta/packs/monsterhearts/assets/images/thorn-heart.svg?url&no-inline'
 import {
     PBTA_MONSTERHEARTS_APPEARANCE,
     PBTA_MONSTERHEARTS_PLAYBOOK_PRESENTATION,
     type PbtaMonsterheartsPlaybookPresentation,
     type PbtaMonsterheartsRegionId,
 } from 'schema-pbta'
+import aliceUrl from 'schema-pbta/packs/monsterhearts/assets/fonts/alice-latin-400-normal.woff2'
+import averiaSerifLibreUrl from 'schema-pbta/packs/monsterhearts/assets/fonts/averia-serif-libre-latin-700-normal.woff2'
+import elMessiriUrl from 'schema-pbta/packs/monsterhearts/assets/fonts/el-messiri-latin-400-700-normal.woff2'
+import imFellDoublePicaUrl from 'schema-pbta/packs/monsterhearts/assets/fonts/im-fell-double-pica-latin-400-italic.woff2'
+import yellowMagicianUrl from 'schema-pbta/packs/monsterhearts/assets/fonts/yellow-magician-latin-400-normal.woff2'
+import gameMarkUrl from 'schema-pbta/packs/monsterhearts/assets/images/thorn-heart.svg?url&no-inline'
 import { PBTA_MONSTERHEARTS_APPEARANCE_ASSET_URLS } from 'schema-pbta/presentation/monsterhearts-appearance-assets'
 import {
     useMonsterheartsSheet,
@@ -30,7 +30,10 @@ const viteAssetUrls = new Map([
         PBTA_MONSTERHEARTS_APPEARANCE_ASSET_URLS.fonts['Yellow Magician'],
         yellowMagicianUrl,
     ],
-    [PBTA_MONSTERHEARTS_APPEARANCE_ASSET_URLS.fonts['El Messiri'], elMessiriUrl],
+    [
+        PBTA_MONSTERHEARTS_APPEARANCE_ASSET_URLS.fonts['El Messiri'],
+        elMessiriUrl,
+    ],
     [
         PBTA_MONSTERHEARTS_APPEARANCE_ASSET_URLS.fonts['Averia Serif Libre'],
         averiaSerifLibreUrl,
@@ -40,10 +43,7 @@ const viteAssetUrls = new Map([
         PBTA_MONSTERHEARTS_APPEARANCE_ASSET_URLS.fonts['IM Fell Double Pica'],
         imFellDoublePicaUrl,
     ],
-    [
-        PBTA_MONSTERHEARTS_APPEARANCE_ASSET_URLS.assets['game-mark'],
-        gameMarkUrl,
-    ],
+    [PBTA_MONSTERHEARTS_APPEARANCE_ASSET_URLS.assets['game-mark'], gameMarkUrl],
 ])
 
 function viteAssetUrl(publishedUrl: string) {
@@ -101,7 +101,7 @@ function EditorialBlock({
 
 export function MonsterheartsPlaybookPreview() {
     const { playbook } = useMonsterheartsStore()
-    const { open } = useMonsterheartsSheet()
+    const { open, editing } = useMonsterheartsSheet()
     const view = useMonsterheartsView()
     const { t } = useTranslation()
     const isVisible = (id: keyof typeof view.hidden) => !view.hidden[id]
@@ -219,7 +219,9 @@ export function MonsterheartsPlaybookPreview() {
                                 onClick={() => open('ascendants')}
                             >
                                 <h2>
-                                    {t('pbta:monsterhearts.sections.ascendants')}
+                                    {t(
+                                        'pbta:monsterhearts.sections.ascendants'
+                                    )}
                                 </h2>
                                 {ascendants.length ? (
                                     <ul className="mh-conditions">
@@ -308,20 +310,31 @@ export function MonsterheartsPlaybookPreview() {
                     </button>
                 ) : null
             case 'gear':
-                return gear.length ? (
-                    <section className="mh-stat-block">
-                        <h2>{t('pbta:playbook.sections.gear')}</h2>
-                        <ul className="mh-conditions">
-                            {gear.map((item, index) => (
-                                <li key={`${item.name}-${index}`}>
-                                    <strong>{item.name}</strong>
-                                    {item.description && (
-                                        <span>{item.description}</span>
-                                    )}
-                                </li>
-                            ))}
-                        </ul>
-                    </section>
+                /* An empty gear list is drawn only while editing, so that it can be filled. */
+                return isVisible('gear') && (gear.length || editing) ? (
+                    <button
+                        type="button"
+                        className="mh-stat-block"
+                        onClick={() => open('gear')}
+                    >
+                        <h2>{t('pbta:monsterhearts.sections.gear')}</h2>
+                        {gear.length ? (
+                            <ul className="mh-conditions">
+                                {gear.map((item, index) => (
+                                    <li key={`${item.name}-${index}`}>
+                                        <strong>{item.name}</strong>
+                                        {item.description && (
+                                            <span>{item.description}</span>
+                                        )}
+                                    </li>
+                                ))}
+                            </ul>
+                        ) : (
+                            <p className="mh-empty">
+                                {t('pbta:monsterhearts.empty.gear')}
+                            </p>
+                        )}
+                    </button>
                 ) : null
             case 'monsterhearts-darkest-self':
                 return isVisible('editorial') ? (
@@ -395,11 +408,7 @@ export function MonsterheartsPlaybookPreview() {
                 >
                     <h1>{playbook.name}</h1>
                     <p>{playbook.description}</p>
-                    <img
-                        className="mh-game-mark"
-                        src={gameMark}
-                        alt=""
-                    />
+                    <img className="mh-game-mark" src={gameMark} alt="" />
                 </button>
                 <div className="mh-layout">
                     {layout.rows.map((row, rowIndex) => (

@@ -1,33 +1,459 @@
+/*
+ * The Urban Shadows booklet in Lantern.
+ *
+ * The preview emits the same hooks as Handbook (`handbook-urban-shadows-*`,
+ * `data-region`, `data-primitive`), so the geometry below is the one
+ * schema-pbta keeps in `handbook/urban-shadows/assets/styles/layout.css`,
+ * rescoped from the Obsidian body class to `.urban-shadows-doc`. That file is
+ * not in the npm package yet: until it is published host-neutral, this is a
+ * copy to keep in step with it.
+ */
 .urban-shadows-doc {
-    color: #221d22;
-    font-family: Georgia, serif;
-}
-.urban-shadows-doc .urban-shadows-sheet {
-    border: 2px solid #4a1622;
-    background: #f8f3ec;
-    padding: 1.25rem;
+    /* What the Obsidian theme gives Handbook. */
+    --text-normal: #171216;
+    --text-faint: #5f555b;
+    --background-modifier-border: #c9c2cc;
+    --font-header-theme:
+        'Urban Shadows Display', 'League Gothic', 'Arial Narrow', sans-serif;
+    container-type: inline-size;
+    background: #fff;
     width: 100%;
+    color: var(--text-normal);
+    font-size: 15px;
+    line-height: 1.3;
+    font-family: 'Urban Shadows Text', 'Source Serif 4', Georgia, serif;
 }
-.urban-shadows-doc .urban-shadows-header,
-.urban-shadows-doc section > button {
+.urban-shadows-doc .handbook-urban-shadows-region {
     cursor: pointer;
-    border: 0;
-    background: transparent;
-    width: 100%;
-    color: inherit;
-    text-align: left;
 }
-.urban-shadows-doc h1,
-.urban-shadows-doc section > button {
-    font-family: Impact, sans-serif;
-    letter-spacing: 0.06em;
+.urban-shadows-doc .handbook-urban-shadows-region:hover,
+.urban-shadows-doc .handbook-urban-shadows-region:focus-visible {
+    outline: 1px dashed var(--urban-shadows-accent, currentColor);
+    outline-offset: 2px;
+}
+
+/* --- schema-pbta: handbook/urban-shadows/assets/styles/layout.css --- */
+/* The booklet: two faces, each laid out by the rows the presentation contract publishes.
+   Handbook renders the regions and their hooks; every measure is here. */
+.urban-shadows-doc {
+    container-type: inline-size;
+}
+.urban-shadows-doc .handbook-urban-shadows-playbook {
+    --us-ink: var(--urban-shadows-accent, var(--text-normal));
+    --us-title: var(
+        --urban-shadows-title-font,
+        var(--font-header-theme, sans-serif)
+    );
+    display: grid;
+    gap: 1.5rem;
+    border-color: var(--pbta-column-rule, var(--background-modifier-border));
+    padding: clamp(0.75rem, 2vw, 1.5rem);
+}
+.urban-shadows-doc .handbook-urban-shadows-face {
+    display: grid;
+    gap: 1rem;
+    min-width: 0;
+}
+.urban-shadows-doc .handbook-urban-shadows-column {
+    display: grid;
+    align-content: start;
+    gap: 1rem;
+    min-width: 0;
+}
+.urban-shadows-doc .handbook-urban-shadows-layout-row {
+    display: grid;
+    gap: var(--pbta-column-gap, 1rem);
+    min-width: 0;
+}
+/* A region: ruled above, never split across two pages. */
+.urban-shadows-doc .handbook-urban-shadows-region {
+    break-inside: avoid;
+    border-top: 1px solid
+        var(--pbta-column-rule, var(--background-modifier-border));
+    padding: 0.4rem 0.55rem 0.65rem;
+    min-width: 0;
+}
+.urban-shadows-doc .handbook-urban-shadows-region > h2,
+.urban-shadows-doc .handbook-urban-shadows-region > h3 {
+    margin: 0 0 0.4rem;
+    color: var(--us-ink);
+    line-height: 1.05;
+    font-family: var(--us-title);
+    letter-spacing: 0.04em;
     text-transform: uppercase;
 }
-.urban-shadows-doc section {
-    margin-top: 0.75rem;
-    border-top: 1px solid #7c3541;
+.urban-shadows-doc .handbook-urban-shadows-region > h2 {
+    font-size: 2.4rem;
+}
+.urban-shadows-doc .handbook-urban-shadows-region > h3 {
+    font-size: 1.3rem;
+}
+.urban-shadows-doc .handbook-urban-shadows-region h4 {
+    margin: 0.55rem 0 0.2rem;
+}
+.urban-shadows-doc .handbook-urban-shadows-region p {
+    margin: 0 0 0.4rem;
+    line-height: 1.35;
+}
+.urban-shadows-doc .handbook-urban-shadows-region ul {
+    padding-inline-start: 1.2rem;
+}
+.urban-shadows-doc .handbook-urban-shadows-region dl {
+    margin: 0.35rem 0;
+}
+.urban-shadows-doc .handbook-urban-shadows-region img {
+    display: block;
+    max-width: 7rem;
+}
+/* The brushed headings of the printed sheet; without the brush face they stay titles. */
+.urban-shadows-doc
+    .handbook-urban-shadows-region[data-primitive='stat-spread']
+    > h3,
+.urban-shadows-doc
+    .handbook-urban-shadows-region[data-primitive='circle-status']
+    > h3,
+.urban-shadows-doc
+    .handbook-urban-shadows-region[data-primitive='condition-harm-tracker']
+    > h3,
+.urban-shadows-doc
+    .handbook-urban-shadows-region[data-primitive='box-track']
+    > h3 {
+    font-size: 1.7rem;
+    font-family: var(--urban-shadows-brush-font, var(--us-title));
+    letter-spacing: 0;
+    text-transform: none;
+}
+.urban-shadows-doc .handbook-urban-shadows-region[data-region='game-identity'],
+.urban-shadows-doc
+    .handbook-urban-shadows-region[data-region='urban-shadows-opening'] {
+    border-top: 0;
+}
+.urban-shadows-doc
+    .handbook-urban-shadows-region[data-region='urban-shadows-opening'] {
+    font-style: italic;
+}
+/* Stats and circles: a value in a ring, or in a lozenge. */
+.urban-shadows-doc .handbook-urban-shadows-marks {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    gap: 0.6rem;
+}
+.urban-shadows-doc .handbook-urban-shadows-mark {
+    display: grid;
+    justify-items: center;
+    gap: 0.25rem;
+    font-variant: small-caps;
+}
+.urban-shadows-doc .handbook-urban-shadows-mark-value {
+    display: grid;
+    position: relative;
+    place-items: center;
+    width: 2.6rem;
+    height: 2.6rem;
+    font-weight: 700;
+}
+.urban-shadows-doc .handbook-urban-shadows-mark-value::before {
+    position: absolute;
+    inset: 0;
+    border: 2px solid var(--us-ink);
+    border-radius: 50%;
+    content: '';
+}
+.urban-shadows-doc
+    .handbook-urban-shadows-mark[data-mark='lozenge']
+    .handbook-urban-shadows-mark-value::before {
+    transform: rotate(45deg);
+    inset: 0.35rem;
+    border-radius: 0;
+}
+.urban-shadows-doc .handbook-urban-shadows-pips {
+    display: flex;
+    gap: 0.2rem;
+}
+.urban-shadows-doc .handbook-urban-shadows-pip {
+    border: 1px solid var(--us-ink);
+    border-radius: 50%;
+    width: 0.55rem;
+    height: 0.55rem;
+}
+.urban-shadows-doc .handbook-urban-shadows-pip[data-filled='true'] {
+    background: var(--us-ink);
+}
+/* Key and value on one ruled line. */
+.urban-shadows-doc .handbook-urban-shadows-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.5rem;
+    border-bottom: 1px solid var(--background-modifier-border);
+    padding: 0.2rem 0;
+}
+.urban-shadows-doc .handbook-urban-shadows-row dd {
+    margin: 0;
+    text-align: end;
+}
+/* A blank to fill in. */
+.urban-shadows-doc .handbook-urban-shadows-fill {
+    display: inline-block;
+    vertical-align: baseline;
+    border-bottom: 1px solid var(--background-modifier-border);
+    width: 60%;
+    min-width: 4rem;
+    height: 1em;
+}
+.urban-shadows-doc .handbook-urban-shadows-identity-fields p,
+.urban-shadows-doc .handbook-urban-shadows-move h4,
+.urban-shadows-doc .handbook-urban-shadows-checks li {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+}
+.urban-shadows-doc
+    .handbook-urban-shadows-identity-fields
+    p
+    .handbook-urban-shadows-fill,
+.urban-shadows-doc .handbook-urban-shadows-move h4 .handbook-urban-shadows-fill,
+.urban-shadows-doc
+    .handbook-urban-shadows-checks
+    li
+    .handbook-urban-shadows-fill {
+    flex: 1;
+    width: auto;
+}
+.urban-shadows-doc .handbook-urban-shadows-label {
+    font-variant: small-caps;
+}
+/* One box for every tick of the booklet. */
+.urban-shadows-doc .handbook-urban-shadows-playbook input[type='checkbox'] {
+    --checkbox-size: 1.25rem;
+    flex: 0 0 1.25rem;
+    box-sizing: border-box;
+    margin: 0;
+    border: 1px solid var(--checkbox-border-color, var(--text-faint));
+    border-radius: var(--checkbox-radius, 5px);
+    width: 1.25rem;
+    height: 1.25rem;
+}
+.urban-shadows-doc .handbook-urban-shadows-boxes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-block: 0.4rem;
+}
+.urban-shadows-doc
+    .handbook-urban-shadows-region
+    ul.handbook-urban-shadows-checks {
+    padding: 0;
+    list-style: none;
+}
+.urban-shadows-doc .handbook-urban-shadows-later {
+    margin-top: 0.5rem;
+    border-top: 1px dashed
+        var(--pbta-column-rule, var(--background-modifier-border));
     padding-top: 0.5rem;
 }
-.urban-shadows-doc section p {
-    margin: 0.3rem 0;
+.urban-shadows-doc .handbook-urban-shadows-lozenges {
+    list-style-type: '\25C7  ';
+}
+.urban-shadows-doc .handbook-urban-shadows-move {
+    border-bottom: 1px solid var(--background-modifier-border);
+    padding: 0.45rem 0;
+}
+.urban-shadows-doc .handbook-urban-shadows-move h4 {
+    margin: 0 0 0.2rem;
+}
+.urban-shadows-doc .handbook-urban-shadows-move p {
+    margin-inline-start: 1.75rem;
+}
+.urban-shadows-doc .handbook-urban-shadows-frame {
+    margin-block: 0.5rem;
+    border: 1px solid var(--pbta-column-rule, var(--background-modifier-border));
+    padding: 0.5rem 0.65rem;
+}
+.urban-shadows-doc .handbook-urban-shadows-frame h4 {
+    margin-top: 0;
+    font-family: var(--us-title);
+    text-transform: uppercase;
+}
+/* A wide pane lays each row in three columns. */
+@container (min-width: 840px) {
+    .urban-shadows-doc .handbook-urban-shadows-layout-row {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+/* A narrow pane flows the regions in canonical order, whatever cell the contract put them in. */
+@container (max-width: 839px) {
+    .urban-shadows-doc .handbook-urban-shadows-layout-row,
+    .urban-shadows-doc .handbook-urban-shadows-column {
+        display: contents;
+    }
+    .urban-shadows-doc .handbook-urban-shadows-region {
+        order: var(--pbta-region-order);
+    }
+}
+/* Paper: one column in canonical order, one face a page. */
+@media print {
+    .urban-shadows-doc .handbook-urban-shadows-layout-row,
+    .urban-shadows-doc .handbook-urban-shadows-column {
+        display: contents;
+    }
+    .urban-shadows-doc .handbook-urban-shadows-region {
+        order: var(--pbta-region-order);
+    }
+    .urban-shadows-doc
+        .handbook-urban-shadows-face
+        + .handbook-urban-shadows-face {
+        break-before: page;
+    }
+}
+
+/* --- Handbook: src/styles/pbta/index.scss (Urban Shadows) --- */
+.urban-shadows-doc
+    [data-region='urban-shadows-debts']
+    .handbook-urban-shadows-fill {
+    display: block;
+    width: 100%;
+    height: 1.8em;
+}
+.urban-shadows-doc .handbook-urban-shadows-checks,
+.urban-shadows-doc .handbook-urban-shadows-checks li {
+    list-style: none;
+}
+.urban-shadows-doc .handbook-urban-shadows-move h4,
+.urban-shadows-doc [data-region='urban-shadows-corruption'] h4 {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.4rem;
+    margin: 0.6rem 0 0.1rem;
+    font-weight: 400;
+    font-size: 1.15em;
+    font-family: var(--urban-shadows-title-font, var(--font-header-theme));
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+}
+.urban-shadows-doc .handbook-urban-shadows-move p,
+.urban-shadows-doc [data-region='urban-shadows-corruption'] p,
+.urban-shadows-doc
+    [data-region='urban-shadows-corruption']
+    .handbook-urban-shadows-checks {
+    margin-block: 0.1rem;
+    font-size: 0.85em;
+    line-height: 1.35;
+}
+.urban-shadows-doc
+    [data-region='harm-tracker']
+    .handbook-urban-shadows-harm-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 0.6rem;
+}
+.urban-shadows-doc
+    [data-region='harm-tracker']
+    .handbook-urban-shadows-harm-head
+    h3 {
+    margin: 0;
+    font-size: 1.7rem;
+    font-family: var(--urban-shadows-brush-font, var(--font-header-theme));
+}
+.urban-shadows-doc [data-region='harm-tracker'] .handbook-urban-shadows-armor,
+.urban-shadows-doc
+    [data-region='harm-tracker']
+    .handbook-urban-shadows-harm-line {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--urban-shadows-title-font, var(--font-header-theme));
+    text-transform: uppercase;
+}
+.urban-shadows-doc
+    [data-region='harm-tracker']
+    .handbook-urban-shadows-harm-line {
+    border-bottom: 1px solid var(--text-normal);
+    padding: 0.15rem 0;
+}
+.urban-shadows-doc .handbook-urban-shadows-boxes {
+    display: inline-flex;
+    gap: 0.2rem;
+}
+.urban-shadows-doc
+    [data-region='urban-shadows-scars']
+    .handbook-urban-shadows-checks {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 10.5rem), 1fr));
+    gap: 0.1rem 0.8rem;
+    padding-inline-start: 0;
+    font-size: 0.85em;
+}
+.urban-shadows-doc
+    .handbook-urban-shadows-region[data-primitive='circle-status']
+    .handbook-urban-shadows-marks {
+    flex-wrap: nowrap;
+    gap: 0.3rem;
+}
+.urban-shadows-doc
+    .handbook-urban-shadows-region[data-primitive='circle-status']
+    .handbook-urban-shadows-mark {
+    min-width: 0;
+    font-size: 0.85em;
+}
+.urban-shadows-doc .handbook-urban-shadows-circle-marks {
+    display: grid;
+    grid-template-rows: repeat(2, auto);
+    grid-auto-flow: column;
+    justify-content: center;
+    gap: 0.4rem 0.6rem;
+    margin: 0.5rem 0;
+}
+.urban-shadows-doc .handbook-urban-shadows-circle-marks label {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 1.1em;
+    font-family: var(--urban-shadows-title-font, var(--font-header-theme));
+    text-transform: uppercase;
+}
+.urban-shadows-doc .handbook-urban-shadows-identity-bar {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0 var(--pbta-column-gap, 2rem);
+    margin-top: 0.75rem;
+}
+.urban-shadows-doc .handbook-urban-shadows-identity-bar p {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    margin: 0;
+}
+.urban-shadows-doc
+    .handbook-urban-shadows-identity-bar
+    .handbook-urban-shadows-fill {
+    flex: 1;
+    width: auto;
+}
+.urban-shadows-doc .handbook-urban-shadows-progression-intro {
+    text-align: center;
+}
+.urban-shadows-doc .handbook-urban-shadows-frame h4 {
+    font-weight: 400;
+    letter-spacing: 0.03em;
+}
+.urban-shadows-doc .handbook-urban-shadows-relations {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+.urban-shadows-doc .handbook-urban-shadows-relations li {
+    padding: 0.1rem 0;
+    font-size: 0.85em;
+    line-height: 1.3;
+}
+.urban-shadows-doc .handbook-urban-shadows-relations p {
+    display: inline;
+    margin: 0;
+    font-style: italic;
+}
+.urban-shadows-doc .handbook-urban-shadows-relations p::before {
+    content: ' – ';
+    font-style: normal;
 }

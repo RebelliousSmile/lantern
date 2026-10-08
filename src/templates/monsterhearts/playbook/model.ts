@@ -23,6 +23,7 @@ export type SectionId =
     | 'moves'
     | 'advances'
     | 'harm'
+    | 'gear'
 export type ViewState = {
     zoom: number
     previewWidth: number
@@ -39,6 +40,7 @@ export const sections: Array<{ id: SectionId; label: TranslationKey }> = [
     { id: 'moves', label: 'pbta:monsterhearts.sections.moves' },
     { id: 'advances', label: 'pbta:monsterhearts.sections.advances' },
     { id: 'harm', label: 'pbta:monsterhearts.sections.harm' },
+    { id: 'gear', label: 'pbta:monsterhearts.sections.gear' },
 ]
 export const defaultView: ViewState = {
     zoom: 1,

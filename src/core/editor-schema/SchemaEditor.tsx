@@ -3,6 +3,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { useUiText } from '@/i18n/text'
 import { cn } from '@/utils/cn'
 import { ChevronDown, ChevronUp, Plus, Trash2 } from 'lucide-react'
 import { getAtPath, joinPath } from './path'
@@ -176,6 +177,7 @@ function CollectionField({
     const entries = getAtPath(root, path)
     const list = Array.isArray(entries) ? entries : []
     const replace = (next: unknown[]) => onChange(replaceAt(root, path, next))
+    const text = useUiText()
     return (
         <fieldset className="space-y-2 rounded-md border p-3">
             <legend className="px-1 text-sm font-medium">
@@ -216,7 +218,7 @@ function CollectionField({
                                     type="button"
                                     variant="ghost"
                                     size="icon-sm"
-                                    aria-label={`Move ${descriptor.label} item up`}
+                                    aria-label={`${text('common:actions.moveItemUp')} (${descriptor.label})`}
                                     disabled={index === 0}
                                     onClick={() => {
                                         const next = [...list]
@@ -233,7 +235,7 @@ function CollectionField({
                                     type="button"
                                     variant="ghost"
                                     size="icon-sm"
-                                    aria-label={`Move ${descriptor.label} item down`}
+                                    aria-label={`${text('common:actions.moveItemDown')} (${descriptor.label})`}
                                     disabled={index === list.length - 1}
                                     onClick={() => {
                                         const next = [...list]
@@ -252,7 +254,7 @@ function CollectionField({
                             type="button"
                             variant="ghost"
                             size="icon-sm"
-                            aria-label={`Remove ${descriptor.label} item`}
+                            aria-label={`${text('common:actions.removeItem')} (${descriptor.label})`}
                             disabled={list.length <= (descriptor.minItems ?? 0)}
                             onClick={() =>
                                 replace(
@@ -274,7 +276,7 @@ function CollectionField({
                 onClick={() => replace([...list, descriptor.createEmpty()])}
             >
                 <Plus />
-                Add {descriptor.label}
+                {text('common:actions.addItem')}
             </Button>
         </fieldset>
     )

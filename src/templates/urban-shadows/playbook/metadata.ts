@@ -1,11 +1,10 @@
-import type { TranslationKey } from '@/i18n/text'
-import { sectionIds, type SectionId } from './model'
+import { regionById, sectionIds, type SectionId } from './model'
 
-/* Keys, not text: the appearance panel translates them, the preview resolves them in English. */
+/* Labels arrive from the published presentation contract: text, not keys. */
 export const urbanShadowsSections: Array<{
     id: SectionId
-    label: TranslationKey
+    label: { text: string }
 }> = sectionIds.map((id) => ({
     id,
-    label: `pbta:urbanShadows.sections.${id}` as const,
+    label: { text: regionById(id)?.label ?? id },
 }))

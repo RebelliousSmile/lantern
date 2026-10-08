@@ -13,6 +13,7 @@
         "preview": "vite preview",
         "assert:contracts": "node tools/assert-contracts.mjs",
         "assert:workspace": "node tools/assert-workspace.mjs",
+        "assert:presentation-coverage": "node tools/assert-presentation-coverage.mjs",
         "assert:template-chunks": "npm run build && node tools/assert-template-chunks.mjs",
         "assert:visibility-protocol": "node tools/assert-visibility-protocol.mjs",
         "assert:cross-repo": "node tools/assert-cross-repo.mjs",
@@ -27,7 +28,7 @@
         "assert:release-identity": "node tools/assert-release-identity.mjs && node tools/release-identity.harness.mjs",
         "prepare:schema-pbta-candidate": "node tools/prepare-schema-pbta-candidate.mjs",
         "assert:candidate-pins": "node tools/assert-candidate-pins.mjs",
-        "check:project": "npm run lint && npm run typecheck && npm run assert:release-train && npm run assert:release-identity && npm run assert:release-train-matrix:unit && npm run assert:consumer-schema-pins:unit && npm run assert:workspace",
+        "check:project": "npm run lint && npm run typecheck && npm run assert:release-train && npm run assert:release-identity && npm run assert:release-train-matrix:unit && npm run assert:consumer-schema-pins:unit && npm run assert:workspace && npm run assert:presentation-coverage",
         "check:candidate": "npm run check:project && npm run assert:candidate-pins",
         "check": "npm run check:project && npm run assert:release-inputs"
     },

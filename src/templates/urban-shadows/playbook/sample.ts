@@ -15,6 +15,24 @@ export const getSampleUrbanShadowsPlaybook = () => ({
         wild: -1,
     },
     statuses: { mortalis: 1, night: 0, power: 0, wild: 1 },
+    statsDetail: 'Add 1 to one of them.',
+    advancementCircles: ['mortalis', 'night', 'power', 'wild'],
+    laterAdvancement: [{ label: 'Retire your character to safety.' }],
+    letItOut: [
+        'Take something from someone without them noticing.',
+        'Find the one door nobody is watching.',
+    ],
+    debts: ['Someone is keeping an eye on you; you owe them a Debt.'],
+    extras: [
+        {
+            key: 'route',
+            label: 'Your route',
+            text: 'The streets you ride every night.',
+            items: ['The docks', 'The old market'],
+        },
+    ],
+    intimacy:
+        'When you share a moment of intimacy with another person, tell them a secret about the city.',
     moves: [
         {
             name: 'I Know a Guy',
@@ -78,5 +96,6 @@ export const getSampleUrbanShadowsPlaybook = () => ({
             'When you abandon someone who trusted your route, mark corruption.',
         advances: [{ label: 'Take a corruption move.' }],
         moves: ['No Safe Address'],
+        track: 5,
     },
 })

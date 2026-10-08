@@ -1,78 +1,24 @@
+import contract from 'schema-pbta/packs/urban-shadows/presentation-contract.json'
 import type { UrbanShadowsPlaybook as PublishedUrbanShadowsPlaybook } from './schema'
 
-export type Move = {
-    name: string
-    moveType: string
-    description: string
-    checked?: boolean
-}
+/** The document is the published one: every field a region of the contract holds is there. */
+export type UrbanShadowsPlaybook = PublishedUrbanShadowsPlaybook
+export type Move = UrbanShadowsPlaybook['moves'][number]
 export type Relationship = NonNullable<
-    PublishedUrbanShadowsPlaybook['mortalRelationships']
+    UrbanShadowsPlaybook['mortalRelationships']
 >[number]
 export type CreationQuestion = NonNullable<
-    PublishedUrbanShadowsPlaybook['creation']
+    UrbanShadowsPlaybook['creation']
 >[number]
-export type Scar = { name: string; stat: string; modifier: number | null }
-export type Harm = {
-    armor: number | null
-    faint: number | null
-    serious: number | null
-    critical: number | null
-}
-export type Corruption = {
-    trigger: string
-    advances: { label: string; checked?: boolean }[]
-    moves: string[]
-}
-export type Editorial = {
-    opening: { heading: string; paragraphs: string[] }
-    playAdvice: { heading: string; paragraphs: string[] }
-    identity: { heading: string; paragraphs: string[] }
-    progression: { heading: string; paragraphs: string[] }
-}
-export type UrbanShadowsPlaybook = {
-    slug: string
-    name: string
-    game: string
-    description: string
-    stats: Record<string, number>
-    statuses: Record<string, number>
-    attributes: Record<string, string | number | boolean | string[]>
-    moves: Move[]
-    startingMoves: string[]
-    mortalRelationships: Relationship[]
-    harm: Harm
-    scars: Scar[]
-    corruption: Corruption
-    endMove: string
-    editorial: Editorial
-    creation: CreationQuestion[]
-    gear: { name: string; description: string }[]
-    advancement: { label: string; checked?: boolean }[]
-}
-export type SectionId =
-    | 'circles'
-    | 'relationships'
-    | 'harm'
-    | 'corruption'
-    | 'editorial'
-    | 'moves'
-    | 'creation'
-    | 'gear'
-    | 'advancement'
-export type SheetTarget = {
-    kind:
-        | 'basic'
-        | 'circles'
-        | 'relationships'
-        | 'harm'
-        | 'corruption'
-        | 'editorial'
-        | 'moves'
-        | 'creation'
-        | 'gear'
-        | 'advancement'
-}
+
+/** Regions, their order and their rows come from the published presentation contract. */
+export const presentation = contract
+export type Region = (typeof contract.regions)[number]
+export type RegionId = Region['id']
+export const regionById = (id: RegionId): Region | undefined =>
+    contract.regions.find((region) => region.id === id)
+export type SectionId = RegionId
+export type SheetTarget = { kind: 'basic' | RegionId }
 export type ViewState = {
     zoom: number
     previewWidth: number
@@ -80,24 +26,13 @@ export type ViewState = {
     exportPrefs: { scale: 1 | 2 | 3 }
 }
 export type SheetState = { open: boolean; target: SheetTarget | null }
-export const sectionIds: SectionId[] = [
-    'circles',
-    'relationships',
-    'harm',
-    'corruption',
-    'editorial',
-    'moves',
-    'creation',
-    'gear',
-    'advancement',
-]
+export const sectionIds: SectionId[] = contract.canonicalOrder.filter(
+    (id) => id !== 'game-identity'
+)
 export const defaultView: ViewState = {
     zoom: 1,
-    previewWidth: 620,
-    hidden: Object.fromEntries(sectionIds.map((id) => [id, false])) as Record<
-        SectionId,
-        boolean
-    >,
+    previewWidth: 1000,
+    hidden: Object.fromEntries(sectionIds.map((id) => [id, false])),
     exportPrefs: { scale: 2 },
 }
 export const defaultSheet: SheetState = { open: false, target: null }

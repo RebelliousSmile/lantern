@@ -10,11 +10,12 @@ export function UrbanShadowsPlaybookAppearancePanel() {
     return (
         <div className="space-y-3">
             <Label>
-                Preview width{' '}
+                {text('pbta:urbanShadows.editor.previewWidth')}{' '}
+                {/* Below 840px the booklet flows in one column, above it lays its three. */}
                 <input
                     type="range"
                     min="360"
-                    max="920"
+                    max="1400"
                     step="10"
                     value={previewWidth}
                     onChange={(e) => setPreviewWidth(Number(e.target.value))}

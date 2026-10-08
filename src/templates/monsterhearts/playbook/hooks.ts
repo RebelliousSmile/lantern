@@ -63,6 +63,7 @@ export function useMonsterheartsSheet() {
     const set = useWorkspaceStore((s) => s.setTabSheet)
     return {
         sheet: tab?.sheet ?? defaultSheet,
+        editing: tab?.mode === 'editing',
         open: (target: SheetState['target']) =>
             tab?.mode === 'editing' && set(tab.id, { open: true, target }),
     }
