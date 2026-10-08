@@ -5,6 +5,12 @@ All notable changes to this project are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.22.0] - 2026-10-08
+
+### Changed
+
+- Adopts the Urban Shadows 2E booklet layout of schema-pbta: the contract's rows regroup the regions across three balanced columns. The editor is unchanged.
+
 ## [v0.21.0] - 2026-10-07
 
 ### Changed
