@@ -9,7 +9,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
-- Adopts the Monster of the Week 2E contract of schema-pbta (booklet, team, monster and threat). The editor is unchanged.
+- Adopts the Monster of the Week 2E contract of schema-pbta (booklet, team, monster and threat); the editor is unchanged.
 
 ## [v0.23.0] - 2026-10-08
 
