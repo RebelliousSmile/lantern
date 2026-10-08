@@ -9,7 +9,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
-- Adopts the Masks 2E booklet layout of schema-pbta: the contract's faces and rows place the regions. The editor is unchanged: no new `masks-playbook` field is displayed or edited, and the `masks-npc` character template is not editable here.
+- Adopts the Masks 2E booklet layout of schema-pbta: the contract's faces and rows place the regions. The Masks booklet preview draws every region of the contract and the editor names every field of it (conditions, drives, advances, identity, backstory, relationships, illustration), with French labels. The `masks-npc` character template is not editable here.
 
 ## [v0.22.0] - 2026-10-08
 
