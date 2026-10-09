@@ -279,6 +279,42 @@ const pbta: ResourceShape<typeof en> = {
             notes: 'Notes',
         },
     },
+    sprawl: {
+        editor: {
+            hint: 'Cliquez sur une zone de la feuille pour la modifier.',
+            invalidCollection: 'Configuration de collection publiée invalide.',
+            previewWidth: 'Largeur de l’aperçu',
+            unknownField: 'Champ sans éditeur :',
+        },
+        tracks: {
+            cred: 'Cred',
+            xp: 'XP',
+        },
+        fields: {
+            name: 'Nom',
+            characterName: 'Nom du personnage',
+            description: 'Description',
+            look: 'Apparence',
+            links: 'Liens',
+            linkName: 'Lié à',
+            value: 'Valeur',
+            label: 'Intitulé',
+            stats: 'Stats',
+            cred: 'Cred',
+            xp: 'XP cochés',
+            xpMax: 'Cases d’XP',
+            hoursMarked: 'Heures de blessure cochées',
+            moves: 'Manœuvres',
+            startingMoves: 'Manœuvres de départ',
+            gear: 'Équipement',
+            missionGear: 'Équipement de mission',
+            cyberware: 'Cybernétique',
+            directives: 'Directives',
+            directiveChoices: 'Choix de directives',
+            advancement: 'Avancement',
+            contacts: 'Contacts',
+        },
+    },
 }
 
 export default pbta

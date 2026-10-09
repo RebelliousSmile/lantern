@@ -276,6 +276,42 @@ const pbta = {
             notes: 'Notes',
         },
     },
+    sprawl: {
+        editor: {
+            hint: 'Click a region of the sheet to edit it.',
+            invalidCollection: 'Invalid published collection configuration.',
+            previewWidth: 'Preview width',
+            unknownField: 'Field without an editor:',
+        },
+        tracks: {
+            cred: 'Cred',
+            xp: 'XP',
+        },
+        fields: {
+            name: 'Name',
+            characterName: 'Character name',
+            description: 'Description',
+            look: 'Look',
+            links: 'Links',
+            linkName: 'Linked to',
+            value: 'Value',
+            label: 'Label',
+            stats: 'Stats',
+            cred: 'Cred',
+            xp: 'XP marked',
+            xpMax: 'XP boxes',
+            hoursMarked: 'Harm hours marked',
+            moves: 'Moves',
+            startingMoves: 'Starting moves',
+            gear: 'Gear',
+            missionGear: 'Mission gear',
+            cyberware: 'Cyberware',
+            directives: 'Directives',
+            directiveChoices: 'Directive choices',
+            advancement: 'Advancement',
+            contacts: 'Contacts',
+        },
+    },
 }
 
 export default pbta

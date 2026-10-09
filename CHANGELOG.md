@@ -5,6 +5,16 @@ All notable changes to this project are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.25.0] - 2026-10-09
+
+### Added
+
+- The Sprawl booklet: the playbook is drawn on its two faces from the published presentation contract of schema-pbta, and every field of every region can be edited from the sheet.
+
+### Changed
+
+- Adopts The Sprawl contract of schema-pbta (booklet, matrix, mission, threat, corporation and resource); only the booklet is editable here.
+
 ## [v0.24.0] - 2026-10-08
 
 ### Changed

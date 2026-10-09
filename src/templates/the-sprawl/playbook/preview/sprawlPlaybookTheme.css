@@ -1,0 +1,147 @@
+/*
+ * The The Sprawl booklet in Lantern.
+ *
+ * The preview emits the same hooks as Handbook (`handbook-sprawl-*`,
+ * `data-face`, `data-column`, `data-region`, `data-primitive`), so the geometry
+ * follows the one schema-pbta keeps in `handbook/the-sprawl/assets/styles/layout.css`,
+ * rescoped from the Obsidian body class to `.sprawl-doc`. Colours come from the
+ * tokens of the published appearance contract.
+ */
+.sprawl-doc {
+    /* What the Obsidian theme gives Handbook. */
+    --text-normal: #1a1a24;
+    --text-faint: #5a5a68;
+    --background-modifier-border: #c9c9d3;
+    --the-sprawl-rule: #d7d7e0;
+    container-type: inline-size;
+    background: #fff;
+    width: 100%;
+    color: var(--text-normal);
+    font-size: 15px;
+    line-height: 1.3;
+    font-family: var(--the-sprawl-body-font, 'Crimson Pro', Georgia, serif);
+}
+.sprawl-doc .handbook-sprawl-playbook {
+    display: grid;
+    gap: 1.5rem;
+    padding: clamp(0.75rem, 2vw, 1.5rem);
+}
+.sprawl-doc .handbook-sprawl-region {
+    order: var(--pbta-region-order);
+    cursor: pointer;
+    border-block-start: 1px solid var(--the-sprawl-rule);
+    padding-block: 0.3rem 0.5rem;
+    min-width: 0;
+}
+.sprawl-doc .handbook-sprawl-region:hover,
+.sprawl-doc .handbook-sprawl-region:focus-visible {
+    outline: 1px dashed var(--the-sprawl-accent, currentColor);
+    outline-offset: 2px;
+}
+
+/* A face: two columns, the header across both. Below 840px they flow in one column. */
+.sprawl-doc .handbook-sprawl-face {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1rem 2rem;
+    border: 0.12rem solid var(--the-sprawl-accent, var(--text-normal));
+    padding: 1rem;
+}
+.sprawl-doc .handbook-sprawl-face > [data-region='sprawl-header'] {
+    border-block-end: 0.2rem solid var(--the-sprawl-accent, currentColor);
+}
+.sprawl-doc .handbook-sprawl-column {
+    display: grid;
+    align-content: start;
+    gap: 1rem;
+    min-width: 0;
+}
+@container (min-width: 840px) {
+    .sprawl-doc .handbook-sprawl-face {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .sprawl-doc .handbook-sprawl-face > [data-region='sprawl-header'] {
+        grid-column: 1 / -1;
+    }
+}
+
+.sprawl-doc h2,
+.sprawl-doc h3 {
+    margin: 0 0 0.3rem;
+    color: var(--the-sprawl-accent, inherit);
+    font-weight: 400;
+    font-family: var(--the-sprawl-title-font, 'Arial Narrow', sans-serif);
+    letter-spacing: 0.03em;
+}
+.sprawl-doc h3 {
+    font-size: 1rem;
+    font-family: var(--the-sprawl-heading-font, sans-serif);
+    text-transform: uppercase;
+}
+.sprawl-doc ul {
+    margin: 0;
+    padding-inline-start: 1.1rem;
+}
+.sprawl-doc .handbook-sprawl-checks {
+    padding: 0;
+    list-style: none;
+}
+.sprawl-doc .handbook-sprawl-checks li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.4rem;
+}
+.sprawl-doc .handbook-sprawl-checks em {
+    flex-basis: 100%;
+    padding-inline-start: 1.6rem;
+    color: var(--text-faint);
+}
+.sprawl-doc input[type='checkbox'] {
+    margin: 0;
+    width: 1.1rem;
+    height: 1.1rem;
+}
+.sprawl-doc .handbook-sprawl-row {
+    display: flex;
+    gap: 0.5rem;
+}
+.sprawl-doc dd,
+.sprawl-doc dl {
+    margin: 0;
+}
+.sprawl-doc dt {
+    color: var(--the-sprawl-accent, inherit);
+    font-weight: 700;
+}
+
+/* A rating: its name and its signed value. */
+.sprawl-doc .handbook-sprawl-value {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.75rem;
+    text-transform: capitalize;
+}
+.sprawl-doc .handbook-sprawl-value strong {
+    font-size: 1.2rem;
+}
+
+/* A track of boxes: its name, then one box per printed box. */
+.sprawl-doc .handbook-sprawl-boxes {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.3rem;
+}
+.sprawl-doc .handbook-sprawl-boxes > span:first-child {
+    min-width: 6rem;
+    font-weight: 700;
+}
+
+/* Print order follows the canonical order of the contract. */
+@media print {
+    .sprawl-doc .handbook-sprawl-region {
+        break-inside: avoid;
+    }
+}
