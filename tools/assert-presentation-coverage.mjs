@@ -9,6 +9,11 @@
  * every field of every region must be named in the editor sources. A pack with
  * a contract and no template is a finding, not a failure; a template that
  * leaves a published region undrawn or uneditable fails.
+ *
+ * A pack may also publish one contract per block besides its playbook
+ * (`<kind>-presentation-contract.json`: NPC, monster, mission...). Each must
+ * have a template folder `src/templates/<id>/<kind>` and be wired into the
+ * shared block configuration, whose regions are the contract itself.
  */
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs'
 import { join, resolve } from 'node:path'
@@ -30,9 +35,32 @@ function sourcesOf(dir) {
 const word = (text, name) =>
     new RegExp(`(^|[^A-Za-z0-9_])${name}([^A-Za-z0-9_]|$)`).test(text)
 
+const blockConfigs = readFileSync(
+    join(root, 'src', 'templates', 'pbta', 'blocks', 'blockConfigs.ts'),
+    'utf8'
+)
 const problems = []
 const notes = []
+const covered = []
 for (const id of readdirSync(packsDir).sort()) {
+    for (const name of readdirSync(join(packsDir, id)).sort()) {
+        const block = /^(.+)-presentation-contract.json$/.exec(name)
+        if (!block) continue
+        const kind = block[1]
+        const dir = join(root, 'src', 'templates', id, kind)
+        if (!existsSync(dir))
+            problems.push(
+                `${id}: block "${kind}" is published, with no Lantern template`
+            )
+        else if (
+            !blockConfigs.includes(`schema-pbta/packs/${id}/${name}`) ||
+            !sourcesOf(dir).includes(`${id}.${kind}`)
+        )
+            problems.push(
+                `${id}: block "${kind}" has a template folder, not wired to its published contract`
+            )
+        else covered.push(`${id}/${kind}`)
+    }
     const file = join(packsDir, id, 'presentation-contract.json')
     if (!existsSync(file)) continue
     const template = join(root, 'src', 'templates', id, 'playbook')
@@ -41,6 +69,7 @@ for (const id of readdirSync(packsDir).sort()) {
         continue
     }
     const contract = JSON.parse(readFileSync(file, 'utf8'))
+    covered.push(`${id}/playbook`)
     const preview = sourcesOf(join(template, 'preview'))
     const editor = sourcesOf(join(template, 'editor'))
     for (const region of contract.regions) {
@@ -73,6 +102,7 @@ for (const id of readdirSync(packsDir).sort()) {
             )
     }
 }
+console.log(`covered: ${covered.join(', ')}`)
 for (const note of notes) console.log(`note: ${note}`)
 if (problems.length) {
     for (const problem of problems) console.error(`✗ ${problem}`)
@@ -82,5 +112,5 @@ if (problems.length) {
     process.exit(1)
 }
 console.log(
-    'presentation coverage: every published region is drawn and editable'
+    'presentation coverage: every published playbook region is drawn and editable, every published block has its template'
 )
