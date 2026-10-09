@@ -315,6 +315,20 @@ const pbta: ResourceShape<typeof en> = {
             contacts: 'Contacts',
         },
     },
+    blocks: {
+        masksNpc: { label: 'PNJ', newTitle: 'Nouveau PNJ' },
+        motwMonster: { label: 'Monstre', newTitle: 'Nouveau monstre' },
+        motwThreat: { label: 'Menace', newTitle: 'Nouvelle menace' },
+        motwTeam: { label: 'Équipe', newTitle: 'Nouvelle équipe' },
+        sprawlMission: { label: 'Mission', newTitle: 'Nouvelle mission' },
+        sprawlThreat: { label: 'Menace', newTitle: 'Nouvelle menace' },
+        sprawlResource: { label: 'Ressource', newTitle: 'Nouvelle ressource' },
+        sprawlCorporation: {
+            label: 'Corporation',
+            newTitle: 'Nouvelle corporation',
+        },
+        sprawlMatrix: { label: 'Matrice', newTitle: 'Nouvelle matrice' },
+    },
 }
 
 export default pbta

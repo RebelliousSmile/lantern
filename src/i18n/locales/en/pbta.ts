@@ -312,6 +312,20 @@ const pbta = {
             contacts: 'Contacts',
         },
     },
+    blocks: {
+        masksNpc: { label: 'NPC', newTitle: 'New NPC' },
+        motwMonster: { label: 'Monster', newTitle: 'New monster' },
+        motwThreat: { label: 'Threat', newTitle: 'New threat' },
+        motwTeam: { label: 'Team', newTitle: 'New team' },
+        sprawlMission: { label: 'Mission', newTitle: 'New mission' },
+        sprawlThreat: { label: 'Threat', newTitle: 'New threat' },
+        sprawlResource: { label: 'Resource', newTitle: 'New resource' },
+        sprawlCorporation: {
+            label: 'Corporation',
+            newTitle: 'New corporation',
+        },
+        sprawlMatrix: { label: 'Matrix', newTitle: 'New matrix' },
+    },
 }
 
 export default pbta

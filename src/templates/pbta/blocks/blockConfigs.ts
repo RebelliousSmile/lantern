@@ -1,3 +1,4 @@
+import type { TranslationKey } from '@/i18n/text'
 import masksNpc from 'schema-pbta/packs/masks/npc-presentation-contract.json'
 import motwMonster from 'schema-pbta/packs/monster-of-the-week/monster-presentation-contract.json'
 import motwTeam from 'schema-pbta/packs/monster-of-the-week/team-presentation-contract.json'
@@ -21,8 +22,8 @@ type BlockSpec = {
     id: string
     gameId: string
     gameLabel: string
-    label: string
-    newTitle: string
+    labelKey: TranslationKey
+    newTitleKey: TranslationKey
     contract: Contract
 }
 
@@ -36,72 +37,72 @@ const BLOCK_SPECS: BlockSpec[] = [
         id: 'masks.npc',
         gameId: 'masks',
         gameLabel: 'Masks',
-        label: 'PNJ',
-        newTitle: 'Nouveau PNJ',
+        labelKey: 'pbta:blocks.masksNpc.label',
+        newTitleKey: 'pbta:blocks.masksNpc.newTitle',
         contract: masksNpc,
     },
     {
         id: 'monster-of-the-week.monster',
         gameId: 'monster-of-the-week',
         gameLabel: 'Monster of the Week',
-        label: 'Monstre',
-        newTitle: 'Nouveau monstre',
+        labelKey: 'pbta:blocks.motwMonster.label',
+        newTitleKey: 'pbta:blocks.motwMonster.newTitle',
         contract: motwMonster,
     },
     {
         id: 'monster-of-the-week.threat',
         gameId: 'monster-of-the-week',
         gameLabel: 'Monster of the Week',
-        label: 'Menace',
-        newTitle: 'Nouvelle menace',
+        labelKey: 'pbta:blocks.motwThreat.label',
+        newTitleKey: 'pbta:blocks.motwThreat.newTitle',
         contract: motwThreat,
     },
     {
         id: 'monster-of-the-week.team',
         gameId: 'monster-of-the-week',
         gameLabel: 'Monster of the Week',
-        label: 'Équipe',
-        newTitle: 'Nouvelle équipe',
+        labelKey: 'pbta:blocks.motwTeam.label',
+        newTitleKey: 'pbta:blocks.motwTeam.newTitle',
         contract: motwTeam,
     },
     {
         id: 'the-sprawl.mission',
         gameId: 'the-sprawl',
         gameLabel: 'The Sprawl',
-        label: 'Mission',
-        newTitle: 'Nouvelle mission',
+        labelKey: 'pbta:blocks.sprawlMission.label',
+        newTitleKey: 'pbta:blocks.sprawlMission.newTitle',
         contract: sprawlMission,
     },
     {
         id: 'the-sprawl.threat',
         gameId: 'the-sprawl',
         gameLabel: 'The Sprawl',
-        label: 'Menace',
-        newTitle: 'Nouvelle menace',
+        labelKey: 'pbta:blocks.sprawlThreat.label',
+        newTitleKey: 'pbta:blocks.sprawlThreat.newTitle',
         contract: sprawlThreat,
     },
     {
         id: 'the-sprawl.resource',
         gameId: 'the-sprawl',
         gameLabel: 'The Sprawl',
-        label: 'Ressource',
-        newTitle: 'Nouvelle ressource',
+        labelKey: 'pbta:blocks.sprawlResource.label',
+        newTitleKey: 'pbta:blocks.sprawlResource.newTitle',
         contract: sprawlResource,
     },
     {
         id: 'the-sprawl.corporation',
         gameId: 'the-sprawl',
         gameLabel: 'The Sprawl',
-        label: 'Corporation',
-        newTitle: 'Nouvelle corporation',
+        labelKey: 'pbta:blocks.sprawlCorporation.label',
+        newTitleKey: 'pbta:blocks.sprawlCorporation.newTitle',
         contract: sprawlCorporation,
     },
     {
         id: 'the-sprawl.matrix',
         gameId: 'the-sprawl',
         gameLabel: 'The Sprawl',
-        label: 'Matrice',
-        newTitle: 'Nouvelle matrice',
+        labelKey: 'pbta:blocks.sprawlMatrix.label',
+        newTitleKey: 'pbta:blocks.sprawlMatrix.newTitle',
         contract: sprawlMatrix,
     },
 ]
@@ -117,8 +118,8 @@ function configOf(spec: BlockSpec): BlockConfig {
         id: spec.id,
         gameId: spec.gameId,
         gameLabel: spec.gameLabel,
-        label: { text: spec.label },
-        newTitle: { text: spec.newTitle },
+        label: spec.labelKey,
+        newTitle: spec.newTitleKey,
         contractKey: `pbta/${spec.contract.target}`,
         sections: spec.contract.canonicalOrder.flatMap((regionId) => {
             const region = byId.get(regionId)
