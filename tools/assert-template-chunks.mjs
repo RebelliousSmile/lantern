@@ -204,10 +204,17 @@ async function main() {
             source.startsWith('src/templates/') &&
             source.endsWith('/definition.tsx')
     )
+    /* One lazy module per loader the registry declares: read from the source, not counted here. */
+    const declared = [
+        ...readFileSync(
+            path.join(root, 'src', 'core', 'templates', 'templateLoader.ts'),
+            'utf8'
+        ).matchAll(/^\s+'[^']+': \(\) =>/gm),
+    ].length
     assert.equal(
         templateModules.length,
-        24,
-        `expected 24 lazy template modules, found ${templateModules.length}`
+        declared,
+        `expected ${declared} lazy template modules, found ${templateModules.length}`
     )
 
     for (const source of templateModules) {

@@ -18,8 +18,11 @@ export type SpecializedPlaybookConfig = {
     label: UiText
     newTitle: UiText
     contractKey: string
-    sections: Array<{ id: string; label: UiText }>
+    /** A section either is a document key (its id) or draws the listed `fields` (dotted paths). */
+    sections: Array<{ id: string; label: UiText; fields?: string[] }>
     blank: SpecializedPlaybookDocument
+    /** Sample document; the blank one when absent. */
+    example?: SpecializedPlaybookDocument
 }
 
 export function createSpecializedPlaybookStaticDefinition(
@@ -48,7 +51,7 @@ export function createSpecializedPlaybookStaticDefinition(
         implemented: true,
         contractKey: config.contractKey,
         createBlank: () => clone(config.blank),
-        createExample: () => clone(config.blank),
+        createExample: () => clone(config.example ?? config.blank),
         createInitialView,
         createInitialSheet,
         getTabTitle: (doc) => String(doc.name || printedLabel()),

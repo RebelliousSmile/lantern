@@ -3,7 +3,7 @@ import { Label } from '@/components/ui/label'
 import { documentContracts } from '@/contracts/registry'
 import { SchemaEditor } from '@/core/editor-schema/SchemaEditor'
 import { inferObject } from '@/core/editor-schema/inferSchema'
-import { getAtPath } from '@/core/editor-schema/path'
+import { getAtPath, setAtPath } from '@/core/editor-schema/path'
 import { createTomlExportAction } from '@/core/templates/shell/tomlExportAction'
 import type { AnyTemplateDefinition } from '@/core/templates/types'
 import { useActiveTemplateTab } from '@/core/workspace/selectors'
@@ -131,6 +131,106 @@ function PlaybookValue({ value }: { value: unknown }) {
     return null
 }
 
+const leafOf = (path: string) => path.split('.').pop() ?? path
+
+/*
+ * A section is a document key, or, for a block published as regions, the
+ * listed fields. The name is the sheet title already; it is not repeated.
+ */
+function SectionValue({
+    doc,
+    id,
+    fields,
+}: {
+    doc: Record<string, unknown>
+    id: string
+    fields: string[] | undefined
+}) {
+    if (!fields) return <PlaybookValue value={getAtPath(doc, id.split('.'))} />
+    const shown = fields.filter((path) => path !== 'name')
+    return (
+        <>
+            {shown.map((path) => (
+                <div key={path}>
+                    {shown.length > 1 && <h4>{humanize(leafOf(path))}</h4>}
+                    <PlaybookValue value={getAtPath(doc, path.split('.'))} />
+                </div>
+            ))}
+        </>
+    )
+}
+
+/*
+ * Editor of a region that holds several document fields. A field with a
+ * published collection presentation gets its collection editor; the others
+ * share one schema-driven form whose shape comes from the sample document, so
+ * a field the blank omits is still offered.
+ */
+function FieldsEditor({
+    target,
+    fields,
+    doc,
+    shape,
+    setDoc,
+}: {
+    target: Parameters<typeof collectionFor>[0]
+    fields: string[]
+    doc: Record<string, unknown>
+    shape: Record<string, unknown>
+    setDoc: (patch: Partial<Record<string, unknown>>) => void
+}) {
+    const editable = fields.filter((path) => path !== 'name')
+    const plain = editable.filter((path) => !collectionFor(target, path))
+    const read = (source: Record<string, unknown>, paths: string[]) =>
+        Object.fromEntries(
+            paths.map((path) => [
+                leafOf(path),
+                getAtPath(source, path.split('.')),
+            ])
+        )
+    const apply = (next: Record<string, unknown>, paths: string[]) => {
+        let updated: Record<string, unknown> = doc
+        for (const path of paths)
+            updated = setAtPath(updated, path.split('.'), next[leafOf(path)])
+        setDoc(updated)
+    }
+    return (
+        <div className="space-y-4">
+            {plain.length > 0 && (
+                <SchemaEditor
+                    schema={inferObject(plain.join(','), read(shape, plain))}
+                    value={read(doc, plain)}
+                    onChange={(next) => apply(next, plain)}
+                />
+            )}
+            {editable.map((path) => {
+                const presentation = collectionFor(target, path)
+                if (!presentation) return null
+                const items = collectionItems(doc, presentation)
+                if (!items || !collectionAdapterFor(presentation.itemEditor))
+                    return (
+                        <p key={path} className="text-sm text-destructive">
+                            Invalid published collection configuration for{' '}
+                            {presentation.label}.
+                        </p>
+                    )
+                return (
+                    <PublishedCollectionEditor
+                        key={path}
+                        presentation={presentation}
+                        items={items}
+                        onChange={(next) =>
+                            setDoc(
+                                replaceCollectionItems(doc, presentation, next)
+                            )
+                        }
+                    />
+                )
+            })}
+        </div>
+    )
+}
+
 export function createSpecializedPlaybookTemplate(
     config: Config,
     staticDefinition = createSpecializedPlaybookStaticDefinition(config)
@@ -140,6 +240,8 @@ export function createSpecializedPlaybookTemplate(
         typeof collectionFor
     >[0]
     const { sections } = staticDefinition
+    const fieldsOf = (id: string) =>
+        config.sections.find((section) => section.id === id)?.fields
     const contract = documentContracts.require<Document>(config.contractKey)
     /* The sheet is document output: it prints English whatever the UI language. */
     const printedLabel = () => translateEnglish(config.label)
@@ -203,11 +305,10 @@ export function createSpecializedPlaybookTemplate(
                                         {translateEnglish(section.label)}
                                     </button>
                                     <div className="pbta-specialized-content">
-                                        <PlaybookValue
-                                            value={getAtPath(
-                                                doc,
-                                                section.id.split('.')
-                                            )}
+                                        <SectionValue
+                                            doc={doc}
+                                            id={section.id}
+                                            fields={fieldsOf(section.id)}
                                         />
                                     </div>
                                 </section>
@@ -250,6 +351,17 @@ export function createSpecializedPlaybookTemplate(
                 </div>
             )
         const key = sheet.target as string
+        const fields = fieldsOf(key)
+        if (fields)
+            return (
+                <FieldsEditor
+                    target={target}
+                    fields={fields}
+                    doc={doc}
+                    shape={config.example ?? config.blank}
+                    setDoc={setDoc}
+                />
+            )
         const section = doc[key]
         const presentation = collectionFor(target, key)
         if (presentation) {

@@ -1,5 +1,4 @@
 import { inferObject } from '@/core/editor-schema/inferSchema'
-import { templateLoaders } from './templateLoader'
 import adrenalineMonstreTemplate from '@/templates/adrenaline/monstre/descriptor'
 import adrenalinePjTemplate from '@/templates/adrenaline/pj/descriptor'
 import adrenalinePnjTemplate from '@/templates/adrenaline/pnj/descriptor'
@@ -11,8 +10,12 @@ import { challengeDescriptor as challengeTemplate } from '@/templates/legend-in-
 import { journeyDescriptor as journeyTemplate } from '@/templates/legend-in-the-mist/journey/descriptor'
 import { storyThemeDescriptor as storyThemeTemplate } from '@/templates/legend-in-the-mist/story-theme/descriptor'
 import { themeKitDescriptor as themeKitTemplate } from '@/templates/legend-in-the-mist/theme-kit/descriptor'
+import masksNpcTemplate from '@/templates/masks/npc/static'
 import masksPlaybookTemplate from '@/templates/masks/playbook/static'
+import motwMonsterTemplate from '@/templates/monster-of-the-week/monster/static'
 import monsterOfTheWeekPlaybookTemplate from '@/templates/monster-of-the-week/playbook/static'
+import motwTeamTemplate from '@/templates/monster-of-the-week/team/static'
+import motwThreatTemplate from '@/templates/monster-of-the-week/threat/static'
 import monsterheartsPlaybookTemplate from '@/templates/monsterhearts/playbook/static'
 import otherscapeChallengeTemplate from '@/templates/otherscape/challenge/descriptor'
 import otherscapeCharacterTropeTemplate from '@/templates/otherscape/character-trope/descriptor'
@@ -22,8 +25,14 @@ import otherscapeThemeKitTemplate from '@/templates/otherscape/theme-kit/descrip
 import otherscapeThemeTemplate from '@/templates/otherscape/theme/descriptor'
 import gameDefinitionTemplate from '@/templates/pbta/game-definition/static'
 import playbookTemplate from '@/templates/pbta/playbook/static'
+import sprawlCorporationTemplate from '@/templates/the-sprawl/corporation/static'
+import sprawlMatrixTemplate from '@/templates/the-sprawl/matrix/static'
+import sprawlMissionTemplate from '@/templates/the-sprawl/mission/static'
 import theSprawlPlaybookTemplate from '@/templates/the-sprawl/playbook/static'
+import sprawlResourceTemplate from '@/templates/the-sprawl/resource/static'
+import sprawlThreatTemplate from '@/templates/the-sprawl/threat/static'
 import urbanShadowsPlaybookTemplate from '@/templates/urban-shadows/playbook/static'
+import { templateLoaders } from './templateLoader'
 import { type AnyStaticTemplateDefinition, type GameId } from './types'
 
 export const templateRegistry: AnyStaticTemplateDefinition[] = [
@@ -49,8 +58,17 @@ export const templateRegistry: AnyStaticTemplateDefinition[] = [
     urbanShadowsPlaybookTemplate,
     monsterheartsPlaybookTemplate,
     masksPlaybookTemplate,
+    masksNpcTemplate,
     monsterOfTheWeekPlaybookTemplate,
+    motwMonsterTemplate,
+    motwThreatTemplate,
+    motwTeamTemplate,
     theSprawlPlaybookTemplate,
+    sprawlMissionTemplate,
+    sprawlThreatTemplate,
+    sprawlResourceTemplate,
+    sprawlCorporationTemplate,
+    sprawlMatrixTemplate,
 ]
 
 /*

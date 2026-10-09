@@ -36,8 +36,7 @@ export const templateLoaders: Record<string, TemplateLoader> = {
         import('@/templates/otherscape/power-set/definition'),
     'otherscape.themeKit': () =>
         import('@/templates/otherscape/theme-kit/definition'),
-    'otherscape.theme': () =>
-        import('@/templates/otherscape/theme/definition'),
+    'otherscape.theme': () => import('@/templates/otherscape/theme/definition'),
     'otherscape.loadoutItem': () =>
         import('@/templates/otherscape/loadout-item/definition'),
     'pbta.gameDefinition': () =>
@@ -52,6 +51,23 @@ export const templateLoaders: Record<string, TemplateLoader> = {
         import('@/templates/monster-of-the-week/playbook/definition'),
     'the-sprawl.playbook': () =>
         import('@/templates/the-sprawl/playbook/definition'),
+    'masks.npc': () => import('@/templates/masks/npc/definition'),
+    'monster-of-the-week.monster': () =>
+        import('@/templates/monster-of-the-week/monster/definition'),
+    'monster-of-the-week.threat': () =>
+        import('@/templates/monster-of-the-week/threat/definition'),
+    'monster-of-the-week.team': () =>
+        import('@/templates/monster-of-the-week/team/definition'),
+    'the-sprawl.mission': () =>
+        import('@/templates/the-sprawl/mission/definition'),
+    'the-sprawl.threat': () =>
+        import('@/templates/the-sprawl/threat/definition'),
+    'the-sprawl.resource': () =>
+        import('@/templates/the-sprawl/resource/definition'),
+    'the-sprawl.corporation': () =>
+        import('@/templates/the-sprawl/corporation/definition'),
+    'the-sprawl.matrix': () =>
+        import('@/templates/the-sprawl/matrix/definition'),
 }
 
 export function loadTemplateDefinition(templateId: string) {
