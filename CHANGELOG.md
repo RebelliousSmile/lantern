@@ -10,6 +10,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Fixed
 
 - Adrenaline: "start from the example" loads the worked example published by schema-adrenaline for the character, the NPC and the monster, instead of the blank starter.
+- Adrenaline: the monster card draws the malus circles published by schema-adrenaline, and the compact cards take their ink from the pack.
 
 ## [v0.25.0] - 2026-10-09
 

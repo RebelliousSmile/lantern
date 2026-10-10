@@ -512,6 +512,27 @@ function Tracks({
     })
 }
 
+/** One empty circle per entered malus, then HS: the count is read as entered, never derived. */
+function MalusCircles({ found }: { found: unknown }) {
+    const count = Number(text(found))
+    if (!Number.isInteger(count) || count < 0)
+        return <Line content={text(found)} name="Malus" />
+    return (
+        <span className={`${cls('track')} ${cls('track--malus')}`}>
+            <b className={cls('line-label')}>Malus</b>
+            <span className={cls('circles')}>
+                {Array.from({ length: count }, (_, index) => (
+                    <i
+                        className={`${cls('circle-mark')} ${cls('circle')}`}
+                        key={index}
+                    />
+                ))}
+            </span>
+            <b className={cls('hs')}>HS</b>
+        </span>
+    )
+}
+
 function InlineList({ found }: { found: unknown }) {
     const record = asRecord(found)
     const items = record
@@ -652,6 +673,9 @@ function blockContent(
     const always = block.form === 'name-card' || block.form === 'malus-tracks'
     if (!always && values.every(isEmpty)) return null
     const [found] = values
+    /* Arrived after the pinned form list: compared as text so both builds type-check. */
+    if ((block.form as string) === 'malus-circles')
+        return <MalusCircles found={found} />
     switch (block.form) {
         case 'name-card':
             return (

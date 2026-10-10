@@ -29,4 +29,6 @@ if (problems.length > 0) {
     for (const p of problems) console.error(`assert:adrenaline-examples: ${p}`)
     process.exit(1)
 }
-console.log('assert:adrenaline-examples: 3 templates start from a published example')
+console.log(
+    'assert:adrenaline-examples: 3 templates start from a published example'
+)

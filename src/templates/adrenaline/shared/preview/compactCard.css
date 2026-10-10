@@ -33,7 +33,7 @@
     margin-inline: auto;
     background: var(--background-primary);
     width: min(100%, 36rem);
-    color: var(--text-normal);
+    color: var(--adrenaline-card-ink, var(--text-normal));
     font-size: 13px;
     line-height: 1.25;
     font-family: var(--font-text-theme);
@@ -163,6 +163,9 @@ details.adr-compact__section > summary {
 }
 .adr-compact__track .adr-compact__line-label {
     min-width: 8.5rem;
+}
+.adr-compact__track--malus .adr-compact__line-label {
+    min-width: 0;
 }
 .adr-compact__circles {
     display: inline-flex;
