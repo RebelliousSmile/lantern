@@ -42,6 +42,7 @@ try {
             '.css': 'empty',
             '.svg': 'empty',
             '.woff2': 'empty',
+            '.toml': 'text',
             '.webp': 'empty',
             '.ttf': 'empty',
         },

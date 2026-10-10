@@ -5,6 +5,12 @@ All notable changes to this project are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.25.1] - 2026-10-10
+
+### Fixed
+
+- Adrenaline: "start from the example" loads the worked example published by schema-adrenaline for the character, the NPC and the monster, instead of the blank starter.
+
 ## [v0.25.0] - 2026-10-09
 
 ### Added

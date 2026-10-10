@@ -1,4 +1,5 @@
 import type { AdrenalinePj } from '@/contracts/adrenaline'
+import published from 'schema-adrenaline/examples/adrenaline/pj/survivante-complete.toml?raw'
 import { parseAdrenalineToml } from '../shared/toml'
 
 const starter = `nom = "Personnage sans nom"
@@ -37,4 +38,7 @@ solidite = 4`
 
 export const blankPj = () =>
     parseAdrenalineToml<AdrenalinePj>('adrenaline/pj', starter)
-export const samplePj = blankPj
+/* The published worked example, parsed like an import, so "start from the
+   example" shows what the schema documents and not an empty card. */
+export const samplePj = () =>
+    parseAdrenalineToml<AdrenalinePj>('adrenaline/pj', published)

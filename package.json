@@ -1,7 +1,7 @@
 {
     "name": "lantern",
     "private": true,
-    "version": "0.25.0",
+    "version": "0.25.1",
     "type": "module",
     "scripts": {
         "dev": "vite",
@@ -29,9 +29,10 @@
         "assert:release-identity": "node tools/assert-release-identity.mjs && node tools/release-identity.harness.mjs",
         "prepare:schema-pbta-candidate": "node tools/prepare-schema-pbta-candidate.mjs",
         "assert:candidate-pins": "node tools/assert-candidate-pins.mjs",
-        "check:project": "npm run lint && npm run typecheck && npm run assert:release-train && npm run assert:release-identity && npm run assert:release-train-matrix:unit && npm run assert:consumer-schema-pins:unit && npm run assert:workspace && npm run assert:block-templates && npm run assert:presentation-coverage",
+        "check:project": "npm run lint && npm run typecheck && npm run assert:release-train && npm run assert:release-identity && npm run assert:release-train-matrix:unit && npm run assert:consumer-schema-pins:unit && npm run assert:workspace && npm run assert:block-templates && npm run assert:adrenaline-examples && npm run assert:presentation-coverage",
         "check:candidate": "npm run check:project && npm run assert:candidate-pins",
-        "check": "npm run check:project && npm run assert:release-inputs"
+        "check": "npm run check:project && npm run assert:release-inputs",
+        "assert:adrenaline-examples": "node tools/assert-adrenaline-examples.mjs"
     },
     "dependencies": {
         "@dnd-kit/core": "^6.3.1",
