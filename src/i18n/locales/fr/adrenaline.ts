@@ -122,6 +122,7 @@ const adrenaline: ResourceShape<typeof en> = {
             baseState: 'Profil de base',
             stateId: 'Identifiant de l’état',
             addState: 'Ajouter un état',
+            stateLimitReached: 'Le schéma publié n’admet pas d’autre état.',
             newStateName: 'Nouvel état',
             newTrigger: 'Nouveau déclencheur',
             trigger: 'Déclencheur',
@@ -213,6 +214,7 @@ const adrenaline: ResourceShape<typeof en> = {
             favouriteGear: 'Équipement favori',
             physicalWeapons: 'Armes physiques',
             mentalWeapons: 'Armes mentales',
+            psychologicalWeapons: 'Armes psychologiques',
             damageDice: 'Dés de dégâts',
         },
         meta: {
@@ -231,6 +233,11 @@ const adrenaline: ResourceShape<typeof en> = {
             roleplayingTips: 'Interprétation',
             lines: 'Répliques',
             gmNotes: 'Notes MJ',
+        },
+        card: {
+            currentState: 'État actuel',
+            statesNotPrinted:
+                '{{count}} état(s) saisi(s) au-delà de ce que le schéma admet ne sont pas imprimés.',
         },
         range: {
             min: 'Min.',

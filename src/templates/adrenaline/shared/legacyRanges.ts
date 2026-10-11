@@ -1,4 +1,5 @@
 import { PersonnageJoueur } from 'schema-adrenaline'
+import { CHARACTERISTIC_FIELDS, WEAPON_FIELDS } from './schemaFields'
 
 type DocumentRecord = Record<string, unknown>
 
@@ -44,9 +45,43 @@ const upgradeSkills = (value: unknown) => {
     }
 }
 
-const upgradeEquipment = (value: unknown) => {
+/*
+ * The lists a document of this target declares come from its published schema: a list the schema
+ * no longer declares is not upgraded, and the schema then reports it. Without a target, every
+ * list any of the documents declares is upgraded.
+ */
+const uniq = (keys: readonly string[]) =>
+    keys.filter((key, index) => keys.indexOf(key) === index)
+
+const weaponKeysOf = (target?: string): readonly string[] =>
+    target === 'adrenaline/pj'
+        ? WEAPON_FIELDS.pj
+        : target === 'adrenaline/pnj'
+          ? WEAPON_FIELDS.pnj
+          : target === 'adrenaline/monstre'
+            ? WEAPON_FIELDS.monstre
+            : uniq([
+                  ...WEAPON_FIELDS.pj,
+                  ...WEAPON_FIELDS.pnj,
+                  ...WEAPON_FIELDS.monstre,
+              ])
+
+const characteristicKeysOf = (target?: string): readonly string[] =>
+    target === 'adrenaline/pj'
+        ? CHARACTERISTIC_FIELDS.pj
+        : target === 'adrenaline/pnj'
+          ? CHARACTERISTIC_FIELDS.pnj
+          : target === 'adrenaline/monstre'
+            ? CHARACTERISTIC_FIELDS.monstre
+            : uniq([
+                  ...CHARACTERISTIC_FIELDS.pj,
+                  ...CHARACTERISTIC_FIELDS.pnj,
+                  ...CHARACTERISTIC_FIELDS.monstre,
+              ])
+
+const upgradeEquipment = (value: unknown, target?: string) => {
     if (!isRecord(value)) return
-    for (const key of ['armesPhysiques', 'armesMentales']) {
+    for (const key of weaponKeysOf(target)) {
         if (!Array.isArray(value[key])) continue
         for (const weapon of value[key]) {
             if (isRecord(weapon)) upgradeKeys(weapon, ['pourcentage'])
@@ -70,7 +105,7 @@ export function upgradeLegacyAdrenalineRanges(
     if (isRecord(document.caracteristiques)) {
         upgradeKeys(
             document.caracteristiques,
-            ['for', 'con', 'dex', 'rap', 'log', 'vol', 'per', 'cha'],
+            [...characteristicKeysOf(target)],
             target === 'adrenaline/pj' ? toCharacteristic : toRange
         )
     }
@@ -107,7 +142,7 @@ export function upgradeLegacyAdrenalineRanges(
         }
     }
     upgradeSkills(document.competences)
-    upgradeEquipment(document.equipement)
+    upgradeEquipment(document.equipement, target)
 
     if (isRecord(document.parametresDuJeu)) {
         upgradeKeys(document.parametresDuJeu, ['px'])
@@ -125,14 +160,7 @@ export function upgradeLegacyAdrenalineRanges(
         isRecord(document.etatAlternatif.caracteristiques)
     ) {
         upgradeKeys(document.etatAlternatif.caracteristiques, [
-            'for',
-            'con',
-            'dex',
-            'rap',
-            'log',
-            'vol',
-            'per',
-            'cha',
+            ...CHARACTERISTIC_FIELDS.monstreEtat,
         ])
     }
 

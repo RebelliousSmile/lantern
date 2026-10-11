@@ -1,4 +1,6 @@
 import { useEffect } from 'react'
+import { useUiText } from '@/i18n/text'
+import { maximumStates } from '../../shared/schemaFields'
 import {
     MONSTRE_PRESENTATION,
     type AdrenalinePresentation,
@@ -8,12 +10,17 @@ import { useAdrenalineDocument } from '../../shared/hooks'
 import {
     adrenalineSheetTokens,
     asRecord,
+    at,
     installAdrenalineFontFaces,
     sortedSections,
 } from '../../shared/presentation'
 import {
     CompactSection,
     compactCardClasses,
+    publishedCards,
+    publishedSection,
+    stateBadgeOf,
+    type CardId,
     type CompactCardState,
 } from '../../shared/preview/CompactCard'
 import '../../shared/preview/compactCard.css'
@@ -36,7 +43,7 @@ type PrintedState = {
 }
 
 type StateCard = {
-    card: 'principal' | 'secondaire'
+    card: CardId
     source: MonsterDocument
     state: CompactCardState
 }
@@ -131,7 +138,10 @@ function statesOf(source: MonsterDocument): PrintedState[] {
  * one: the base when the principal is a state, else the first state. A creature without states
  * has one card. A state overlays the base field by field, as entered.
  */
-function stateCards(source: MonsterDocument): StateCard[] {
+function stateCards(
+    source: MonsterDocument,
+    enteredPath: string | undefined
+): StateCard[] {
     const base = baseOf(source)
     const states = statesOf(source)
     const known = (id: string) =>
@@ -141,6 +151,20 @@ function stateCards(source: MonsterDocument): StateCard[] {
         : BASE
     const secondary = principal !== BASE ? BASE : states[0]?.id
     const active = known(text(source.etatActif)) ? text(source.etatActif) : BASE
+    /*
+     * The current state, as the schema says: absent or `base` designates the base profile, a known
+     * id designates that state, anything else designates no card. A creature with no state besides
+     * its base has no current state to tick.
+     */
+    const entered = enteredPath ? text(at(source, enteredPath)) : ''
+    const current =
+        states.length === 0
+            ? undefined
+            : entered === '' || entered === BASE
+              ? BASE
+              : states.some((state) => state.id === entered)
+                ? entered
+                : undefined
     const baseState = asRecord(source.etatDeBase)
     const resolve = (card: StateCard['card'], id: string): StateCard => {
         const state = states.find((candidate) => candidate.id === id)
@@ -155,6 +179,7 @@ function stateCards(source: MonsterDocument): StateCard[] {
                     ? state.declencheurs
                     : strings(baseState?.declencheurs),
                 active: states.length > 0 && active === id,
+                current: current === id,
                 ...(state?.notes ? { note: state.notes } : {}),
             },
         }
@@ -162,6 +187,27 @@ function stateCards(source: MonsterDocument): StateCard[] {
     return secondary === undefined
         ? [resolve('principal', principal)]
         : [resolve('principal', principal), resolve('secondaire', secondary)]
+}
+
+function isEntered(found: unknown): boolean {
+    if (found === undefined || found === null || found === '') return false
+    return Array.isArray(found) ? found.length > 0 : true
+}
+
+/*
+ * A card exists when the presentation declares it and, if it names `existsWhenAny`, the document
+ * enters a value at one of those pointers. A presentation that declares no cards leaves every
+ * resolvable state its card.
+ */
+function cardExists(card: CardId, source: MonsterDocument): boolean {
+    const declared = publishedCards(PRESENTATION)?.find(
+        (entry) => entry.id === card
+    )
+    if (!declared) return !publishedCards(PRESENTATION)
+    return (
+        !declared.existsWhenAny ||
+        declared.existsWhenAny.some((pointer) => isEntered(at(source, pointer)))
+    )
 }
 
 /*
@@ -177,12 +223,30 @@ export function MonstrePreview() {
         blankMonstre() as unknown as Record<string, unknown>
     )
     useEffect(installAdrenalineFontFaces, [])
+    const ui = useUiText()
     const base = baseOf(document)
-    const cards = stateCards(document)
+    const badge = stateBadgeOf(PRESENTATION)
+    const cards = stateCards(document, badge?.current.path).filter(
+        ({ card }) => cardExists(card, document)
+    )
+    /* States entered beyond what the published schema allows are not printed; say so. */
+    const allowed = maximumStates()
+    const unprinted =
+        allowed === undefined ? 0 : statesOf(document).length - allowed
+    const printed = cards.map(({ card }) => card)
     const sections = sortedSections(PRESENTATION)
     const onOpen = (block: AdrenalinePresentationBlock) =>
         openSection(editTarget(block))
     const firstCarded = sections.findIndex((section) => section.cards)
+    /* A section is on a card it names, or on its fallback card when none of those is printed. */
+    const printedOn = (section: (typeof sections)[number], card: CardId) => {
+        const published = publishedSection(section)
+        if (published.cards?.includes(card)) return true
+        return (
+            published.fallbackCard === card &&
+            !published.cards?.some((named) => printed.includes(named))
+        )
+    }
     return (
         <article
             className={compactCardClasses(PRESENTATION, document)}
@@ -214,7 +278,7 @@ export function MonstrePreview() {
                                 className={[
                                     'adr-compact__state-card',
                                     `adr-compact__state-card--${card}`,
-                                    state.active
+                                    !badge && state.active
                                         ? 'adr-compact__state-card--active'
                                         : '',
                                 ]
@@ -223,24 +287,55 @@ export function MonstrePreview() {
                                 key={card}
                             >
                                 {sections
-                                    .filter((carded) =>
-                                        carded.cards?.includes(card)
-                                    )
-                                    .map((carded) => (
-                                        <CompactSection
-                                            key={carded.id}
-                                            presentation={PRESENTATION}
-                                            section={carded}
-                                            source={source}
-                                            state={state}
-                                            onOpen={onOpen}
-                                        />
-                                    ))}
+                                    .filter((carded) => printedOn(carded, card))
+                                    .flatMap((carded, _, onThisCard) => {
+                                        const join = publishedSection(carded).joinedTo
+                                        const target =
+                                            join?.card === card
+                                                ? onThisCard.find(
+                                                      (other) =>
+                                                          other.id ===
+                                                          join.section
+                                                  )
+                                                : undefined
+                                        /* Printed under the section it joins, not on its own. */
+                                        if (target) return []
+                                        const following = onThisCard.find(
+                                            (other) => {
+                                                const joined =
+                                                    publishedSection(other).joinedTo
+                                                return (
+                                                    joined?.card === card &&
+                                                    joined.section ===
+                                                        carded.id
+                                                )
+                                            }
+                                        )
+                                        return [
+                                            <CompactSection
+                                                card={card}
+                                                joined={following}
+                                                key={carded.id}
+                                                presentation={PRESENTATION}
+                                                section={carded}
+                                                source={source}
+                                                state={state}
+                                                onOpen={onOpen}
+                                            />,
+                                        ]
+                                    })}
                             </div>
                         ))}
                     </div>
                 )
             })}
+            {unprinted > 0 && (
+                <p className="adr-compact__notice" role="status">
+                    {ui('adrenaline:shared.card.statesNotPrinted', {
+                        count: unprinted,
+                    })}
+                </p>
+            )}
         </article>
     )
 }

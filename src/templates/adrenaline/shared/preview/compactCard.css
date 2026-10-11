@@ -141,14 +141,24 @@ details.adr-compact__section > summary {
     text-align: end;
     white-space: nowrap;
 }
+/* A row of cells: the columns are the block's published count, a cell its published column and span. */
 .adr-compact__grid {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(var(--adr-published-columns, 4), minmax(0, 1fr));
     gap: 0.12rem 0.5rem;
 }
 .adr-compact__cell {
     display: flex;
+    grid-column: var(--adr-column, auto) / span var(--adr-span, 1);
     gap: 0.3rem;
+}
+/* The blocks a section places by column and row sit in a grid of its published columns. */
+.adr-compact__placed {
+    display: grid;
+    grid-template-columns: repeat(var(--adr-published-columns, 1), minmax(0, 1fr));
+}
+.adr-compact__placed > .adr-compact__block {
+    min-width: 0;
 }
 .adr-compact__thresholds {
     display: grid;
@@ -235,7 +245,9 @@ details.adr-compact__section > summary {
     font-size: 0.9em;
 }
 .adr-compact__trigger {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
     border-radius: 0.2rem;
     background: var(--adrenaline-trigger-bg);
     padding: 0 0.3rem;
@@ -262,9 +274,12 @@ details.adr-compact__section > summary {
 .adr-compact__state-card--secondaire {
     font-size: 0.92em;
 }
-/* The secondary card is too narrow for four characteristics on a line. */
+/* The secondary card is too narrow for four characteristics on a line: cells follow the flow. */
 .adr-compact__state-card--secondaire .adr-compact__grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.adr-compact__state-card--secondaire .adr-compact__cell {
+    grid-column: auto;
 }
 .adr-compact__form-state-header {
     display: flex;
@@ -282,10 +297,37 @@ details.adr-compact__section > summary {
 .adr-compact__state-active {
     font-size: 0.8em;
 }
+/* The pack's badge colour marks each trigger and the box of the current state. */
+.adr-compact__notice {
+    margin: 0.4rem 0 0;
+    font-size: 0.8em;
+    font-style: italic;
+}
+.adr-compact__trigger-mark {
+    flex: none;
+    border-radius: 50%;
+    background: var(--adrenaline-card-badge);
+    width: 0.55em;
+    height: 0.55em;
+}
+.adr-compact__state-box {
+    display: inline-block;
+    flex: none;
+    align-self: center;
+    border: 1px solid var(--adrenaline-card-badge);
+    width: 0.9em;
+    height: 0.9em;
+}
+.adr-compact__state-box--checked {
+    background: var(--adrenaline-card-badge);
+}
 
 @container (max-width: 520px) {
     .adr-compact__grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .adr-compact__cell {
+        grid-column: auto;
     }
     .adr-compact__thresholds {
         grid-template-columns: 2.2rem repeat(2, minmax(0, 1fr));

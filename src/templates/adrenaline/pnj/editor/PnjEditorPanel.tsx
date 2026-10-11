@@ -10,6 +10,10 @@ import {
     SkillRows,
 } from '../../shared/editor/AdrenalineFields'
 import {
+    CHARACTERISTIC_FIELDS,
+    WEAPON_FIELDS,
+} from '../../shared/schemaFields'
+import {
     LongTextField,
     NumberField,
     RangedNumberField,
@@ -94,6 +98,7 @@ export function PnjEditorPanel() {
                         {text('adrenaline:shared.headings.characteristics')}
                     </h3>
                     <CharacteristicsFields
+                        keys={CHARACTERISTIC_FIELDS.pnj}
                         value={document.caracteristiques}
                         onChange={(caracteristiques) =>
                             set('caracteristiques', caracteristiques)
@@ -198,6 +203,7 @@ export function PnjEditorPanel() {
                         {text('adrenaline:shared.headings.equipment')}
                     </h3>
                     <EquipmentFields
+                        weapons={WEAPON_FIELDS.pnj}
                         value={document.equipement}
                         onChange={(equipement) => set('equipement', equipement)}
                     />

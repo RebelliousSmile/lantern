@@ -5,6 +5,14 @@ All notable changes to this project are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.26.0] - 2026-10-11
+
+### Changed
+
+- Adrenaline: the creature cards follow the card contract schema-adrenaline publishes. Detection zone and movement sit on the characteristic rows, the state header carries its badge and the current-state box, and the small card joins behaviour and health under one heading. A creature with no other state prints a single card that carries its equipment.
+- Adrenaline: the editors offer the characteristics and the weapon lists the installed contract declares for each sheet, instead of a fixed list.
+- Adrenaline: a state entered beyond what the contract admits is reported under the card instead of being dropped silently.
+
 ## [v0.25.1] - 2026-10-10
 
 ### Fixed

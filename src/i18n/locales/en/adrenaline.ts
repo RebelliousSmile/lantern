@@ -120,6 +120,7 @@ const adrenaline = {
             baseState: 'Base profile',
             stateId: 'State ID',
             addState: 'Add state',
+            stateLimitReached: 'The published schema allows no further state.',
             newStateName: 'New state',
             newTrigger: 'New trigger',
             trigger: 'Trigger',
@@ -212,6 +213,7 @@ const adrenaline = {
             favouriteGear: 'Favourite gear',
             physicalWeapons: 'Physical weapons',
             mentalWeapons: 'Mental weapons',
+            psychologicalWeapons: 'Psychological weapons',
             damageDice: 'Damage dice',
         },
         meta: {
@@ -230,6 +232,11 @@ const adrenaline = {
             roleplayingTips: 'Roleplaying tips',
             lines: 'Lines',
             gmNotes: 'GM notes',
+        },
+        card: {
+            currentState: 'Current state',
+            statesNotPrinted:
+                '{{count}} state(s) entered beyond what the schema allows are not printed.',
         },
         range: {
             min: 'Min.',

@@ -19,16 +19,23 @@ import {
 } from './FieldPrimitives'
 
 type RecordValue = Record<string, unknown>
-const stats: [string, TranslationKey][] = [
-    ['for', 'adrenaline:shared.characteristics.for'],
-    ['con', 'adrenaline:shared.characteristics.con'],
-    ['dex', 'adrenaline:shared.characteristics.dex'],
-    ['rap', 'adrenaline:shared.characteristics.rap'],
-    ['log', 'adrenaline:shared.characteristics.log'],
-    ['vol', 'adrenaline:shared.characteristics.vol'],
-    ['per', 'adrenaline:shared.characteristics.per'],
-    ['cha', 'adrenaline:shared.characteristics.cha'],
-]
+/* The labels of the characteristics the schemas may declare; the form offers the ones a schema names. */
+const statLabels: Record<string, TranslationKey> = {
+    for: 'adrenaline:shared.characteristics.for',
+    con: 'adrenaline:shared.characteristics.con',
+    dex: 'adrenaline:shared.characteristics.dex',
+    rap: 'adrenaline:shared.characteristics.rap',
+    log: 'adrenaline:shared.characteristics.log',
+    vol: 'adrenaline:shared.characteristics.vol',
+    per: 'adrenaline:shared.characteristics.per',
+    cha: 'adrenaline:shared.characteristics.cha',
+}
+/* The weapon lists the schemas may declare, by field name. */
+const weaponLabels: Record<string, TranslationKey> = {
+    armesPhysiques: 'adrenaline:shared.equipment.physicalWeapons',
+    armesMentales: 'adrenaline:shared.equipment.mentalWeapons',
+    armesPsychologiques: 'adrenaline:shared.equipment.psychologicalWeapons',
+}
 const wounds: [string, TranslationKey][] = [
     ['superficiel', 'adrenaline:shared.health.superficiel'],
     ['leger', 'adrenaline:shared.health.leger'],
@@ -57,10 +64,13 @@ const rows = (value: unknown): RecordValue[] =>
           )
         : []
 
+/** `keys` are the characteristics the document's schema declares (see `schemaFields.ts`). */
 export function CharacteristicsFields({
+    keys,
     value,
     onChange,
 }: {
+    keys: readonly string[]
     value: unknown
     onChange: (value: RecordValue) => void
 }) {
@@ -68,10 +78,14 @@ export function CharacteristicsFields({
     const current = record(value)
     return (
         <div className="grid grid-cols-2 gap-2">
-            {stats.map(([key, labelKey]) => (
+            {keys.map((key) => (
                 <RangedNumberField
                     key={key}
-                    label={text(labelKey)}
+                    label={
+                        statLabels[key]
+                            ? text(statLabels[key])
+                            : key.toUpperCase()
+                    }
                     value={current[key]}
                     onChange={(next) => onChange({ ...current, [key]: next })}
                 />
@@ -499,18 +513,22 @@ export function SkillRows({
     )
 }
 
+/** `weapons` are the weapon lists the document's schema declares (see `schemaFields.ts`). */
 export function EquipmentFields({
+    weapons: weaponKeys,
     value,
     onChange,
 }: {
+    weapons: readonly string[]
     value: unknown
     onChange: (value: RecordValue) => void
 }) {
     const text = useUiText()
     const current = record(value)
-    const weapons = (key: string, labelKey: TranslationKey) => (
+    const weapons = (key: string) => (
         <RecordRows
-            label={text(labelKey)}
+            key={key}
+            label={weaponLabels[key] ? text(weaponLabels[key]) : key}
             values={rows(current[key])}
             create={() => ({
                 nom: '',
@@ -572,14 +590,7 @@ export function EquipmentFields({
                     onChange({ ...current, equipementFavori })
                 }
             />
-            {weapons(
-                'armesPhysiques',
-                'adrenaline:shared.equipment.physicalWeapons'
-            )}
-            {weapons(
-                'armesMentales',
-                'adrenaline:shared.equipment.mentalWeapons'
-            )}
+            {weaponKeys.map(weapons)}
         </div>
     )
 }

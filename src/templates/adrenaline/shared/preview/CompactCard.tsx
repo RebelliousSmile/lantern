@@ -6,12 +6,13 @@ import {
     User,
     type LucideIcon,
 } from 'lucide-react'
-import type { ReactNode } from 'react'
+import type { CSSProperties, ReactNode } from 'react'
 import type {
     AdrenalinePresentation,
     AdrenalinePresentationBlock,
     AdrenalinePresentationSection,
 } from 'schema-adrenaline/presentation'
+import { translate, useUiText, type TranslationKey } from '@/i18n/text'
 import { asRecord, at, lastSegment, sortedBlocks } from '../presentation'
 import { currentValue } from './SheetPrimitives'
 
@@ -25,12 +26,79 @@ const CARD = 'adr-compact'
 
 type Source = Record<string, unknown>
 
+/** The two cards a creature can print. */
+export type CardId = 'principal' | 'secondaire'
+
+/*
+ * What the creature contract publishes on top of the base presentation types, read through these
+ * shapes so the sheet type-checks against any pinned build of the package. A property the build
+ * does not publish is simply absent, never replaced by a local value.
+ */
+type Placement = {
+    column: number
+    row: number
+    rowSpan?: number
+    columnSpan?: number
+}
+type PublishedBlock = AdrenalinePresentationBlock & {
+    pointerRows?: readonly (readonly { path: string; label?: string }[])[]
+    cards?: readonly CardId[]
+    placement?: Placement
+}
+type PublishedSection = AdrenalinePresentationSection & {
+    cards?: readonly CardId[]
+    joinedTo?: { section: string; title: string; card: CardId }
+    fallbackCard?: CardId
+}
+type PublishedPresentation = AdrenalinePresentation & {
+    cards?: readonly { id: CardId; existsWhenAny?: readonly string[] }[]
+}
+type StateBadge = {
+    triggerMarker: boolean
+    current: { path: string; cards: readonly CardId[] }
+}
+
+export function publishedSection(
+    section: AdrenalinePresentationSection
+): PublishedSection {
+    return section
+}
+
+/** The cards the presentation declares, with the pointers that make each exist. */
+export function publishedCards(presentation: AdrenalinePresentation) {
+    return (presentation as PublishedPresentation).cards
+}
+
+/** The state-badge decoration of the block that draws the state header, if the contract publishes it. */
+export function stateBadgeOf(
+    presentation: AdrenalinePresentation
+): StateBadge | undefined {
+    for (const section of presentation.sections)
+        for (const block of section.blocks) {
+            const decoration = block.decoration as
+                | (Partial<StateBadge> & { kind?: string })
+                | undefined
+            if (
+                block.form === 'state-header' &&
+                decoration?.kind === 'state-badge' &&
+                decoration.current
+            )
+                return {
+                    triggerMarker: decoration.triggerMarker === true,
+                    current: decoration.current,
+                }
+        }
+    return undefined
+}
+
 /** The creature state a card prints, named and triggered as entered. */
 export type CompactCardState = {
     name: string
     triggers: string[]
-    /** True on the card of the state the creature is in (`etatActif`). */
+    /** True on the card of the state the creature is in (`etatActif`, absent meaning the base); read without the badge decoration. */
     active: boolean
+    /** True when the current state, `etatActif` absent or `base` meaning the base, is the one this card prints. */
+    current: boolean
     note?: string
 }
 
@@ -103,7 +171,14 @@ function humanize(key: string): string {
     return spaced.charAt(0).toUpperCase() + spaced.slice(1)
 }
 
+/* Labels that come from the interface texts rather than from this table. */
+const TEXT_LABELS: Record<string, TranslationKey> = {
+    armesPsychologiques: 'adrenaline:shared.equipment.psychologicalWeapons',
+}
+
 function label(key: string): string {
+    const text = TEXT_LABELS[key]
+    if (text) return translate(text)
     return FIELD_LABELS[key] ?? humanize(key)
 }
 
@@ -346,6 +421,54 @@ function Narrative({ found }: { found: unknown }) {
     })
 }
 
+/*
+ * The printed rows of a block that reads several paths (`pointerRows`): each row is its own grid
+ * of the block's columns, a cell is its published label (else the key, upper-cased) and the value
+ * as entered, and a cell the document leaves out is not printed. The cells of a row sit in the
+ * published order on columns 1, 2, 3... of the grid; a cell left out leaves its column empty and
+ * the others keep their place.
+ */
+function PointerRows({
+    block,
+    source,
+}: {
+    block: PublishedBlock
+    source: Source
+}) {
+    const columns = block.columns ?? 1
+    return (block.pointerRows ?? []).map((row, index) => {
+        const cells = row.flatMap((cell, position) => {
+            const entered = at(source, cell.path)
+            const shown = text(
+                entered,
+                cell.path.startsWith('/caracteristiques/') ? ' %' : ''
+            )
+            if (!shown) return []
+            const style = { '--adr-column': position + 1 } as CSSProperties
+            return [
+                <span className={cls('cell')} key={cell.path} style={style}>
+                    <b className={cls('line-label')}>
+                        {cell.label ?? lastSegment(cell.path).toUpperCase()}
+                    </b>
+                    <span className={cls('value')}>{shown}</span>
+                </span>,
+            ]
+        })
+        if (cells.length === 0) return null
+        return (
+            <span
+                className={cls('grid')}
+                key={index}
+                style={
+                    { '--adr-published-columns': columns } as CSSProperties
+                }
+            >
+                {cells}
+            </span>
+        )
+    })
+}
+
 function CompactRows({ pointer, found }: { pointer: string; found: unknown }) {
     const key = lastSegment(pointer)
     if (key === 'caracteristiques') {
@@ -533,7 +656,8 @@ function MalusCircles({ found }: { found: unknown }) {
     )
 }
 
-function InlineList({ found }: { found: unknown }) {
+/** A list on one line; `name` is the block's own label, printed before it when the block sits in a grid. */
+function InlineList({ found, name }: { found: unknown; name?: string }) {
     const record = asRecord(found)
     const items = record
         ? Object.keys(record).flatMap((key) => {
@@ -555,7 +679,12 @@ function InlineList({ found }: { found: unknown }) {
               ]
           })
         : strings(found)
-    return <span className={cls('inline-list')}>{items.join(' · ')}</span>
+    return (
+        <span className={cls('inline-list')}>
+            {name && <b className={cls('line-label')}>{name} </b>}
+            {items.join(' · ')}
+        </span>
+    )
 }
 
 function Combat({ source }: { source: Source }) {
@@ -635,17 +764,51 @@ function Status({ found }: { found: unknown }) {
     ))
 }
 
-function StateHeader({ state }: { state: CompactCardState }) {
+/*
+ * The state header, dressed by the published `state-badge` decoration: a marker before each
+ * trigger, and on the cards the decoration names a box ticked when the current state is the one
+ * this card prints. The box is not a control (disabled checkbox), ticked or not. Without the
+ * decoration, the card of the active state carries the textual marker.
+ */
+function StateHeader({
+    badge,
+    card,
+    state,
+}: {
+    badge?: StateBadge
+    card?: CardId
+    state: CompactCardState
+}) {
+    const ui = useUiText()
+    const boxed = !!card && !!badge?.current.cards.includes(card)
     return (
         <>
             <span className={cls('state-name')}>
+                {boxed && (
+                    <span
+                        aria-checked={state.current}
+                        aria-disabled="true"
+                        aria-label={ui('adrenaline:shared.card.currentState')}
+                        className={
+                            state.current
+                                ? `${cls('state-box')} ${cls('state-box--checked')}`
+                                : cls('state-box')
+                        }
+                        role="checkbox"
+                    />
+                )}
                 <strong className={cls('state-label')}>{state.name}</strong>
-                {state.active && (
-                    <span className={cls('state-active')}>État actuel</span>
+                {!badge && state.active && (
+                    <span className={cls('state-active')}>
+                        {ui('adrenaline:shared.card.currentState')}
+                    </span>
                 )}
             </span>
             {state.triggers.map((trigger, index) => (
                 <span className={cls('trigger')} key={index}>
+                    {badge?.triggerMarker && (
+                        <i aria-hidden="true" className={cls('trigger-mark')} />
+                    )}
                     {trigger}
                 </span>
             ))}
@@ -659,16 +822,28 @@ type SectionProps = {
     source: Source
     presentation: AdrenalinePresentation
     state?: CompactCardState
+    /** The card the section is printed on; blocks naming other cards are left out. */
+    card?: CardId
+    /** A section printed right after this one, under the single title it publishes. */
+    joined?: AdrenalinePresentationSection
     onOpen: (block: AdrenalinePresentationBlock) => void
 }
+
+type BlockContext = Omit<SectionProps, 'section' | 'joined' | 'onOpen'>
 
 /** What a block prints, or null when it has no value to print. */
 function blockContent(
     block: AdrenalinePresentationBlock,
-    { source, presentation, state }: Omit<SectionProps, 'section' | 'onOpen'>
+    { source, presentation, state, card }: BlockContext
 ): ReactNode {
     if (block.form === 'state-header')
-        return state ? <StateHeader state={state} /> : null
+        return state ? (
+            <StateHeader
+                badge={stateBadgeOf(presentation)}
+                card={card}
+                state={state}
+            />
+        ) : null
     const values = block.paths.map((pointer) => at(source, pointer))
     const always = block.form === 'name-card' || block.form === 'malus-tracks'
     if (!always && values.every(isEmpty)) return null
@@ -688,7 +863,11 @@ function blockContent(
         case 'narrative':
             return <Narrative found={found} />
         case 'compact-rows':
-            return <CompactRows found={found} pointer={block.paths[0]} />
+            return (block as PublishedBlock).pointerRows ? (
+                <PointerRows block={block} source={source} />
+            ) : (
+                <CompactRows found={found} pointer={block.paths[0]} />
+            )
         case 'threshold-rows':
             return <Thresholds found={found} />
         case 'protection-lines':
@@ -702,7 +881,16 @@ function blockContent(
                 <SkillLine key={index} skill={skill} />
             ))
         case 'inline-list':
-            return <InlineList found={found} />
+            return (
+                <InlineList
+                    found={found}
+                    name={
+                        (block as PublishedBlock).placement
+                            ? block.label
+                            : undefined
+                    }
+                />
+            )
         case 'combat':
             return <Combat source={source} />
         case 'action-lines':
@@ -730,17 +918,33 @@ function sectionTitle(
     return from ? `${section.label} (${from})` : section.label
 }
 
-/** One published section, or nothing when none of its blocks has a value to print. */
-export function CompactSection({
-    section,
-    source,
-    presentation,
-    state,
-    onOpen,
-}: SectionProps) {
-    const blocks = sortedBlocks(section).flatMap((block) => {
-        const content = blockContent(block, { source, presentation, state })
+/** The grid lines a placed block takes, from its published column, row and spans. */
+function placementStyle(placement: Placement): CSSProperties {
+    return {
+        gridColumn: `${placement.column} / span ${placement.columnSpan ?? 1}`,
+        gridRow: `${placement.row} / span ${placement.rowSpan ?? 1}`,
+    }
+}
+
+/*
+ * The blocks of a section that have a value to print on this card. When the section publishes
+ * `placement` for its blocks they sit in a grid of the section's columns, each on its own cell.
+ */
+function sectionBlocks(
+    section: AdrenalinePresentationSection,
+    context: BlockContext,
+    onOpen: SectionProps['onOpen']
+): ReactNode[] {
+    const { card } = context
+    const onCard = sortedBlocks(section).filter((block) => {
+        const cards = (block as PublishedBlock).cards
+        return !card || !cards || cards.includes(card)
+    })
+    const placed = onCard.some((block) => (block as PublishedBlock).placement)
+    const items = onCard.flatMap((block) => {
+        const content = blockContent(block, context)
         if (content === null) return []
+        const placement = (block as PublishedBlock).placement
         return [
             <button
                 className={[
@@ -748,7 +952,8 @@ export function CompactSection({
                     cls(`form-${block.form ?? 'none'}`),
                     cls(`block-${block.id}`),
                 ].join(' ')}
-                key={block.id}
+                key={`${section.id}-${block.id}`}
+                style={placement ? placementStyle(placement) : undefined}
                 type="button"
                 onClick={() => onOpen(block)}
             >
@@ -756,13 +961,52 @@ export function CompactSection({
             </button>,
         ]
     })
+    if (items.length === 0 || !placed) return items
+    return [
+        <div
+            className={cls('placed')}
+            key={`${section.id}-placed`}
+            style={
+                {
+                    '--adr-published-columns': section.columns ?? 1,
+                } as CSSProperties
+            }
+        >
+            {items}
+        </div>,
+    ]
+}
+
+/**
+ * One published section, or nothing when none of its blocks has a value to print. A `joined`
+ * section follows it under the single title that section publishes.
+ */
+export function CompactSection({
+    section,
+    source,
+    presentation,
+    state,
+    card,
+    joined,
+    onOpen,
+}: SectionProps) {
+    const context = { source, presentation, state, card }
+    const blocks = [
+        ...sectionBlocks(section, context, onOpen),
+        ...(joined ? sectionBlocks(joined, context, onOpen) : []),
+    ]
     if (blocks.length === 0) return null
     const className = [
         cls('section'),
         cls(`section-${section.id}`),
         cls(`layout-${section.layout}`),
-    ].join(' ')
-    const title = sectionTitle(section, source)
+        joined ? cls(`section-joined-${joined.id}`) : '',
+    ]
+        .filter(Boolean)
+        .join(' ')
+    const title =
+        (joined && publishedSection(joined).joinedTo?.title) ||
+        sectionTitle(section, source)
     if (section.collapsible)
         return (
             <details className={className}>

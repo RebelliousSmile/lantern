@@ -9,6 +9,10 @@ import {
     ProtectionFields,
     SkillRows,
 } from '../../shared/editor/AdrenalineFields'
+import {
+    CHARACTERISTIC_FIELDS,
+    WEAPON_FIELDS,
+} from '../../shared/schemaFields'
 import { PercentageField, TextField } from '../../shared/editor/FieldPrimitives'
 import {
     FORMATION_TYPES,
@@ -92,6 +96,7 @@ export function PjEditorPanel() {
                         {text('adrenaline:shared.headings.characteristics')}
                     </h3>
                     <CharacteristicsFields
+                        keys={CHARACTERISTIC_FIELDS.pj}
                         value={document.caracteristiques}
                         onChange={(caracteristiques) =>
                             set('caracteristiques', caracteristiques)
@@ -195,6 +200,7 @@ export function PjEditorPanel() {
                         {text('adrenaline:shared.headings.equipment')}
                     </h3>
                     <EquipmentFields
+                        weapons={WEAPON_FIELDS.pj}
                         value={document.equipement}
                         onChange={(equipement) => set('equipement', equipement)}
                     />

@@ -25,6 +25,11 @@ import {
     StringRows,
     TextField,
 } from '../../shared/editor/FieldPrimitives'
+import {
+    CHARACTERISTIC_FIELDS,
+    WEAPON_FIELDS,
+    maximumStates,
+} from '../../shared/schemaFields'
 import { useAdrenalineDocument } from '../../shared/hooks'
 import type { MonstreSection } from '../../shared/sections'
 import { blankMonstre } from '../sample'
@@ -83,6 +88,9 @@ export function MonstreEditorPanel() {
         })
     const contagion = record(document.contagion)
     const states = monsterStates(document)
+    const stateMaximum = maximumStates()
+    const stateLimitReached =
+        stateMaximum !== undefined && states.length >= stateMaximum
     const commitStateDocument = (replacement: MonsterDocument) => {
         update((next) => {
             if ('etats' in replacement) next.etats = replacement.etats
@@ -172,6 +180,7 @@ export function MonstreEditorPanel() {
                         {text('adrenaline:shared.headings.characteristics')}
                     </h3>
                     <CharacteristicsFields
+                        keys={CHARACTERISTIC_FIELDS.monstre}
                         value={document.caracteristiques}
                         onChange={(caracteristiques) =>
                             set('caracteristiques', caracteristiques)
@@ -244,6 +253,7 @@ export function MonstreEditorPanel() {
                         {text('adrenaline:shared.headings.equipment')}
                     </h3>
                     <EquipmentFields
+                        weapons={WEAPON_FIELDS.monstre}
                         value={document.equipement}
                         onChange={(equipement) => set('equipement', equipement)}
                     />
@@ -378,6 +388,7 @@ export function MonstreEditorPanel() {
                                     </Button>
                                 </div>
                                 <CharacteristicsFields
+                                    keys={CHARACTERISTIC_FIELDS.monstreEtat}
                                     value={
                                         delta.caracteristiques ??
                                         document.caracteristiques
@@ -467,7 +478,13 @@ export function MonstreEditorPanel() {
                             {stateError}
                         </p>
                     ) : null}
+                    {stateLimitReached && (
+                        <p className="text-sm text-muted-foreground">
+                            {text('adrenaline:monstre.form.stateLimitReached')}
+                        </p>
+                    )}
                     <Button
+                        disabled={stateLimitReached}
                         type="button"
                         variant="outline"
                         onClick={() =>
