@@ -1,17 +1,26 @@
 /* global process */
 import assert from 'node:assert/strict'
 import fs from 'node:fs'
-import { ADRENALINE_DOCUMENT_CODECS } from 'schema-adrenaline'
+import {
+    ADRENALINE_DOCUMENT_CODECS,
+    EtatDeCreature,
+    Monstre,
+} from 'schema-adrenaline'
+import { MONSTRE_PRESENTATION } from 'schema-adrenaline/presentation'
 import {
     PBTA_COLLECTION_PRESENTATIONS,
     type PbtaCollectionPresentation,
 } from 'schema-pbta'
-import { parse as parseToml } from 'smol-toml'
+import { parse as parseToml, stringify as stringifyToml } from 'smol-toml'
 import {
     carryCanonicalSource,
     overlayCanonicalSource,
 } from '../src/contracts/mist-engine'
 import { nodeDocumentContracts } from '../src/contracts/registry.node'
+import {
+    LANTERN_CAPABILITIES,
+    unknownCapabilities,
+} from '../src/core/capabilities'
 import {
     appendAtPath,
     getAtPath,
@@ -20,15 +29,28 @@ import {
     setAtPath,
 } from '../src/core/editor-schema/path'
 import {
-    LANTERN_CAPABILITIES,
-    unknownCapabilities,
-} from '../src/core/capabilities'
-import { normalizeContractManifests } from './contractManifests.mjs'
-import { collectionAdapterFor } from '../src/templates/pbta/specialized/collectionAdapters'
+    actionSummary,
+    cleanAction,
+    hasMoreFields,
+} from '../src/templates/adrenaline/monstre/editor/actionClean'
 import {
-    removeCollectionItem,
-    replaceCollectionItems,
-} from '../src/templates/pbta/specialized/collectionPolicy'
+    damageNatures,
+    damageSides,
+} from '../src/templates/adrenaline/monstre/editor/damageEnums'
+import {
+    DELTA_KEYS,
+    acceptedEmpty,
+    giveDeltaKey,
+    isStateOnly,
+    shownValue,
+    takeBackDeltaKey,
+    writeDeltaKey,
+} from '../src/templates/adrenaline/monstre/editor/deltaEdit'
+import {
+    panelFor,
+    rootKeys,
+    shownKeys,
+} from '../src/templates/adrenaline/monstre/editTargets'
 import {
     addMonsterState,
     monsterStates,
@@ -40,6 +62,17 @@ import {
     type MonsterDocument,
 } from '../src/templates/adrenaline/monstre/states'
 import { upgradeLegacyAdrenalineRanges } from '../src/templates/adrenaline/shared/legacyRanges'
+import {
+    parseAdrenalineToml,
+    stringifyAdrenalineToml,
+} from '../src/templates/adrenaline/shared/toml'
+import { collectionAdapterFor } from '../src/templates/pbta/specialized/collectionAdapters'
+import {
+    removeCollectionItem,
+    replaceCollectionItems,
+} from '../src/templates/pbta/specialized/collectionPolicy'
+import { NOT_EDITABLE } from './adrenalineNotEditable.mjs'
+import { normalizeContractManifests } from './contractManifests.mjs'
 
 /*
  * Two layers, run against every registered contract:
@@ -279,7 +312,10 @@ function assertExactLegacyMonsterMigration(before: unknown, after: unknown) {
     assert.equal(migrated.id, 'alternatif-historique')
     assert.deepStrictEqual(migrated.declencheurs, legacy.declencheurs)
     const migratedDelta = record(migrated.delta)
-    assert.deepStrictEqual(migratedDelta.caracteristiques, delta.caracteristiques)
+    assert.deepStrictEqual(
+        migratedDelta.caracteristiques,
+        delta.caracteristiques
+    )
     assert.equal(migratedDelta.zoneDeDetection, legacy.zoneDeDetection)
     assert.equal(migratedDelta.deplacement, legacy.deplacement)
     assert.equal(migratedDelta.actionsParRound, legacy.actionsParRound)
@@ -409,11 +445,7 @@ async function assertLanternModules(cases: NormalizedCase[]) {
             )
 
             const first = codec.exportToTOML(imported[key] as never)
-            assertRawRoundTrip(
-                witness,
-                parseToml(source),
-                parseToml(first)
-            )
+            assertRawRoundTrip(witness, parseToml(source), parseToml(first))
 
             const second = codec.exportToTOML(
                 codec.importFromTOMLWithWarnings(first)[key] as never
@@ -678,9 +710,10 @@ function assertMonsterStateHelpers() {
         monsterStates(edited.document).map((state) => state.id),
         ['etat', 'etat-2']
     )
-    assert.deepStrictEqual(monsterStates(edited.document)[0].delta.traitsSpeciaux, [
-        'Ignore la douleur',
-    ])
+    assert.deepStrictEqual(
+        monsterStates(edited.document)[0].delta.traitsSpeciaux,
+        ['Ignore la douleur']
+    )
 
     const renamed = replaceMonsterState(source, 0, {
         ...first,
@@ -705,35 +738,476 @@ function assertMonsterStateHelpers() {
     assert.deepStrictEqual(resolved.traitsSpeciaux, ['Ignore la douleur'])
 }
 
+/*
+ * The creature's actions editor writes through `cleanAction`: whatever a half-filled draft holds,
+ * the document must still pass the published codec, and a legacy damage key must survive.
+ */
+function assertActionEditorOutput() {
+    const codec = ADRENALINE_DOCUMENT_CODECS['monstre'] as {
+        parseJson: (text: string) => unknown
+    }
+    const base = parseToml(
+        fs.readFileSync(
+            'node_modules/schema-adrenaline/examples/adrenaline/monstre/infecte-zy-2.toml',
+            'utf8'
+        )
+    ) as Record<string, unknown>
+    const messy = {
+        nom: '',
+        test: {
+            nom: 'Morsure',
+            pourcentage: 40,
+        },
+        degats: {
+            versant: 'physique',
+            profils: [
+                { des: '' },
+                { des: '1d10', nature: 'blessante', condition: '' },
+            ],
+            liant: '',
+            proprietes: ['', 'Perforante'],
+        },
+        effets: [''],
+        conditions: [],
+        notes: '',
+        suites: [
+            { nom: '', degats: { versant: 'mental', profils: [{ des: '' }] } },
+            { nom: 'Suivi' },
+        ],
+    }
+    const cleaned = cleanAction(messy)
+    assert.ok(cleaned, 'a filled action is kept')
+    assert.deepStrictEqual(
+        Object.keys(cleaned).sort(),
+        ['degats', 'suites', 'test'],
+        'blank keys, empty lists and empty objects are not written'
+    )
+    assert.deepStrictEqual(cleaned.suites, [{ nom: 'Suivi' }])
+    assert.equal(
+        cleanAction({ nom: '', degats: { profils: [{ des: '' }] } }),
+        undefined
+    )
+    assert.deepStrictEqual(
+        cleanAction({ nom: 'Coup', desDeDegats: 2, modificateurDeDegats: 1 }),
+        { nom: 'Coup', desDeDegats: 2, modificateurDeDegats: 1 },
+        'legacy damage keys are kept'
+    )
+    assert.ok(
+        codec.parseJson(JSON.stringify({ ...base, actions: [cleaned] })),
+        'the cleaned action passes the published codec'
+    )
+    assert.deepStrictEqual(
+        cleaned.test,
+        { nom: 'Morsure', pourcentage: 40 },
+        'the editor writes the test percentage as a plain number'
+    )
+    // A document written earlier may hold the triplet: it is read as it is
+    // and still passes the codec, as the creature accepts both forms.
+    const withTriplet = cleanAction({
+        nom: 'Coup',
+        test: {
+            nom: 'Frapper',
+            pourcentage: { minimum: 0, current: 55, maximum: 55 },
+        },
+        suites: [
+            {
+                nom: 'Suivi',
+                test: {
+                    nom: 'Lutter',
+                    pourcentage: { minimum: 0, current: 30, maximum: 30 },
+                },
+            },
+        ],
+    })
+    assert.ok(withTriplet, 'an action with a triplet test is kept')
+    assert.deepStrictEqual(withTriplet.test, {
+        nom: 'Frapper',
+        pourcentage: { minimum: 0, current: 55, maximum: 55 },
+    })
+    assert.ok(
+        codec.parseJson(JSON.stringify({ ...base, actions: [withTriplet] })),
+        'a triplet test passes the published codec on a creature'
+    )
+}
+
+/*
+ * A state's delta is written through a draft: blank rows never reach the contract, a key the state
+ * owns stays the state's when it is emptied, and a key the contract takes no empty form for is
+ * refused. Every key of the published delta is probed, none is listed here.
+ */
+function assertDeltaEdit() {
+    const state = { id: 'enrage', nom: 'Enragé', delta: {} } as never
+    const parse = (candidate: unknown) =>
+        replaceMonsterState({ etats: [state] }, 0, candidate)
+    assert.ok(DELTA_KEYS.length > 0, 'the contract publishes delta keys')
+    assert.ok(
+        DELTA_KEYS.includes('actions') &&
+            DELTA_KEYS.includes('caracteristiques'),
+        'the delta keys come from the contract'
+    )
+    for (const key of DELTA_KEYS) {
+        const empty = acceptedEmpty(key)
+        const written = writeDeltaKey(state, key, undefined)
+        if (empty === undefined) {
+            assert.equal(
+                written.ok,
+                false,
+                `${key}: no empty form, so emptying is refused`
+            )
+        } else {
+            assert.ok(
+                written.ok,
+                `${key}: an owned key emptied keeps the form the contract accepts`
+            )
+            if (written.ok)
+                assert.ok(
+                    parse(written.state).ok,
+                    `${key}: its empty form is accepted by the contract`
+                )
+        }
+    }
+    for (const key of [
+        'actions',
+        'comportement',
+        'traitsSpeciaux',
+        'competences',
+    ])
+        assert.deepEqual(
+            acceptedEmpty(key),
+            [],
+            `${key} may be an empty list on a state`
+        )
+    // A blank row is cleaned before the write, so the contract accepts the document.
+    const blank = writeDeltaKey(state, 'comportement', ['Charge', ''])
+    assert.ok(blank.ok, 'a list with a blank row is written cleaned')
+    if (blank.ok) {
+        assert.deepEqual(blank.state.delta.comportement, ['Charge'])
+        assert.ok(parse(blank.state).ok)
+    }
+    const nameless = writeDeltaKey(state, 'competences', [
+        { nom: 'Mordre', pourcentage: 40 },
+        { nom: '', pourcentage: 0 },
+    ])
+    assert.ok(
+        nameless.ok && parse(nameless.state).ok,
+        'a nameless skill row is not written'
+    )
+    const last = writeDeltaKey(state, 'comportement', [''])
+    assert.ok(last.ok, 'emptying the last line keeps the key on the state')
+    if (last.ok) assert.deepEqual(last.state.delta.comportement, [])
+    assert.equal(
+        writeDeltaKey(state, 'caracteristiques', {}).ok,
+        false,
+        'characteristics cannot be emptied on a state'
+    )
+    // The draft survives a write and a refused write, and gives way to a changed document.
+    const draft = { value: ['Charge', ''], over: JSON.stringify(['Charge']) }
+    assert.deepEqual(
+        shownValue(draft, ['Charge']),
+        ['Charge', ''],
+        'written: the draft stays'
+    )
+    assert.deepEqual(shownValue(draft, ['Charge']), draft.value)
+    assert.deepEqual(
+        shownValue({ value: ['x', ''], over: JSON.stringify(['a']) }, ['a']),
+        ['x', ''],
+        'refused write: the draft stays over the unchanged document'
+    )
+    assert.deepEqual(
+        shownValue({ value: ['x'], over: JSON.stringify(['a']) }, ['b']),
+        ['b'],
+        'the document changed elsewhere: the draft gives way'
+    )
+    assert.equal(isStateOnly('notes'), true, 'notes is a state-only key')
+    assert.equal(isStateOnly('actions'), false)
+}
+
+/*
+ * The gesture that creates a delta key: "give" copies the base's value (else the empty form the contract
+ * accepts), "take back" removes it. Proven for every delta key the contract declares, on the Zy-2 example.
+ */
+function assertGiveAndTakeBack() {
+    const base = parseToml(
+        fs.readFileSync(
+            'node_modules/schema-adrenaline/examples/adrenaline/monstre/infecte-zy-2.toml',
+            'utf8'
+        )
+    ) as Record<string, unknown>
+    assert.ok(
+        Monstre.safeParse(base).success,
+        'the Zy-2 example is a valid creature'
+    )
+    const state = { id: 'enrage', nom: 'Enragé', delta: {} } as never
+    const accepts = (candidate: unknown) =>
+        EtatDeCreature.safeParse(candidate).success
+    let given = 0
+    let drafted = 0
+    for (const key of DELTA_KEYS) {
+        const gift = giveDeltaKey(state, key, base[key])
+        if (gift.kind === 'draft') {
+            assert.equal(
+                base[key] === undefined && acceptedEmpty(key) === undefined,
+                true,
+                `${key}: a draft is only opened when there is neither a base value nor an accepted empty form`
+            )
+            drafted += 1
+            continue
+        }
+        given += 1
+        assert.ok(
+            accepts(gift.state),
+            `${key}: giving the key yields a document the contract accepts`
+        )
+        const expected =
+            base[key] !== undefined ? base[key] : acceptedEmpty(key)
+        assert.deepEqual(
+            (gift.state.delta as Record<string, unknown>)[key],
+            expected,
+            `${key}: the state starts from the base value, else the accepted empty form`
+        )
+        assert.deepEqual(
+            takeBackDeltaKey(gift.state, key),
+            state,
+            `${key}: taking the key back restores the document as it was`
+        )
+        assert.equal(
+            gift.state.delta === (state as { delta: unknown }).delta,
+            false,
+            `${key}: giving never mutates the state it was given`
+        )
+    }
+    assert.ok(given > 0, 'at least one delta key can be given')
+    assert.equal(
+        given + drafted,
+        DELTA_KEYS.length,
+        'every delta key is either written or drafted'
+    )
+    // The base has no value: the contract's empty form is written when there is one.
+    const emptyKey = DELTA_KEYS.find((key) => acceptedEmpty(key) !== undefined)
+    assert.ok(emptyKey, 'the contract accepts an empty form for some key')
+    if (emptyKey) {
+        const gift = giveDeltaKey(state, emptyKey, undefined)
+        assert.equal(gift.kind, 'written')
+    }
+}
+
+/*
+ * Clicking a zone must open a panel that edits everything the zone prints: for every block of the
+ * published presentation, each root key its paths print is carried by the panel `panelFor` picks,
+ * save the declared debt.
+ */
+function assertClickedZonesAreEditable() {
+    const debt = new Set<string>(NOT_EDITABLE.monstre)
+    let blocks = 0
+    for (const section of MONSTRE_PRESENTATION.sections)
+        for (const block of section.blocks) {
+            const paths = (block.paths ?? []) as string[]
+            if (paths.length === 0) continue
+            blocks += 1
+            const printed = rootKeys(paths).filter((key) => !debt.has(key))
+            const rendered = shownKeys(panelFor(paths), rootKeys(paths))
+            /* Equality, not inclusion: a panel wider than its zone is as wrong as one that is too narrow. */
+            assert.deepEqual(
+                rendered.slice().sort(),
+                printed.slice().sort(),
+                `block ${block.id}: the panel it opens (${panelFor(paths)}) renders ${rendered.join(', ') || 'nothing'}, the block prints ${printed.join(', ')}`
+            )
+        }
+    assert.ok(blocks > 0, 'the creature presentation publishes blocks')
+}
+
+function assertDamageEnumerations() {
+    /* The editor offers what the contract declares, and keeps a value it does not know. */
+    const probe = (damage: Record<string, unknown>) =>
+        EtatDeCreature.safeParse({
+            id: 'e',
+            nom: 'e',
+            delta: { actions: [{ nom: 'Coup', degats: damage }] },
+        }).success
+    assert.ok(
+        damageNatures().length > 0 && damageSides().length > 0,
+        'the damage enumerations are readable from the published contract: its shape changed'
+    )
+    for (const nature of damageNatures())
+        assert.ok(probe({ profils: [{ des: '1d10', nature }] }), nature)
+    for (const side of damageSides())
+        assert.ok(probe({ versant: side, profils: [{ des: '1d10' }] }), side)
+    const kept = cleanAction({
+        nom: 'Coup',
+        degats: {
+            versant: 'inconnu',
+            profils: [{ des: '1d10', nature: 'inconnue' }],
+        },
+    }) as { degats: { versant: string; profils: { nature: string }[] } }
+    assert.equal(kept.degats.versant, 'inconnu')
+    assert.equal(kept.degats.profils[0].nature, 'inconnue')
+}
+
+function assertActionEditorSummaries() {
+    assert.equal(actionSummary({}), undefined)
+    assert.equal(
+        actionSummary({
+            nom: 'Morsure',
+            test: { nom: 'Mordre', pourcentage: 45 },
+            degats: { profils: [{ des: '' }, { des: '2d10' }] },
+        }),
+        'Morsure · Mordre 45 % · 2d10'
+    )
+    assert.equal(
+        actionSummary({
+            test: {
+                nom: 'Lutte',
+                pourcentage: { minimum: 0, current: 30, maximum: 30 },
+            },
+        }),
+        'Lutte 30 %',
+        'a triplet is summarised by its current value'
+    )
+    // A test without a name is not written, a named one always carries its percentage.
+    assert.equal(cleanAction({ test: { nom: '', pourcentage: 40 } }), undefined)
+    assert.deepStrictEqual(cleanAction({ test: { nom: 'Mordre' } }), {
+        test: { nom: 'Mordre', pourcentage: 0 },
+    })
+    // Empty damage and an empty test, as the always visible fields leave them, write nothing.
+    assert.equal(
+        cleanAction({
+            nom: '',
+            test: { nom: '', pourcentage: 0 },
+            degats: { profils: [{ des: '' }] },
+        }),
+        undefined
+    )
+    assert.equal(hasMoreFields({ nom: 'A' }), false)
+    assert.equal(hasMoreFields({ degats: { liant: 'ou' } }), true)
+    assert.equal(hasMoreFields({ conditions: ['Au contact'] }), true)
+    assert.equal(hasMoreFields({ notes: '  ' }), false)
+}
+
 function assertLegacyRangeKeyPresence() {
-    const source = {
+    /* Each target is given a source of its own form: the keys a source lacks stay absent, none is restored. */
+    const playerSource = {
+        caracteristiques: { for: 45, con: 60 },
+        sante: { physique: { superficiel: { base: 2 } } },
+    }
+    const upgraded = upgradeLegacyAdrenalineRanges(
+        playerSource,
+        'adrenaline/pj'
+    ) as {
+        caracteristiques: Record<string, unknown>
+        sante: { physique: { superficiel: Record<string, unknown> } }
+    }
+    assert.deepStrictEqual(Object.keys(upgraded.caracteristiques), [
+        'for',
+        'con',
+    ])
+    for (const key of ['dex', 'rap', 'per'])
+        assert.equal(
+            Object.hasOwn(upgraded.caracteristiques, key),
+            false,
+            `adrenaline/pj: the absent "${key}" is not restored`
+        )
+    assert.deepStrictEqual(Object.keys(upgraded.sante.physique), [
+        'superficiel',
+    ])
+    assert.deepStrictEqual(Object.keys(upgraded.sante.physique.superficiel), [
+        'base',
+    ])
+    assert.equal(
+        Object.values(upgraded.caracteristiques).some(
+            (value) => value === undefined
+        ),
+        false
+    )
+    assert.equal(
+        (upgraded.caracteristiques.for as { current: number }).current,
+        45
+    )
+    assert.deepStrictEqual(playerSource.caracteristiques, { for: 45, con: 60 })
+
+    /* Only the player sheet keeps the triplet: a creature or a PNJ keeps the plain number, key for key. */
+    const creatureSource = {
         caracteristiques: { for: 45, con: 60, dex: 25, rap: 30 },
         etatAlternatif: {
             nom: 'Stimulé',
             caracteristiques: { rap: 55, per: 50 },
         },
     }
-    const upgraded = upgradeLegacyAdrenalineRanges(source) as {
-        etatAlternatif: { caracteristiques: Record<string, unknown> }
+    const npcSource = {
+        caracteristiques: { for: 30, per: 40 },
+        sante: { physique: { superficiel: { base: 2 } } },
     }
-    const characteristics = upgraded.etatAlternatif.caracteristiques
+    for (const [target, own] of [
+        ['adrenaline/monstre', creatureSource],
+        ['adrenaline/pnj', npcSource],
+    ] as const)
+        assert.deepStrictEqual(
+            upgradeLegacyAdrenalineRanges(own, target),
+            own,
+            `${target} keeps its plain numbers`
+        )
+    const player = upgradeLegacyAdrenalineRanges(
+        { caracteristiques: { for: 45 } },
+        'adrenaline/pj'
+    ) as { caracteristiques: { for: { current: number } } }
+    assert.equal(player.caracteristiques.for.current, 45)
 
-    assert.deepStrictEqual(Object.keys(characteristics), ['rap', 'per'])
-    assert.equal(Object.hasOwn(characteristics, 'for'), false)
-    assert.equal(Object.hasOwn(characteristics, 'con'), false)
-    assert.equal(Object.hasOwn(characteristics, 'dex'), false)
-    assert.equal(
-        Object.values(characteristics).some((value) => value === undefined),
-        false
+    /* The real round trip an import and an export make: read the TOML, write it back. */
+    const roundTrip = (target: string, toml: string) => {
+        const read = parseAdrenalineToml<Record<string, unknown>>(target, toml)
+        return {
+            read,
+            written: parseAdrenalineToml<Record<string, unknown>>(
+                target,
+                stringifyAdrenalineToml(target, read)
+            ),
+        }
+    }
+    const published = (target: string, file: string) =>
+        parseToml(
+            fs.readFileSync(
+                `node_modules/schema-adrenaline/examples/${target}/${file}`,
+                'utf8'
+            )
+        ) as { caracteristiques: Record<string, unknown> }
+    const asNumbers = (document: {
+        caracteristiques: Record<string, unknown>
+    }) => {
+        for (const key of Object.keys(document.caracteristiques))
+            document.caracteristiques[key] = (
+                document.caracteristiques[key] as { current: number }
+            ).current
+        return document
+    }
+    for (const [target, file] of [
+        ['adrenaline/monstre', 'infecte-zy-2.toml'],
+        ['adrenaline/pnj', 'agent-de-securite.toml'],
+    ]) {
+        const document = asNumbers(published(target, file))
+        const entered = { ...document.caracteristiques }
+        const { read, written } = roundTrip(target, stringifyToml(document))
+        for (const result of [read, written])
+            assert.deepStrictEqual(
+                result.caracteristiques,
+                entered,
+                `${target}: plain numbers stay numbers through the round trip`
+            )
+    }
+    const sheet = published('adrenaline/pj', 'figurant-minimal.toml')
+    sheet.caracteristiques.for = 40
+    const { read: pj, written: pjWritten } = roundTrip(
+        'adrenaline/pj',
+        stringifyToml(sheet)
     )
-    assert.deepStrictEqual(characteristics, {
-        rap: { minimum: 0, current: 55, maximum: 55 },
-        per: { minimum: 0, current: 50, maximum: 50 },
-    })
-    assert.deepStrictEqual(source.etatAlternatif.caracteristiques, {
-        rap: 55,
-        per: 50,
-    })
+    for (const result of [pj, pjWritten]) {
+        const value = (result.caracteristiques as Record<string, unknown>).for
+        assert.ok(
+            typeof value === 'object' &&
+                value !== null &&
+                (value as { minimum: number }).minimum === 40 &&
+                (value as { current: number }).current === 40,
+            'adrenaline/pj: a plain number becomes a triplet through the round trip'
+        )
+    }
 }
 
 type DeclaredPack = {
@@ -859,6 +1333,12 @@ async function main() {
     assertPbtaCollectionAdapters()
     assertMonsterStateHelpers()
     assertLegacyRangeKeyPresence()
+    assertActionEditorOutput()
+    assertActionEditorSummaries()
+    assertDamageEnumerations()
+    assertDeltaEdit()
+    assertGiveAndTakeBack()
+    assertClickedZonesAreEditable()
     const declaredLine = assertDeclaredCapabilities(descriptors)
 
     const perContract = [...tally.entries()].map(([contractId, counts]) => {

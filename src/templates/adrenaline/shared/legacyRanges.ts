@@ -45,43 +45,9 @@ const upgradeSkills = (value: unknown) => {
     }
 }
 
-/*
- * The lists a document of this target declares come from its published schema: a list the schema
- * no longer declares is not upgraded, and the schema then reports it. Without a target, every
- * list any of the documents declares is upgraded.
- */
-const uniq = (keys: readonly string[]) =>
-    keys.filter((key, index) => keys.indexOf(key) === index)
-
-const weaponKeysOf = (target?: string): readonly string[] =>
-    target === 'adrenaline/pj'
-        ? WEAPON_FIELDS.pj
-        : target === 'adrenaline/pnj'
-          ? WEAPON_FIELDS.pnj
-          : target === 'adrenaline/monstre'
-            ? WEAPON_FIELDS.monstre
-            : uniq([
-                  ...WEAPON_FIELDS.pj,
-                  ...WEAPON_FIELDS.pnj,
-                  ...WEAPON_FIELDS.monstre,
-              ])
-
-const characteristicKeysOf = (target?: string): readonly string[] =>
-    target === 'adrenaline/pj'
-        ? CHARACTERISTIC_FIELDS.pj
-        : target === 'adrenaline/pnj'
-          ? CHARACTERISTIC_FIELDS.pnj
-          : target === 'adrenaline/monstre'
-            ? CHARACTERISTIC_FIELDS.monstre
-            : uniq([
-                  ...CHARACTERISTIC_FIELDS.pj,
-                  ...CHARACTERISTIC_FIELDS.pnj,
-                  ...CHARACTERISTIC_FIELDS.monstre,
-              ])
-
-const upgradeEquipment = (value: unknown, target?: string) => {
+const upgradeEquipment = (value: unknown) => {
     if (!isRecord(value)) return
-    for (const key of weaponKeysOf(target)) {
+    for (const key of WEAPON_FIELDS.pj) {
         if (!Array.isArray(value[key])) continue
         for (const weapon of value[key]) {
             if (isRecord(weapon)) upgradeKeys(weapon, ['pourcentage'])
@@ -94,19 +60,25 @@ const upgradeEquipment = (value: unknown, target?: string) => {
  * current value and upper bound. A legacy scalar has no stated headroom, so
  * migration keeps it truthful: 0 ≤ n ≤ n — except a PJ characteristic, whose
  * scalar is its creation value: n ≤ n ≤ the published ceiling.
+ *
+ * Only the player sheet keeps the triplet. A creature or a PNJ accepts the plain number (its scores
+ * do not evolve), so a document of those targets is left as written. The lists upgraded are the
+ * ones the published player-sheet schema declares: a list it no longer declares is not upgraded,
+ * and the schema then reports it.
  */
 export function upgradeLegacyAdrenalineRanges(
     value: unknown,
-    target?: string
+    target: string
 ): unknown {
     if (!isRecord(value)) return value
+    if (target !== 'adrenaline/pj') return value
     const document = structuredClone(value)
 
     if (isRecord(document.caracteristiques)) {
         upgradeKeys(
             document.caracteristiques,
-            [...characteristicKeysOf(target)],
-            target === 'adrenaline/pj' ? toCharacteristic : toRange
+            [...CHARACTERISTIC_FIELDS.pj],
+            toCharacteristic
         )
     }
 
@@ -142,7 +114,7 @@ export function upgradeLegacyAdrenalineRanges(
         }
     }
     upgradeSkills(document.competences)
-    upgradeEquipment(document.equipement, target)
+    upgradeEquipment(document.equipement)
 
     if (isRecord(document.parametresDuJeu)) {
         upgradeKeys(document.parametresDuJeu, ['px'])

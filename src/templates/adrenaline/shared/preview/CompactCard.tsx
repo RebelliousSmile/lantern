@@ -1,4 +1,6 @@
+import { translate, useUiText, type TranslationKey } from '@/i18n/text'
 import {
+    ArrowRight,
     Biohazard,
     PawPrint,
     Shield,
@@ -12,7 +14,6 @@ import type {
     AdrenalinePresentationBlock,
     AdrenalinePresentationSection,
 } from 'schema-adrenaline/presentation'
-import { translate, useUiText, type TranslationKey } from '@/i18n/text'
 import { asRecord, at, lastSegment, sortedBlocks } from '../presentation'
 import { currentValue } from './SheetPrimitives'
 
@@ -44,6 +45,8 @@ type PublishedBlock = AdrenalinePresentationBlock & {
     pointerRows?: readonly (readonly { path: string; label?: string }[])[]
     cards?: readonly CardId[]
     placement?: Placement
+    subtitlePaths?: readonly string[]
+    rowLabels?: readonly string[]
 }
 type PublishedSection = AdrenalinePresentationSection & {
     cards?: readonly CardId[]
@@ -55,7 +58,7 @@ type PublishedPresentation = AdrenalinePresentation & {
 }
 type StateBadge = {
     triggerMarker: boolean
-    current: { path: string; cards: readonly CardId[] }
+    current: { path: string; cards: readonly CardId[]; position?: string }
 }
 
 export function publishedSection(
@@ -346,7 +349,7 @@ function NameCard({
     source,
     presentation,
 }: {
-    block: AdrenalinePresentationBlock
+    block: PublishedBlock
     source: Source
     presentation: AdrenalinePresentation
 }) {
@@ -358,6 +361,16 @@ function NameCard({
     const danger = text(at(source, '/niveauDeDanger'))
     const alternate = text(at(source, '/niveauDeDangerAlternatif'))
     const note = text(at(source, '/niveauDeDangerNote'))
+    /* The note is called by an asterisk on the first level printed, as the contract describes it. */
+    const call = note ? '*' : ''
+    const levels = danger
+        ? [danger + call, alternate]
+        : [danger, alternate ? alternate + call : alternate]
+    /* The published pointers, on one line under the name; a value left out is not printed. */
+    const subtitle = (block.subtitlePaths ?? [])
+        .map((pointer) => text(at(source, pointer)))
+        .filter(Boolean)
+        .join(' ')
     return (
         <>
             <span className={cls('banner-category')}>{shown}</span>
@@ -367,16 +380,23 @@ function NameCard({
                         <Icon aria-hidden="true" />
                     </span>
                 )}
-                <strong className={cls('banner-name')}>
-                    {text(at(source, '/nom'))}
-                </strong>
+                <span className={cls('banner-title')}>
+                    <strong className={cls('banner-name')}>
+                        {text(at(source, '/nom'))}
+                    </strong>
+                    {subtitle && (
+                        <span className={cls('banner-subtitle')}>
+                            {subtitle}
+                        </span>
+                    )}
+                </span>
                 {(danger || alternate) && (
                     <span className={cls('banner-danger')}>
-                        ND {joined([danger, alternate], ' / ')}
+                        ND {joined(levels, ' / ')}
                     </span>
                 )}
             </span>
-            {note && <span className={cls('banner-note')}>{note}</span>}
+            {note && <span className={cls('banner-note')}>* {note}</span>}
         </>
     )
 }
@@ -443,13 +463,18 @@ function PointerRows({
                 entered,
                 cell.path.startsWith('/caracteristiques/') ? ' %' : ''
             )
-            if (!shown) return []
+            /* A cell is printed when its value is entered, the Handbook's criterion. */
+            if (isEmpty(entered)) return []
             const style = { '--adr-column': position + 1 } as CSSProperties
             return [
                 <span className={cls('cell')} key={cell.path} style={style}>
-                    <b className={cls('line-label')}>
-                        {cell.label ?? lastSegment(cell.path).toUpperCase()}
-                    </b>
+                    {cell.label === undefined ? (
+                        <b className={cls('line-label')}>
+                            {lastSegment(cell.path).toUpperCase()}
+                        </b>
+                    ) : (
+                        <span className={cls('line-label')}>{cell.label}</span>
+                    )}
                     <span className={cls('value')}>{shown}</span>
                 </span>,
             ]
@@ -459,9 +484,7 @@ function PointerRows({
             <span
                 className={cls('grid')}
                 key={index}
-                style={
-                    { '--adr-published-columns': columns } as CSSProperties
-                }
+                style={{ '--adr-published-columns': columns } as CSSProperties}
             >
                 {cells}
             </span>
@@ -511,23 +534,37 @@ function Thresholds({ found }: { found: unknown }) {
     return HEALTH_SIDES.map(([side, short]) => {
         const thresholds = asRecord(health[side])
         if (!thresholds) return null
+        /* A threshold the document leaves out is not printed. */
+        const printed = THRESHOLDS.flatMap(([key, name]) => {
+            const threshold = asRecord(thresholds[key])
+            const base = text(threshold?.base)
+            const covered = text(threshold?.couvert)
+            return base
+                ? [
+                      {
+                          key,
+                          name,
+                          shown: covered ? `${base} (${covered})` : base,
+                      },
+                  ]
+                : []
+        })
         return (
             <span className={cls('thresholds')} key={side}>
                 <b className={cls('line-label')}>{short}</b>
-                {THRESHOLDS.map(([key, name]) => {
-                    const threshold = asRecord(thresholds[key])
-                    const base = text(threshold?.base)
-                    const covered = text(threshold?.couvert)
-                    return (
-                        <span
-                            className={`${cls('threshold')} ${cls('value')}`}
-                            data-threshold={name}
-                            key={key}
-                        >
-                            {covered ? `${base} (${covered})` : base}
-                        </span>
-                    )
-                })}
+                {printed.map(({ key, name, shown }, position) => (
+                    /* The slash leads its figure: a line breaks between figures, never inside one. */
+                    <span
+                        className={`${cls('threshold')} ${cls('value')}`}
+                        data-threshold={name}
+                        key={key}
+                    >
+                        {position > 0 && (
+                            <span className={cls('threshold-sep')}>/ </span>
+                        )}
+                        {shown}
+                    </span>
+                ))}
             </span>
         )
     })
@@ -687,7 +724,12 @@ function InlineList({ found, name }: { found: unknown; name?: string }) {
     )
 }
 
-function Combat({ source }: { source: Source }) {
+/*
+ * The combat block: one row of the block's published columns, each path under its published
+ * `rowLabels` entry (bold, in the order of `paths`). Actions print `<n>/round`, the defence
+ * `<level> (<bonus> bonus)`, the bonus omitted when not entered. Values as entered, never computed.
+ */
+function Combat({ block, source }: { block: PublishedBlock; source: Source }) {
     const actions = text(at(source, '/actionsParRound'))
     const defense = asRecord(at(source, '/defense'))
     const level = text(defense?.niveau)
@@ -698,27 +740,39 @@ function Combat({ source }: { source: Source }) {
                 : 'non'
             : ''
     const bonus = text(defense?.bonus)
+    const shownLevel = DEFENSE_LEVELS[level || legacy] ?? level
+    const shown: Record<string, string> = {
+        '/actionsParRound': actions && `${actions}/round`,
+        '/defense': joined([shownLevel, bonus && `(${bonus} bonus)`], ' '),
+    }
+    // A declared field is never hidden: the free note follows the published form.
+    const notes: Record<string, string> = { '/defense': text(defense?.notes) }
+    const cells = block.paths.flatMap((path, index) => {
+        const content = shown[path]
+        const note = notes[path]
+        if (!content && !note) return []
+        return [
+            <span className={cls('cell')} key={path}>
+                <b className={cls('line-label')}>
+                    {block.rowLabels?.[index] ?? label(lastSegment(path))}
+                </b>
+                {content && <span className={cls('value')}>{content}</span>}
+                {note && <span className={cls('note')}>{note}</span>}
+            </span>,
+        ]
+    })
+    if (cells.length === 0) return null
     return (
-        <>
-            {actions && (
-                <span className={cls('combat-actions')}>
-                    {actions} action{actions === '1' ? '' : 's'} par round
-                </span>
-            )}
-            {defense && (
-                <Line
-                    content={joined(
-                        [
-                            DEFENSE_LEVELS[level || legacy] ?? level,
-                            bonus && `+${bonus}`,
-                            text(defense.notes),
-                        ],
-                        ' '
-                    )}
-                    name="Défense"
-                />
-            )}
-        </>
+        <span
+            className={cls('grid')}
+            style={
+                {
+                    '--adr-published-columns': block.columns ?? 1,
+                } as CSSProperties
+            }
+        >
+            {cells}
+        </span>
     )
 }
 
@@ -765,10 +819,12 @@ function Status({ found }: { found: unknown }) {
 }
 
 /*
- * The state header, dressed by the published `state-badge` decoration: a marker before each
- * trigger, and on the cards the decoration names a box ticked when the current state is the one
- * this card prints. The box is not a control (disabled checkbox), ticked or not. Without the
- * decoration, the card of the active state carries the textual marker.
+ * The state header, dressed by the published `state-badge` decoration: the state name on a section
+ * title band, and on the cards the decoration names a box ticked when the current state is the one
+ * this card prints, at the end of the band when `current.position` says `end`. The box is not a
+ * control (disabled checkbox), ticked or not. Each trigger follows under the band: a round arrow
+ * marker, then the bare text. Without the decoration, the card of the active state carries the
+ * textual marker.
  */
 function StateHeader({
     badge,
@@ -781,38 +837,50 @@ function StateHeader({
 }) {
     const ui = useUiText()
     const boxed = !!card && !!badge?.current.cards.includes(card)
+    const atEnd = badge?.current.position === 'end'
+    const box = boxed && (
+        <span
+            aria-checked={state.current}
+            aria-disabled="true"
+            aria-label={ui('adrenaline:shared.card.currentState')}
+            className={
+                state.current
+                    ? `${cls('state-box')} ${cls('state-box--checked')}`
+                    : cls('state-box')
+            }
+            role="checkbox"
+        />
+    )
     return (
         <>
-            <span className={cls('state-name')}>
-                {boxed && (
-                    <span
-                        aria-checked={state.current}
-                        aria-disabled="true"
-                        aria-label={ui('adrenaline:shared.card.currentState')}
-                        className={
-                            state.current
-                                ? `${cls('state-box')} ${cls('state-box--checked')}`
-                                : cls('state-box')
-                        }
-                        role="checkbox"
-                    />
-                )}
+            <span
+                className={`${cls('section-title')} ${cls('state-name')}${atEnd ? ` ${cls('state-name--box-end')}` : ''}`}
+            >
+                {!atEnd && box}
                 <strong className={cls('state-label')}>{state.name}</strong>
                 {!badge && state.active && (
                     <span className={cls('state-active')}>
                         {ui('adrenaline:shared.card.currentState')}
                     </span>
                 )}
+                {atEnd && box}
             </span>
             {state.triggers.map((trigger, index) => (
-                <span className={cls('trigger')} key={index}>
+                <span className={cls('state-trigger')} key={index}>
                     {badge?.triggerMarker && (
-                        <i aria-hidden="true" className={cls('trigger-mark')} />
+                        <span
+                            aria-hidden="true"
+                            className={cls('trigger-mark')}
+                        >
+                            <ArrowRight />
+                        </span>
                     )}
                     {trigger}
                 </span>
             ))}
-            {state.note && <span className={cls('note')}>{state.note}</span>}
+            {state.note && (
+                <span className={cls('state-note')}>{state.note}</span>
+            )}
         </>
     )
 }
@@ -834,7 +902,8 @@ type BlockContext = Omit<SectionProps, 'section' | 'joined' | 'onOpen'>
 /** What a block prints, or null when it has no value to print. */
 function blockContent(
     block: AdrenalinePresentationBlock,
-    { source, presentation, state, card }: BlockContext
+    { source, presentation, state, card }: BlockContext,
+    sectionLabel?: string
 ): ReactNode {
     if (block.form === 'state-header')
         return state ? (
@@ -855,13 +924,23 @@ function blockContent(
         case 'name-card':
             return (
                 <NameCard
-                    block={block}
+                    block={block as PublishedBlock}
                     presentation={presentation}
                     source={source}
                 />
             )
         case 'narrative':
-            return <Narrative found={found} />
+            /* A caption only when the block is named otherwise than its section ("Traits spéciaux"). */
+            return sectionLabel !== undefined &&
+                block.label.trim().toLowerCase() !==
+                    sectionLabel.trim().toLowerCase() ? (
+                <>
+                    <span className={cls('line-label')}>{block.label}</span>
+                    <Narrative found={found} />
+                </>
+            ) : (
+                <Narrative found={found} />
+            )
         case 'compact-rows':
             return (block as PublishedBlock).pointerRows ? (
                 <PointerRows block={block} source={source} />
@@ -892,7 +971,7 @@ function blockContent(
                 />
             )
         case 'combat':
-            return <Combat source={source} />
+            return <Combat block={block as PublishedBlock} source={source} />
         case 'action-lines':
             return records(found).map((action, index) => (
                 <Action action={action} follow={false} key={index} />
@@ -942,7 +1021,7 @@ function sectionBlocks(
     })
     const placed = onCard.some((block) => (block as PublishedBlock).placement)
     const items = onCard.flatMap((block) => {
-        const content = blockContent(block, context)
+        const content = blockContent(block, context, section.label)
         if (content === null) return []
         const placement = (block as PublishedBlock).placement
         return [

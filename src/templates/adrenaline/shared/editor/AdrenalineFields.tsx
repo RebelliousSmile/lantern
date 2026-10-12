@@ -16,6 +16,9 @@ import {
     RecordRows,
     StringRows,
     TextField,
+    ValueField,
+    zeroValue,
+    type ValueForm,
 } from './FieldPrimitives'
 
 type RecordValue = Record<string, unknown>
@@ -67,10 +70,13 @@ const rows = (value: unknown): RecordValue[] =>
 /** `keys` are the characteristics the document's schema declares (see `schemaFields.ts`). */
 export function CharacteristicsFields({
     keys,
+    form,
     value,
     onChange,
 }: {
     keys: readonly string[]
+    /** The player sheet writes triplets; a creature or a PNJ writes plain numbers. */
+    form: ValueForm
     value: unknown
     onChange: (value: RecordValue) => void
 }) {
@@ -79,7 +85,8 @@ export function CharacteristicsFields({
     return (
         <div className="grid grid-cols-2 gap-2">
             {keys.map((key) => (
-                <RangedNumberField
+                <ValueField
+                    form={form}
                     key={key}
                     label={
                         statLabels[key]
@@ -145,9 +152,11 @@ export function IdentityFields({
 }
 
 export function HealthFields({
+    form,
     value,
     onChange,
 }: {
+    form: ValueForm
     value: unknown
     onChange: (value: RecordValue) => void
 }) {
@@ -184,7 +193,8 @@ export function HealthFields({
                                         <legend className="px-1 font-medium">
                                             {text(levelLabelKey)}
                                         </legend>
-                                        <RangedNumberField
+                                        <ValueField
+                                            form={form}
                                             label={text(
                                                 'adrenaline:shared.health.base'
                                             )}
@@ -193,7 +203,8 @@ export function HealthFields({
                                                 set('base', next)
                                             }
                                         />
-                                        <RangedNumberField
+                                        <ValueField
+                                            form={form}
                                             label={text(
                                                 kind === 'mental'
                                                     ? 'adrenaline:shared.health.plusTrait'
@@ -216,11 +227,13 @@ export function HealthFields({
 }
 
 function DefenceFields({
+    form,
     label,
     value,
     onChange,
     mental,
 }: {
+    form: ValueForm
     label: string
     value: unknown
     onChange: (value: RecordValue) => void
@@ -234,7 +247,8 @@ function DefenceFields({
     return (
         <div className="grid gap-2 rounded border p-2">
             <h4 className="font-medium">{label}</h4>
-            <RangedNumberField
+            <ValueField
+                form={form}
                 label={text('adrenaline:shared.protection.toughness')}
                 value={current.solidite}
                 onChange={(solidite) => onChange({ ...current, solidite })}
@@ -257,7 +271,8 @@ function DefenceFields({
                         })
                     }
                 />
-                <RangedNumberField
+                <ValueField
+                    form={form}
                     label={text('adrenaline:shared.protection.points')}
                     value={armour.points}
                     onChange={(points) =>
@@ -299,9 +314,11 @@ function DefenceFields({
     )
 }
 export function ProtectionFields({
+    form,
     value,
     onChange,
 }: {
+    form: ValueForm
     value: unknown
     onChange: (value: RecordValue) => void
 }) {
@@ -310,11 +327,13 @@ export function ProtectionFields({
     return (
         <div className="grid gap-3">
             <DefenceFields
+                form={form}
                 label={text('adrenaline:shared.protection.physicalHeading')}
                 value={current.physiques}
                 onChange={(physiques) => onChange({ ...current, physiques })}
             />
             <DefenceFields
+                form={form}
                 label={text('adrenaline:shared.protection.mentalHeading')}
                 mental
                 value={current.mentales}
@@ -375,11 +394,13 @@ function without(entry: RecordValue, key: string): RecordValue {
 
 export function SkillRows({
     label,
+    form,
     value,
     onChange,
     playerSheet = false,
 }: {
     label: string
+    form: ValueForm
     value: unknown
     onChange: (value: RecordValue[]) => void
     /** A PJ sheet keeps one percentage per skill and no pre-computed total. */
@@ -395,13 +416,13 @@ export function SkillRows({
                 playerSheet
                     ? {
                           nom: '',
-                          pourcentage: { minimum: 0, current: 0, maximum: 0 },
+                          pourcentage: zeroValue(form),
                           avantages: [],
                       }
                     : {
                           nom: '',
-                          pourcentage: { minimum: 0, current: 0, maximum: 0 },
-                          total: { minimum: 0, current: 0, maximum: 0 },
+                          pourcentage: zeroValue(form),
+                          total: zeroValue(form),
                           avantages: [],
                       }
             }
@@ -479,7 +500,8 @@ export function SkillRows({
                                     }
                                 />
                             ) : (
-                                <RangedNumberField
+                                <ValueField
+                                    form={form}
                                     label={text('adrenaline:shared.percentage')}
                                     value={entry.pourcentage}
                                     onChange={(pourcentage) =>
@@ -488,7 +510,8 @@ export function SkillRows({
                                 />
                             )}
                             {!playerSheet && (
-                                <RangedNumberField
+                                <ValueField
+                                    form={form}
                                     label={text(
                                         'adrenaline:shared.skills.total'
                                     )}
@@ -516,10 +539,12 @@ export function SkillRows({
 /** `weapons` are the weapon lists the document's schema declares (see `schemaFields.ts`). */
 export function EquipmentFields({
     weapons: weaponKeys,
+    form,
     value,
     onChange,
 }: {
     weapons: readonly string[]
+    form: ValueForm
     value: unknown
     onChange: (value: RecordValue) => void
 }) {
@@ -532,7 +557,7 @@ export function EquipmentFields({
             values={rows(current[key])}
             create={() => ({
                 nom: '',
-                pourcentage: { minimum: 0, current: 0, maximum: 0 },
+                pourcentage: zeroValue(form),
                 desDeDegats: 0,
                 type: '',
                 notes: '',
@@ -546,7 +571,8 @@ export function EquipmentFields({
                         value={String(entry.nom ?? '')}
                         onChange={(nom) => replace({ ...entry, nom })}
                     />
-                    <RangedNumberField
+                    <ValueField
+                        form={form}
                         label={text('adrenaline:shared.percentage')}
                         value={entry.pourcentage}
                         onChange={(pourcentage) =>

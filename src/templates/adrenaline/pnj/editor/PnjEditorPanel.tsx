@@ -10,17 +10,18 @@ import {
     SkillRows,
 } from '../../shared/editor/AdrenalineFields'
 import {
-    CHARACTERISTIC_FIELDS,
-    WEAPON_FIELDS,
-} from '../../shared/schemaFields'
-import {
     LongTextField,
     NumberField,
-    RangedNumberField,
     RecordRows,
     TextField,
+    ValueField,
 } from '../../shared/editor/FieldPrimitives'
+import {
+    OptionalNumberField,
+    OptionalTextField,
+} from '../../shared/editor/OptionalFields'
 import { useAdrenalineDocument } from '../../shared/hooks'
+import { CHARACTERISTIC_FIELDS, WEAPON_FIELDS } from '../../shared/schemaFields'
 import type { PnjSection } from '../../shared/sections'
 import { blankPnj } from '../sample'
 
@@ -45,6 +46,19 @@ export function PnjEditorPanel() {
         update((next) => {
             next[key] = value
         })
+    /* A key the contract lets a document leave out: emptied, it leaves the document. */
+    const setOptional = (key: string, value: unknown) =>
+        update((next) => {
+            if (value === undefined) delete next[key]
+            else next[key] = value
+        })
+    const tracks = (document.pistes ?? {}) as Entry
+    const setTrack = (key: string, value: number | undefined) => {
+        const next = { ...tracks }
+        if (value === undefined) delete next[key]
+        else next[key] = value
+        setOptional('pistes', Object.keys(next).length > 0 ? next : undefined)
+    }
     if (!sheet.open || !sheet.target) {
         return (
             <div className="rounded-md border border-dashed px-3 py-4 text-sm text-muted-foreground">
@@ -65,11 +79,32 @@ export function PnjEditorPanel() {
                         value={String(document.nom ?? '')}
                         onChange={(nom) => set('nom', nom)}
                     />
+                    <OptionalTextField
+                        label={text('adrenaline:shared.category')}
+                        value={document.categorie}
+                        onChange={(categorie) =>
+                            setOptional('categorie', categorie)
+                        }
+                    />
                     <NumberField
                         label={text('adrenaline:pnj.form.dangerLevel')}
                         value={Number(document.niveauDeDanger ?? 0)}
                         onChange={(niveauDeDanger) =>
                             set('niveauDeDanger', niveauDeDanger)
+                        }
+                    />
+                    <OptionalNumberField
+                        label={text('adrenaline:shared.dangerAlternative')}
+                        value={document.niveauDeDangerAlternatif}
+                        onChange={(alternative) =>
+                            setOptional('niveauDeDangerAlternatif', alternative)
+                        }
+                    />
+                    <OptionalTextField
+                        label={text('adrenaline:shared.dangerNote')}
+                        value={document.niveauDeDangerNote}
+                        onChange={(note) =>
+                            setOptional('niveauDeDangerNote', note)
                         }
                     />
                     <LongTextField
@@ -98,6 +133,7 @@ export function PnjEditorPanel() {
                         {text('adrenaline:shared.headings.characteristics')}
                     </h3>
                     <CharacteristicsFields
+                        form="number"
                         keys={CHARACTERISTIC_FIELDS.pnj}
                         value={document.caracteristiques}
                         onChange={(caracteristiques) =>
@@ -112,9 +148,40 @@ export function PnjEditorPanel() {
                         {text('adrenaline:shared.headings.health')}
                     </h3>
                     <HealthFields
+                        form="number"
                         value={document.sante}
                         onChange={(sante) => set('sante', sante)}
                     />
+                    <fieldset className="grid gap-2 rounded border p-2">
+                        <legend className="px-1 text-sm">
+                            {text('adrenaline:pnj.form.tracks')}
+                        </legend>
+                        <div className="grid grid-cols-3 gap-2">
+                            <OptionalNumberField
+                                label={text('adrenaline:pnj.form.trackStress')}
+                                value={tracks.stress}
+                                onChange={(value) => setTrack('stress', value)}
+                            />
+                            <OptionalNumberField
+                                label={text(
+                                    'adrenaline:pnj.form.trackShocking'
+                                )}
+                                value={tracks.malusChoquants}
+                                onChange={(value) =>
+                                    setTrack('malusChoquants', value)
+                                }
+                            />
+                            <OptionalNumberField
+                                label={text(
+                                    'adrenaline:pnj.form.trackWounding'
+                                )}
+                                value={tracks.malusBlessants}
+                                onChange={(value) =>
+                                    setTrack('malusBlessants', value)
+                                }
+                            />
+                        </div>
+                    </fieldset>
                 </section>
             )}
             {target === 'protections' && (
@@ -123,6 +190,7 @@ export function PnjEditorPanel() {
                         {text('adrenaline:shared.headings.protections')}
                     </h3>
                     <ProtectionFields
+                        form="number"
                         value={document.protections}
                         onChange={(protections) =>
                             set('protections', protections)
@@ -141,7 +209,7 @@ export function PnjEditorPanel() {
                         create={() => ({
                             type: '',
                             nom: '',
-                            pourcentage: { minimum: 0, current: 0, maximum: 0 },
+                            pourcentage: 0,
                             competences: [],
                         })}
                         onChange={(formations) => set('formations', formations)}
@@ -163,7 +231,8 @@ export function PnjEditorPanel() {
                                             replace({ ...formation, nom })
                                         }
                                     />
-                                    <RangedNumberField
+                                    <ValueField
+                                        form="number"
                                         label={text(
                                             'adrenaline:shared.percentage'
                                         )}
@@ -177,6 +246,7 @@ export function PnjEditorPanel() {
                                     />
                                 </div>
                                 <SkillRows
+                                    form="number"
                                     label={text(
                                         'adrenaline:shared.trainings.trainingSkills'
                                     )}
@@ -189,6 +259,7 @@ export function PnjEditorPanel() {
                         )}
                     </RecordRows>
                     <SkillRows
+                        form="number"
                         label={text('adrenaline:shared.skills.label')}
                         value={document.competences}
                         onChange={(competences) =>
@@ -203,6 +274,7 @@ export function PnjEditorPanel() {
                         {text('adrenaline:shared.headings.equipment')}
                     </h3>
                     <EquipmentFields
+                        form="number"
                         weapons={WEAPON_FIELDS.pnj}
                         value={document.equipement}
                         onChange={(equipement) => set('equipement', equipement)}

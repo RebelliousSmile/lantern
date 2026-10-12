@@ -134,6 +134,46 @@ export function RangedNumberField({
 }
 
 /**
+ * How a sheet writes a numeric value: the player sheet keeps the `{minimum, current, maximum}` triplet
+ * (its scores evolve), a creature or a PNJ writes one plain number (its scores do not). A triplet already
+ * in a creature or PNJ document is read by its current value and rewritten as a plain number on edit.
+ */
+export type ValueForm = 'triplet' | 'number'
+
+/** The value a new row starts with, in the sheet's form. */
+export const zeroValue = (form: ValueForm): number | RangedValue =>
+    form === 'number' ? 0 : { minimum: 0, current: 0, maximum: 0 }
+
+/** One field per value in the sheet's form: three bounds for a triplet, one number otherwise. */
+export function ValueField({
+    form,
+    label,
+    value,
+    onChange,
+}: {
+    form: ValueForm
+    label: string
+    value: unknown
+    onChange: (value: number | RangedValue) => void
+}) {
+    if (form === 'triplet')
+        return (
+            <RangedNumberField
+                label={label}
+                value={value}
+                onChange={onChange}
+            />
+        )
+    return (
+        <NumberField
+            label={label}
+            value={rangedValue(value).current}
+            onChange={onChange}
+        />
+    )
+}
+
+/**
  * The one percentage the sheet prints: it sets the current value and its ceiling together, the
  * floor is kept. Edit the three bounds with RangedNumberField where the sheet shows them.
  */

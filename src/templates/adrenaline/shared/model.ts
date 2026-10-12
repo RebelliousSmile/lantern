@@ -20,6 +20,10 @@ export const defaultAdrenalineView: AdrenalineViewState = {
 export type AdrenalineSheetState<TTarget extends string = string> = {
     open: boolean
     target: TTarget | null
+    /** The state card (`base` or a state id) whose block opened the sheet, when it came from one. */
+    profile?: string
+    /** The root keys that block prints: the panel then edits those and nothing else. */
+    keys?: string[]
 }
 
 export const emptyAdrenalineSheetState: AdrenalineSheetState = {

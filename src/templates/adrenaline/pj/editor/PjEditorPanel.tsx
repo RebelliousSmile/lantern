@@ -9,10 +9,6 @@ import {
     ProtectionFields,
     SkillRows,
 } from '../../shared/editor/AdrenalineFields'
-import {
-    CHARACTERISTIC_FIELDS,
-    WEAPON_FIELDS,
-} from '../../shared/schemaFields'
 import { PercentageField, TextField } from '../../shared/editor/FieldPrimitives'
 import {
     FORMATION_TYPES,
@@ -21,6 +17,7 @@ import {
     withFormation,
 } from '../../shared/formations'
 import { useAdrenalineDocument } from '../../shared/hooks'
+import { CHARACTERISTIC_FIELDS, WEAPON_FIELDS } from '../../shared/schemaFields'
 import type { PjSection } from '../../shared/sections'
 import { blankPj } from '../sample'
 
@@ -96,6 +93,7 @@ export function PjEditorPanel() {
                         {text('adrenaline:shared.headings.characteristics')}
                     </h3>
                     <CharacteristicsFields
+                        form="triplet"
                         keys={CHARACTERISTIC_FIELDS.pj}
                         value={document.caracteristiques}
                         onChange={(caracteristiques) =>
@@ -110,6 +108,7 @@ export function PjEditorPanel() {
                         {text('adrenaline:shared.headings.health')}
                     </h3>
                     <HealthFields
+                        form="triplet"
                         value={document.sante}
                         onChange={(sante) => set('sante', sante)}
                     />
@@ -121,6 +120,7 @@ export function PjEditorPanel() {
                         {text('adrenaline:shared.headings.protections')}
                     </h3>
                     <ProtectionFields
+                        form="triplet"
                         value={document.protections}
                         onChange={(protections) =>
                             set('protections', protections)
@@ -177,6 +177,7 @@ export function PjEditorPanel() {
                                         />
                                     </div>
                                     <SkillRows
+                                        form="triplet"
                                         playerSheet
                                         label={text(
                                             'adrenaline:shared.trainings.trainingSkills'
@@ -200,6 +201,7 @@ export function PjEditorPanel() {
                         {text('adrenaline:shared.headings.equipment')}
                     </h3>
                     <EquipmentFields
+                        form="triplet"
                         weapons={WEAPON_FIELDS.pj}
                         value={document.equipement}
                         onChange={(equipement) => set('equipement', equipement)}

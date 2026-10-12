@@ -1,6 +1,5 @@
-import { useEffect } from 'react'
 import { useUiText } from '@/i18n/text'
-import { maximumStates } from '../../shared/schemaFields'
+import { useEffect } from 'react'
 import {
     MONSTRE_PRESENTATION,
     type AdrenalinePresentation,
@@ -24,7 +23,9 @@ import {
     type CompactCardState,
 } from '../../shared/preview/CompactCard'
 import '../../shared/preview/compactCard.css'
+import { maximumStates } from '../../shared/schemaFields'
 import type { MonstreSection } from '../../shared/sections'
+import { panelFor, rootKeys } from '../editTargets'
 import { blankMonstre } from '../sample'
 import type { MonsterDocument } from '../states'
 
@@ -44,34 +45,14 @@ type PrintedState = {
 
 type StateCard = {
     card: CardId
+    /** `base` or the id of the state this card prints. */
+    id: string
     source: MonsterDocument
     state: CompactCardState
 }
 
-/* The edit sheet a block opens, read from the first document path it shows. */
-const editTargets: Record<string, MonstreSection | undefined> = {
-    nom: 'basic',
-    description: 'basic',
-    zoneDeDetection: 'basic',
-    deplacement: 'basic',
-    actionsParRound: 'basic',
-    etatPrincipal: 'states',
-    caracteristiques: 'statistics',
-    sante: 'health',
-    etatsPermanents: 'health',
-    malusAvantHs: 'health',
-    protections: 'protections',
-    comportement: 'behaviour',
-    traitsSpeciaux: 'behaviour',
-    actions: 'behaviour',
-    competences: 'skills',
-    equipement: 'equipment',
-    contagion: 'contagion',
-    narratif: 'narrative',
-}
-
 function editTarget(block: AdrenalinePresentationBlock): MonstreSection {
-    return editTargets[block.paths[0]?.split('/')[1] ?? ''] ?? 'meta'
+    return panelFor(block.paths)
 }
 
 function strings(value: unknown): string[] {
@@ -150,7 +131,6 @@ function stateCards(
         ? text(source.etatPrincipal)
         : BASE
     const secondary = principal !== BASE ? BASE : states[0]?.id
-    const active = known(text(source.etatActif)) ? text(source.etatActif) : BASE
     /*
      * The current state, as the schema says: absent or `base` designates the base profile, a known
      * id designates that state, anything else designates no card. A creature with no state besides
@@ -168,8 +148,11 @@ function stateCards(
     const baseState = asRecord(source.etatDeBase)
     const resolve = (card: StateCard['card'], id: string): StateCard => {
         const state = states.find((candidate) => candidate.id === id)
+        // The published state enters its note in its delta; the legacy form entered it beside.
+        const note = text(state?.notes) || text(state?.delta.notes)
         return {
             card,
+            id,
             source: state ? { ...base, ...state.delta } : base,
             state: {
                 name: state
@@ -178,9 +161,9 @@ function stateCards(
                 triggers: state
                     ? state.declencheurs
                     : strings(baseState?.declencheurs),
-                active: states.length > 0 && active === id,
+                active: current === id,
                 current: current === id,
-                ...(state?.notes ? { note: state.notes } : {}),
+                ...(note ? { note } : {}),
             },
         }
     }
@@ -189,9 +172,13 @@ function stateCards(
         : [resolve('principal', principal), resolve('secondaire', secondary)]
 }
 
+/* Entered means non-empty, as the Handbook reads it: an empty list or an empty object enters nothing. */
 function isEntered(found: unknown): boolean {
     if (found === undefined || found === null || found === '') return false
-    return Array.isArray(found) ? found.length > 0 : true
+    if (Array.isArray(found)) return found.length > 0
+    return typeof found === 'object'
+        ? Object.keys(found as object).length > 0
+        : true
 }
 
 /*
@@ -226,8 +213,8 @@ export function MonstrePreview() {
     const ui = useUiText()
     const base = baseOf(document)
     const badge = stateBadgeOf(PRESENTATION)
-    const cards = stateCards(document, badge?.current.path).filter(
-        ({ card }) => cardExists(card, document)
+    const cards = stateCards(document, badge?.current.path).filter(({ card }) =>
+        cardExists(card, document)
     )
     /* States entered beyond what the published schema allows are not printed; say so. */
     const allowed = maximumStates()
@@ -235,8 +222,11 @@ export function MonstrePreview() {
         allowed === undefined ? 0 : statesOf(document).length - allowed
     const printed = cards.map(({ card }) => card)
     const sections = sortedSections(PRESENTATION)
+    /* Outside the cards the sheet has one source: what the principal card prints. */
+    const principal = cards.find(({ card }) => card === 'principal')
+    const sheetSource = principal?.source ?? base
     const onOpen = (block: AdrenalinePresentationBlock) =>
-        openSection(editTarget(block))
+        openSection(editTarget(block), principal?.id, rootKeys(block.paths))
     const firstCarded = sections.findIndex((section) => section.cards)
     /* A section is on a card it names, or on its fallback card when none of those is printed. */
     const printedOn = (section: (typeof sections)[number], card: CardId) => {
@@ -259,7 +249,7 @@ export function MonstrePreview() {
                             key={section.id}
                             presentation={PRESENTATION}
                             section={section}
-                            source={base}
+                            source={sheetSource}
                             onOpen={onOpen}
                         />
                     )
@@ -273,12 +263,12 @@ export function MonstrePreview() {
                         }
                         key="cards"
                     >
-                        {cards.map(({ card, source, state }) => (
+                        {cards.map(({ card, id, source, state }) => (
                             <div
                                 className={[
                                     'adr-compact__state-card',
                                     `adr-compact__state-card--${card}`,
-                                    !badge && state.active
+                                    state.active
                                         ? 'adr-compact__state-card--active'
                                         : '',
                                 ]
@@ -289,7 +279,8 @@ export function MonstrePreview() {
                                 {sections
                                     .filter((carded) => printedOn(carded, card))
                                     .flatMap((carded, _, onThisCard) => {
-                                        const join = publishedSection(carded).joinedTo
+                                        const join =
+                                            publishedSection(carded).joinedTo
                                         const target =
                                             join?.card === card
                                                 ? onThisCard.find(
@@ -303,11 +294,12 @@ export function MonstrePreview() {
                                         const following = onThisCard.find(
                                             (other) => {
                                                 const joined =
-                                                    publishedSection(other).joinedTo
+                                                    publishedSection(
+                                                        other
+                                                    ).joinedTo
                                                 return (
                                                     joined?.card === card &&
-                                                    joined.section ===
-                                                        carded.id
+                                                    joined.section === carded.id
                                                 )
                                             }
                                         )
@@ -320,7 +312,13 @@ export function MonstrePreview() {
                                                 section={carded}
                                                 source={source}
                                                 state={state}
-                                                onOpen={onOpen}
+                                                onOpen={(block) =>
+                                                    openSection(
+                                                        editTarget(block),
+                                                        id,
+                                                        rootKeys(block.paths)
+                                                    )
+                                                }
                                             />,
                                         ]
                                     })}

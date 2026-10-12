@@ -92,10 +92,18 @@ details.adr-compact__section > summary {
     width: 1.3em;
     height: 1.3em;
 }
-.adr-compact__banner-name {
+.adr-compact__banner-title {
+    display: flex;
     flex: 1 1 auto;
+    flex-direction: column;
+    min-width: 0;
+}
+.adr-compact__banner-name {
     font-size: 1.2em;
     text-transform: uppercase;
+}
+.adr-compact__banner-subtitle {
+    font-size: 0.85em;
 }
 .adr-compact__banner-danger {
     font-weight: 700;
@@ -135,6 +143,11 @@ details.adr-compact__section > summary {
     flex-wrap: wrap;
     gap: 0 0.35rem;
 }
+/* A label is never broken inside a word: it wraps between words only. */
+.adr-compact__line-label {
+    word-break: normal;
+    overflow-wrap: normal;
+}
 /* A figure sits where the published `values.align` puts it; prose values follow their label. */
 .adr-compact--values-end .adr-compact__figure {
     margin-inline-start: auto;
@@ -144,26 +157,43 @@ details.adr-compact__section > summary {
 /* A row of cells: the columns are the block's published count, a cell its published column and span. */
 .adr-compact__grid {
     display: grid;
-    grid-template-columns: repeat(var(--adr-published-columns, 4), minmax(0, 1fr));
+    grid-template-columns: repeat(
+        var(--adr-published-columns, 4),
+        minmax(0, 1fr)
+    );
     gap: 0.12rem 0.5rem;
 }
 .adr-compact__cell {
     display: flex;
     grid-column: var(--adr-column, auto) / span var(--adr-span, 1);
-    gap: 0.3rem;
+    flex-wrap: wrap;
+    gap: 0 0.3rem;
+}
+/* A value stays whole: too long for the room beside its label, it drops under the label. */
+.adr-compact__cell > .adr-compact__value {
+    white-space: nowrap;
+    overflow-wrap: normal;
 }
 /* The blocks a section places by column and row sit in a grid of its published columns. */
 .adr-compact__placed {
     display: grid;
-    grid-template-columns: repeat(var(--adr-published-columns, 1), minmax(0, 1fr));
+    grid-template-columns: repeat(
+        var(--adr-published-columns, 1),
+        minmax(0, 1fr)
+    );
 }
 .adr-compact__placed > .adr-compact__block {
     min-width: 0;
 }
+/* "SP 7 / 14 / 19 / 24": a figure (with the slash that leads it) is never split. */
 .adr-compact__thresholds {
-    display: grid;
-    grid-template-columns: 2.2rem repeat(4, minmax(0, 1fr));
-    gap: 0.4rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 0.3rem;
+    overflow-wrap: normal;
+}
+.adr-compact__threshold {
+    white-space: nowrap;
 }
 .adr-compact__track {
     display: flex;
@@ -281,18 +311,28 @@ details.adr-compact__section > summary {
 .adr-compact__state-card--secondaire .adr-compact__cell {
     grid-column: auto;
 }
-.adr-compact__form-state-header {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.15rem 0.3rem;
+/* The state: its name on a title band (box at the published end), then its triggers under it. */
+.adr-compact__block.adr-compact__form-state-header {
+    padding: 0;
 }
 .adr-compact__state-name {
     display: flex;
-    flex-basis: 100%;
-    flex-wrap: wrap;
-    align-items: baseline;
+    align-items: center;
     gap: 0 0.5rem;
-    text-transform: uppercase;
+}
+.adr-compact__state-name--box-end > .adr-compact__state-box {
+    margin-inline-start: auto;
+}
+.adr-compact__state-trigger {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.2rem 0.5rem 0;
+}
+.adr-compact__state-note {
+    display: block;
+    padding: 0.2rem 0.5rem 0;
+    font-size: 0.9em;
 }
 .adr-compact__state-active {
     font-size: 0.8em;
@@ -300,15 +340,23 @@ details.adr-compact__section > summary {
 /* The pack's badge colour marks each trigger and the box of the current state. */
 .adr-compact__notice {
     margin: 0.4rem 0 0;
-    font-size: 0.8em;
     font-style: italic;
+    font-size: 0.8em;
 }
 .adr-compact__trigger-mark {
+    display: inline-flex;
     flex: none;
+    justify-content: center;
+    align-items: center;
     border-radius: 50%;
     background: var(--adrenaline-card-badge);
-    width: 0.55em;
-    height: 0.55em;
+    width: 1.2em;
+    height: 1.2em;
+    color: var(--adrenaline-card-surface);
+}
+.adr-compact__trigger-mark svg {
+    width: 0.8em;
+    height: 0.8em;
 }
 .adr-compact__state-box {
     display: inline-block;
@@ -328,9 +376,6 @@ details.adr-compact__section > summary {
     }
     .adr-compact__cell {
         grid-column: auto;
-    }
-    .adr-compact__thresholds {
-        grid-template-columns: 2.2rem repeat(2, minmax(0, 1fr));
     }
     .adr-compact__cards {
         grid-template-columns: minmax(0, 1fr);

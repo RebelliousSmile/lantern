@@ -5,13 +5,29 @@ All notable changes to this project are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [v0.26.0] - 2026-10-11
+## [v0.26.0] - 2026-10-12
 
 ### Changed
 
 - Adrenaline: the creature cards follow the card contract schema-adrenaline publishes. Detection zone and movement sit on the characteristic rows, the state header carries its badge and the current-state box, and the small card joins behaviour and health under one heading. A creature with no other state prints a single card that carries its equipment.
 - Adrenaline: the editors offer the characteristics and the weapon lists the installed contract declares for each sheet, instead of a fixed list.
 - Adrenaline: a state entered beyond what the contract admits is reported under the card instead of being dropped silently.
+- Adrenaline: the creature card follows the page of the book as the contract now publishes it. The banner prints the instinct and body type under the name, the body section loses its title band, and the combat row prints "Actions 3/round" and "Défense Non (4 bonus)" side by side.
+- Adrenaline: the creature and NPC cards no longer fold a "Meneur" section. The preview prints behaviour and special traits openly on the large creature card, then skills, contagion and notes after the cards; the NPC prints its notes after the card. A narrative block named otherwise than its section gets a caption.
+- Adrenaline: the creature and NPC editors take one field per numeric value and write a plain number; a document that still holds the `{minimum, current, maximum}` triplet is read by its current value and rewritten as a plain number on edit. The player sheet keeps its three fields, and only the player sheet converts a legacy plain number to a triplet on import. The preview and the TOML export handle both forms.
+- Adrenaline: the state header puts the state name on a title band with the current-state box at the published end, and each trigger is a round arrow followed by its bare text.
+- Adrenaline: characteristic cells print their abbreviation in bold and a published label in regular weight; thresholds read "SP 7 / 14 / 19 / 24" on the NPC and creature cards.
+- Adrenaline: clicking a zone of the creature card opens the panel carrying only the fields that zone prints, one small form per zone, and every value the zone prints can be edited there (the characteristics block also edits the detection zone and the movement). The panel is derived from the published presentation, with no per-block case.
+- Adrenaline: a creature state is edited through its own card: clicking a state's card edits that state's values. A value the state does not hold is written to the base creature, and the panel says so on one line; a state holding its own value is never silently handed back to the base.
+- Adrenaline: a state card's panel offers "Donner ses propres valeurs à cet état" for each value the state does not hold, which copies the base's value (or the empty form the contract accepts) into the state, and "Revenir au profil de base" to remove it. It is the only way a state gets a value of its own; the base never gets the button.
+- Adrenaline: the creature actions editor folds each action, and its follow-ups, into one row with one open at a time; the rarely used fields sit under a folded "Plus" that stays as the user left it while typing.
+- Adrenaline: the state identifier field is gone from the creature state editor; the identifier is generated when the state is created and does not change.
+- Adrenaline: an action's tested skill and percentage come first in its editor; the name field follows and says it is only needed when the action is named otherwise than its test.
+- Adrenaline: the note on the danger level is called by an asterisk on the first level the banner prints ("ND 13* / 3") and prints as "* …".
+
+### Fixed
+
+- Adrenaline: on the compact cards, a number is never split across lines, a label is never broken inside a word, and a value too long for its cell drops whole under its label.
 
 ## [v0.25.1] - 2026-10-10
 

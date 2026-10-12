@@ -29,9 +29,14 @@ export function useAdrenalineDocument<
                 return next
             })
         },
-        openSection: (section: TSection) => {
+        openSection: (section: TSection, profile?: string, keys?: string[]) => {
             if (!tab || tab.mode !== 'editing') return
-            setTabSheet(tab.id, { open: true, target: section })
+            setTabSheet(tab.id, {
+                open: true,
+                target: section,
+                ...(profile === undefined ? {} : { profile }),
+                ...(keys === undefined ? {} : { keys }),
+            })
         },
     }
 }
