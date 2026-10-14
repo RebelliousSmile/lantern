@@ -30,13 +30,46 @@ const adrenaline = {
         exportToml: 'Export the current PJ data as TOML.',
         exportPng: 'Export the current PJ preview as PNG.',
         form: {
+            addIdentity: 'Fill in the identity',
             characterHeading: 'Character and settings',
             player: 'Player',
             creationMethod: 'Creation method',
             scenarioType: 'Scenario type',
             campaignVariant: 'Campaign variant',
+            noChoice: 'Not set',
             xp: 'XP',
             trainingsHeading: 'Trainings',
+            scenario: 'Scenario',
+            professionalConstraints: 'Professional constraints',
+            familyConstraints: 'Family constraints',
+            externalCommitments: 'External commitments',
+            stressHeading: 'Stress',
+            shockRounds: 'Shock maluses (ROUND)',
+            shockNotes: 'Shock (text)',
+            misc: 'Miscellaneous (text)',
+            miscCircles: 'Miscellaneous (circles)',
+            totalMaluses: 'Total maluses',
+            woundsPhysical: 'Physical wounds',
+            woundsMental: 'Mental wounds',
+            states: 'States',
+            woundNotes: 'Wound written under the circles',
+            stateName: 'State',
+            stateSide: 'Side',
+            sideDropsLocation: 'Changing the side clears the location.',
+            locationDropped:
+                'The location was cleared: it belonged to the other side.',
+            noLocation: 'No location',
+            durations: {
+                heure: 'Hour',
+                jour: 'Day',
+                semaine: 'Week',
+                mois: 'Month',
+            },
+            sides: {
+                physique: 'Physical',
+                mental: 'Mental',
+                general: 'General',
+            },
         },
         sheet: {
             parameters: {
@@ -47,6 +80,7 @@ const adrenaline = {
             },
             rangeMinimum: 'Creation',
             rangeCurrent: 'Current',
+            malus: 'malus',
             training: 'Training',
             weapon: 'Weapon',
             base: 'Base',
@@ -65,14 +99,7 @@ const adrenaline = {
             condition: 'Condition',
             location: 'Location',
             duration: 'Duration',
-            perk: 'Perk: {{perks}}',
             years: '{{age}} years',
-            thresholds: {
-                superficiel: 'Superficial',
-                leger: 'Light',
-                grave: 'Serious',
-                profond: 'Deep',
-            },
             values: {
                 equitable: 'Fair',
                 aleatoire: 'Random',
@@ -161,8 +188,9 @@ const adrenaline = {
             baseState: 'Base profile',
             addState: 'Add state',
             stateLimitReached: 'The published schema allows no further state.',
-            newStateName: 'New state',
-            newTrigger: 'New trigger',
+            newStateName: 'Name of the new state',
+            newStateNameMissing:
+                'Type a name: a state only exists with its own.',
             trigger: 'Trigger',
             duplicateStateId: 'Each state ID must be unique.',
             invalidState: 'This state does not match the Adrenaline schema.',
@@ -224,6 +252,10 @@ const adrenaline = {
             base: 'Base',
             plusArmour: '+ Armour',
             plusTrait: '+ Trait',
+            sideIncomplete:
+                'This side is written to the sheet once its four levels give a base.',
+            sideWaiting:
+                'This side is written to the sheet once the other side, which is required, has its four levels too.',
         },
         protection: {
             physicalHeading: 'Physical protection',
@@ -233,7 +265,21 @@ const adrenaline = {
             characterTrait: 'Character trait',
             points: 'Points',
             locations: 'Locations',
+            locationsAll: 'Tick all',
+            locationsNone: 'Clear all',
             shield: 'Shield',
+            details: 'Details — {{name}}',
+            tabs: { values: 'Values', lists: 'Lists' },
+            dice: 'Dice removed',
+            coverage: 'Coverage',
+            properties: 'Properties',
+            emotions: 'Emotions',
+            reductionAgainst: 'Reduction against',
+            reductionValue: 'Reduction value',
+            reductionIncomplete:
+                'The reduction is recorded on the sheet once its value and at least one damage type are given.',
+            shieldIncomplete:
+                'The properties are recorded on the sheet once the shield has a name.',
             shieldProperties: 'Shield properties',
         },
         trainings: {
@@ -246,10 +292,21 @@ const adrenaline = {
             specialty: 'Specialty',
             addSpecialty: 'Add a specialty',
             removeSpecialty: 'Remove the specialty',
+            showAll: 'Show all skills',
+            noFormationType: 'Type not set',
             noCharacteristic: '—',
             characteristic: 'Characteristic',
+            more: 'More fields',
+            action: 'Action',
             total: 'Total',
             perks: 'Perks',
+            tabs: {
+                general: 'General',
+                values: 'Total',
+                damage: 'Damage',
+                details: 'Details',
+                notes: 'Other',
+            },
         },
         equipment: {
             possessions: 'Possessions',
@@ -258,9 +315,20 @@ const adrenaline = {
             mentalWeapons: 'Mental weapons',
             psychologicalWeapons: 'Psychological weapons',
             damageDice: 'Damage dice',
+            damageNature: 'Damage nature',
+            noNature: 'Unspecified',
+            perksAndImmunities: 'Perks and immunities',
+            socialWeapons: 'Social weapons used',
         },
         meta: {
             publicationType: 'Publication type',
+            publicationTypes: {
+                officiel: 'Official',
+                tiers: 'Third party',
+                communautaire: 'Community',
+                maison: 'House',
+            },
+            noPublicationType: 'Not set',
             source: 'Source',
             authors: 'Authors',
             page: 'Page',
@@ -285,6 +353,24 @@ const adrenaline = {
             min: 'Min.',
             current: 'Current',
             max: 'Max.',
+            followed:
+                '{{name}}: the maximum followed the current value, to {{value}}.',
+        },
+        draft: {
+            incomplete:
+                'Draft: {{missing}} missing. This line is not exported until it is complete.',
+            formationSkills:
+                'Draft: {{missing}} missing. The skills of this training are not exported until it is complete.',
+            nameKept:
+                'Name required: “{{name}}” stays the exported name until another is typed.',
+            nameMissing:
+                'Name required: type a name for the sheet to be exportable.',
+            numberMissing:
+                '{{name}}: field is empty, nothing is written until a number is typed.',
+        },
+        bounds: {
+            below: '{{name}}: {{value}} is under the minimum allowed, brought back to {{bound}}.',
+            above: '{{name}}: {{value}} is over the maximum allowed, brought back to {{bound}}.',
         },
     },
 }

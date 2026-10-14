@@ -1,15 +1,6 @@
-import { PersonnageJoueur } from 'schema-adrenaline'
 import { CHARACTERISTIC_FIELDS, WEAPON_FIELDS } from './schemaFields'
 
 type DocumentRecord = Record<string, unknown>
-
-/*
- * A PJ characteristic leaves creation at its creation value, which is both its floor and its current
- * value, and may only grow up to the sheet's ceiling. The ceiling is read from the published schema.
- */
-const PJ_CHARACTERISTIC_CEILING =
-    PersonnageJoueur.shape.caracteristiques.shape.for.shape.maximum.maxValue ??
-    Number.POSITIVE_INFINITY
 
 const isRecord = (value: unknown): value is DocumentRecord =>
     Boolean(value) && typeof value === 'object' && !Array.isArray(value)
@@ -19,14 +10,9 @@ const toRange = (value: unknown): unknown =>
         ? { minimum: 0, current: value, maximum: value }
         : value
 
-const toCharacteristic = (value: unknown): unknown =>
-    typeof value === 'number'
-        ? {
-              minimum: value,
-              current: value,
-              maximum: Math.max(value, PJ_CHARACTERISTIC_CEILING),
-          }
-        : value
+/* The player sheet writes one number where a range was written: the current value is kept. */
+const toPlain = (value: unknown): unknown =>
+    isRecord(value) && typeof value.current === 'number' ? value.current : value
 
 const upgradeKeys = (
     record: DocumentRecord,
@@ -41,7 +27,18 @@ const upgradeKeys = (
 const upgradeSkills = (value: unknown) => {
     if (!Array.isArray(value)) return
     for (const skill of value) {
-        if (isRecord(skill)) upgradeKeys(skill, ['pourcentage', 'total'])
+        if (!isRecord(skill)) continue
+        /* The player sheet prints a skill's name, specialty and percentage, and nothing under it. */
+        for (const key of [
+            'caracteristique',
+            'degats',
+            'total',
+            'action',
+            'avantages',
+            'notes',
+        ])
+            delete skill[key]
+        upgradeKeys(skill, ['pourcentage', 'total'], toPlain)
     }
 }
 
@@ -50,21 +47,22 @@ const upgradeEquipment = (value: unknown) => {
     for (const key of WEAPON_FIELDS.pj) {
         if (!Array.isArray(value[key])) continue
         for (const weapon of value[key]) {
-            if (isRecord(weapon)) upgradeKeys(weapon, ['pourcentage'])
+            if (!isRecord(weapon)) continue
+            /* The player sheet's weapon line has a damage nature, no type and no note. */
+            delete weapon.type
+            delete weapon.notes
+            upgradeKeys(weapon, ['pourcentage'], toPlain)
         }
     }
 }
 
 /**
- * v1 exported the playable value as a scalar. v2 exports its lower bound,
- * current value and upper bound. A legacy scalar has no stated headroom, so
- * migration keeps it truthful: 0 ≤ n ≤ n — except a PJ characteristic, whose
- * scalar is its creation value: n ≤ n ≤ the published ceiling.
- *
- * Only the player sheet keeps the triplet. A creature or a PNJ accepts the plain number (its scores
- * do not evolve), so a document of those targets is left as written. The lists upgraded are the
- * ones the published player-sheet schema declares: a list it no longer declares is not upgraded,
- * and the schema then reports it.
+ * Older player-sheet documents wrote ranges (`minimum`, `current`, `maximum`) and keys the sheet
+ * does not print. The current contract types one number for a characteristic, a threshold, a
+ * protection, a percentage, and drops the keys the sheet has no zone for: the current value is
+ * kept, the rest is removed. The experience points (`px`) and the contagion probability keep the
+ * range. A creature or a PNJ accepts the plain number and its own keys, so a document of those
+ * targets is left as written. A key the published schema still refuses is then reported by it.
  */
 export function upgradeLegacyAdrenalineRanges(
     value: unknown,
@@ -78,7 +76,7 @@ export function upgradeLegacyAdrenalineRanges(
         upgradeKeys(
             document.caracteristiques,
             [...CHARACTERISTIC_FIELDS.pj],
-            toCharacteristic
+            toPlain
         )
     }
 
@@ -89,7 +87,7 @@ export function upgradeLegacyAdrenalineRanges(
             for (const level of ['superficiel', 'leger', 'grave', 'profond']) {
                 const threshold = health[level]
                 if (isRecord(threshold))
-                    upgradeKeys(threshold, ['base', 'couvert'])
+                    upgradeKeys(threshold, ['base', 'couvert'], toPlain)
             }
         }
     }
@@ -98,10 +96,22 @@ export function upgradeLegacyAdrenalineRanges(
         for (const kind of ['physiques', 'mentales']) {
             const protection = document.protections[kind]
             if (!isRecord(protection)) continue
-            upgradeKeys(protection, ['solidite'])
+            /* The player sheet prints no solidity and no shield, and its armour or
+               character trait is one line: the older document's extras are dropped. */
+            delete protection.solidite
+            delete protection.bouclier
             for (const item of ['armure', 'caractere']) {
-                if (isRecord(protection[item]))
-                    upgradeKeys(protection[item], ['points'])
+                const entry = protection[item]
+                if (!isRecord(entry)) continue
+                for (const key of [
+                    'des',
+                    'couverture',
+                    'emotions',
+                    'proprietes',
+                    'reduction',
+                ])
+                    delete entry[key]
+                upgradeKeys(entry, ['points'], toPlain)
             }
         }
     }
@@ -109,12 +119,42 @@ export function upgradeLegacyAdrenalineRanges(
     if (Array.isArray(document.formations)) {
         for (const formation of document.formations) {
             if (!isRecord(formation)) continue
-            upgradeKeys(formation, ['pourcentage'])
+            upgradeKeys(formation, ['pourcentage'], toPlain)
             upgradeSkills(formation.competences)
         }
     }
     upgradeSkills(document.competences)
     upgradeEquipment(document.equipement)
+
+    if (
+        isRecord(document.etatDePartie) &&
+        Array.isArray(document.etatDePartie.etats)
+    ) {
+        /* The player sheet's « États » zone is one free text, a line per state. */
+        document.etatDePartie.etats = document.etatDePartie.etats
+            .map((state: unknown) => {
+                if (typeof state === 'string') return state
+                if (!isRecord(state) || typeof state.nom !== 'string') return ''
+                const where =
+                    typeof state.localisation === 'string'
+                        ? ` (${state.localisation})`
+                        : ''
+                return `${state.nom}${where}`
+            })
+            .filter((line: string) => line.length > 0)
+            .join('\n')
+        if (document.etatDePartie.etats === '')
+            delete document.etatDePartie.etats
+    }
+
+    if (
+        isRecord(document.etatDePartie) &&
+        isRecord(document.etatDePartie.malus) &&
+        isRecord(document.etatDePartie.malus.choc)
+    ) {
+        /* The sheet prints the five round circles only. */
+        delete document.etatDePartie.malus.choc.heures
+    }
 
     if (isRecord(document.parametresDuJeu)) {
         upgradeKeys(document.parametresDuJeu, ['px'])

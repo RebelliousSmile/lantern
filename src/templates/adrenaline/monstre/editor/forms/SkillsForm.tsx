@@ -14,6 +14,11 @@ export function SkillsForm() {
             {profileLine()}
             {ownership([[text('adrenaline:sections.skills'), skillsSource]])}
             <SkillRows
+                at={
+                    skillsSource.owner
+                        ? '/etats[]/delta/competences[]'
+                        : '/competences[]'
+                }
                 form="number"
                 label={text('adrenaline:shared.skills.label')}
                 value={skillsSource.value}

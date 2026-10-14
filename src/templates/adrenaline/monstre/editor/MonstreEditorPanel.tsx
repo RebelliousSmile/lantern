@@ -1,4 +1,5 @@
 import { useUiText } from '@/i18n/text'
+import { SchemaProvider } from '../../shared/editor/draft'
 import { useAdrenalineDocument } from '../../shared/hooks'
 import type { MonstreSection } from '../../shared/sections'
 import { blankMonstre } from '../sample'
@@ -31,7 +32,11 @@ export function MonstreEditorPanel() {
             </div>
         )
     }
-    switch (sheet.target) {
+    return <SchemaProvider value="monstre">{form(sheet.target)}</SchemaProvider>
+}
+
+function form(target: MonstreSection) {
+    switch (target) {
         case 'basic':
             return <BasicForm />
         case 'statistics':

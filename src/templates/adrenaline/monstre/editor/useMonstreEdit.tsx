@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button'
 import { useUiText } from '@/i18n/text'
 import type { ReactNode } from 'react'
 import { useEffect, useState } from 'react'
-import { canonical } from '../../shared/editor/clean'
+import { canonical, withoutHollow } from '../../shared/editor/clean'
 import { useAdrenalineDocument } from '../../shared/hooks'
 import { maximumStates } from '../../shared/schemaFields'
 import type { MonstreSection } from '../../shared/sections'
@@ -38,23 +38,22 @@ export function useMonstreEdit() {
         'adrenaline.monstre',
         blankMonstre() as unknown as Record<string, unknown>
     )
-    const set = (key: string, value: unknown) =>
-        update((next) => {
-            next[key] = value
-        })
-    /* A key the contract lets a document leave out: emptied, it leaves the document. */
+    /* A field is a value or it is not there: nothing hollow is held by the document. */
     const setOptional = (key: string, value: unknown) =>
         update((next) => {
-            if (value === undefined) delete next[key]
-            else next[key] = value
+            const kept = withoutHollow(value)
+            if (kept === undefined) delete next[key]
+            else next[key] = kept
         })
+    const set = setOptional
     const states = monsterStates(document)
     const stateMaximum = maximumStates()
     const stateLimitReached =
         stateMaximum !== undefined && states.length >= stateMaximum
     const commitStateDocument = (replacement: MonsterDocument) => {
         update((next) => {
-            if ('etats' in replacement) next.etats = replacement.etats
+            const states = withoutHollow(replacement.etats)
+            if (states !== undefined) next.etats = states
             else delete next.etats
             if ('etatActif' in replacement)
                 next.etatActif = replacement.etatActif
@@ -126,7 +125,9 @@ export function useMonstreEdit() {
             index,
             owner,
             value: owner ? shownValue(drafts[draftKey], stored) : stored,
-            write: (value: unknown) => {
+            write: (typed: unknown) => {
+                /* A field is a value or it is not there: nothing hollow is held by the document. */
+                const value = withoutHollow(typed)
                 if (!owner) {
                     setStateError(null)
                     update((next) => {

@@ -1,5 +1,6 @@
 import type { StaticTemplateDefinition } from '@/core/templates/types'
 import { cloneValue } from '@/utils/clone'
+import { upgradeLegacyAdrenalineRanges } from '../shared/legacyRanges'
 import {
     defaultAdrenalineView,
     emptyAdrenalineSheetState,
@@ -19,6 +20,8 @@ const descriptor: StaticTemplateDefinition<
     implemented: true,
     contractKey: 'adrenaline/pj',
     createBlank: blankPj,
+    upgradeDocument: (doc) =>
+        upgradeLegacyAdrenalineRanges(doc, 'adrenaline/pj'),
     createExample: samplePj,
     createInitialView: () => cloneValue(defaultAdrenalineView),
     createInitialSheet: () => cloneValue(emptyAdrenalineSheetState),

@@ -105,7 +105,12 @@ function restorePersistedTab(tab: AnyWorkspaceTab): AnyWorkspaceTab {
 
     return {
         ...tab,
-        doc: restoreMissing(template.createBlank(), tab.doc),
+        doc: restoreMissing(
+            template.createBlank(),
+            template.upgradeDocument
+                ? template.upgradeDocument(tab.doc)
+                : tab.doc
+        ),
         view: restoreMissing(template.createInitialView(), tab.view),
         sheet: restoreMissing(template.createInitialSheet(), tab.sheet),
     }

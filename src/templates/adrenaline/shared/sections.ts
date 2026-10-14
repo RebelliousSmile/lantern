@@ -36,14 +36,15 @@ function sections<T extends string>(ids: readonly T[]) {
     return ids.map((id) => ({ id, label: sectionLabel(id) }))
 }
 
+/* Identity comes last, as it does on the published sheet. */
 export const pjSections = sections<PjSection>([
     'parameters',
-    'identity',
     'characteristics',
     'health',
     'protections',
     'formations',
     'equipment',
+    'identity',
     'meta',
 ])
 export const pnjSections = sections<PnjSection>([

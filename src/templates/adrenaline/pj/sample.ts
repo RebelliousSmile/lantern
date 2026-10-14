@@ -29,12 +29,7 @@ base = 8
 [sante.mental.grave]
 base = 13
 [sante.mental.profond]
-base = 18
-
-[protections.physiques]
-solidite = 5
-[protections.mentales]
-solidite = 4`
+base = 18`
 
 export const blankPj = () =>
     parseAdrenalineToml<AdrenalinePj>('adrenaline/pj', starter)

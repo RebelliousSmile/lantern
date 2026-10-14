@@ -61,6 +61,7 @@ import {
     selectMonsterState,
     type MonsterDocument,
 } from '../src/templates/adrenaline/monstre/states'
+import { compactAgainst } from '../src/templates/adrenaline/shared/editor/schemaCompact'
 import { upgradeLegacyAdrenalineRanges } from '../src/templates/adrenaline/shared/legacyRanges'
 import {
     parseAdrenalineToml,
@@ -225,6 +226,13 @@ function collectDeltas(
         /* `JSON.stringify`, not a deepEqual over a clone: the clone drops `undefined` values and the
          * comparison then fails on absent optional fields. */
         if (JSON.stringify(a) === JSON.stringify(b)) continue
+        /* The export leaves empty lists out by design (`compactAgainst`): an empty list that comes
+         * back absent carries nothing, so it is not a loss. */
+        if (
+            (Array.isArray(a) && a.length === 0 && b === undefined) ||
+            (Array.isArray(b) && b.length === 0 && a === undefined)
+        )
+            continue
         const bothPlain =
             a &&
             b &&
@@ -782,7 +790,11 @@ function assertActionEditorOutput() {
         ['degats', 'suites', 'test'],
         'blank keys, empty lists and empty objects are not written'
     )
-    assert.deepStrictEqual(cleaned.suites, [{ nom: 'Suivi' }])
+    /* What is typed stays (a draft the panels signal); the blank name and the emptied profile leave. */
+    assert.deepStrictEqual(cleaned.suites, [
+        { degats: { versant: 'mental' } },
+        { nom: 'Suivi' },
+    ])
     assert.equal(
         cleanAction({ nom: '', degats: { profils: [{ des: '' }] } }),
         undefined
@@ -793,8 +805,12 @@ function assertActionEditorOutput() {
         'legacy damage keys are kept'
     )
     assert.ok(
-        codec.parseJson(JSON.stringify({ ...base, actions: [cleaned] })),
-        'the cleaned action passes the published codec'
+        codec.parseJson(
+            JSON.stringify(
+                compactAgainst('monstre', { ...base, actions: [cleaned] })
+            )
+        ),
+        'the cleaned action passes the published codec once exported'
     )
     assert.deepStrictEqual(
         cleaned.test,
@@ -1063,17 +1079,30 @@ function assertActionEditorSummaries() {
         'Lutte 30 %',
         'a triplet is summarised by its current value'
     )
-    // A test without a name is not written, a named one always carries its percentage.
-    assert.equal(cleanAction({ test: { nom: '', pourcentage: 40 } }), undefined)
+    // What is typed stays a draft the panels signal; a percentage is never invented, and the
+    // export (`compactAgainst`) leaves the incomplete test out.
+    assert.deepStrictEqual(
+        cleanAction({ test: { nom: '', pourcentage: 40 } }),
+        { test: { pourcentage: 40 } }
+    )
     assert.deepStrictEqual(cleanAction({ test: { nom: 'Mordre' } }), {
-        test: { nom: 'Mordre', pourcentage: 0 },
+        test: { nom: 'Mordre' },
     })
-    // Empty damage and an empty test, as the always visible fields leave them, write nothing.
     assert.equal(
-        cleanAction({
-            nom: '',
-            test: { nom: '', pourcentage: 0 },
-            degats: { profils: [{ des: '' }] },
+        compactAgainst('monstre', { actions: [{ test: { nom: 'Mordre' } }] }),
+        undefined
+    )
+    // Empty damage and an empty test, as the always visible fields leave them: the draft keeps the
+    // zero it shows, the export writes nothing.
+    assert.equal(
+        compactAgainst('monstre', {
+            actions: [
+                cleanAction({
+                    nom: '',
+                    test: { nom: '', pourcentage: 0 },
+                    degats: { profils: [{ des: '' }] },
+                }),
+            ],
         }),
         undefined
     )
@@ -1118,13 +1147,11 @@ function assertLegacyRangeKeyPresence() {
         ),
         false
     )
-    assert.equal(
-        (upgraded.caracteristiques.for as { current: number }).current,
-        45
-    )
+    /* The 5.0.0 player sheet carries a characteristic as a plain number, not a triplet. */
+    assert.equal(upgraded.caracteristiques.for, 45)
     assert.deepStrictEqual(playerSource.caracteristiques, { for: 45, con: 60 })
 
-    /* Only the player sheet keeps the triplet: a creature or a PNJ keeps the plain number, key for key. */
+    /* A creature or a PNJ keeps the plain number, key for key. */
     const creatureSource = {
         caracteristiques: { for: 45, con: 60, dex: 25, rap: 30 },
         etatAlternatif: {
@@ -1148,8 +1175,8 @@ function assertLegacyRangeKeyPresence() {
     const player = upgradeLegacyAdrenalineRanges(
         { caracteristiques: { for: 45 } },
         'adrenaline/pj'
-    ) as { caracteristiques: { for: { current: number } } }
-    assert.equal(player.caracteristiques.for.current, 45)
+    ) as { caracteristiques: { for: number } }
+    assert.equal(player.caracteristiques.for, 45)
 
     /* The real round trip an import and an export make: read the TOML, write it back. */
     const roundTrip = (target: string, toml: string) => {
@@ -1192,20 +1219,26 @@ function assertLegacyRangeKeyPresence() {
                 `${target}: plain numbers stay numbers through the round trip`
             )
     }
+    /* The 5.0.0 player sheet: a plain number stays a plain number, and an older triplet is read
+     * as its current value. */
     const sheet = published('adrenaline/pj', 'figurant-minimal.toml')
     sheet.caracteristiques.for = 40
+    sheet.caracteristiques.con = { minimum: 10, current: 35, maximum: 50 }
     const { read: pj, written: pjWritten } = roundTrip(
         'adrenaline/pj',
         stringifyToml(sheet)
     )
     for (const result of [pj, pjWritten]) {
-        const value = (result.caracteristiques as Record<string, unknown>).for
-        assert.ok(
-            typeof value === 'object' &&
-                value !== null &&
-                (value as { minimum: number }).minimum === 40 &&
-                (value as { current: number }).current === 40,
-            'adrenaline/pj: a plain number becomes a triplet through the round trip'
+        const values = result.caracteristiques as Record<string, unknown>
+        assert.equal(
+            values.for,
+            40,
+            'adrenaline/pj: a plain number stays a plain number through the round trip'
+        )
+        assert.equal(
+            values.con,
+            35,
+            'adrenaline/pj: an older triplet is read as its current value'
         )
     }
 }

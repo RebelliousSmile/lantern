@@ -5,6 +5,15 @@ All notable changes to this project are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.27.0] - 2026-10-14
+
+### Changed
+
+- Adrenaline: the player sheet follows contract 5.0.0 of schema-adrenaline. The editors write one number for a characteristic, a threshold, a protection and a percentage; armour and character trait are one line; the sheet no longer offers solidity, shield, weapon type and note, a skill's characteristic or the shock hours, and a weapon takes its nature.
+- Adrenaline: the player sheet prints and edits the states as one text, the wound circles and notes of each column, the advantages and immunities, the constraints, history and personality, the scenario, and the social weapons the character does not use.
+- Adrenaline: clicking a zone of the player sheet opens only that zone's fields; the identity is split into its own zones and each formation column is edited alone. A formation column that holds nothing is no longer reported as incomplete.
+- Adrenaline: a player sheet written with ranges is read by its current value and rewritten as plain numbers on edit; the experience points keep their three fields.
+
 ## [v0.26.0] - 2026-10-12
 
 ### Changed

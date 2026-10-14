@@ -32,13 +32,46 @@ const adrenaline: ResourceShape<typeof en> = {
         exportToml: 'Exporter les données du PJ actuel en TOML.',
         exportPng: 'Exporter l’aperçu du PJ actuel en PNG.',
         form: {
+            addIdentity: 'Renseigner l’identité',
             characterHeading: 'Personnage et paramètres',
             player: 'Joueur',
             creationMethod: 'Type de création',
             scenarioType: 'Type de scénario',
             campaignVariant: 'Déclinaison de campagne',
+            noChoice: 'Non précisé',
             xp: 'PX',
             trainingsHeading: 'Formations',
+            scenario: 'Scénario',
+            professionalConstraints: 'Contraintes professionnelles',
+            familyConstraints: 'Contraintes familiales',
+            externalCommitments: 'Engagements extérieurs',
+            stressHeading: 'Stress',
+            shockRounds: 'Malus de choc (ROUND)',
+            shockNotes: 'Choc (texte)',
+            misc: 'Divers (texte)',
+            miscCircles: 'Divers (cercles)',
+            totalMaluses: 'Total des malus',
+            woundsPhysical: 'Blessures physiques',
+            woundsMental: 'Blessures mentales',
+            states: 'États',
+            woundNotes: 'Blessure écrite sous les cercles',
+            stateName: 'État',
+            stateSide: 'Versant',
+            sideDropsLocation: 'Changer le versant efface la localisation.',
+            locationDropped:
+                'La localisation a été effacée : elle appartenait à l’autre versant.',
+            noLocation: 'Aucune localisation',
+            durations: {
+                heure: 'Heure',
+                jour: 'Jour',
+                semaine: 'Semaine',
+                mois: 'Mois',
+            },
+            sides: {
+                physique: 'Physique',
+                mental: 'Mental',
+                general: 'Général',
+            },
         },
         sheet: {
             parameters: {
@@ -49,6 +82,7 @@ const adrenaline: ResourceShape<typeof en> = {
             },
             rangeMinimum: 'Création',
             rangeCurrent: 'Actuel',
+            malus: 'malus',
             training: 'Formation',
             weapon: 'Arme',
             base: 'Base',
@@ -67,14 +101,7 @@ const adrenaline: ResourceShape<typeof en> = {
             condition: 'État',
             location: 'Localisation',
             duration: 'Durée',
-            perk: 'Avantage : {{perks}}',
             years: '{{age}} ans',
-            thresholds: {
-                superficiel: 'Superficiel',
-                leger: 'Léger',
-                grave: 'Grave',
-                profond: 'Profond',
-            },
             values: {
                 equitable: 'Équitable',
                 aleatoire: 'Aléatoire',
@@ -163,8 +190,9 @@ const adrenaline: ResourceShape<typeof en> = {
             baseState: 'Profil de base',
             addState: 'Ajouter un état',
             stateLimitReached: 'Le schéma publié n’admet pas d’autre état.',
-            newStateName: 'Nouvel état',
-            newTrigger: 'Nouveau déclencheur',
+            newStateName: 'Nom du nouvel état',
+            newStateNameMissing:
+                'Saisissez un nom : un état n’existe qu’avec le sien.',
             trigger: 'Déclencheur',
             duplicateStateId: 'Chaque identifiant d’état doit être unique.',
             invalidState: 'Cet état ne respecte pas le schéma Adrenaline.',
@@ -225,6 +253,10 @@ const adrenaline: ResourceShape<typeof en> = {
             base: 'Base',
             plusArmour: '+ Armure',
             plusTrait: '+ Caractère',
+            sideIncomplete:
+                'Ce côté s’inscrit dans la fiche quand ses quatre seuils ont une base.',
+            sideWaiting:
+                'Ce côté s’inscrit dans la fiche quand l’autre côté, requis, a lui aussi ses quatre seuils.',
         },
         protection: {
             physicalHeading: 'Protection physique',
@@ -234,7 +266,21 @@ const adrenaline: ResourceShape<typeof en> = {
             characterTrait: 'Trait de caractère',
             points: 'Points',
             locations: 'Localisations',
+            locationsAll: 'Tout cocher',
+            locationsNone: 'Tout décocher',
             shield: 'Bouclier',
+            details: 'Détails — {{name}}',
+            tabs: { values: 'Valeurs', lists: 'Listes' },
+            dice: 'Dés retirés',
+            coverage: 'Couverture',
+            properties: 'Propriétés',
+            emotions: 'Émotions',
+            reductionAgainst: 'Réduction contre',
+            reductionValue: 'Valeur de la réduction',
+            reductionIncomplete:
+                'La réduction s’inscrit dans la fiche quand sa valeur et au moins un type de dégâts sont renseignés.',
+            shieldIncomplete:
+                'Les propriétés s’inscrivent dans la fiche quand le bouclier porte un nom.',
             shieldProperties: 'Propriétés du bouclier',
         },
         trainings: {
@@ -247,10 +293,21 @@ const adrenaline: ResourceShape<typeof en> = {
             specialty: 'Spécialité',
             addSpecialty: 'Ajouter une spécialité',
             removeSpecialty: 'Retirer la spécialité',
+            showAll: 'Afficher toutes les compétences',
+            noFormationType: 'Type non précisé',
             noCharacteristic: '—',
             characteristic: 'Caractéristique',
+            more: 'Plus de champs',
+            action: 'Action',
             total: 'Total',
             perks: 'Avantages',
+            tabs: {
+                general: 'Général',
+                values: 'Total',
+                damage: 'Dégâts',
+                details: 'Détails',
+                notes: 'Autres',
+            },
         },
         equipment: {
             possessions: 'Possessions',
@@ -259,9 +316,20 @@ const adrenaline: ResourceShape<typeof en> = {
             mentalWeapons: 'Armes mentales',
             psychologicalWeapons: 'Armes psychologiques',
             damageDice: 'Dés de dégâts',
+            damageNature: 'Nature des dégâts',
+            noNature: 'Non précisée',
+            perksAndImmunities: 'Avantages et immunités',
+            socialWeapons: 'Armes sociales utilisées',
         },
         meta: {
             publicationType: 'Type de publication',
+            publicationTypes: {
+                officiel: 'Officielle',
+                tiers: 'Tierce',
+                communautaire: 'Communautaire',
+                maison: 'Maison',
+            },
+            noPublicationType: 'Non précisé',
             source: 'Source',
             authors: 'Auteurs',
             page: 'Page',
@@ -286,6 +354,23 @@ const adrenaline: ResourceShape<typeof en> = {
             min: 'Min.',
             current: 'Actuel',
             max: 'Max.',
+            followed: "{{name}} : le maximum a suivi l'actuel, à {{value}}.",
+        },
+        draft: {
+            incomplete:
+                'Brouillon : il manque {{missing}}. Cette ligne n’est pas exportée tant qu’elle est incomplète.',
+            formationSkills:
+                'Brouillon : il manque {{missing}}. Les compétences de cette formation ne sont pas exportées tant qu’elle est incomplète.',
+            nameKept:
+                'Nom requis : « {{name}} » reste le nom exporté tant qu’aucun autre n’est saisi.',
+            nameMissing:
+                'Nom requis : saisissez un nom pour que la fiche soit exportable.',
+            numberMissing:
+                '{{name}} : champ vide, rien n’est écrit tant qu’aucun nombre n’est saisi.',
+        },
+        bounds: {
+            below: '{{name}} : {{value}} est sous le minimum admis, ramené à {{bound}}.',
+            above: '{{name}} : {{value}} dépasse le maximum admis, ramené à {{bound}}.',
         },
     },
 }

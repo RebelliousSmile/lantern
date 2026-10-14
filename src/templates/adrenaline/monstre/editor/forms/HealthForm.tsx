@@ -35,6 +35,7 @@ export function HealthForm() {
             {shows('sante') ? (
                 <HealthFields
                     form="number"
+                    schema="monstre"
                     value={healthSource.value}
                     onChange={healthSource.write}
                 />
@@ -49,6 +50,7 @@ export function HealthForm() {
             {shows('malusAvantHs') ? (
                 <OptionalNumberField
                     label={text('adrenaline:monstre.form.maluses')}
+                    at="/malusAvantHs"
                     value={maluses.value}
                     onChange={maluses.write}
                 />

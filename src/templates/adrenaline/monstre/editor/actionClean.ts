@@ -9,21 +9,23 @@ import {
 export { canonical } from '../../shared/editor/clean'
 export type { Entry }
 
+/*
+ * What is typed stays in the document, a group that lacks a key the schema requires included: it
+ * is a draft the panels signal and the preview shows, and the export leaves it out
+ * (`compactAgainst`). Only blank strings and emptied containers leave.
+ */
 function cleanProfile(value: unknown): Entry | undefined {
     const profile = record(value)
-    const dice = filled(profile.des)
-    if (dice === undefined) return undefined
-    let next = put(profile, 'des', dice)
+    let next = put(profile, 'des', filled(profile.des))
     /* A nature the editor does not list is kept as entered: the contract, not the editor, refuses it. */
     next = put(next, 'nature', filled(profile.nature))
-    return put(next, 'condition', filled(profile.condition))
+    next = put(next, 'condition', filled(profile.condition))
+    return Object.keys(next).length > 0 ? next : undefined
 }
 
-function cleanDamage(value: unknown): Entry | undefined {
+export function cleanDamage(value: unknown): Entry | undefined {
     const damage = record(value)
-    const profiles = cleanList(damage.profils, cleanProfile)
-    if (profiles === undefined) return undefined
-    let next = put(damage, 'profils', profiles)
+    let next = put(damage, 'profils', cleanList(damage.profils, cleanProfile))
     next = put(next, 'versant', filled(damage.versant))
     next = put(next, 'liant', filled(damage.liant))
     next = put(
@@ -32,15 +34,15 @@ function cleanDamage(value: unknown): Entry | undefined {
         cleanList(damage.proprietes, filled) as string[] | undefined
     )
     next = put(next, 'munitions', filled(damage.munitions))
-    return put(next, 'portee', filled(damage.portee))
+    next = put(next, 'portee', filled(damage.portee))
+    return Object.keys(next).length > 0 ? next : undefined
 }
 
 function cleanTest(value: unknown): Entry | undefined {
     const test = record(value)
-    const name = filled(test.nom)
-    if (name === undefined) return undefined
-    /* A named test always carries its percentage: the contract requires both. */
-    return put(put(test, 'nom', name), 'pourcentage', test.pourcentage ?? 0)
+    /* A percentage is never invented: a test without one is a draft, signalled as such. */
+    const next = put(test, 'nom', filled(test.nom))
+    return Object.keys(next).length > 0 ? next : undefined
 }
 
 /** The fields an action and a follow-up share; legacy damage keys pass through untouched. */

@@ -88,7 +88,8 @@
     border: 1px solid var(--adrenaline-rule);
 }
 
-.adr-pj h4.adr-pj__section-title {
+.adr-pj h4.adr-pj__section-title,
+.adr-pj summary.adr-pj__section-title {
     margin: 0;
     background: var(--adrenaline-band);
     padding: 3px 8px;
@@ -103,7 +104,8 @@
     text-transform: uppercase;
 }
 
-.adr-pj--titles-center h4.adr-pj__section-title {
+.adr-pj--titles-center h4.adr-pj__section-title,
+.adr-pj--titles-center summary.adr-pj__section-title {
     text-align: center;
 }
 
@@ -232,6 +234,8 @@
     margin: 0;
     font-style: italic;
     font-size: 0.88em;
+    line-height: 1.1;
+    text-align: center;
 }
 
 .adr-pj__write-line {
@@ -274,7 +278,7 @@
 }
 
 .adr-pj__metric-2 {
-    grid-template-columns: minmax(0, 1fr) 42px 42px;
+    grid-template-columns: minmax(0, 0.6fr) repeat(2, minmax(0, 1fr));
 }
 
 .adr-pj__metric {
@@ -307,6 +311,7 @@
 }
 
 .adr-pj--entete > .adr-pj__section-body {
+    /* The character name on the left, the sheet label between, the game parameters on the right. */
     grid-template-columns: minmax(0, 1fr) minmax(0, 1.35fr) minmax(0, 1.15fr);
     grid-template-areas: 'nom brand params';
     align-items: stretch;
@@ -363,8 +368,21 @@
 .adr-pj__card-fields {
     display: flex;
     flex-direction: column;
-    gap: 3px;
-    padding: 5px 48px 5px 6px;
+    gap: 0;
+    padding: 2px 48px 3px 6px;
+    line-height: 1.1;
+}
+
+/* Game parameters: one tight line each, the dotted field no taller than its text. */
+.adr-pj__card-fields .adr-pj__write-line {
+    flex-wrap: nowrap;
+    align-items: baseline;
+    gap: 4px;
+}
+
+.adr-pj__card-fields .adr-pj__write-field {
+    min-height: 0;
+    line-height: 1.1;
 }
 
 .adr-pj__px {
@@ -397,6 +415,12 @@
     font-family: var(--font-header-theme);
     letter-spacing: 0.04em;
     text-transform: uppercase;
+}
+
+.adr-pj__brand-subtitle {
+    font-style: italic;
+    font-size: 10px;
+    line-height: 1.1;
 }
 
 .adr-pj__brand-sheet {
@@ -490,6 +514,10 @@
     gap: 4px;
 }
 
+.adr-pj__ruled-list + .adr-pj__write-line {
+    margin-block-start: 6px;
+}
+
 .adr-pj__ruled-line {
     border-bottom: 1px dotted var(--adrenaline-field-border);
     min-height: 1.25em;
@@ -508,7 +536,7 @@
 }
 
 .adr-pj__unit-line {
-    grid-template-columns: auto minmax(0, 1fr) auto 32px;
+    grid-template-columns: auto minmax(0, 1fr) auto;
 }
 
 .adr-pj__weapon-score,
@@ -530,14 +558,20 @@
     text-transform: uppercase;
 }
 
+/* The malus blocks (wounds, shock, various, total) share one line, as on the paper sheet. */
 .adr-pj--sante > .adr-pj__section-body {
-    grid-template-areas:
-        'stress sp sm' 'choc etats etats' 'divers etats etats'
-        'total etats etats';
+    grid-template-columns:
+        repeat(2, minmax(0, 3fr)) repeat(2, minmax(0, 1fr))
+        minmax(0, 1.5fr);
+    grid-template-areas: 'sp sm etats etats etats' 'wp wm choc divers total';
 }
 
-.adr-pj--sante .adr-pj__stress {
-    grid-area: stress;
+.adr-pj--sante .adr-pj__blessures-physiques {
+    grid-area: wp;
+}
+
+.adr-pj--sante .adr-pj__blessures-mentales {
+    grid-area: wm;
 }
 
 .adr-pj--sante .adr-pj__seuils-physiques {
@@ -631,27 +665,27 @@
 
 .adr-pj__track {
     display: grid;
-    grid-template-columns: 17px minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-rows: auto 1fr;
     border: 1px solid var(--adrenaline-rule);
     min-height: 36px;
 }
 
 .adr-pj__track-label {
-    transform: rotate(180deg);
+    grid-column: 1 / -1;
     background: var(--adrenaline-band);
     color: var(--adrenaline-band-ink);
     font-weight: 800;
     font-size: 8px;
     font-family: var(--font-header-theme);
     letter-spacing: 0.04em;
-    writing-mode: vertical-rl;
     text-align: center;
     text-transform: uppercase;
 }
 
 .adr-pj__track-body {
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
     align-items: center;
     gap: 4px;
     padding: 4px 6px;
@@ -667,6 +701,20 @@
 .adr-pj__track-value {
     min-width: 42px;
     text-align: center;
+}
+
+/* The period label sits under its circles, as on the paper sheet (ROUND), with room between. */
+.adr-pj__track-group {
+    display: inline-flex;
+    align-items: flex-end;
+    gap: 4px;
+}
+
+.adr-pj__track-stack {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
 }
 
 .adr-pj__track-period {
@@ -697,25 +745,32 @@
     background: var(--adrenaline-condition);
 }
 
+/* Room to write in front of the circles: a vertical strip, the text turned a quarter turn. */
 .adr-pj__track-text {
-    flex: 1;
-    min-width: 0;
+    grid-column: 2;
+    min-width: 16px;
+    margin: 4px 4px 4px 0;
+    border-inline-start: 1px dotted var(--adrenaline-field-border);
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
     text-align: start;
+    overflow: hidden;
 }
 
 /* Total des malus: the printed scale, the current total circled. */
 .adr-pj__scale {
-    display: flex;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     align-items: center;
-    gap: 4px;
+    justify-items: center;
+    gap: 2px;
     border-radius: 6px;
     background: var(--adrenaline-card-surface, var(--background-primary));
-    padding: 4px 8px;
+    padding: 4px 6px;
 }
 
 .adr-pj__scale-label {
-    max-width: 44px;
+    grid-column: 1 / -1;
     color: var(--adrenaline-rule);
     font-weight: 800;
     font-size: 7px;
@@ -728,20 +783,38 @@
 
 .adr-pj__scale-step {
     display: inline-flex;
+    flex: 0 0 auto;
     justify-content: center;
     align-items: center;
-    width: 20px;
+    min-width: 20px;
     height: 20px;
     color: var(--adrenaline-rule);
     font-weight: 800;
-    font-size: 15px;
+    font-size: 14px;
     font-family: var(--font-header-theme);
+    white-space: nowrap;
+}
+
+.adr-pj__scale-step:last-child {
+    grid-column: 1 / -1;
 }
 
 .adr-pj__scale-step--current {
     border: 2px solid var(--adrenaline-handwritten-ink);
     border-radius: 50%;
     color: var(--adrenaline-handwritten-ink);
+}
+
+/* États: a free zone, an empty frame to fill by hand. */
+.adr-pj__states-zone {
+    min-height: 0;
+    padding: 5px 6px;
+    border: 1px solid var(--adrenaline-condition-border);
+}
+
+.adr-pj__states-line {
+    margin: 0 0 2px;
+    font-size: 11px;
 }
 
 .adr-pj__condition-stack {
@@ -804,7 +877,7 @@
         grid-template-areas: 'brand brand' 'nom params';
     }
     .adr-pj--sante > .adr-pj__section-body {
-        grid-template-areas: 'stress stress' 'sp sm' 'choc divers' 'total total' 'etats etats';
+        grid-template-areas: 'sp sm' 'wp wm' 'choc divers' 'total total' 'etats etats';
     }
 }
 @container (max-width: 420px) {
@@ -822,6 +895,224 @@
         grid-template-areas: 'brand' 'nom' 'params';
     }
     .adr-pj--sante > .adr-pj__section-body {
-        grid-template-areas: 'stress' 'sp' 'sm' 'choc' 'divers' 'total' 'etats';
+        grid-template-areas: 'sp' 'sm' 'wp' 'wm' 'choc' 'divers' 'total' 'etats';
     }
+}
+
+/* Collapsible section (Identité): its title band is the handle, closed by default. */
+.adr-pj summary.adr-pj__section-title {
+    cursor: pointer;
+    list-style: none;
+}
+
+.adr-pj summary.adr-pj__section-title::-webkit-details-marker {
+    display: none;
+}
+
+.adr-pj summary.adr-pj__section-title::before {
+    content: '▸ ';
+}
+
+.adr-pj details[open] > summary.adr-pj__section-title::before {
+    content: '▾ ';
+}
+
+/* Damage dice: the entered nature stays a class, the sheet does not colour it. */
+.adr-pj__die {
+    display: inline-block;
+    border-radius: 3px;
+    padding: 0 5px;
+    font-weight: 800;
+    text-align: center;
+    white-space: nowrap;
+}
+
+/* Social weapons: a compact fixed table, name and properties. */
+.adr-pj__reference {
+    display: grid;
+    gap: 3px;
+}
+
+.adr-pj__reference-table {
+    display: grid;
+    gap: 1px;
+}
+
+.adr-pj__reference-row {
+    display: grid;
+    grid-template-columns: 70px minmax(0, 1fr);
+    align-items: center;
+    gap: 8px;
+    border-bottom: 1px dotted var(--adrenaline-field-border);
+    font-size: 0.9em;
+    line-height: 1.2;
+}
+
+.adr-pj__reference-row--struck {
+    opacity: 0.5;
+    text-decoration: line-through;
+}
+
+.adr-pj__reference-row--head {
+    border-bottom: 1px solid var(--adrenaline-rule);
+}
+
+.adr-pj__reference-name {
+    font-weight: 700;
+}
+
+/* Location grid: the six published locations, three boxes each. */
+.adr-pj__locations {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 4px;
+    margin-block-start: 4px;
+}
+
+.adr-pj__location {
+    display: grid;
+    justify-items: center;
+    gap: 1px;
+    border: 1px solid var(--adrenaline-field-border);
+    padding: 2px;
+    text-align: center;
+}
+
+.adr-pj__location-range {
+    color: var(--adrenaline-rule);
+    font-weight: 800;
+    font-size: 8px;
+    font-family: var(--font-header-theme);
+}
+
+.adr-pj__location-label {
+    font-size: 0.8em;
+    line-height: 1.1;
+}
+
+/* The three boxes touch, as on the paper sheet. */
+.adr-pj__location-boxes {
+    display: inline-flex;
+    gap: 0;
+}
+
+.adr-pj__location-boxes .adr-pj__dot-mark {
+    border-radius: 0;
+}
+
+.adr-pj__location-boxes .adr-pj__dot-mark + .adr-pj__dot-mark {
+    margin-inline-start: -1px;
+}
+
+/* Advantages: the first three lines carry their circled rank. */
+.adr-pj__avantages-immunites .adr-pj__ruled-line:nth-child(-n + 3)::before {
+    display: inline-block;
+    width: 11px;
+    height: 11px;
+    margin-inline-end: 4px;
+    border: 1px solid var(--adrenaline-rule);
+    border-radius: 50%;
+    font-size: 8px;
+    line-height: 11px;
+    text-align: center;
+    vertical-align: 1px;
+    color: var(--adrenaline-rule);
+}
+
+.adr-pj__avantages-immunites .adr-pj__ruled-line:nth-child(1)::before { content: '1'; }
+.adr-pj__avantages-immunites .adr-pj__ruled-line:nth-child(2)::before { content: '2'; }
+.adr-pj__avantages-immunites .adr-pj__ruled-line:nth-child(3)::before { content: '3'; }
+
+/* Wounds, as on the paper sheet: two panels split by a dotted line, four lines of circle + duration, then room to write. */
+.adr-pj__wounds {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    flex: 1;
+    padding: 4px;
+}
+
+.adr-pj__wound {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    padding-inline: 4px;
+}
+
+.adr-pj__wound + .adr-pj__wound {
+    border-inline-start: 1px dotted var(--adrenaline-malus-wound);
+}
+
+.adr-pj__wound-line {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.adr-pj__wound-head {
+    font-size: 8px;
+    font-weight: 700;
+    color: var(--adrenaline-rule);
+}
+
+.adr-pj__wound-write {
+    flex: 1;
+    margin: 0;
+    min-height: 48px;
+    background: repeating-linear-gradient(to bottom, transparent 0 15px, var(--adrenaline-field-border) 15px 16px);
+}
+
+.adr-pj__threshold-malus {
+    opacity: 0.8;
+    margin-inline-start: 4px;
+    font-weight: 400;
+    font-size: 0.8em;
+    white-space: nowrap;
+}
+
+.adr-pj__narrative {
+    display: block;
+    border-bottom: 1px dotted var(--adrenaline-field-border);
+    min-height: 4em;
+    text-align: start;
+    white-space: pre-wrap;
+}
+
+.adr-pj__block-note {
+    grid-column: 1 / -1;
+    align-self: stretch;
+    justify-self: stretch;
+    margin-block-start: 3px;
+    width: 100%;
+    text-align: center;
+}
+
+/* The blocks of one Santé row share one height: each frame fills its block. */
+.adr-pj--sante .adr-pj__block {
+    display: flex;
+    flex-direction: column;
+}
+
+.adr-pj--sante .adr-pj__block > :is(.adr-pj__tracks, .adr-pj__scale, .adr-pj__wounds, .adr-pj__states-zone) {
+    flex: 1;
+}
+
+.adr-pj--sante .adr-pj__tracks > .adr-pj__track {
+    flex: 1;
+}
+
+/* The total's note sits inside its frame, so the three bottom frames end on one line. */
+.adr-pj__total-malus {
+    position: relative;
+}
+
+.adr-pj__total-malus .adr-pj__scale {
+    padding-bottom: 16px;
+}
+
+.adr-pj__total-malus .adr-pj__block-note {
+    position: absolute;
+    inset-inline: 0;
+    bottom: 2px;
+    margin: 0;
+    text-align: center;
 }

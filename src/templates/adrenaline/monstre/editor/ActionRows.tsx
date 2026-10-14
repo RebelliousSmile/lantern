@@ -16,6 +16,7 @@ import {
     put,
     type Entry,
 } from '../../shared/editor/clean'
+import { DraftScope, useGroupCaptions } from '../../shared/editor/draft'
 import { EnumSelect } from '../../shared/editor/OptionalFields'
 import { actionSummary, cleanAction, hasMoreFields } from './actionClean'
 import { damageNatures, damageSides } from './damageEnums'
@@ -52,17 +53,22 @@ const sideOptions = (): [string, TranslationKey | undefined][] =>
     damageSides().map((value) => [value, sideLabels[value]])
 
 /** The always visible part of a damage: its profiles, one blank row while none is entered. */
-function DamageProfiles({
+export function DamageProfiles({
     value,
     onChange,
+    at,
 }: {
     value: Entry
     onChange: (value: Entry) => void
+    /** Where the schema describes this damage (`/actions[]/degats`). */
+    at?: string
 }) {
     const text = useUiText()
     const entered = records(value.profils)
     return (
         <RecordRows
+            /* The blank row shown while none is entered is not a profile of the document. */
+            at={entered.length > 0 && at ? `${at}/profils[]` : undefined}
             label={text('adrenaline:monstre.form.damageProfiles')}
             values={entered.length > 0 ? entered : [{ des: '' }]}
             create={() => ({ des: '' })}
@@ -101,16 +107,20 @@ function DamageProfiles({
 }
 
 /** The rarely used damage fields, kept behind "More". */
-function DamageExtras({
+export function DamageExtras({
     value,
     onChange,
+    at,
 }: {
     value: Entry
     onChange: (value: Entry) => void
+    /** Where the schema describes this damage (`/actions[]/degats`). */
+    at?: string
 }) {
     const text = useUiText()
+    const missing = useGroupCaptions(at, value)
     return (
-        <>
+        <DraftScope missing={missing}>
             <div className="grid grid-cols-2 gap-2">
                 <EnumSelect
                     label={text('adrenaline:monstre.form.damageSide')}
@@ -143,7 +153,7 @@ function DamageExtras({
                     onChange={(portee) => onChange({ ...value, portee })}
                 />
             </div>
-        </>
+        </DraftScope>
     )
 }
 
@@ -154,34 +164,45 @@ function DamageExtras({
 function ActionFields({
     entry,
     replace,
+    at,
 }: {
     entry: Entry
     replace: (entry: Entry) => void
+    /** Where the schema describes this action (`/actions[]`). */
+    at: string
 }) {
     const text = useUiText()
     const test = record(entry.test)
     const damage = record(entry.degats)
+    const testMissing = useGroupCaptions(`${at}/test`, test)
     /* Opened by what the entry already holds, then by the user alone: emptying the last field must not fold it under the cursor. */
     const [more, setMore] = useState(hasMoreFields(entry))
     return (
         <div className="grid gap-2">
-            <div className="grid grid-cols-2 gap-2">
-                <TextField
-                    label={text('adrenaline:monstre.form.actionTestName')}
-                    value={String(test.nom ?? '')}
-                    onChange={(nom) =>
-                        replace({ ...entry, test: { ...test, nom } })
-                    }
-                />
-                <ValueField
-                    form="number"
-                    label={text('adrenaline:monstre.form.actionTestPercentage')}
-                    value={test.pourcentage}
-                    onChange={(pourcentage) =>
-                        replace({ ...entry, test: { ...test, pourcentage } })
-                    }
-                />
-            </div>
+            <DraftScope missing={testMissing}>
+                <div className="grid grid-cols-2 gap-2">
+                    <TextField
+                        label={text('adrenaline:monstre.form.actionTestName')}
+                        value={String(test.nom ?? '')}
+                        onChange={(nom) =>
+                            replace({ ...entry, test: { ...test, nom } })
+                        }
+                    />
+                    <ValueField
+                        form="number"
+                        label={text(
+                            'adrenaline:monstre.form.actionTestPercentage'
+                        )}
+                        value={test.pourcentage}
+                        onChange={(pourcentage) =>
+                            replace({
+                                ...entry,
+                                test: { ...test, pourcentage },
+                            })
+                        }
+                    />
+                </div>
+            </DraftScope>
             {/* The test names the action most of the time: the name of its own comes second and says when it is needed. */}
             <TextField
                 label={text('adrenaline:monstre.form.actionName')}
@@ -189,6 +210,7 @@ function ActionFields({
                 onChange={(nom) => replace({ ...entry, nom })}
             />
             <DamageProfiles
+                at={`${at}/degats`}
                 value={damage}
                 onChange={(degats) => replace({ ...entry, degats })}
             />
@@ -207,6 +229,7 @@ function ActionFields({
                 </summary>
                 <div className="mt-2 grid gap-2">
                     <DamageExtras
+                        at={`${at}/degats`}
                         value={damage}
                         onChange={(degats) => replace({ ...entry, degats })}
                     />
@@ -332,9 +355,12 @@ export function ActionRows({
     label,
     value,
     onChange,
+    at = '/actions[]',
 }: {
     label: string
     value: unknown
+    /** Where the schema describes one action: the base's, or a state's (`/etats[]/delta/actions[]`). */
+    at?: string
     /** `undefined` when no action is left: the key leaves the document. */
     onChange: (value: Entry[] | undefined) => void
 }) {
@@ -351,7 +377,7 @@ export function ActionRows({
         <FoldList label={label} values={draft} onChange={commit}>
             {(action, replace) => (
                 <div className="grid gap-2">
-                    <ActionFields entry={action} replace={replace} />
+                    <ActionFields entry={action} replace={replace} at={at} />
                     <FoldList
                         label={text('adrenaline:monstre.form.followUps')}
                         values={records(action.suites)}
@@ -361,6 +387,7 @@ export function ActionRows({
                             <ActionFields
                                 entry={followUp}
                                 replace={replaceFollowUp}
+                                at={`${at}/suites[]`}
                             />
                         )}
                     </FoldList>

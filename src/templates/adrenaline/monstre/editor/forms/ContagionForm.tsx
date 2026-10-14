@@ -57,13 +57,10 @@ export function ContagionForm() {
                     }
                 />
                 <RecordRows
+                    at={`${contagionSource.owner ? '/etats[]/delta/contagion' : '/contagion'}/vecteurs[]`}
                     label={text('adrenaline:monstre.form.vectors')}
                     values={records(contagion.vecteurs)}
-                    create={() => ({
-                        nom: '',
-                        probabilite: 0,
-                        notes: '',
-                    })}
+                    create={() => ({}) as Record<string, unknown>}
                     onChange={(vecteurs) =>
                         contagionSource.write({ ...contagion, vecteurs })
                     }
@@ -96,6 +93,7 @@ export function ContagionForm() {
                     )}
                 </RecordRows>
                 <RecordRows
+                    at={`${contagionSource.owner ? '/etats[]/delta/contagion' : '/contagion'}/modulations[]`}
                     label={text('adrenaline:monstre.form.modifiers')}
                     values={records(contagion.modulations)}
                     create={() => ({

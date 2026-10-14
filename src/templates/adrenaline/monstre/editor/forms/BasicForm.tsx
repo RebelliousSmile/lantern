@@ -1,6 +1,7 @@
 import {
     LongTextField,
     NumberField,
+    RequiredTextField,
     TextField,
 } from '../../../shared/editor/FieldPrimitives'
 import {
@@ -8,6 +9,7 @@ import {
     OptionalNumberField,
     OptionalTextField,
 } from '../../../shared/editor/OptionalFields'
+import { limitAt } from '../../../shared/editor/pjLimits'
 import { creatureFields } from '../fieldHelpers'
 import { useMonstreEdit } from '../useMonstreEdit'
 
@@ -49,20 +51,30 @@ export function BasicForm() {
             ])}
             {creatureFields
                 .filter(([key]) => shows(key))
-                .map(([key, labelKey]) => (
-                    <TextField
-                        key={key}
-                        label={text(labelKey)}
-                        value={String(document[key] ?? '')}
-                        onChange={(next) => set(key, next)}
-                    />
-                ))}
+                .map(([key, labelKey]) =>
+                    key === 'nom' ? (
+                        <RequiredTextField
+                            key={key}
+                            label={text(labelKey)}
+                            value={String(document[key] ?? '')}
+                            onChange={(next) => set(key, next)}
+                        />
+                    ) : (
+                        <TextField
+                            key={key}
+                            label={text(labelKey)}
+                            value={String(document[key] ?? '')}
+                            onChange={(next) => setOptional(key, next)}
+                        />
+                    )
+                )}
             {shows('niveauDeDanger') ? (
-                <NumberField
+                <OptionalNumberField
                     label={text('adrenaline:monstre.form.dangerLevel')}
-                    value={Number(document.niveauDeDanger ?? 0)}
+                    at="/niveauDeDanger"
+                    value={document.niveauDeDanger}
                     onChange={(niveauDeDanger) =>
-                        set('niveauDeDanger', niveauDeDanger)
+                        setOptional('niveauDeDanger', niveauDeDanger)
                     }
                 />
             ) : null}
@@ -78,6 +90,7 @@ export function BasicForm() {
             {shows('niveauDeDangerAlternatif') ? (
                 <OptionalNumberField
                     label={text('adrenaline:shared.dangerAlternative')}
+                    at="/niveauDeDangerAlternatif"
                     value={document.niveauDeDangerAlternatif}
                     onChange={(alternative) =>
                         setOptional('niveauDeDangerAlternatif', alternative)
@@ -108,8 +121,14 @@ export function BasicForm() {
             {shows('actionsParRound') ? (
                 <NumberField
                     label={text('adrenaline:monstre.form.actionsPerRound')}
-                    value={Number(actionsPerRound.value ?? 0)}
+                    limit={limitAt('monstre', '/actionsParRound')}
+                    value={
+                        typeof actionsPerRound.value === 'number'
+                            ? actionsPerRound.value
+                            : undefined
+                    }
                     onChange={(value) => actionsPerRound.write(value)}
+                    onClear={() => actionsPerRound.write(undefined)}
                 />
             ) : null}
             {shows('defense') ? (
@@ -132,6 +151,7 @@ export function BasicForm() {
                     />
                     <OptionalNumberField
                         label={text('adrenaline:monstre.form.defenseBonus')}
+                        at="/defense/bonus"
                         value={defense.bonus}
                         onChange={(bonus) => setDefense('bonus', bonus)}
                     />

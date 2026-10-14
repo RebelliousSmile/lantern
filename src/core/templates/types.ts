@@ -77,6 +77,8 @@ export type TemplateDefinition<
      */
     contractKey: string
     createBlank: () => TDoc
+    /** Brings a document kept by an older version up to the published contract, when it is restored. */
+    upgradeDocument?: (doc: unknown) => unknown
     createExample: () => TDoc
     createInitialView: () => TView
     createInitialSheet: () => TSheet
@@ -137,7 +139,11 @@ export type StaticTemplateDefinition<
     editorSchema?: TemplateEditorSchema
 }
 
-export type AnyStaticTemplateDefinition = StaticTemplateDefinition<any, any, any>
+export type AnyStaticTemplateDefinition = StaticTemplateDefinition<
+    any,
+    any,
+    any
+>
 
 /** Render factories supplied by a lazily imported template module. */
 export type TemplateRenderDefinition<

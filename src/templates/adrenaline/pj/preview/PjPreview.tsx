@@ -4,12 +4,15 @@ import { useAdrenalineDocument } from '../../shared/hooks'
 import {
     adrenalineSheetTokens,
     appearanceClasses,
+    at,
     editTarget,
+    hasContent,
     installAdrenalineFontFaces,
     sheetRows,
     sortedBlocks,
 } from '../../shared/presentation'
 import {
+    parametersSubtitle,
     PresentationBlock,
     PresentationBrand,
     PresentationSection,
@@ -18,6 +21,16 @@ import '../../shared/preview/adrenalineTheme.css'
 import '../../shared/preview/presentationSheet.css'
 import type { PjSection } from '../../shared/sections'
 import { blankPj } from '../sample'
+
+/* In a section of several columns, a block's note spans all of them instead of hanging under its own column. */
+const liftsNotes = (
+    section: { layout?: string; columns?: number },
+    block: { placement?: { columnSpan?: number } }
+) =>
+    section.layout === 'columns' &&
+    (section.columns ?? 1) > 1 &&
+    block.placement !== undefined &&
+    (block.placement.columnSpan ?? 1) < (section.columns ?? 1)
 
 /*
  * The sheet is laid out by the published presentation: sections, block order, placements,
@@ -37,7 +50,18 @@ export function PjPreview() {
             )}
             style={adrenalineSheetTokens}
         >
-            {sheetRows(PJ_PRESENTATION).map(({ id, sections }) => {
+            {sheetRows(PJ_PRESENTATION).map(({ id, sections: listed }) => {
+                /* A folding section with nothing entered is not drawn (nor printed): the editor panel offers the way in. */
+                const sections = listed.filter(
+                    ({ section }) =>
+                        !section.collapsible ||
+                        section.blocks.some((block) =>
+                            block.paths.some((path) =>
+                                hasContent(at(document, path))
+                            )
+                        )
+                )
+                if (sections.length === 0) return null
                 const rendered = sections.map(({ section, span }) => (
                     <PresentationSection
                         key={section.id}
@@ -49,16 +73,44 @@ export function PjPreview() {
                                 <PresentationBrand
                                     key={`${block.id}-brand`}
                                     sheetLabel={sheet.label}
+                                    subtitle={parametersSubtitle(
+                                        block,
+                                        document
+                                    )}
                                     variant={appearance.variant}
                                 />
                             ) : null,
                             <PresentationBlock
                                 block={block}
+                                withNotes={!liftsNotes(section, block)}
                                 key={block.id}
                                 source={document}
-                                onOpen={() => openSection(editTarget(block))}
+                                onOpen={
+                                    block.paths.length > 0
+                                        ? (zone) =>
+                                              openSection(
+                                                  editTarget(block),
+                                                  undefined,
+                                                  zone
+                                                      ? [block.id, zone]
+                                                      : [block.id]
+                                              )
+                                        : undefined
+                                }
                             />,
                         ])}
+                        {sortedBlocks(section)
+                            .filter((block) => liftsNotes(section, block))
+                            .flatMap((block) =>
+                                (block.notes ?? []).map((note) => (
+                                    <p
+                                        className="adr-pj__note adr-pj__block-note"
+                                        key={`${block.id}:${note}`}
+                                    >
+                                        {note}
+                                    </p>
+                                ))
+                            )}
                     </PresentationSection>
                 ))
                 return sections.length > 1 ? (

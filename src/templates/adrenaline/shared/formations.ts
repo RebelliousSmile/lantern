@@ -1,4 +1,5 @@
-import { PersonnageJoueur } from 'schema-adrenaline'
+import { PersonnageJoueur, PersonnageNonJoue } from 'schema-adrenaline'
+import { withoutHollow } from './editor/clean'
 
 /*
  * The PJ sheet prints one column per published formation type, and the schema closes that set:
@@ -8,9 +9,12 @@ import { PersonnageJoueur } from 'schema-adrenaline'
 export const FORMATION_TYPES: readonly string[] =
     PersonnageJoueur.shape.formations.unwrap().element.shape.type.options
 
-const skillCharacteristic = PersonnageJoueur.shape.formations
-    .unwrap()
-    .element.shape.competences.unwrap().element.shape.caracteristique
+/*
+ * The player sheet names no characteristic per skill (the GM picks it at the table): only the
+ * PNJ and the creature sheets do, so the keys are read from the PNJ schema.
+ */
+const skillCharacteristic =
+    PersonnageNonJoue.shape.competences.unwrap().element.shape.caracteristique
 /** The characteristics a skill can name, by their published three-letter key. */
 export const CHARACTERISTIC_KEYS: readonly string[] = (
     'unwrap' in skillCharacteristic
@@ -67,6 +71,11 @@ export function withFormation(
             (Array.isArray(entry.competences) && entry.competences.length > 0)
     )
     const index = formations.findIndex((entry) => entry.type === type)
+    /* The type only says which column the row is in: a row holding nothing else is no row. */
+    if (withoutHollow({ ...formation, type: undefined }) === undefined)
+        return index < 0
+            ? [...formations]
+            : formations.filter((_, i) => i !== index)
     if (index < 0) return [...formations, { ...formation, type }]
     return formations.map((entry, i) =>
         i === index ? { ...formation, type } : entry

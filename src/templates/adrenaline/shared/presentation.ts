@@ -94,6 +94,17 @@ export function asRecord(value: unknown): Record<string, unknown> | undefined {
 }
 
 /** Reads a JSON Pointer of the published presentation. */
+/** Whether a document value holds anything: a text, a number, a flag, or a list or object that does. */
+export function hasContent(value: unknown): boolean {
+    if (value === undefined || value === null || value === '') return false
+    if (Array.isArray(value)) return value.some(hasContent)
+    if (typeof value === 'object')
+        return Object.keys(value as object).some((key) =>
+            hasContent((value as Record<string, unknown>)[key])
+        )
+    return true
+}
+
 export function at(source: unknown, pointer: string): unknown {
     return pointer
         .slice(1)

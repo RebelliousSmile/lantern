@@ -1,4 +1,5 @@
 import type { AdrenalineMonstre } from '@/contracts/adrenaline'
+import { compactAgainst } from '../shared/editor/schemaCompact'
 import { parseAdrenalineToml, stringifyAdrenalineToml } from '../shared/toml'
 
 export function importFromTOMLWithWarnings(source: string) {
@@ -12,5 +13,9 @@ export function importFromTOMLWithWarnings(source: string) {
 }
 
 export const importFromTOML = importFromTOMLWithWarnings
+/* The editor keeps drafts; the export writes the lines the schema takes whole. */
 export const exportToTOML = (document: AdrenalineMonstre) =>
-    stringifyAdrenalineToml('adrenaline/monstre', document)
+    stringifyAdrenalineToml<AdrenalineMonstre>(
+        'adrenaline/monstre',
+        (compactAgainst('monstre', document) ?? {}) as AdrenalineMonstre
+    )

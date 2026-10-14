@@ -77,3 +77,33 @@ export function compact(value: unknown): unknown {
     }
     return value === null ? undefined : value
 }
+
+/**
+ * What an editor hands the document it holds: a field is a value or it is not there. A blank
+ * string, an empty list and a group that lost every field leave it, wherever they sit. A row of a
+ * list stays even when it lost everything: that row is the draft its fields are typed into, and
+ * the export is what leaves it out.
+ */
+export function withoutHollow(value: unknown): unknown {
+    if (typeof value === 'string')
+        return value.trim() === '' ? undefined : value
+    if (Array.isArray(value)) {
+        const kept = value.flatMap((item) => {
+            if (typeof item === 'string')
+                return item.trim() === '' ? [] : [item]
+            if (item && typeof item === 'object' && !Array.isArray(item))
+                return [withoutHollow(item) ?? {}]
+            const cleaned = withoutHollow(item)
+            return cleaned === undefined ? [] : [cleaned]
+        })
+        return kept.length > 0 ? kept : undefined
+    }
+    if (value && typeof value === 'object') {
+        const kept = Object.entries(value as Entry).flatMap(([key, item]) => {
+            const cleaned = withoutHollow(item)
+            return cleaned === undefined ? [] : [[key, cleaned] as const]
+        })
+        return kept.length > 0 ? Object.fromEntries(kept) : undefined
+    }
+    return value === null ? undefined : value
+}

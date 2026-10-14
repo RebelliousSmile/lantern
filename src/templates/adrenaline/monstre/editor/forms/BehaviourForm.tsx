@@ -41,6 +41,11 @@ export function BehaviourForm() {
                 <ActionRows
                     key={actionsSource.owner ? actionsSource.owner.id : 'base'}
                     label={text('adrenaline:monstre.form.actions')}
+                    at={
+                        actionsSource.owner
+                            ? '/etats[]/delta/actions[]'
+                            : '/actions[]'
+                    }
                     value={actionsSource.value}
                     onChange={actionsSource.write}
                 />

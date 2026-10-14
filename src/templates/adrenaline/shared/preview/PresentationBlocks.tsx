@@ -1,9 +1,12 @@
 import { translate, type TranslationValues } from '@/i18n/text'
 import type { ReactNode } from 'react'
-import type {
-    AdrenalinePresentationBlock,
-    AdrenalinePresentationSection,
+import {
+    PJ_PRESENTATION,
+    type AdrenalinePresentationBlock,
+    type AdrenalinePresentationSection,
 } from 'schema-adrenaline/presentation'
+import { pjLimit } from '../editor/pjLimits'
+import { enumAt, STATE_SIDES } from '../editor/schemaShapes'
 import {
     formationColumns,
     formationTypeLabel,
@@ -114,7 +117,7 @@ function Metric({
     values,
     className = '',
 }: {
-    name: string
+    name: ReactNode
     values: readonly string[]
     className?: string
 }) {
@@ -178,14 +181,53 @@ const PARAMETER_LABELS: Record<string, string> = {
     typeDeScenario: 'scenario',
     declinaisonDeCampagne: 'campaign',
 }
-const PARAMETER_VALUES = [
-    'equitable',
-    'aleatoire',
-    'one-shot',
-    'campagne',
-    'bac-a-sable',
-    'storyline',
-]
+/* The values the schema lists for the three enumerated parameters: nothing restated here. */
+const PARAMETER_VALUES: readonly string[] = [
+    'typeDeCreation',
+    'typeDeScenario',
+    'declinaisonDeCampagne',
+].reduce<string[]>(
+    (all, key) => all.concat(enumAt('pj', `/parametresDuJeu/${key}`)),
+    []
+)
+
+/* The label the presentation publishes for a location id; the id itself when it publishes none. */
+const LOCATION_LABELS: Record<string, string> = PJ_PRESENTATION.sections.reduce<
+    Record<string, string>
+>(
+    (all, section) =>
+        (section.blocks as readonly AdrenalinePresentationBlock[]).reduce(
+            (labels, block) => {
+                const locations = (
+                    block.decoration as
+                        | { locations?: { id: string; label: string }[] }
+                        | undefined
+                )?.locations
+                return (locations ?? []).reduce(
+                    (found, { id, label }) => ({ ...found, [id]: label }),
+                    labels
+                )
+            },
+            all
+        ),
+    {}
+)
+
+/** The line printed under the sheet label: the subtitle pointers of the game parameters, as entered. */
+export function parametersSubtitle(
+    block: BlockProps['block'],
+    source: BlockProps['source']
+): string {
+    return (block.subtitlePaths ?? [])
+        .map((pointer) => {
+            const raw = text(at(source, pointer))
+            return PARAMETER_VALUES.includes(raw)
+                ? t(`pj.sheet.values.${raw}`)
+                : raw
+        })
+        .filter(Boolean)
+        .join(' · ')
+}
 
 function GameParameters({ block, source }: BlockProps) {
     return (
@@ -193,6 +235,9 @@ function GameParameters({ block, source }: BlockProps) {
             <span className="adr-pj__card-label">{block.label}</span>
             <div className="adr-pj__card-fields">
                 {block.paths.map((pointer, index) => {
+                    /* A pointer printed as a subtitle, under the sheet label, is not a row. */
+                    if ((block.subtitlePaths ?? []).includes(pointer))
+                        return null
                     const key = lastSegment(pointer)
                     const raw = text(at(source, pointer))
                     return (
@@ -247,7 +292,11 @@ function FormationColumns({ block, source }: BlockProps) {
                         String(formation?.[typeKey] ?? type)
                     )
                     return (
-                        <div className="adr-pj__formation" key={index}>
+                        <div
+                            className="adr-pj__formation"
+                            data-zone={`formation:${type}`}
+                            key={index}
+                        >
                             <Subhead
                                 label={t('pj.sheet.training')}
                                 trailing={[suffix]}
@@ -255,17 +304,28 @@ function FormationColumns({ block, source }: BlockProps) {
                             <div className="adr-pj__metric-list">
                                 <div className="adr-pj__metric adr-pj__formation-head">
                                     <span className="adr-pj__metric-name">
-                                        <span className="adr-pj__formation-type">
-                                            {typeLabel} (
-                                        </span>
-                                        <Value className="adr-pj__formation-name">
-                                            {text(
+                                        {(() => {
+                                            const name = text(
                                                 formation?.[formationNameKey]
-                                            )}
-                                        </Value>
-                                        <span className="adr-pj__formation-type">
                                             )
-                                        </span>
+                                            return name.trim() === '' ? (
+                                                <span className="adr-pj__formation-type">
+                                                    {typeLabel}
+                                                </span>
+                                            ) : (
+                                                <>
+                                                    <span className="adr-pj__formation-type">
+                                                        {typeLabel} (
+                                                    </span>
+                                                    <Value className="adr-pj__formation-name">
+                                                        {name}
+                                                    </Value>
+                                                    <span className="adr-pj__formation-type">
+                                                        )
+                                                    </span>
+                                                </>
+                                            )
+                                        })()}
                                     </span>
                                     <Value className="adr-pj__metric-value">
                                         {text(formation?.[formationScoreKey])}
@@ -289,12 +349,12 @@ function FormationColumns({ block, source }: BlockProps) {
                                           ).toUpperCase()
                                         : ''
                                     const name = competence
-                                        ? `${text(competence.nom)}${specialty ? ` · ${specialty}` : ''}${characteristic ? ` (${characteristic})` : ''}`
+                                        ? `${text(competence.nom)}${specialty ? ` (${specialty})` : ''}${characteristic ? ` (${characteristic})` : ''}`
                                         : ''
-                                    const perks = strings(competence?.avantages)
                                     return (
                                         <div
                                             className="adr-pj__competence"
+                                            data-zone={`skill:${type}:${rank}`}
                                             key={rank}
                                         >
                                             <div className="adr-pj__metric">
@@ -307,13 +367,6 @@ function FormationColumns({ block, source }: BlockProps) {
                                                     )}
                                                 </Value>
                                             </div>
-                                            {perks.length > 0 && (
-                                                <p className="adr-pj__note">
-                                                    {t('pj.sheet.perk', {
-                                                        perks: perks.join(', '),
-                                                    })}
-                                                </p>
-                                            )}
                                             {typeof competence?.notes ===
                                                 'string' &&
                                                 competence.notes && (
@@ -397,9 +450,14 @@ function CharacteristicRows({ block, source }: BlockProps) {
     const suffix = block.valueSuffix ? ` ${block.valueSuffix}` : ''
     return (
         <>
-            <MetricHeads
-                heads={parts.map((part) => t(`pj.sheet.${RANGE_HEADS[part]}`))}
-            />
+            {/* One column needs no heading: the sheet prints a bare value. */}
+            {parts.length > 1 && (
+                <MetricHeads
+                    heads={parts.map((part) =>
+                        t(`pj.sheet.${RANGE_HEADS[part]}`)
+                    )}
+                />
+            )}
             <div className="adr-pj__metric-list">
                 {block.paths.map((pointer, index) => (
                     <Metric
@@ -428,12 +486,15 @@ const FIELD_LABELS: Record<string, string> = {
 }
 
 function RuledList({ block, source }: BlockProps) {
-    return block.paths.map((pointer) => {
+    return block.paths.map((pointer, rank) => {
         const found = at(source, pointer)
         const key = lastSegment(pointer)
-        if (Array.isArray(found)) {
-            const lines = found.map((item) => text(item))
-            while (lines.length < 3) lines.push('')
+        /* The first path of a ruled list is the list; with nothing entered yet its lines stay to be written on. */
+        if (Array.isArray(found) || (found === undefined && rank === 0)) {
+            const lines = (Array.isArray(found) ? found : []).map((item) =>
+                text(item)
+            )
+            while (lines.length < (block.minimumRows ?? 0)) lines.push('')
             return (
                 <div className="adr-pj__ruled-list" key={pointer}>
                     {lines.map((line, index) => (
@@ -454,37 +515,41 @@ function RuledList({ block, source }: BlockProps) {
     })
 }
 
-const WEAPON_LINES = 2
-
 function WeaponLines({ block, source }: BlockProps) {
     const die =
         block.decoration?.kind === 'weapon-die' ? block.decoration.label : ''
-    /* The paper sheet prints two weapon lines per side: empty ones stay to be written on. */
+    /* Empty lines stay to be written on. */
     const weapons: (Record<string, unknown> | undefined)[] = records(
         at(source, block.paths[0])
     )
-    while (weapons.length < WEAPON_LINES) weapons.push(undefined)
+    while (weapons.length < (block.minimumRows ?? 0)) weapons.push(undefined)
     return weapons.map((weapon, index) => (
-        <div className="adr-pj__weapon" key={index}>
+        <div
+            className="adr-pj__weapon"
+            data-zone={`weapon:${index}`}
+            key={index}
+        >
             <div className="adr-pj__weapon-line">
-                <b className="adr-pj__write-label">{t('pj.sheet.weapon')}</b>
                 <Value className="adr-pj__write-field">
-                    {weapon
-                        ? `${String(weapon.nom ?? '')}${weapon.type ? ` (${String(weapon.type)})` : ''}`
-                        : ''}
+                    {weapon ? String(weapon.nom ?? '') : ''}
                 </Value>
                 <Value className="adr-pj__weapon-score">
                     {weapon ? text(weapon.pourcentage, ' %') : ''}
                 </Value>
-                <Value className="adr-pj__weapon-damage">
+                <Value
+                    className={`adr-pj__weapon-damage${
+                        typeof weapon?.nature === 'string' &&
+                        /^[a-z][a-z0-9-]*$/.test(weapon.nature)
+                            ? ` adr-pj__die adr-pj__die--${weapon.nature}`
+                            : ''
+                    }`}
+                >
+                    {/* The die's unit follows a written count: an empty line prints nothing. */}
                     {weapon?.desDeDegats !== undefined
                         ? `${text(weapon.desDeDegats)} ${die}`.trim()
-                        : die}
+                        : ''}
                 </Value>
             </div>
-            {typeof weapon?.notes === 'string' && weapon.notes && (
-                <p className="adr-pj__note">{weapon.notes}</p>
-            )}
         </div>
     ))
 }
@@ -493,66 +558,62 @@ function UnitLine({
     label,
     field,
     amount,
-    unit,
 }: {
     label: string
     field: string
     amount: string
-    unit: string
 }) {
     return (
         <div className="adr-pj__unit-line">
             <b className="adr-pj__write-label">{label}</b>
             <Value className="adr-pj__write-field">{field}</Value>
             <Value className="adr-pj__unit-value">{amount}</Value>
-            <span className="adr-pj__unit">{unit}</span>
         </div>
     )
 }
 
-function ProtectionLines({ block, source }: BlockProps) {
-    const pointer = block.paths[0]
-    const physical = lastSegment(pointer) === 'physiques'
-    const units =
-        block.decoration?.kind === 'protection-units'
+/* Protection lines, then the grid of the published locations: a covered one ticks its first box. */
+function LocationGrid({ block, source }: BlockProps) {
+    const grid =
+        block.decoration?.kind === 'location-grid'
             ? block.decoration
             : undefined
-    const unit = (physical ? units?.physical : units?.mental) ?? ''
-    const side = asRecord(at(source, pointer)) ?? {}
+    if (!grid) return null
+    const physical = grid.side === 'physical'
+    const side = asRecord(at(source, block.paths[0])) ?? {}
     const cover = asRecord(physical ? side.armure : side.caractere)
-    const places = strings(cover?.localisations)
-        .map((item) => item.replace(/-/g, ' '))
-        .join(', ')
-    const shield = asRecord(side.bouclier)
+    const covered = strings(cover?.localisations)
     return (
         <>
-            <UnitLine
-                label={t('shared.protection.toughness')}
-                field=""
-                amount={text(side.solidite)}
-                unit={unit}
-            />
             <UnitLine
                 label={
                     physical
                         ? t('shared.protection.armour')
                         : t('pj.sheet.character')
                 }
-                field={[text(physical ? cover?.nom : cover?.trait), places]
-                    .filter(Boolean)
-                    .join(' · ')}
+                field={text(physical ? cover?.nom : cover?.trait)}
                 amount={text(cover?.points)}
-                unit={unit}
             />
-            <WriteLine
-                label={t('shared.protection.shield')}
-                value={[
-                    text(shield?.nom),
-                    strings(shield?.proprietes).join(', '),
-                ]
-                    .filter(Boolean)
-                    .join(' · ')}
-            />
+            <div className="adr-pj__locations">
+                {grid.locations.map((location) => (
+                    <div className="adr-pj__location" key={location.id}>
+                        <span className="adr-pj__location-range">
+                            {location.range}
+                        </span>
+                        <span className="adr-pj__location-label">
+                            {location.label}
+                        </span>
+                        <span className="adr-pj__location-boxes">
+                            <Circles
+                                count={grid.boxes}
+                                filled={
+                                    covered.indexOf(location.id) >= 0 ? 1 : 0
+                                }
+                            />
+                        </span>
+                    </div>
+                ))}
+            </div>
         </>
     )
 }
@@ -579,7 +640,7 @@ function StressDice({ block, source }: BlockProps) {
                             <div className="adr-pj__stress-roll" key={die}>
                                 <Circles
                                     count={1}
-                                    filled={count > index ? 1 : 0}
+                                    filled={count === index + 1 ? 1 : 0}
                                 />
                                 <strong className="adr-pj__stress-die">
                                     {die.replace('-', '−')}
@@ -596,31 +657,38 @@ function StressDice({ block, source }: BlockProps) {
     )
 }
 
-const THRESHOLDS = ['superficiel', 'leger', 'grave', 'profond'] as const
+/** The noun of the malus the sheet counts: read from the published legend ("1 malus = -10 %"). */
+function malusNoun(): string {
+    for (const section of PJ_PRESENTATION.sections)
+        for (const block of section.blocks)
+            if (block.form === 'malus-scale')
+                for (const note of block.notes ?? []) {
+                    const found = /^\d+\s+(\S+)/.exec(note)
+                    if (found) return found[1]
+                }
+    return t('pj.sheet.malus')
+}
 
 function ThresholdRows({ block, source }: BlockProps) {
     const pointer = block.paths[0]
     const side = asRecord(at(source, pointer)) ?? {}
-    const mental = lastSegment(pointer) === 'mental'
     return (
         <>
-            <MetricHeads
-                heads={[
-                    t('pj.sheet.base'),
-                    t(mental ? 'pj.sheet.plusTrait' : 'pj.sheet.plusArmour'),
-                ]}
-            />
             <div className="adr-pj__metric-list">
-                {THRESHOLDS.map((key) => {
-                    const threshold = asRecord(side[key])
+                {(block.thresholdLevels ?? []).map((level) => {
+                    const threshold = asRecord(side[level.key])
                     return (
                         <Metric
-                            key={key}
-                            name={t(`pj.sheet.thresholds.${key}`)}
-                            values={[
-                                text(threshold?.base),
-                                text(threshold?.couvert),
-                            ]}
+                            key={level.key}
+                            name={
+                                <>
+                                    {level.label}
+                                    <span className="adr-pj__threshold-malus">
+                                        {level.malus} {malusNoun()}
+                                    </span>
+                                </>
+                            }
+                            values={[text(threshold?.base)]}
                         />
                     )
                 })}
@@ -633,10 +701,12 @@ function Track({
     label,
     modifier,
     children,
+    written,
 }: {
     label: string
     modifier?: string
     children: ReactNode
+    written?: ReactNode
 }) {
     return (
         <div
@@ -644,6 +714,7 @@ function Track({
         >
             <span className="adr-pj__track-label">{label}</span>
             <div className="adr-pj__track-body">{children}</div>
+            <Value className="adr-pj__track-text">{written}</Value>
         </div>
     )
 }
@@ -651,40 +722,49 @@ function Track({
 function StatusFrames({ block, source }: BlockProps) {
     const pointer = block.paths[0]
     const found = at(source, pointer)
-    if (Array.isArray(found) || lastSegment(pointer) === 'etats') {
-        const states = records(found)
+    if (typeof found === 'string' && lastSegment(pointer) === 'etats') {
+        /* The player sheet's free zone: the text as written, one line per state. */
         return (
-            <div className="adr-pj__condition-stack">
-                {(states.length ? states : [undefined]).map((state, index) => (
-                    <div className="adr-pj__condition-card" key={index}>
-                        <span className="adr-pj__condition-label">
-                            {text(state?.nom) || t('pj.sheet.condition')}
-                        </span>
-                        <div className="adr-pj__condition-body">
-                            <WriteLine
-                                label={t('pj.sheet.location')}
-                                value={[
-                                    text(state?.versant),
-                                    text(state?.localisation).replace(
-                                        /-/g,
-                                        ' '
-                                    ),
-                                ]
-                                    .filter(Boolean)
-                                    .join(' · ')}
-                            />
-                            <WriteLine
-                                label={t('pj.sheet.duration')}
-                                value={text(state?.duree)}
-                            />
-                            {typeof state?.notes === 'string' &&
-                                state.notes && (
-                                    <p className="adr-pj__note">
-                                        {state.notes}
-                                    </p>
-                                )}
-                        </div>
-                    </div>
+            <div className="adr-pj__states-zone">
+                {found
+                    .split(/\r?\n/)
+                    .filter((line) => line.trim())
+                    .map((line, index) => (
+                        <p className="adr-pj__states-line" key={index}>
+                            {line.trim()}
+                        </p>
+                    ))}
+            </div>
+        )
+    }
+    if (Array.isArray(found) || lastSegment(pointer) === 'etats') {
+        const lines = records(found)
+            .map((state) =>
+                [
+                    text(state.nom),
+                    [
+                        STATE_SIDES.includes(text(state.versant))
+                            ? t(`pj.form.sides.${text(state.versant)}`)
+                            : text(state.versant),
+                        LOCATION_LABELS[text(state.localisation)] ??
+                            text(state.localisation),
+                    ]
+                        .filter(Boolean)
+                        .join(' · '),
+                    text(state.duree),
+                    text(state.notes),
+                ]
+                    .filter(Boolean)
+                    .join(' — ')
+            )
+            .filter(Boolean)
+        // A free zone, as on the paper sheet: what the document enters is written in it, nothing is laid out.
+        return (
+            <div className="adr-pj__states-zone">
+                {lines.map((line, index) => (
+                    <p className="adr-pj__states-line" key={index}>
+                        {line}
+                    </p>
                 ))}
             </div>
         )
@@ -729,24 +809,33 @@ function ShockCircles({ block, source }: BlockProps) {
             : []
     return (
         <div className="adr-pj__tracks">
-            <Track label={block.label} modifier="choc">
+            <Track
+                label={block.label}
+                modifier="choc"
+                written={text(
+                    block.paths[1] ? at(source, block.paths[1]) : undefined
+                )}
+            >
                 {groups.map((group, index) => (
-                    <span className="adr-pj__track-group" key={group.label}>
+                    <span className="adr-pj__track-group" key={group.key}>
                         {index > 0 && <span className="adr-pj__track-line" />}
-                        <span className="adr-pj__track-period">
-                            {humanize(group.label)}
+                        <span className="adr-pj__track-stack">
+                            <Circles
+                                count={group.count}
+                                filled={Math.min(
+                                    group.count,
+                                    Math.max(
+                                        0,
+                                        Number(
+                                            currentValue(shock[group.key])
+                                        ) || 0
+                                    )
+                                )}
+                            />
+                            <span className="adr-pj__track-period">
+                                {group.label}
+                            </span>
                         </span>
-                        <Circles
-                            count={group.count}
-                            filled={Math.min(
-                                group.count,
-                                Math.max(
-                                    0,
-                                    Number(currentValue(shock[group.label])) ||
-                                        0
-                                )
-                            )}
-                        />
                     </span>
                 ))}
             </Track>
@@ -756,32 +845,165 @@ function ShockCircles({ block, source }: BlockProps) {
 
 /* Total des malus: the printed scale, the current total circled. */
 function MalusScale({ block, source }: BlockProps) {
-    const decoration = (
-        block as {
-            decoration?: { kind?: unknown; from?: unknown; to?: unknown }
-        }
-    ).decoration
-    const scale = decoration?.kind === 'scale' ? decoration : undefined
-    const from = typeof scale?.from === 'number' ? scale.from : 1
-    const to = typeof scale?.to === 'number' ? scale.to : 10
+    const scale =
+        block.decoration?.kind === 'scale' ? block.decoration : undefined
+    const from = scale?.from ?? 1
+    /* The last numbered step is the published one, else the schema's bound of the total. */
+    const to = scale?.to ?? pjLimit('/etatDePartie/malus/total')?.max ?? from
     const total = Number(currentValue(at(source, block.paths[0]))) || 0
-    const steps = Array.from(
+    const steps: { label: string; current: boolean }[] = Array.from(
         { length: to - from + 1 },
-        (_, index) => from + index
+        (_, index) => ({
+            label: String(from + index),
+            current: from + index === total,
+        })
     )
+    /* The tenth malus is the published last step: any total above the numbered ones lands there. */
+    if (scale?.last) steps.push({ label: scale.last, current: total > to })
     return (
         <div className="adr-pj__scale">
             <span className="adr-pj__scale-label">{block.label}</span>
             {steps.map((step) => (
                 <span
-                    className={`adr-pj__scale-step${step === total ? ' adr-pj__scale-step--current' : ''}`}
-                    key={step}
+                    className={`adr-pj__scale-step${step.current ? ' adr-pj__scale-step--current' : ''}`}
+                    key={step.label}
                 >
-                    {step}
+                    {step.label}
                 </span>
             ))}
         </div>
     )
+}
+
+/* Divers: the published count of circles, ticked by the counter, and the free text beside them. */
+function CircleRow({ block, source }: BlockProps) {
+    const row =
+        block.decoration?.kind === 'circle-row' ? block.decoration : undefined
+    const entered = block.paths.map((pointer) => at(source, pointer))
+    const counter = entered.find((value) => typeof value === 'number')
+    const free = entered.find((value) => typeof value === 'string')
+    const count = row?.count ?? 0
+    return (
+        <div className="adr-pj__tracks">
+            <Track label={block.label} modifier="frame" written={text(free)}>
+                <Circles
+                    count={count}
+                    filled={Math.min(count, Math.max(0, Number(counter) || 0))}
+                />
+            </Track>
+        </div>
+    )
+}
+
+/* Wounds, as on the paper sheet: one panel per column, a circle left of each duration (one ticked), then room to write. */
+function WoundCircles({ block, source }: BlockProps) {
+    const wounds =
+        block.decoration?.kind === 'wound-circles'
+            ? block.decoration
+            : undefined
+    if (!wounds) return null
+    const side = asRecord(at(source, block.paths[0])) ?? {}
+    return (
+        <div className="adr-pj__wounds">
+            {wounds.columns.map((column) => {
+                const entered = asRecord(side[column.key]) ?? {}
+                return (
+                    <div className="adr-pj__wound" key={column.key}>
+                        {wounds.durations.map((duration) => (
+                            <div className="adr-pj__wound-line" key={duration}>
+                                <Circles
+                                    count={wounds.circles}
+                                    filled={
+                                        entered[duration] === true
+                                            ? wounds.circles
+                                            : 0
+                                    }
+                                />
+                                <span className="adr-pj__wound-head">
+                                    {humanize(duration)}
+                                </span>
+                            </div>
+                        ))}
+                        <p className="adr-pj__wound-write">
+                            {text(entered.notes)}
+                        </p>
+                    </div>
+                )
+            })}
+        </div>
+    )
+}
+
+/* The fixed table of the social weapons: every word comes from the presentation, never the document. */
+function ReferenceTable({ block, source }: BlockProps) {
+    const table = block.referenceTable
+    if (!table) return null
+    /* A weapon the character does not use stays on its line, struck out by typography alone. */
+    const struck = strings(at(source, block.paths[0]))
+    return (
+        <div className="adr-pj__reference">
+            <div className="adr-pj__reference-table">
+                {table.lines.map((line) => (
+                    <div
+                        className={
+                            struck.indexOf(line.name) >= 0
+                                ? 'adr-pj__reference-row adr-pj__reference-row--struck'
+                                : 'adr-pj__reference-row'
+                        }
+                        key={line.name}
+                    >
+                        <span className="adr-pj__reference-name">
+                            {line.name}
+                        </span>
+                        <span className="adr-pj__reference-properties">
+                            {line.properties}
+                        </span>
+                    </div>
+                ))}
+            </div>
+        </div>
+    )
+}
+
+/* Rows of several paths, each cell named by its published label: the value as entered. */
+function CompactRows({ block, source }: BlockProps) {
+    return (block.pointerRows ?? []).map((row, index) => (
+        <div className="adr-pj__field-rows" key={index}>
+            {row.map((cell) => {
+                const raw = at(source, cell.path)
+                return (
+                    <div
+                        className={
+                            row.length === 1
+                                ? 'adr-pj__field adr-pj__field--across'
+                                : 'adr-pj__field'
+                        }
+                        key={cell.path}
+                    >
+                        <WriteLine
+                            label={
+                                cell.label ?? humanize(lastSegment(cell.path))
+                            }
+                            value={
+                                Array.isArray(raw)
+                                    ? strings(raw).join(' · ')
+                                    : text(raw)
+                            }
+                        />
+                    </div>
+                )
+            })}
+        </div>
+    ))
+}
+
+/* Free prose under the block title, on ruled lines. */
+function Narrative({ block, source }: BlockProps) {
+    return block.paths.map((pointer) => (
+        <Value className="adr-pj__narrative" key={pointer}>
+            {text(at(source, pointer))}
+        </Value>
+    ))
 }
 
 function Unknown({ block, source }: BlockProps) {
@@ -802,7 +1024,12 @@ const FORMS: Partial<Record<string, (props: BlockProps) => ReactNode>> = {
     'characteristic-rows': CharacteristicRows,
     'ruled-list': RuledList,
     'weapon-lines': WeaponLines,
-    'protection-lines': ProtectionLines,
+    'location-grid': LocationGrid,
+    'reference-table': ReferenceTable,
+    'wound-circles': WoundCircles,
+    'circle-row': CircleRow,
+    'compact-rows': CompactRows,
+    ['narrative']: Narrative,
     'stress-dice': StressDice,
     'threshold-rows': ThresholdRows,
     'status-frames': StatusFrames,
@@ -820,6 +1047,7 @@ const TITLED_ELSEWHERE = new Set([
     'fatigue-circles',
     'shock-circles',
     'malus-scale',
+    'circle-row',
 ])
 
 function titledElsewhere(
@@ -854,22 +1082,53 @@ export function PresentationBlock({
     block,
     source,
     onOpen,
-}: BlockProps & { onOpen: () => void }) {
+    withNotes = true,
+}: BlockProps & {
+    onOpen?: (zone?: string) => void
+    /** False when the section prints the block's notes itself, across all its columns. */
+    withNotes?: boolean
+}) {
     const Form = FORMS[block.form ?? ''] ?? Unknown
-    return (
-        <button className={blockClasses(block)} type="button" onClick={onOpen}>
+    const content = (
+        <>
             {!titledElsewhere(block, source) && <Subhead label={block.label} />}
             <Form block={block} source={source} />
+            {withNotes &&
+                (block.notes ?? []).map((note) => (
+                    <p className="adr-pj__note adr-pj__block-note" key={note}>
+                        {note}
+                    </p>
+                ))}
+        </>
+    )
+    /* A block that reads no document path has nothing to edit: it is not a button. */
+    return onOpen ? (
+        <button
+            className={blockClasses(block)}
+            type="button"
+            onClick={(event) =>
+                onOpen(
+                    (event.target as HTMLElement)
+                        .closest('[data-zone]')
+                        ?.getAttribute('data-zone') ?? undefined
+                )
+            }
+        >
+            {content}
         </button>
+    ) : (
+        <div className={blockClasses(block)}>{content}</div>
     )
 }
 
 export function PresentationBrand({
     variant,
     sheetLabel,
+    subtitle,
 }: {
     variant: string
     sheetLabel: string
+    subtitle?: string
 }) {
     return (
         <div className="adr-pj__brand">
@@ -877,6 +1136,9 @@ export function PresentationBrand({
                 ☣ {variant.charAt(0).toUpperCase() + variant.slice(1)}
             </strong>
             <span className="adr-pj__brand-sheet">{sheetLabel}</span>
+            {subtitle ? (
+                <span className="adr-pj__brand-subtitle">{subtitle}</span>
+            ) : null}
         </div>
     )
 }
@@ -891,24 +1153,37 @@ export function PresentationSection({
     span?: number
     children: ReactNode
 }) {
-    return (
-        <section
-            className={[
-                'adr-pj__section',
-                `adr-pj--${section.id}`,
-                span ? `adr-pj__span-${span}` : '',
-            ]
-                .filter(Boolean)
-                .join(' ')}
+    const className = [
+        'adr-pj__section',
+        `adr-pj--${section.id}`,
+        span ? `adr-pj__span-${span}` : '',
+        section.collapsible ? 'adr-pj__section--collapsible' : '',
+    ]
+        .filter(Boolean)
+        .join(' ')
+    const body = (
+        <div
+            className={`adr-pj__section-body adr-pj__columns-${section.columns ?? 1}`}
         >
+            {children}
+        </div>
+    )
+    /* A collapsible section is folded by default; its title is the handle that unfolds it. */
+    if (section.collapsible)
+        return (
+            <details className={className}>
+                <summary className="adr-pj__section-title">
+                    {section.label}
+                </summary>
+                {body}
+            </details>
+        )
+    return (
+        <section className={className}>
             {section.showTitle !== false && (
                 <h4 className="adr-pj__section-title">{section.label}</h4>
             )}
-            <div
-                className={`adr-pj__section-body adr-pj__columns-${section.columns ?? 1}`}
-            >
-                {children}
-            </div>
+            {body}
         </section>
     )
 }

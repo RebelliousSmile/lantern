@@ -8,11 +8,12 @@ import {
     SelectValue,
 } from '@/components/ui/select'
 import { useUiText } from '@/i18n/text'
-import { useState, type ReactNode } from 'react'
+import { useId, useState, type ReactNode } from 'react'
 import { CharacteristicsFields } from '../../../shared/editor/AdrenalineFields'
 import {
     LongTextField,
     NumberField,
+    StringRows,
     TextField,
 } from '../../../shared/editor/FieldPrimitives'
 import { CHARACTERISTIC_FIELDS } from '../../../shared/schemaFields'
@@ -38,20 +39,42 @@ function DraftTextField({
     value: string
     onChange: (value: string) => void
 }) {
+    const text = useUiText()
+    const statusId = useId()
     const [draft, setDraft] = useState<string | null>(null)
+    /* A blank name is not a name: it stays typed in the field, the document keeps the last one. */
+    const blank = draft !== null && draft.trim() === ''
     return (
-        <label className="grid gap-1 text-sm">
-            <span>{label}</span>
-            <Input
-                value={draft ?? value}
-                onFocus={() => setDraft(value)}
-                onBlur={() => setDraft(null)}
-                onChange={(event) => {
-                    setDraft(event.target.value)
-                    onChange(event.target.value)
-                }}
-            />
-        </label>
+        <div className="grid gap-1">
+            <label className="grid gap-1 text-sm">
+                <span>{label}</span>
+                <Input
+                    value={draft ?? value}
+                    aria-invalid={blank ? true : undefined}
+                    aria-describedby={blank ? statusId : undefined}
+                    onFocus={() => setDraft(value)}
+                    onBlur={() => setDraft(null)}
+                    onChange={(event) => {
+                        setDraft(event.target.value)
+                        if (event.target.value.trim() === '') return
+                        onChange(event.target.value)
+                    }}
+                />
+            </label>
+            {blank && (
+                <p
+                    id={statusId}
+                    role="status"
+                    className="text-xs text-muted-foreground"
+                >
+                    {value.trim() === ''
+                        ? text('adrenaline:shared.draft.nameMissing')
+                        : text('adrenaline:shared.draft.nameKept', {
+                              name: value,
+                          })}
+                </p>
+            )}
+        </div>
     )
 }
 
@@ -112,6 +135,9 @@ export function StatesForm() {
         zone,
         profile,
     } = useMonstreEdit()
+    /* A state exists with a name nobody gave it by default: the name is typed, then the state is added. */
+    const [newName, setNewName] = useState('')
+    const newNameId = useId()
     /*
      * Opened from the state header of a card, the panel is that header: the state's name, its triggers
      * and the current-state choice. The values of the other zones, and the list management, belong to
@@ -168,75 +194,16 @@ export function StatesForm() {
                                     replaceState(index, { ...state, nom })
                                 }
                             />
-                            <div className="grid gap-2">
-                                <span className="text-sm">
-                                    {text('adrenaline:monstre.form.triggers')}
-                                </span>
-                                {triggers.map((trigger, triggerIndex) => (
-                                    <div
-                                        className="flex items-end gap-2"
-                                        key={triggerIndex}
-                                    >
-                                        <div className="flex-1">
-                                            <Input
-                                                aria-label={text(
-                                                    'adrenaline:monstre.form.trigger'
-                                                )}
-                                                value={trigger}
-                                                onChange={(event) =>
-                                                    replaceState(index, {
-                                                        ...state,
-                                                        declencheurs:
-                                                            triggers.map(
-                                                                (entry, at) =>
-                                                                    at ===
-                                                                    triggerIndex
-                                                                        ? event
-                                                                              .target
-                                                                              .value
-                                                                        : entry
-                                                            ),
-                                                    })
-                                                }
-                                            />
-                                        </div>
-                                        <Button
-                                            type="button"
-                                            variant="outline"
-                                            onClick={() =>
-                                                replaceState(index, {
-                                                    ...state,
-                                                    declencheurs:
-                                                        triggers.filter(
-                                                            (_, at) =>
-                                                                at !==
-                                                                triggerIndex
-                                                        ),
-                                                })
-                                            }
-                                        >
-                                            {text('actions.remove')}
-                                        </Button>
-                                    </div>
-                                ))}
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    onClick={() =>
-                                        replaceState(index, {
-                                            ...state,
-                                            declencheurs: [
-                                                ...triggers,
-                                                text(
-                                                    'adrenaline:monstre.form.newTrigger'
-                                                ),
-                                            ],
-                                        })
-                                    }
-                                >
-                                    {text('actions.add')}
-                                </Button>
-                            </div>
+                            <StringRows
+                                label={text('adrenaline:monstre.form.triggers')}
+                                values={triggers}
+                                onChange={(declencheurs) =>
+                                    replaceState(index, {
+                                        ...state,
+                                        declencheurs,
+                                    })
+                                }
+                            />
                             {zone ? null : (
                                 <>
                                     <OwnedRow
@@ -359,10 +326,16 @@ export function StatesForm() {
                                                 label={text(
                                                     'adrenaline:monstre.form.actionsPerRound'
                                                 )}
-                                                value={Number(
-                                                    source.value ?? 0
-                                                )}
+                                                value={
+                                                    typeof source.value ===
+                                                    'number'
+                                                        ? source.value
+                                                        : undefined
+                                                }
                                                 onChange={source.write}
+                                                onClear={() =>
+                                                    source.write(undefined)
+                                                }
                                             />
                                         )}
                                     </OwnedRow>
@@ -418,21 +391,51 @@ export function StatesForm() {
                     </p>
                 )}
                 {zone ? null : (
-                    <Button
-                        disabled={stateLimitReached}
-                        type="button"
-                        variant="outline"
-                        onClick={() =>
-                            commitStateResult(
-                                addMonsterState(
-                                    document,
-                                    text('adrenaline:monstre.form.newStateName')
+                    <div className="grid gap-1">
+                        <label className="grid gap-1 text-sm">
+                            <span>
+                                {text('adrenaline:monstre.form.newStateName')}
+                            </span>
+                            <Input
+                                value={newName}
+                                aria-describedby={
+                                    newName.trim() === ''
+                                        ? newNameId
+                                        : undefined
+                                }
+                                onChange={(event) =>
+                                    setNewName(event.target.value)
+                                }
+                            />
+                        </label>
+                        {newName.trim() === '' && (
+                            <p
+                                id={newNameId}
+                                role="status"
+                                className="text-xs text-muted-foreground"
+                            >
+                                {text(
+                                    'adrenaline:monstre.form.newStateNameMissing'
+                                )}
+                            </p>
+                        )}
+                        <Button
+                            disabled={
+                                stateLimitReached || newName.trim() === ''
+                            }
+                            type="button"
+                            variant="outline"
+                            onClick={() => {
+                                if (newName.trim() === '') return
+                                commitStateResult(
+                                    addMonsterState(document, newName.trim())
                                 )
-                            )
-                        }
-                    >
-                        {text('adrenaline:monstre.form.addState')}
-                    </Button>
+                                setNewName('')
+                            }}
+                        >
+                            {text('adrenaline:monstre.form.addState')}
+                        </Button>
+                    </div>
                 )}
             </section>
         </>
