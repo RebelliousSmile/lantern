@@ -16,11 +16,14 @@ export const FORMATION_TYPES: readonly string[] =
 const skillCharacteristic =
     PersonnageNonJoue.shape.competences.unwrap().element.shape.caracteristique
 /** The characteristics a skill can name, by their published three-letter key. */
-export const CHARACTERISTIC_KEYS: readonly string[] = (
-    'unwrap' in skillCharacteristic
-        ? skillCharacteristic.unwrap()
-        : skillCharacteristic
-).options
+export const CHARACTERISTIC_KEYS: readonly string[] =
+    skillCharacteristic === undefined
+        ? []
+        : (
+              'unwrap' in skillCharacteristic
+                  ? skillCharacteristic.unwrap()
+                  : skillCharacteristic
+          ).options
 
 /** Ruled skill lines printed under each formation column, filled or not. */
 export const SKILL_LINES = 5

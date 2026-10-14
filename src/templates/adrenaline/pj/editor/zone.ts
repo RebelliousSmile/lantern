@@ -14,6 +14,7 @@ type Block = {
     pointerRows?: readonly (readonly { path: string }[])[]
     thresholdLevels?: readonly { key: string; label: string; malus: number }[]
     referenceTable?: {
+        lines?: readonly { name: string }[]
         legend?: readonly { nature: string; meaning?: string }[]
     }
     decoration?: {
