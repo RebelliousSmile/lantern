@@ -47,7 +47,7 @@
         {
             "provider": "schema-adrenaline",
             "repository": "RebelliousSmile/schema-adrenaline",
-            "ref": "b41a9d921967c6b066f38a35eab87bb35b9776ff",
+            "ref": "8adba08d4f59934ae3fab22dfe40214f082412b4",
             "manifests": [
                 {
                     "path": "release-train/schema-adrenaline-v2.4.0.json",
