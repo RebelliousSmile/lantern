@@ -225,6 +225,15 @@
     font-family: 'Adrenaline Handwriting', var(--font-text-theme);
 }
 
+/* Skill and formation names read as printed text (the Handbook sheet); only the percentages are handwritten. */
+.adr-pj--values-handwritten .adr-pj__competence .adr-pj__metric-name,
+.adr-pj--values-handwritten .adr-pj__formation-name {
+    color: inherit;
+    font-size: inherit;
+    line-height: inherit;
+    font-family: var(--font-text-theme);
+}
+
 .adr-pj--values-end .adr-pj__metric-value,
 .adr-pj--values-end .adr-pj__unit-value {
     text-align: center;
@@ -233,7 +242,7 @@
 .adr-pj__note {
     margin: 0;
     font-style: italic;
-    font-size: 0.88em;
+    font-size: 0.78em;
     line-height: 1.1;
     text-align: center;
 }
@@ -312,7 +321,7 @@
 
 .adr-pj--entete > .adr-pj__section-body {
     /* The character name on the left, the sheet label between, the game parameters on the right. */
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1.35fr) minmax(0, 1.15fr);
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1.35fr) minmax(0, 1fr);
     grid-template-areas: 'nom brand params';
     align-items: stretch;
 }
@@ -532,7 +541,7 @@
 }
 
 .adr-pj__weapon-line {
-    grid-template-columns: auto minmax(0, 1fr) 42px auto;
+    grid-template-columns: minmax(0, 1fr) 42px auto;
 }
 
 .adr-pj__unit-line {
@@ -548,6 +557,11 @@
     white-space: nowrap;
 }
 
+.adr-pj .adr-pj__weapon-damage {
+    border-bottom: 1px dotted var(--adrenaline-field-border);
+    padding-inline: 4px;
+}
+
 .adr-pj__unit {
     color: var(--adrenaline-rule);
     font-weight: 800;
@@ -559,11 +573,13 @@
 }
 
 /* The malus blocks (wounds, shock, various, total) share one line, as on the paper sheet. */
-.adr-pj--sante > .adr-pj__section-body {
-    grid-template-columns:
-        repeat(2, minmax(0, 3fr)) repeat(2, minmax(0, 1fr))
-        minmax(0, 1.5fr);
-    grid-template-areas: 'sp sm etats etats etats' 'wp wm choc divers total';
+@container (min-width: 601px) {
+    .adr-pj--sante > .adr-pj__section-body {
+        grid-template-columns:
+            repeat(2, minmax(0, 3fr)) repeat(2, minmax(0, 1fr))
+            minmax(0, 1.5fr);
+        grid-template-areas: 'sp sm etats etats etats' 'wp wm choc divers total';
+    }
 }
 
 .adr-pj--sante .adr-pj__blessures-physiques {
@@ -635,7 +651,7 @@
 .adr-pj__stress-side {
     flex: 1 0 auto;
     font-weight: 700;
-    font-size: 7px;
+    font-size: 8px;
     font-family: var(--font-header-theme);
     letter-spacing: 0.04em;
     letter-spacing: 0;
@@ -665,8 +681,8 @@
 
 .adr-pj__track {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
     grid-template-rows: auto 1fr;
+    grid-template-columns: minmax(0, 1fr) auto;
     border: 1px solid var(--adrenaline-rule);
     min-height: 36px;
 }
@@ -717,12 +733,19 @@
     gap: 3px;
 }
 
+.adr-pj__track-text {
+    font-size: 10px;
+    line-height: 1.2;
+}
+
 .adr-pj__track-period {
+    transform: rotate(180deg);
     color: var(--adrenaline-rule);
     font-weight: 800;
     font-size: 8px;
     font-family: var(--font-header-theme);
     letter-spacing: 0.04em;
+    writing-mode: vertical-rl;
     text-transform: uppercase;
 }
 
@@ -748,37 +771,44 @@
 /* Room to write in front of the circles: a vertical strip, the text turned a quarter turn. */
 .adr-pj__track-text {
     grid-column: 2;
-    min-width: 16px;
+    transform: rotate(180deg);
     margin: 4px 4px 4px 0;
     border-inline-start: 1px dotted var(--adrenaline-field-border);
-    writing-mode: vertical-rl;
-    transform: rotate(180deg);
-    text-align: start;
+    min-width: 16px;
     overflow: hidden;
+    writing-mode: vertical-rl;
+    text-align: start;
 }
 
-/* Total des malus: the printed scale, the current total circled. */
+/* Total des malus: the printed scale under a banner, the current total circled; the closing step (HS) at the foot. */
 .adr-pj__scale {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-items: center;
-    gap: 2px;
-    border-radius: 6px;
+    gap: 4px;
+    border: 1px solid var(--adrenaline-rule);
     background: var(--adrenaline-card-surface, var(--background-primary));
-    padding: 4px 6px;
+    padding-block-end: 4px;
 }
 
 .adr-pj__scale-label {
-    grid-column: 1 / -1;
-    color: var(--adrenaline-rule);
+    align-self: stretch;
+    background: var(--adrenaline-band);
+    padding: 2px 3px;
+    color: var(--adrenaline-band-ink);
     font-weight: 800;
-    font-size: 7px;
+    font-size: 8px;
     line-height: 1.1;
     font-family: var(--font-header-theme);
     letter-spacing: 0.04em;
     text-align: center;
     text-transform: uppercase;
+}
+
+.adr-pj__scale-grid {
+    display: grid;
+    grid-template-columns: repeat(3, auto);
+    gap: 2px;
 }
 
 .adr-pj__scale-step {
@@ -790,13 +820,11 @@
     height: 20px;
     color: var(--adrenaline-rule);
     font-weight: 800;
-    font-size: 14px;
+    font-size: 15px;
     font-family: var(--font-header-theme);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
     white-space: nowrap;
-}
-
-.adr-pj__scale-step:last-child {
-    grid-column: 1 / -1;
 }
 
 .adr-pj__scale-step--current {
@@ -807,9 +835,9 @@
 
 /* États: a free zone, an empty frame to fill by hand. */
 .adr-pj__states-zone {
-    min-height: 0;
-    padding: 5px 6px;
     border: 1px solid var(--adrenaline-condition-border);
+    padding: 5px 6px;
+    min-height: 0;
 }
 
 .adr-pj__states-line {
@@ -877,7 +905,7 @@
         grid-template-areas: 'brand brand' 'nom params';
     }
     .adr-pj--sante > .adr-pj__section-body {
-        grid-template-areas: 'sp sm' 'wp wm' 'choc divers' 'total total' 'etats etats';
+        grid-template-areas: 'sp sm' 'etats etats' 'wp wm' 'choc divers' 'total total';
     }
 }
 @container (max-width: 420px) {
@@ -895,7 +923,7 @@
         grid-template-areas: 'brand' 'nom' 'params';
     }
     .adr-pj--sante > .adr-pj__section-body {
-        grid-template-areas: 'sp' 'sm' 'wp' 'wm' 'choc' 'divers' 'total' 'etats';
+        grid-template-areas: 'sp' 'sm' 'etats' 'wp' 'wm' 'choc' 'divers' 'total';
     }
 }
 
@@ -927,25 +955,31 @@
     white-space: nowrap;
 }
 
-/* Social weapons: a compact fixed table, name and properties. */
+/* Social weapons: a compact fixed table, name and properties; an unused weapon stays readable, struck and lightened. */
 .adr-pj__reference {
-    display: grid;
-    gap: 3px;
+    display: block;
+    margin: 0;
+    width: 100%;
+    font-size: 10px;
+    line-height: 1.15;
 }
 
 .adr-pj__reference-table {
-    display: grid;
-    gap: 1px;
+    display: block;
 }
 
 .adr-pj__reference-row {
     display: grid;
-    grid-template-columns: 70px minmax(0, 1fr);
-    align-items: center;
-    gap: 8px;
-    border-bottom: 1px dotted var(--adrenaline-field-border);
-    font-size: 0.9em;
-    line-height: 1.2;
+    grid-template-columns: 66px minmax(0, 1fr);
+    gap: 0 6px;
+    border-bottom: 1px solid var(--adrenaline-field-border);
+    padding: 1px 0;
+}
+
+.adr-pj__reference-row > * {
+    border: 0;
+    padding: 0;
+    text-align: start;
 }
 
 .adr-pj__reference-row--struck {
@@ -959,6 +993,12 @@
 
 .adr-pj__reference-name {
     font-weight: 700;
+    white-space: nowrap;
+}
+
+.adr-pj__reference-properties {
+    font-size: 9px;
+    white-space: nowrap;
 }
 
 /* Location grid: the six published locations, three boxes each. */
@@ -975,6 +1015,7 @@
     gap: 1px;
     border: 1px solid var(--adrenaline-field-border);
     padding: 2px;
+    min-width: 0;
     text-align: center;
 }
 
@@ -983,11 +1024,17 @@
     font-weight: 800;
     font-size: 8px;
     font-family: var(--font-header-theme);
+    letter-spacing: 0;
+    text-transform: uppercase;
 }
 
 .adr-pj__location-label {
+    font-weight: 800;
     font-size: 0.8em;
     line-height: 1.1;
+    font-family: var(--font-header-theme);
+    letter-spacing: 0;
+    text-transform: uppercase;
 }
 
 /* The three boxes touch, as on the paper sheet. */
@@ -998,6 +1045,8 @@
 
 .adr-pj__location-boxes .adr-pj__dot-mark {
     border-radius: 0;
+    width: 9px;
+    height: 9px;
 }
 
 .adr-pj__location-boxes .adr-pj__dot-mark + .adr-pj__dot-mark {
@@ -1007,21 +1056,27 @@
 /* Advantages: the first three lines carry their circled rank. */
 .adr-pj__avantages-immunites .adr-pj__ruled-line:nth-child(-n + 3)::before {
     display: inline-block;
-    width: 11px;
-    height: 11px;
+    vertical-align: 1px;
     margin-inline-end: 4px;
     border: 1px solid var(--adrenaline-rule);
     border-radius: 50%;
+    width: 11px;
+    height: 11px;
+    color: var(--adrenaline-rule);
     font-size: 8px;
     line-height: 11px;
     text-align: center;
-    vertical-align: 1px;
-    color: var(--adrenaline-rule);
 }
 
-.adr-pj__avantages-immunites .adr-pj__ruled-line:nth-child(1)::before { content: '1'; }
-.adr-pj__avantages-immunites .adr-pj__ruled-line:nth-child(2)::before { content: '2'; }
-.adr-pj__avantages-immunites .adr-pj__ruled-line:nth-child(3)::before { content: '3'; }
+.adr-pj__avantages-immunites .adr-pj__ruled-line:nth-child(1)::before {
+    content: '1';
+}
+.adr-pj__avantages-immunites .adr-pj__ruled-line:nth-child(2)::before {
+    content: '2';
+}
+.adr-pj__avantages-immunites .adr-pj__ruled-line:nth-child(3)::before {
+    content: '3';
+}
 
 /* Wounds, as on the paper sheet: two panels split by a dotted line, four lines of circle + duration, then room to write. */
 .adr-pj__wounds {
@@ -1049,16 +1104,38 @@
 }
 
 .adr-pj__wound-head {
-    font-size: 8px;
-    font-weight: 700;
     color: var(--adrenaline-rule);
+    font-weight: 700;
+    font-size: 8px;
+    font-family: var(--font-header-theme);
+    letter-spacing: 0;
+    text-transform: uppercase;
+}
+
+/* The red frame of the sheet: banner on top, panels below. */
+.adr-pj__form-wound-circles {
+    gap: 0;
+    border: 1px solid var(--adrenaline-malus-wound);
+}
+
+.adr-pj__form-wound-circles h5.adr-pj__block-title {
+    justify-content: center;
+    border: 0;
+    background: var(--adrenaline-malus-wound);
+    padding: 2px 4px;
+    color: var(--adrenaline-band-ink);
 }
 
 .adr-pj__wound-write {
     flex: 1;
     margin: 0;
+    background: repeating-linear-gradient(
+        to bottom,
+        transparent 0 15px,
+        var(--adrenaline-field-border) 15px 16px
+    );
     min-height: 48px;
-    background: repeating-linear-gradient(to bottom, transparent 0 15px, var(--adrenaline-field-border) 15px 16px);
+    font-size: 11px;
 }
 
 .adr-pj__threshold-malus {
@@ -1081,8 +1158,9 @@
     grid-column: 1 / -1;
     align-self: stretch;
     justify-self: stretch;
-    margin-block-start: 3px;
+    margin-block: -3px -4px;
     width: 100%;
+    line-height: 1;
     text-align: center;
 }
 
@@ -1092,7 +1170,14 @@
     flex-direction: column;
 }
 
-.adr-pj--sante .adr-pj__block > :is(.adr-pj__tracks, .adr-pj__scale, .adr-pj__wounds, .adr-pj__states-zone) {
+.adr-pj--sante
+    .adr-pj__block
+    > :is(
+        .adr-pj__tracks,
+        .adr-pj__scale,
+        .adr-pj__wounds,
+        .adr-pj__states-zone
+    ) {
     flex: 1;
 }
 

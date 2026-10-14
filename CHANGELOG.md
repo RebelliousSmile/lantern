@@ -5,6 +5,12 @@ All notable changes to this project are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.28.0] - 2026-10-15
+
+### Changed
+
+- Adrenaline: the player sheet preview looks the same as the Handbook plugin's. The header columns, the weapon line (name, percentage, dice written "2d10"), the compact social weapons table, the capitalised location tiles, the red frame of the wounds and the framed malus total with its banner follow the Handbook sheet; skill and formation names print as plain text, only the values stay handwritten. Under 601 px the health section keeps two columns with the states right after the thresholds.
+
 ## [v0.27.0] - 2026-10-14
 
 ### Changed

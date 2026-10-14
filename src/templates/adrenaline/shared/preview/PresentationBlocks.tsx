@@ -546,7 +546,7 @@ function WeaponLines({ block, source }: BlockProps) {
                 >
                     {/* The die's unit follows a written count: an empty line prints nothing. */}
                     {weapon?.desDeDegats !== undefined
-                        ? `${text(weapon.desDeDegats)} ${die}`.trim()
+                        ? `${text(weapon.desDeDegats)}${die}`
                         : ''}
                 </Value>
             </div>
@@ -859,18 +859,22 @@ function MalusScale({ block, source }: BlockProps) {
         })
     )
     /* The tenth malus is the published last step: any total above the numbered ones lands there. */
-    if (scale?.last) steps.push({ label: scale.last, current: total > to })
+    const last = scale?.last
+        ? { label: scale.last, current: total > to }
+        : undefined
+    const step = (item: { label: string; current: boolean }) => (
+        <span
+            className={`adr-pj__scale-step${item.current ? ' adr-pj__scale-step--current' : ''}`}
+            key={item.label}
+        >
+            {item.label}
+        </span>
+    )
     return (
         <div className="adr-pj__scale">
             <span className="adr-pj__scale-label">{block.label}</span>
-            {steps.map((step) => (
-                <span
-                    className={`adr-pj__scale-step${step.current ? ' adr-pj__scale-step--current' : ''}`}
-                    key={step.label}
-                >
-                    {step.label}
-                </span>
-            ))}
+            <span className="adr-pj__scale-grid">{steps.map(step)}</span>
+            {last && step(last)}
         </div>
     )
 }
