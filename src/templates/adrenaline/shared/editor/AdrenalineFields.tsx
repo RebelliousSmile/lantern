@@ -20,6 +20,8 @@ import {
     TextField,
     useLimits,
     ValueField,
+    isRangeSet,
+    rangedValue,
     type RangedValue,
     type ValueForm,
 } from './FieldPrimitives'
@@ -233,7 +235,13 @@ function HealthValue({
         <OptionalNumberField
             at={at}
             label={label}
-            value={typeof value === 'number' ? value : undefined}
+            value={
+                typeof value === 'number'
+                    ? value
+                    : isRangeSet(value)
+                      ? rangedValue(value).current
+                      : undefined
+            }
             onChange={onChange}
         />
     )

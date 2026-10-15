@@ -1446,6 +1446,64 @@ runAll(
     )
 }
 
+/*
+ * A creature written with triplet thresholds (the contract allows both forms): its health panel reads each
+ * one by its current value, as the scores of the other zones do, instead of drawing empty fields. A blank
+ * field here would invite a rewrite from nothing and look like data that is not there.
+ */
+{
+    type Edit = {
+        doc: Record<string, unknown>
+        sheet: { open: boolean; target: string | null; keys?: string[] }
+    }
+    const globals = globalThis as unknown as {
+        __lanternEdit?: Edit
+        __lanternControls?: unknown[]
+        __lanternSlots?: { values: unknown[]; cursor: number }
+    }
+    const triplet = (current: number) => ({
+        minimum: 0,
+        current,
+        maximum: current,
+    })
+    const edit: Edit = {
+        doc: {
+            ...(JSON.parse(JSON.stringify(blankMonstre())) as Record<
+                string,
+                unknown
+            >),
+            sante: {
+                physique: {
+                    superficiel: { base: triplet(4) },
+                    leger: { base: triplet(9) },
+                    grave: { base: triplet(14) },
+                    profond: { base: triplet(19) },
+                },
+            },
+        },
+        sheet: { open: true, target: 'health' },
+    }
+    globals.__lanternEdit = edit
+    globals.__lanternControls = []
+    globals.__lanternSlots = { values: [], cursor: 0 }
+    let markup = ''
+    try {
+        markup = renderToStaticMarkup(createElement(MonstreEditorPanel))
+    } finally {
+        globals.__lanternEdit = undefined
+        globals.__lanternControls = undefined
+        globals.__lanternSlots = undefined
+    }
+    const shown = (markup.match(/<input[^>]*type="number"[^>]*>/g) ?? [])
+        .map((input) => /value="([^"]*)"/.exec(input)?.[1])
+        .filter((value) => value !== undefined)
+    for (const value of ['4', '9', '14', '19'])
+        assert.ok(
+            shown.indexOf(value) >= 0,
+            `the health panel of a creature with triplet thresholds shows the current value ${value}`
+        )
+}
+
 const fields = lines(failures)
 /* Every defect, for a run that has to be read whole (the message below keeps the first sixty). */
 if (process.env.LANTERN_GUARD_DUMP)

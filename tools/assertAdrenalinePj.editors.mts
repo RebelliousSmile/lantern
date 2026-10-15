@@ -608,7 +608,20 @@ export function probePanel(
                                         entry.value
                                     )))
                     )
-                if (!signalled && !diff.some((_, at) => excused(at)))
+                /* A cleared field shows a group by its current value (`ValueForm`): clearing it takes the whole group, its leaves going together. */
+                const parentOf = (path: string) => path.slice(0, path.lastIndexOf('/'))
+                const groupCleared =
+                    variant.name === 'cleared' &&
+                    diff.every(
+                        (entry) =>
+                            entry.value === undefined &&
+                            parentOf(entry.path) === parentOf(diff[0].path)
+                    )
+                if (
+                    !signalled &&
+                    !groupCleared &&
+                    !diff.some((_, at) => excused(at))
+                )
                     failures.push({
                         where,
                         what: `writes ${diff.length} paths with no signal: ${diff

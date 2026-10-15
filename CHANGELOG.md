@@ -11,6 +11,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - Adrenaline creature editor: emptying a text that the profile of a state owns (detection range, movement) no longer leaves a blank field over a value that is still exported. The field is flagged invalid and names the message that says the state keeps its text.
 - Adrenaline editors: a minimum typed first on an empty `{minimum, current, maximum}` triplet is kept as typed instead of being brought back to 0 (writing 0/0/0); the current value that follows it is said in a status.
+- Adrenaline creature and NPC editors: the health panel shows the current value of a threshold held as a `{minimum, current, maximum}` triplet instead of an empty field; clearing it removes the whole group.
 
 ## [v0.29.0] - 2026-10-15
 
