@@ -7,8 +7,11 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [v0.29.0] - 2026-10-15
+
 ### Changed
 
+- Adrenaline: adopts schema-adrenaline 6.1.0, whose published JSON Schema refuses a creature that carries `etatAlternatif` together with `etats` or `etatActif`, as the codec already did.
 - The nine PbtA and The Sprawl block templates are drawn from the rows, primitives and tokens their appearance contract publishes (header, two or three columns, outside-card notes, boxes, tracks, hour track, hexagons, cut-corner cards) instead of a flat list of fields; a region is still edited alone by clicking it.
 
 ### Fixed
