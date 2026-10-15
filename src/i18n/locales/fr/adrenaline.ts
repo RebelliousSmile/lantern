@@ -355,6 +355,8 @@ const adrenaline: ResourceShape<typeof en> = {
             current: 'Actuel',
             max: 'Max.',
             followed: "{{name}} : le maximum a suivi l'actuel, à {{value}}.",
+            followedMinimum:
+                "{{name}} : l'actuel a suivi le minimum, à {{value}}.",
         },
         draft: {
             incomplete:

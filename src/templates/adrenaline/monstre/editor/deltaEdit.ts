@@ -115,5 +115,7 @@ export type DeltaSource = {
     /** The state when it holds its own value for `key`; `undefined` when the value is the base's. */
     owner: MonsterState | undefined
     value: unknown
+    /** The field shows what was typed, but the document still holds the stored value (the write was refused). */
+    refused: boolean
     write: (value: unknown) => void
 }

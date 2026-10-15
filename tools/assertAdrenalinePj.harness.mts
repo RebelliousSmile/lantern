@@ -516,6 +516,26 @@ type Session = ReturnType<typeof typingSession>
     )
 }
 
+/*
+ * A triplet that holds nothing yet takes the first number typed as it is typed. The minimum is
+ * bounded by the current value only once the triplet is set: typing it first never brings it back
+ * to 0, nor writes a 0/0/0 that was not typed.
+ */
+{
+    const minimum = ui('adrenaline:shared.range.min')
+    const session = typingSession({}, 'parameters')
+    session.type(minimum, '5')
+    const written = JSON.stringify(session.document())
+    assert.ok(
+        written.indexOf('"minimum":5') >= 0,
+        `a minimum typed first on an empty triplet is kept as typed: ${written}`
+    )
+    assert.ok(
+        session.markup().indexOf('role="alert"') < 0,
+        'the minimum typed first on an empty triplet is not signalled as out of bounds'
+    )
+}
+
 /* The paper sheet prints neither a shield nor a toughness: the protections panel offers neither. */
 {
     const session = typingSession({}, 'protections')
@@ -1327,6 +1347,103 @@ runAll(
 'a whole training points at no status'
         )
     }
+}
+
+/*
+ * A state that owns a text cannot leave it empty (the contract takes no empty string). Emptying the
+ * field keeps the stored text in the document, and the field says so itself: it is flagged invalid
+ * and names the alert that explains it. A field the write was not refused for carries neither.
+ */
+{
+    type Control = { kind: string; onChange?: (event: unknown) => void }
+    type Edit = {
+        doc: Record<string, unknown>
+        sheet: {
+            open: boolean
+            target: string | null
+            profile?: string
+            keys?: string[]
+        }
+    }
+    const globals = globalThis as unknown as {
+        __lanternEdit?: Edit
+        __lanternControls?: Control[]
+        __lanternSlots?: { values: unknown[]; cursor: number }
+    }
+    const label = ui('adrenaline:monstre.form.detectionRange')
+    const stored = '10 m'
+    const edit: Edit = {
+        doc: {
+            ...(JSON.parse(JSON.stringify(blankMonstre())) as Record<
+                string,
+                unknown
+            >),
+            etats: [
+                { id: 'sombre', nom: 'Sombre', delta: { zoneDeDetection: stored } },
+            ],
+        },
+        sheet: {
+            open: true,
+            target: 'statistics',
+            profile: 'sombre',
+            keys: ['zoneDeDetection'],
+        },
+    }
+    const slots = { values: [] as unknown[], cursor: 0 }
+    const draw = () => {
+        const controls: Control[] = []
+        globals.__lanternEdit = edit
+        globals.__lanternControls = controls
+        slots.cursor = 0
+        globals.__lanternSlots = slots
+        try {
+            return {
+                markup: renderToStaticMarkup(createElement(MonstreEditorPanel)),
+                controls,
+            }
+        } finally {
+            globals.__lanternEdit = undefined
+            globals.__lanternControls = undefined
+            globals.__lanternSlots = undefined
+        }
+    }
+    const fieldOf = (drawn: ReturnType<typeof draw>) => {
+        const found = new RegExp(
+            `>${escapeRegExp(label)}</(?:span|label)>(?:<[^>]*>)*?<input([^>]*)data-control="([0-9]+)"([^>]*)>`
+        ).exec(drawn.markup)
+        assert.ok(found, 'the detection field is drawn')
+        return {
+            attributes: `${found[1]}${found[3]}`,
+            control: drawn.controls[Number(found[2])],
+        }
+    }
+    const before = fieldOf(draw())
+    assert.ok(
+        before.attributes.indexOf('aria-invalid') < 0,
+        'a detection range that holds its text is not flagged'
+    )
+    before.control.onChange?.({ target: { value: '' }, currentTarget: { value: '' } })
+    const after = draw()
+    const emptied = fieldOf(after)
+    const kept = (edit.doc.etats as { delta: Record<string, unknown> }[])[0]
+    assert.equal(
+        kept.delta.zoneDeDetection,
+        stored,
+        'emptying the detection range of a state keeps the stored text in the document'
+    )
+    assert.ok(
+        /aria-invalid="true"/.test(emptied.attributes),
+        'the emptied detection range is flagged invalid'
+    )
+    const described = /aria-describedby="([^"]+)"/.exec(emptied.attributes)
+    assert.ok(described, 'the emptied detection range names its explanation')
+    const alert = new RegExp(
+        `<p id="${escapeRegExp(described[1])}"[^>]*role="alert"`
+    )
+    assert.ok(
+        alert.test(after.markup),
+        'the explanation the field names is the alert that says the state keeps its text'
+    )
 }
 
 const fields = lines(failures)

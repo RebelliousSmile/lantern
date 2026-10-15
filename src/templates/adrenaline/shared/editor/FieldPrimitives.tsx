@@ -84,11 +84,16 @@ export function TextField({
     value,
     onChange,
     inline = false,
+    invalid = false,
+    describedBy: explained,
 }: {
     label: string
     value: string
     onChange: (value: string) => void
     inline?: boolean
+    /** The typed text is not what the document holds: the field is flagged and `describedBy` says why. */
+    invalid?: boolean
+    describedBy?: string
 }) {
     const describedBy = useDescribedBy()
     return (
@@ -96,7 +101,8 @@ export function TextField({
             <span>{label}</span>
             <Input
                 value={value}
-                aria-describedby={describedBy}
+                aria-invalid={invalid ? true : undefined}
+                aria-describedby={invalid && explained ? explained : describedBy}
                 onChange={(event) => onChange(event.target.value)}
             />
         </label>
@@ -444,19 +450,30 @@ export function boundLimit(
         : tripletLimit(range, bound, limit)
 }
 
-/** The triplet once `bound` is typed, and the maximum it dragged along when it did. */
+/** A number another one dragged along when it was typed: the value it took, and the bound that moved it. */
+export type Followed = { value: number; by: 'current' | 'minimum' }
+
+/** The triplet once `bound` is typed, and what it dragged along when it did. */
 export function enterBound(
     range: RangedValue,
     bound: keyof RangedValue,
     next: number
-): { value: RangedValue; followed?: number } {
+): { value: RangedValue; followed?: Followed } {
     const together =
         bound === 'current' &&
         range.current === range.maximum &&
         next !== range.maximum
-    return together
-        ? { value: { ...range, current: next, maximum: next }, followed: next }
-        : { value: withRangedBound(range, bound, next) }
+    if (together)
+        return {
+            value: { ...range, current: next, maximum: next },
+            followed: { value: next, by: 'current' },
+        }
+    /* A minimum raised above the current value takes it along: said, not silent. */
+    const raised = bound === 'minimum' && next > range.current
+    return {
+        value: withRangedBound(range, bound, next),
+        ...(raised ? { followed: { value: next, by: 'minimum' as const } } : {}),
+    }
 }
 
 /** The status of a maximum that followed a typed current value; nothing while none did. */
@@ -467,7 +484,7 @@ export function FollowedStatus({
 }: {
     id: string
     name: string
-    value: number | undefined
+    value: Followed | undefined
 }) {
     const text = useUiText()
     if (value === undefined) return null
@@ -477,10 +494,15 @@ export function FollowedStatus({
             role="status"
             className="col-span-full text-xs text-muted-foreground"
         >
-            {text('adrenaline:shared.range.followed', {
-                name,
-                value: String(value),
-            })}
+            {text(
+                value.by === 'minimum'
+                    ? 'adrenaline:shared.range.followedMinimum'
+                    : 'adrenaline:shared.range.followed',
+                {
+                    name,
+                    value: String(value.value),
+                }
+            )}
         </p>
     )
 }
@@ -499,7 +521,7 @@ export function RangedNumberField({
     limit?: Limit
 }) {
     const range = rangedValue(value)
-    const [followed, setFollowed] = useState<number | undefined>(undefined)
+    const [followed, setFollowed] = useState<Followed | undefined>(undefined)
     const followedId = useId()
     const enter = (bound: keyof RangedValue) => (next: number) => {
         const entered = enterBound(range, bound, next)
@@ -535,7 +557,8 @@ export function RangedNumberField({
                             followed !== undefined ? followedId : undefined
                         }
                         value={set ? range[bound] : undefined}
-                        limit={boundLimit(range, bound, limit)}
+                        /* An unset triplet bounds nothing by its absent numbers: the first one typed is kept as typed. */
+                        limit={set ? boundLimit(range, bound, limit) : limit}
                         onCommit={commit}
                     />
                 ))}
@@ -661,10 +684,11 @@ export function PercentageField({
         : allBounds
     const set = isRangeSet(value)
     /* The maximum that followed the current value is said, never silent. */
-    const [followed, setFollowed] = useState<number | undefined>(undefined)
+    const [followed, setFollowed] = useState<Followed | undefined>(undefined)
     const followedId = useId()
+    /* An unset triplet bounds nothing by its absent numbers: the first one typed is kept as typed. */
     const limitOf = (bound: keyof RangedValue) =>
-        boundLimit(range, bound, limit)
+        set ? boundLimit(range, bound, limit) : limit
     return (
         <div className="grid gap-1 text-sm" role="group" aria-label={label}>
             <span>{label}</span>

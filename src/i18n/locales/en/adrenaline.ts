@@ -355,6 +355,8 @@ const adrenaline = {
             max: 'Max.',
             followed:
                 '{{name}}: the maximum followed the current value, to {{value}}.',
+            followedMinimum:
+                '{{name}}: the current value followed the minimum, to {{value}}.',
         },
         draft: {
             incomplete:

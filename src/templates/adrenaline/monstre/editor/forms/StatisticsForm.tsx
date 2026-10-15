@@ -1,3 +1,4 @@
+import { useId } from 'react'
 import { CharacteristicsFields } from '../../../shared/editor/AdrenalineFields'
 import { TextField } from '../../../shared/editor/FieldPrimitives'
 import { CHARACTERISTIC_FIELDS } from '../../../shared/schemaFields'
@@ -15,6 +16,7 @@ export function StatisticsForm() {
         ownership,
         errorLine,
     } = useMonstreEdit()
+    const errorId = useId()
     return (
         <section className="grid gap-2">
             <h3 className="font-semibold">
@@ -45,6 +47,8 @@ export function StatisticsForm() {
                     label={text('adrenaline:monstre.form.detectionRange')}
                     value={String(detectionSource.value ?? '')}
                     onChange={detectionSource.write}
+                    invalid={detectionSource.refused}
+                    describedBy={errorId}
                 />
             ) : null}
             {shows('deplacement') ? (
@@ -52,9 +56,11 @@ export function StatisticsForm() {
                     label={text('adrenaline:monstre.form.movement')}
                     value={String(movementSource.value ?? '')}
                     onChange={movementSource.write}
+                    invalid={movementSource.refused}
+                    describedBy={errorId}
                 />
             ) : null}
-            {errorLine()}
+            {errorLine(errorId)}
         </section>
     )
 }

@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button'
 import { useUiText } from '@/i18n/text'
 import type { ReactNode } from 'react'
 import { useEffect, useState } from 'react'
-import { canonical, withoutHollow } from '../../shared/editor/clean'
+import { canonical, compact, withoutHollow } from '../../shared/editor/clean'
 import { useAdrenalineDocument } from '../../shared/hooks'
 import { maximumStates } from '../../shared/schemaFields'
 import type { MonstreSection } from '../../shared/sections'
@@ -119,12 +119,16 @@ export function useMonstreEdit() {
         const owner =
             state && (delta[key] !== undefined || claimed) ? state : undefined
         const stored = owner ? delta[key] : document[key]
+        const shown = owner ? shownValue(drafts[draftKey], stored) : stored
         return {
             key,
             state,
             index,
             owner,
-            value: owner ? shownValue(drafts[draftKey], stored) : stored,
+            value: shown,
+            refused:
+                owner !== undefined &&
+                canonical(compact(shown)) !== canonical(compact(stored)),
             write: (typed: unknown) => {
                 /* A field is a value or it is not there: nothing hollow is held by the document. */
                 const value = withoutHollow(typed)
@@ -300,9 +304,10 @@ export function useMonstreEdit() {
             </div>
         )
     }
-    const errorLine = () =>
+    /* `id` lets the field whose write was refused name this line as its description. */
+    const errorLine = (id?: string) =>
         stateError ? (
-            <p className="text-sm text-destructive" role="alert">
+            <p id={id} className="text-sm text-destructive" role="alert">
                 {stateError}
             </p>
         ) : null
