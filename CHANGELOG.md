@@ -7,6 +7,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Changed
+
+- The nine PbtA and The Sprawl block templates are drawn from the rows, primitives and tokens their appearance contract publishes (header, two or three columns, outside-card notes, boxes, tracks, hour track, hexagons, cut-corner cards) instead of a flat list of fields; a region is still edited alone by clicking it.
+
 ### Fixed
 
 - The nine PbtA and The Sprawl block templates (Masks NPC, Monster of the Week monster, threat and team, The Sprawl mission, threat, resource, corporation and matrix) now offer the PNG export next to the TOML export; they had only the TOML one.

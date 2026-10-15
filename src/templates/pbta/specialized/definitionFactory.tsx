@@ -20,6 +20,7 @@ import {
     collectionItems,
     replaceCollectionItems,
 } from './collectionPolicy'
+import { LayoutCard } from './LayoutCard'
 import './specializedPlaybookTheme.css'
 import type {
     SpecializedPlaybookConfig as Config,
@@ -281,6 +282,17 @@ export function createSpecializedPlaybookTemplate(
         const { open } = useSheet()
         const tab = useTab()
         const view = { ...defaultView(), ...(tab?.view ?? {}) }
+        /* A block whose pack publishes rows is drawn from them, not as the flat sheet. */
+        if (config.layout)
+            return (
+                <LayoutCard
+                    config={config}
+                    layout={config.layout}
+                    doc={doc}
+                    hidden={view.hidden}
+                    open={open}
+                />
+            )
         return (
             <div className="pbta-card pbta-specialized-playbook">
                 <article className="pbta-specialized-sheet">

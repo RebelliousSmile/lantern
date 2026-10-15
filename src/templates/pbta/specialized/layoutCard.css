@@ -1,0 +1,276 @@
+/*
+ * A PbtA block drawn from its published rows. Colours and fonts are the tokens
+ * of the pack's appearance contract, set on the sheet root (so the PNG export
+ * carries them); the geometry below is Lantern's own reading of the
+ * primitives, not a restatement of the contract.
+ */
+.pbta-layout-sheet {
+    --layout-ink: #1a1a24;
+    --layout-ink-soft: #5a5a68;
+    --layout-rule: #d7d7e0;
+    --layout-accent-fallback: #1b2a49;
+    container-type: inline-size;
+    box-sizing: border-box;
+    background: #fff;
+    padding: 1.25rem;
+    width: 100%;
+    color: var(--layout-ink);
+    font-size: 15px;
+    line-height: 1.35;
+    font-family: var(--layout-body-font, Georgia, serif);
+}
+.pbta-layout-card {
+    display: grid;
+    gap: 1rem;
+    border: 0.15rem solid var(--layout-accent, var(--layout-accent-fallback));
+    padding: 1rem;
+}
+.pbta-layout-row {
+    display: grid;
+    grid-template-columns: repeat(var(--columns, 1), minmax(0, 1fr));
+    gap: 1rem 2rem;
+}
+.pbta-layout-row[data-columns='2'] {
+    --columns: 2;
+}
+.pbta-layout-row[data-columns='3'] {
+    --columns: 3;
+}
+.pbta-layout-column {
+    display: grid;
+    align-content: start;
+    gap: 1rem;
+    min-width: 0;
+}
+.pbta-layout-region {
+    cursor: pointer;
+    border-block-start: 1px solid var(--layout-rule);
+    padding-block: 0.3rem 0.5rem;
+    min-width: 0;
+}
+.pbta-layout-row:first-child > .pbta-layout-column > .pbta-layout-region {
+    border-block-start: 0;
+    border-block-end: 0.2rem solid
+        var(--layout-accent, var(--layout-accent-fallback));
+}
+.pbta-layout-region:hover,
+.pbta-layout-region:focus-visible {
+    outline: 1px dashed var(--layout-accent, currentColor);
+    outline-offset: 2px;
+}
+.pbta-layout-outside {
+    display: grid;
+    gap: 0.75rem;
+    margin-top: 1rem;
+    padding-inline: 0.25rem;
+    color: var(--layout-ink-soft);
+}
+.pbta-layout-outside .pbta-layout-region {
+    border-block-start: 0;
+}
+
+.pbta-layout-sheet h2,
+.pbta-layout-sheet h3 {
+    margin: 0 0 0.3rem;
+    color: var(--layout-accent, inherit);
+    font-weight: 400;
+    font-family: var(--layout-title-font, 'Arial Narrow', sans-serif);
+    letter-spacing: 0.03em;
+}
+.pbta-layout-sheet h2 {
+    font-size: 1.9rem;
+    line-height: 1.1;
+}
+.pbta-layout-sheet h3 {
+    font-size: 0.95rem;
+    font-family: var(--layout-heading-font, sans-serif);
+    text-transform: uppercase;
+}
+.pbta-layout-sheet p {
+    margin: 0 0 0.35rem;
+}
+.pbta-layout-empty {
+    color: var(--layout-ink-soft);
+    font-style: italic;
+}
+
+.pbta-layout-pairs {
+    display: grid;
+    gap: 0.25rem;
+    margin: 0;
+}
+.pbta-layout-pairs > div {
+    display: flex;
+    gap: 0.6rem;
+    align-items: baseline;
+}
+.pbta-layout-pairs dt {
+    min-width: 7.5rem;
+    color: var(--layout-accent, inherit);
+    font-weight: 700;
+}
+.pbta-layout-pairs dd {
+    margin: 0;
+}
+
+.pbta-layout-list,
+.pbta-layout-checks,
+.pbta-layout-tags,
+.pbta-layout-steps {
+    margin: 0;
+    padding-inline-start: 1.1rem;
+}
+.pbta-layout-list em,
+.pbta-layout-checks em {
+    display: block;
+    color: var(--layout-ink-soft);
+}
+.pbta-layout-checks {
+    padding: 0;
+    list-style: none;
+}
+.pbta-layout-checks li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem;
+}
+.pbta-layout-checks em {
+    flex-basis: 100%;
+    padding-inline-start: 1.5rem;
+}
+
+.pbta-layout-boxes {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    vertical-align: middle;
+}
+.pbta-layout-boxes > span {
+    box-sizing: border-box;
+    border: 1px solid var(--layout-ink);
+    width: 1rem;
+    height: 1rem;
+}
+.pbta-layout-boxes > span[data-marked] {
+    background: var(--layout-accent, var(--layout-ink));
+}
+.pbta-layout-line {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.3rem;
+}
+.pbta-layout-line > span:first-child {
+    min-width: 6rem;
+    font-weight: 700;
+}
+
+/* Numbered track and hour track: a row of cells, the current or marked ones filled. */
+.pbta-layout-track,
+.pbta-layout-hours {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+.pbta-layout-track li,
+.pbta-layout-hours li {
+    display: grid;
+    place-items: center;
+    box-sizing: border-box;
+    border: 1px solid var(--layout-accent, var(--layout-ink));
+    min-width: 1.9rem;
+    height: 1.9rem;
+    font-size: 0.85rem;
+}
+.pbta-layout-hours li {
+    border-radius: 50%;
+    width: 2.2rem;
+    height: 2.2rem;
+}
+.pbta-layout-track li[data-marked],
+.pbta-layout-hours li[data-marked] {
+    background: var(--layout-accent, var(--layout-ink));
+    color: #fff;
+}
+.pbta-layout-list {
+    list-style: disc;
+}
+.pbta-layout-steps {
+    margin-top: 0.5rem;
+    list-style: decimal;
+}
+
+/* Hexagons: one rating each. */
+.pbta-layout-hexagons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+.pbta-layout-hexagons li {
+    display: grid;
+    place-content: center;
+    justify-items: center;
+    clip-path: polygon(25% 3%, 75% 3%, 100% 50%, 75% 97%, 25% 97%, 0 50%);
+    background: var(--layout-accent, var(--layout-ink));
+    width: 5.4rem;
+    height: 4.8rem;
+    color: #fff;
+    text-align: center;
+}
+.pbta-layout-hexagons strong {
+    font-size: 1.4rem;
+    line-height: 1;
+}
+.pbta-layout-hexagons span {
+    font-size: 0.7rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+/* A card with the top-right corner cut. */
+.pbta-layout-cut {
+    clip-path: polygon(0 0, calc(100% - 1.4rem) 0, 100% 1.4rem, 100% 100%, 0 100%);
+    background: color-mix(
+        in srgb,
+        var(--layout-accent, var(--layout-accent-fallback)) 8%,
+        #fff
+    );
+    padding: 0.6rem 0.8rem;
+}
+.pbta-layout-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    padding: 0;
+    list-style: none;
+}
+.pbta-layout-tags li {
+    border: 1px solid var(--layout-accent, currentColor);
+    border-radius: 0.2rem;
+    padding: 0 0.4rem;
+    font-size: 0.8rem;
+}
+.pbta-layout-image {
+    color: var(--layout-ink-soft);
+    font-size: 0.8rem;
+}
+
+/* Narrow pane and print: the rows fold to one column, in the order they are read. */
+@container (max-width: 840px) {
+    .pbta-layout-row {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+@media print {
+    .pbta-layout-region {
+        break-inside: avoid;
+    }
+}

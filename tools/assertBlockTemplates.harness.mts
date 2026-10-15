@@ -83,11 +83,21 @@ for (const config of BLOCK_CONFIGS) {
         `${config.id}: a TOML export action`
     )
 
-    /* The preview draws one block per published region. */
+    /*
+     * The preview draws one block per published region. A block published with
+     * rows is drawn from them, each region as the primitive the contract names
+     * (the header has no label of its own: its name is the title).
+     */
     const html = renderToStaticMarkup(definition.preview.render())
+    const layout = (config as { layout?: { regions: Record<string, { primitive: string }> } })
+        .layout
     for (const section of config.sections)
         assert.ok(
-            html.includes(escapeHtml(translate(section.label))),
+            layout
+                ? html.includes(
+                      `data-region="${section.id}" data-primitive="${layout.regions[section.id]?.primitive}"`
+                  )
+                : html.includes(escapeHtml(translate(section.label))),
             `${config.id}: region "${section.id}" is not drawn`
         )
     console.log(`${config.id}: ${target} ok (${config.sections.length} regions)`)

@@ -13,7 +13,8 @@
  * A pack may also publish one contract per block besides its playbook
  * (`<kind>-presentation-contract.json`: NPC, monster, mission...). Each must
  * have a template folder `src/templates/<id>/<kind>` and be wired into the
- * shared block configuration, whose regions are the contract itself.
+ * shared block configuration, whose regions are the contract itself. Every
+ * primitive a block region is published as must be drawn by the block preview.
  */
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs'
 import { join, resolve } from 'node:path'
@@ -39,6 +40,17 @@ const blockConfigs = readFileSync(
     join(root, 'src', 'templates', 'pbta', 'blocks', 'blockConfigs.ts'),
     'utf8'
 )
+const layoutSource = readFileSync(
+    join(root, 'src', 'templates', 'pbta', 'specialized', 'LayoutCard.tsx'),
+    'utf8'
+)
+/* The primitives the block preview draws: the keys of its PRIMITIVES table. */
+const drawn = new Set(
+    [
+        ...(/const PRIMITIVES[^{]*\{([^}]*)\}/s.exec(layoutSource)?.[1] ?? '')
+            .matchAll(/'?([a-z-]+)'?\s*:/g),
+    ].map((match) => match[1])
+)
 const problems = []
 const notes = []
 const covered = []
@@ -59,7 +71,23 @@ for (const id of readdirSync(packsDir).sort()) {
             problems.push(
                 `${id}: block "${kind}" has a template folder, not wired to its published contract`
             )
-        else covered.push(`${id}/${kind}`)
+        else {
+            covered.push(`${id}/${kind}`)
+            /* A published primitive nobody draws would fall back to prose silently. */
+            const contract = JSON.parse(
+                readFileSync(join(packsDir, id, name), 'utf8')
+            )
+            for (const region of contract.regions) {
+                if (region.primitive && !drawn.has(region.primitive))
+                    problems.push(
+                        `${id}: block "${kind}" region "${region.id}" is a "${region.primitive}", which the block preview does not draw`
+                    )
+            }
+            if (contract.rows?.length && !blockConfigs.includes('rows'))
+                problems.push(
+                    `${id}: block "${kind}" publishes rows the block configuration does not read`
+                )
+        }
     }
     const file = join(packsDir, id, 'presentation-contract.json')
     if (!existsSync(file)) continue

@@ -12,6 +12,18 @@ export type SpecializedPlaybookSheet = {
     target: string | 'basic' | null
 }
 
+/** How a published block lays its regions out: the presentation contract, as read. */
+export type SpecializedPlaybookLayout = {
+    /** Rows of columns of region ids; a row with one column spans the card. */
+    rows: string[][][]
+    /** Regions drawn under the card, not on it. */
+    outsideCard: string[]
+    /** What each region is drawn as, and the group it belongs to. */
+    regions: Record<string, { primitive: string; group: string }>
+    /** CSS custom properties of the pack's appearance contract (base variant). */
+    tokens: Record<string, string>
+}
+
 export type SpecializedPlaybookConfig = {
     id: string
     gameId: string
@@ -24,6 +36,8 @@ export type SpecializedPlaybookConfig = {
     blank: SpecializedPlaybookDocument
     /** Sample document; the blank one when absent. */
     example?: SpecializedPlaybookDocument
+    /** Present for a block whose pack publishes rows: the preview draws them. */
+    layout?: SpecializedPlaybookLayout
 }
 
 export function createSpecializedPlaybookStaticDefinition(

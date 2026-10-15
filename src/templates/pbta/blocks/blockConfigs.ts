@@ -1,20 +1,48 @@
 import type { TranslationKey } from '@/i18n/text'
+import masksAppearance from 'schema-pbta/packs/masks/appearance-contract.json'
 import masksNpc from 'schema-pbta/packs/masks/npc-presentation-contract.json'
+import motwAppearance from 'schema-pbta/packs/monster-of-the-week/appearance-contract.json'
 import motwMonster from 'schema-pbta/packs/monster-of-the-week/monster-presentation-contract.json'
 import motwTeam from 'schema-pbta/packs/monster-of-the-week/team-presentation-contract.json'
 import motwThreat from 'schema-pbta/packs/monster-of-the-week/threat-presentation-contract.json'
+import sprawlAppearance from 'schema-pbta/packs/the-sprawl/appearance-contract.json'
 import sprawlCorporation from 'schema-pbta/packs/the-sprawl/corporation-presentation-contract.json'
 import sprawlMatrix from 'schema-pbta/packs/the-sprawl/matrix-presentation-contract.json'
 import sprawlMission from 'schema-pbta/packs/the-sprawl/mission-presentation-contract.json'
 import sprawlResource from 'schema-pbta/packs/the-sprawl/resource-presentation-contract.json'
 import sprawlThreat from 'schema-pbta/packs/the-sprawl/threat-presentation-contract.json'
-import type { SpecializedPlaybookConfig } from '../specialized/staticDefinitionFactory'
+import type {
+    SpecializedPlaybookConfig,
+    SpecializedPlaybookLayout,
+} from '../specialized/staticDefinitionFactory'
 import { BLOCK_SAMPLES } from './blockSamples'
 
 type Contract = {
     target: string
-    regions: Array<{ id: string; label: string; fields: string[] }>
+    regions: Array<{
+        id: string
+        label: string
+        fields: string[]
+        group?: string
+        primitive?: string
+    }>
     canonicalOrder: string[]
+    rows?: string[][][]
+    outsideCard?: string[]
+}
+
+type Appearance = {
+    variants: Array<{ id: string; tokens?: Record<string, string> }>
+}
+
+/** The tokens of the published base variant of a pack. */
+const baseTokens = (appearance: Appearance): Record<string, string> =>
+    appearance.variants.find((variant) => variant.id === 'base')?.tokens ?? {}
+
+const APPEARANCES: Record<string, Appearance> = {
+    masks: masksAppearance,
+    'monster-of-the-week': motwAppearance,
+    'the-sprawl': sprawlAppearance,
 }
 
 type BlockSpec = {
@@ -135,6 +163,30 @@ function configOf(spec: BlockSpec): BlockConfig {
         }),
         blank: samples.blank,
         example: samples.example,
+        layout: layoutOf(spec),
+    }
+}
+
+/*
+ * The rows, the regions outside the card and what each region is drawn as come
+ * from the published contract; a contract without rows keeps the flat sheet.
+ */
+function layoutOf(spec: BlockSpec): SpecializedPlaybookLayout | undefined {
+    const { rows, outsideCard, regions } = spec.contract
+    if (!rows?.length) return undefined
+    return {
+        rows,
+        outsideCard: outsideCard ?? [],
+        regions: Object.fromEntries(
+            regions.map((region) => [
+                region.id,
+                {
+                    primitive: region.primitive ?? 'prose',
+                    group: region.group ?? 'card',
+                },
+            ])
+        ),
+        tokens: baseTokens(APPEARANCES[spec.gameId] ?? { variants: [] }),
     }
 }
 
