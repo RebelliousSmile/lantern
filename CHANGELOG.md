@@ -9,6 +9,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- Adrenaline: adopts contract 6.0.0. A damage threshold of zero on a non-player character or a creature is refused, as it is a blank field and not a value: enter the real threshold or remove the health block.
 - Adrenaline: the player sheet preview looks the same as the Handbook plugin's. The header columns, the weapon line (name, percentage, dice written "2d10"), the compact social weapons table, the capitalised location tiles, the red frame of the wounds and the framed malus total with its banner follow the Handbook sheet; skill and formation names print as plain text, only the values stay handwritten. Under 601 px the health section keeps two columns with the states right after the thresholds.
 
 ## [v0.27.0] - 2026-10-14
