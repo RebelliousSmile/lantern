@@ -37,6 +37,7 @@ const pbta: ResourceShape<typeof en> = {
     specialized: {
         description:
             'Créez un livret original pour {{game}} sous forme d’un seul document TOML.',
+        exportPng: 'Exporter la fiche courante en PNG.',
         sections: {
             stats: 'Caractéristiques',
             labels: 'Étiquettes',

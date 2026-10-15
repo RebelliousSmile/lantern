@@ -5,6 +5,7 @@ export type SpecializedPlaybookDocument = Record<string, unknown>
 export type SpecializedPlaybookView = {
     hidden: Record<string, boolean>
     previewWidth: number
+    exportPrefs: { scale: 1 | 2 | 3 }
 }
 export type SpecializedPlaybookSheet = {
     open: boolean
@@ -38,6 +39,7 @@ export function createSpecializedPlaybookStaticDefinition(
     const createInitialView = (): SpecializedPlaybookView => ({
         previewWidth: 1123,
         hidden: Object.fromEntries(sections.map(({ id }) => [id, false])),
+        exportPrefs: { scale: 1 },
     })
     const createInitialSheet = (): SpecializedPlaybookSheet => ({
         open: false,

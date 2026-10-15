@@ -5,6 +5,16 @@ All notable changes to this project are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+
+- The nine PbtA and The Sprawl block templates (Masks NPC, Monster of the Week monster, threat and team, The Sprawl mission, threat, resource, corporation and matrix) now offer the PNG export next to the TOML export; they had only the TOML one.
+
+### Added
+
+- `assert:template-exports` walks every registered template and proves its TOML export (written, accepted by the published codec, stable on re-read) and the wiring of its PNG export, so a template added without one fails the check.
+
 ## [v0.28.0] - 2026-10-15
 
 ### Changed

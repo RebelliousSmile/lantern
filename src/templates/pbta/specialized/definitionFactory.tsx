@@ -1,9 +1,11 @@
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { documentContracts } from '@/contracts/registry'
 import { SchemaEditor } from '@/core/editor-schema/SchemaEditor'
 import { inferObject } from '@/core/editor-schema/inferSchema'
 import { getAtPath, setAtPath } from '@/core/editor-schema/path'
+import { createImageExportAction } from '@/core/templates/shell/imageExportAction'
 import { createTomlExportAction } from '@/core/templates/shell/tomlExportAction'
 import type { AnyTemplateDefinition } from '@/core/templates/types'
 import { useActiveTemplateTab } from '@/core/workspace/selectors'
@@ -411,6 +413,28 @@ export function createSpecializedPlaybookTemplate(
             />
         )
     }
+    function ImageExportSettings() {
+        const tab = useTab()
+        const patch = useWorkspaceStore((state) => state.patchTabView)
+        const view = { ...defaultView(), ...(tab?.view ?? {}) }
+        return (
+            <RadioGroup
+                value={String(view.exportPrefs.scale)}
+                onValueChange={(value) =>
+                    tab &&
+                    patch(tab.id, {
+                        exportPrefs: { scale: Number(value) as 1 | 2 | 3 },
+                    })
+                }
+            >
+                {[1, 2, 3].map((scale) => (
+                    <label className="mr-3" key={scale}>
+                        <RadioGroupItem value={String(scale)} /> {scale}x
+                    </label>
+                ))}
+            </RadioGroup>
+        )
+    }
     function Appearance() {
         const tab = useTab()
         const patch = useWorkspaceStore((state) => state.patchTabView)
@@ -464,6 +488,10 @@ export function createSpecializedPlaybookTemplate(
                 createTomlExportAction({
                     exportToml: (doc) => contract.stringifyToml(doc),
                     description: 'pbta:playbook.exportToml',
+                }),
+                createImageExportAction({
+                    description: 'pbta:specialized.exportPng',
+                    renderSettings: () => <ImageExportSettings />,
                 }),
             ],
         },

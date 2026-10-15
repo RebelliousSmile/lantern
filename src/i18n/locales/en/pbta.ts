@@ -34,6 +34,7 @@ const pbta = {
     specialized: {
         description:
             'Create an original {{game}} playbook as one TOML document.',
+        exportPng: 'Export the current sheet as PNG.',
         sections: {
             stats: 'Stats',
             labels: 'Labels',
