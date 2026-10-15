@@ -7,6 +7,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Changed
+
+- Adrenaline creature and NPC editors: the health panel lays each wound level on one row (its name beside the two figures, instead of a bordered group under a legend), which brings the panel from about 888 px to 732 px high; the level name stays the accessible legend of its group.
+
 ### Fixed
 
 - Adrenaline creature editor: emptying a text that the profile of a state owns (detection range, movement) no longer leaves a blank field over a value that is still exported. The field is flagged invalid and names the message that says the state keeps its text.

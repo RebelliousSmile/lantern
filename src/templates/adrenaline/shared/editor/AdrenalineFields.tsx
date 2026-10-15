@@ -310,19 +310,26 @@ export function HealthFields({
                         <h4 className="font-medium capitalize">
                             {text(healthKindHeadingKeys[kind])}
                         </h4>
-                        <div className="grid gap-2">
+                        <div className="grid gap-1">
                             {wounds.map(([level, levelLabelKey]) => {
                                 const threshold = record(block[level])
                                 const set = (key: string, next: unknown) =>
                                     change(kind, level, key, next)
                                 return (
+                                    /* One row per level: its name in a column of its own, so the two figures sit beside it rather than under a legend. */
                                     <fieldset
-                                        className="grid grid-cols-2 gap-1 rounded border p-1 text-sm"
+                                        className="grid grid-cols-[4.5rem_1fr_1fr] items-end gap-1 border-t pt-1 text-sm"
                                         key={level}
                                     >
-                                        <legend className="px-1 font-medium">
+                                        <legend className="sr-only">
                                             {text(levelLabelKey)}
                                         </legend>
+                                        <span
+                                            aria-hidden="true"
+                                            className="self-center font-medium"
+                                        >
+                                            {text(levelLabelKey)}
+                                        </span>
                                         <HealthValue
                                             form={form}
                                             label={text(
