@@ -3,8 +3,7 @@ import published from 'schema-adrenaline/examples/adrenaline/pnj/pnj-majeur.toml
 import { parseAdrenalineToml } from '../shared/toml'
 
 const starter = `nom = "PNJ sans nom"
-niveauDeDanger = 1
-description = "Décrivez ce personnage et ce que les joueurs perçoivent de lui."`
+niveauDeDanger = 1`
 
 export const blankPnj = () =>
     parseAdrenalineToml<AdrenalinePnj>('adrenaline/pnj', starter)

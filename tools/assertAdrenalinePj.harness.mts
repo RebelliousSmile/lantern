@@ -1023,6 +1023,12 @@ runAll(
         },
     ]
 )
+/* A blank NPC holds the name and the danger level the contract asks for, not an instruction written as data. */
+assert.equal(
+    'description' in (blankPnj() as unknown as Record<string, unknown>),
+    false,
+    'a blank NPC exports no placeholder description'
+)
 runAll(
     monstreSurface,
     monstreSections.map((section) => named(section.id)),
