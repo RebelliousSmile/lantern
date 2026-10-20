@@ -3,7 +3,8 @@ import type { CSSProperties, ReactNode } from 'react'
 import appearance from 'schema-pbta/packs/urban-shadows/appearance-contract.json'
 import brushFontUrl from 'schema-pbta/packs/urban-shadows/assets/fonts/caveat-brush-400-normal.woff2'
 import displayFontUrl from 'schema-pbta/packs/urban-shadows/assets/fonts/league-gothic-latin-400-normal.woff2'
-import textFontUrl from 'schema-pbta/packs/urban-shadows/assets/fonts/source-serif-4-latin-wght-normal.woff2'
+import textFontUrl from 'schema-pbta/packs/urban-shadows/assets/fonts/source-serif-4-latin-400-normal.woff2'
+import textBoldFontUrl from 'schema-pbta/packs/urban-shadows/assets/fonts/source-serif-4-latin-700-normal.woff2'
 import {
     useUrbanShadowsPlaybookStore,
     useUrbanShadowsSheetStore,
@@ -22,15 +23,17 @@ import './urbanShadowsPlaybookTheme.css'
 const STATUS_PIPS = 3
 const DEBT_LINES = 4
 
-/* The published fonts, under the family names the appearance contract gives them. */
+/* The published fonts, under the family names the appearance contract gives them.
+   The text face is one static file per weight, its bold beside the 400 the contract names. */
 const fontFaces = [
-    ['Urban Shadows Display', displayFontUrl],
-    ['Urban Shadows Text', textFontUrl],
-    ['Urban Shadows Brush', brushFontUrl],
+    ['Urban Shadows Display', displayFontUrl, ''],
+    ['Urban Shadows Text', textFontUrl, 'font-weight:400;'],
+    ['Urban Shadows Text', textBoldFontUrl, 'font-weight:700;'],
+    ['Urban Shadows Brush', brushFontUrl, ''],
 ]
     .map(
-        ([family, url]) =>
-            `@font-face{font-family:"${family}";src:url("${url}") format("woff2");font-display:swap;}`
+        ([family, url, weight]) =>
+            `@font-face{font-family:"${family}";src:url("${url}") format("woff2");${weight}font-display:swap;}`
     )
     .join('')
 

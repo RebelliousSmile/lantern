@@ -239,14 +239,18 @@ async function main() {
         )
     }
 
+    /* Every font the preview imports from the published pack: read from the source, not listed here. */
+    const monsterheartsFonts = [
+        ...monsterheartsPreview.matchAll(
+            /schema-pbta\/packs\/monsterhearts\/assets\/fonts\/([\w-]+)\.woff2/g
+        ),
+    ].map((match) => match[1])
+    assert.ok(
+        monsterheartsFonts.length > 0,
+        'Monsterhearts must import its fonts from the published pack'
+    )
     const assets = [
-        ...[
-            'yellow-magician-latin-400-normal',
-            'el-messiri-latin-400-700-normal',
-            'averia-serif-libre-latin-700-normal',
-            'alice-latin-400-normal',
-            'im-fell-double-pica-latin-400-italic',
-        ].map((font) =>
+        ...monsterheartsFonts.map((font) =>
             emittedAsset(
                 manifest,
                 `/monsterhearts/assets/fonts/${font}.woff2`,

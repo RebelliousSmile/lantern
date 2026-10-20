@@ -1,8 +1,13 @@
 import type { CSSProperties } from 'react'
 import darkOrganicUrl from 'schema-adrenaline/handbook/adrenaline/assets/dark-organic.webp?url&no-inline'
-import bodyFontUrl from 'schema-adrenaline/handbook/adrenaline/assets/fonts/adrenaline-body.woff2?url&no-inline'
+import body400FontUrl from 'schema-adrenaline/handbook/adrenaline/assets/fonts/adrenaline-body-400.woff2?url&no-inline'
+import body500FontUrl from 'schema-adrenaline/handbook/adrenaline/assets/fonts/adrenaline-body-500.woff2?url&no-inline'
+import body600FontUrl from 'schema-adrenaline/handbook/adrenaline/assets/fonts/adrenaline-body-600.woff2?url&no-inline'
+import body700FontUrl from 'schema-adrenaline/handbook/adrenaline/assets/fonts/adrenaline-body-700.woff2?url&no-inline'
+import body800FontUrl from 'schema-adrenaline/handbook/adrenaline/assets/fonts/adrenaline-body-800.woff2?url&no-inline'
 import displayFontUrl from 'schema-adrenaline/handbook/adrenaline/assets/fonts/adrenaline-display.woff2?url&no-inline'
 import handwritingFontUrl from 'schema-adrenaline/handbook/adrenaline/assets/fonts/adrenaline-handwriting.ttf?url&no-inline'
+import facesSource from 'schema-adrenaline/handbook/adrenaline/assets/fonts/faces.css?raw'
 import paperGrainUrl from 'schema-adrenaline/handbook/adrenaline/assets/paper-grain.webp?url&no-inline'
 import warningStripeUrl from 'schema-adrenaline/handbook/adrenaline/assets/warning-stripe.webp?url&no-inline'
 import packSource from 'schema-adrenaline/handbook/adrenaline/pack.json?raw'
@@ -27,6 +32,7 @@ type Pack = {
         assets?: {
             images?: Record<string, string>
             fonts?: Record<string, PackFont>
+            stylesheets?: string[]
         }
     }
 }
@@ -37,7 +43,11 @@ const publishedFiles: Record<string, string> = {
     'paper-grain.webp': paperGrainUrl,
     'dark-organic.webp': darkOrganicUrl,
     'warning-stripe.webp': warningStripeUrl,
-    'fonts/adrenaline-body.woff2': bodyFontUrl,
+    'fonts/adrenaline-body-400.woff2': body400FontUrl,
+    'fonts/adrenaline-body-500.woff2': body500FontUrl,
+    'fonts/adrenaline-body-600.woff2': body600FontUrl,
+    'fonts/adrenaline-body-700.woff2': body700FontUrl,
+    'fonts/adrenaline-body-800.woff2': body800FontUrl,
     'fonts/adrenaline-display.woff2': displayFontUrl,
     'fonts/adrenaline-handwriting.ttf': handwritingFontUrl,
 }
@@ -62,6 +72,37 @@ const fontFormats: Record<string, string> = {
     otf: 'opentype',
 }
 
+/*
+ * The pack declares one face per family and the other weights of a family in a stylesheet of
+ * @font-face rules, whose URLs are relative to that stylesheet. A rule whose file this map does
+ * not know is left out.
+ */
+const publishedStylesheets: Record<string, string> = {
+    'fonts/faces.css': facesSource,
+}
+
+function stylesheetFaces(path: string): string[] {
+    const source = publishedStylesheets[path]
+    if (!source) return []
+    const directory = path.includes('/')
+        ? path.slice(0, path.lastIndexOf('/') + 1)
+        : ''
+    return (source.match(/@font-face\s*\{[^}]*\}/g) ?? [])
+        .map((rule) => {
+            let known = true
+            const resolved = rule.replace(
+                /url\(\s*["']?([^"')]+)["']?\s*\)/g,
+                (_, file: string) => {
+                    const url = publishedFiles[directory + file]
+                    if (!url) known = false
+                    return `url('${url}')`
+                }
+            )
+            return known ? resolved.replace(/\s+/g, ' ') : ''
+        })
+        .filter(Boolean)
+}
+
 const adrenalineFontFaces = Object.entries(pack.assets?.fonts ?? {})
     .map(([family, font]) => {
         const url = publishedFiles[font.file]
@@ -69,6 +110,7 @@ const adrenalineFontFaces = Object.entries(pack.assets?.fonts ?? {})
         if (!url || !format) return ''
         return `@font-face { font-family: '${family}'; src: url('${url}') format('${format}'); font-weight: ${font.weight ?? '400'}; font-display: swap; }`
     })
+    .concat((pack.assets?.stylesheets ?? []).flatMap(stylesheetFaces))
     .filter(Boolean)
     .join(' ')
 

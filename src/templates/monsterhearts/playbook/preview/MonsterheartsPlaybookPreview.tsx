@@ -8,7 +8,8 @@ import {
 } from 'schema-pbta'
 import aliceUrl from 'schema-pbta/packs/monsterhearts/assets/fonts/alice-latin-400-normal.woff2'
 import averiaSerifLibreUrl from 'schema-pbta/packs/monsterhearts/assets/fonts/averia-serif-libre-latin-700-normal.woff2'
-import elMessiriUrl from 'schema-pbta/packs/monsterhearts/assets/fonts/el-messiri-latin-400-700-normal.woff2'
+import elMessiriUrl from 'schema-pbta/packs/monsterhearts/assets/fonts/el-messiri-latin-400-normal.woff2'
+import elMessiriBoldUrl from 'schema-pbta/packs/monsterhearts/assets/fonts/el-messiri-latin-700-normal.woff2'
 import imFellDoublePicaUrl from 'schema-pbta/packs/monsterhearts/assets/fonts/im-fell-double-pica-latin-400-italic.woff2'
 import yellowMagicianUrl from 'schema-pbta/packs/monsterhearts/assets/fonts/yellow-magician-latin-400-normal.woff2'
 import gameMarkUrl from 'schema-pbta/packs/monsterhearts/assets/images/thorn-heart.svg?url&no-inline'
@@ -51,10 +52,17 @@ function viteAssetUrl(publishedUrl: string) {
 }
 
 /* Each face is declared with the weight and style the published stylesheet
-   gives it; El Messiri is one file covering the 400 to 700 range. */
+   gives it; El Messiri has one static file per weight, and the published
+   asset map names only its 400 face. */
 const fontFaces = [
     { family: 'Yellow Magician', weight: '400', style: 'normal' },
-    { family: 'El Messiri', weight: '400 700', style: 'normal' },
+    { family: 'El Messiri', weight: '400', style: 'normal' },
+    {
+        family: 'El Messiri',
+        weight: '700',
+        style: 'normal',
+        url: elMessiriBoldUrl,
+    },
     { family: 'Averia Serif Libre', weight: '700', style: 'normal' },
     { family: 'Alice', weight: '400', style: 'normal' },
     { family: 'IM Fell Double Pica', weight: '400', style: 'italic' },
@@ -395,8 +403,8 @@ export function MonsterheartsPlaybookPreview() {
             <style>
                 {fontFaces
                     .map(
-                        ({ family, weight, style }) =>
-                            `@font-face { font-family: '${family}'; src: url('${viteAssetUrl(assetUrls.fonts[family])}') format('woff2'); font-weight: ${weight}; font-style: ${style}; font-display: swap; }`
+                        (face) =>
+                            `@font-face { font-family: '${face.family}'; src: url('${'url' in face ? face.url : viteAssetUrl(assetUrls.fonts[face.family])}') format('woff2'); font-weight: ${face.weight}; font-style: ${face.style}; font-display: swap; }`
                     )
                     .join(' ')}
             </style>

@@ -7,8 +7,11 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [v0.29.1] - 2026-10-20
+
 ### Changed
 
+- Adrenaline, Monsterhearts and Urban Shadows previews read the static font files their packs now publish, one per weight, instead of a variable font: a PDF export of a Handbook note in these games printed nothing on some printers (obsidian-handbook#116). The Adrenaline sheets declare the extra weights from the pack's `fonts/faces.css`; the drawn text is unchanged.
 - Adrenaline creature and NPC editors: the health panel lays each wound level on one row (its name beside the two figures, instead of a bordered group under a legend), which brings the panel from about 888 px to 732 px high; the level name stays the accessible legend of its group.
 
 ### Fixed
