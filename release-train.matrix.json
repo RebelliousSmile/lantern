@@ -2,13 +2,13 @@
     "protocol": 1,
     "handbook": {
         "repository": "RebelliousSmile/obsidian-handbook",
-        "ref": "5d83a9144f7665efc0264bfa6321945f54bbeeb0"
+        "ref": "bc00dc88048176f443afeca29e8158542292a527"
     },
     "providers": [
         {
             "provider": "schema-pbta",
             "repository": "RebelliousSmile/schema-pbta",
-            "ref": "0af56048087970d625520a8bdea79d71d2854696",
+            "ref": "f471f565c5e5950a27ef9b3b3a4ab6f69078c992",
             "manifests": [
                 {
                     "path": "release-train/schema-pbta-v8.4.2.json",
@@ -41,13 +41,17 @@
                 {
                     "path": "release-train/schema-pbta-v13.0.0.json",
                     "validatorRef": "0af56048087970d625520a8bdea79d71d2854696"
+                },
+                {
+                    "path": "release-train/schema-pbta-v13.1.0.json",
+                    "validatorRef": "f471f565c5e5950a27ef9b3b3a4ab6f69078c992"
                 }
             ]
         },
         {
             "provider": "schema-adrenaline",
             "repository": "RebelliousSmile/schema-adrenaline",
-            "ref": "8e3617ba3870d5e3ae1967be112d43857488cc63",
+            "ref": "5116a4b4f010a33cf55c38eca570a9f0cf7a2ba8",
             "manifests": [
                 {
                     "path": "release-train/schema-adrenaline-v2.4.0.json",
@@ -96,6 +100,10 @@
                 {
                     "path": "release-train/schema-adrenaline-v6.1.0.json",
                     "validatorRef": "87d9234ca13710d8c94cd97961b1cb1a633d9301"
+                },
+                {
+                    "path": "release-train/schema-adrenaline-v6.2.0.json",
+                    "validatorRef": "5116a4b4f010a33cf55c38eca570a9f0cf7a2ba8"
                 }
             ]
         },
