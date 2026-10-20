@@ -7,6 +7,12 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [v0.29.2] - 2026-10-20
+
+### Changed
+
+- Adrenaline PJ preview: skill names and the name of a training are written by hand, like the other values typed in the editor, as on the paper sheet and in Handbook; the training type and its brackets stay printed (#72, obsidian-handbook#118).
+
 ## [v0.29.1] - 2026-10-20
 
 ### Changed

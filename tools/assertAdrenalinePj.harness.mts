@@ -1,6 +1,6 @@
 /* global console */
 import assert from 'node:assert/strict'
-import { writeFileSync } from 'node:fs'
+import { readFileSync, writeFileSync } from 'node:fs'
 import { createElement } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { PJ_PRESENTATION } from 'schema-adrenaline/presentation'
@@ -44,8 +44,8 @@ import {
 } from '../src/templates/adrenaline/shared/sections'
 import { NOT_EDITABLE_LEAVES } from './adrenalineNotEditable.mjs'
 import {
-    linkedStatus,
     lines,
+    linkedStatus,
     probePanel,
     type Failure,
     type Panel,
@@ -880,6 +880,84 @@ type Session = ReturnType<typeof typingSession>
             })
         })
     })
+
+    /* As on the paper: skill and formation names are written by hand, the formation type stays printed. */
+    const sheet = blocks.map((block) => drawBlock(block, example)).join('\n')
+    const skillNames = [
+        ...sheet.matchAll(
+            /<div class="adr-pj__competence"[^>]*><div class="adr-pj__metric"><span class="([^"]*)">([^<]*)</g
+        ),
+    ]
+    assert.ok(
+        skillNames.some((found) => found[2] !== ''),
+        'the example prints skills'
+    )
+    skillNames.forEach((found) =>
+        assert.match(
+            found[1],
+            /\badr-pj__value\b.*\badr-pj__metric-name\b/,
+            `the skill name ${found[2]} is handwritten`
+        )
+    )
+    assert.ok(
+        skillNames.some((found) => /\(/.test(found[2])),
+        'a skill with a specialty is covered'
+    )
+    const formationHeads = sheet
+        .split('adr-pj__formation-head')
+        .slice(1)
+        .map((head) => head.split('adr-pj__metric-value')[0])
+    assert.ok(
+        formationHeads.some(
+            (head) => head.indexOf('adr-pj__formation-name') >= 0
+        ),
+        'the example names a formation'
+    )
+    formationHeads
+        .filter((head) => head.indexOf('adr-pj__formation-name') >= 0)
+        .forEach((head) => {
+            assert.match(
+                head,
+                /class="adr-pj__value adr-pj__formation-name"/,
+                'the formation name is handwritten'
+            )
+            const types = [
+                ...head.matchAll(
+                    /<span class="([^"]*adr-pj__formation-type[^"]*)">([^<]*)</g
+                ),
+            ]
+            assert.equal(
+                types.length,
+                2,
+                'the formation type and its brackets are printed'
+            )
+            types.forEach((found) =>
+                assert.doesNotMatch(
+                    found[1],
+                    /adr-pj__value/,
+                    `the printed part ${found[2]} is not handwritten`
+                )
+            )
+        })
+    const stylesheet = readFileSync(
+        'src/templates/adrenaline/shared/preview/presentationSheet.css',
+        'utf8'
+    ).replace(/\/\*[\s\S]*?\*\//g, '')
+    const reprinted = stylesheet
+        .split('}')
+        .map((rule) => rule.split('{')[0])
+        .filter(
+            (selector) =>
+                selector.indexOf('values-handwritten') >= 0 &&
+                /adr-pj__(metric-name|formation-name|formation-type)\b/.test(
+                    selector
+                )
+        )
+    assert.deepEqual(
+        reprinted.map((selector) => selector.trim()),
+        [],
+        'no handwritten-values rule reprints a typed name nor styles the formation type'
+    )
 }
 
 /*
@@ -1350,7 +1428,7 @@ runAll(
         assert.ok(fields.length >= 3, 'a whole training draws its fields')
         assert.ok(
             fields.every((control) => !linkedStatus(control, run.markup)),
-'a whole training points at no status'
+            'a whole training points at no status'
         )
     }
 }
@@ -1385,7 +1463,11 @@ runAll(
                 unknown
             >),
             etats: [
-                { id: 'sombre', nom: 'Sombre', delta: { zoneDeDetection: stored } },
+                {
+                    id: 'sombre',
+                    nom: 'Sombre',
+                    delta: { zoneDeDetection: stored },
+                },
             ],
         },
         sheet: {
@@ -1428,7 +1510,10 @@ runAll(
         before.attributes.indexOf('aria-invalid') < 0,
         'a detection range that holds its text is not flagged'
     )
-    before.control.onChange?.({ target: { value: '' }, currentTarget: { value: '' } })
+    before.control.onChange?.({
+        target: { value: '' },
+        currentTarget: { value: '' },
+    })
     const after = draw()
     const emptied = fieldOf(after)
     const kept = (edit.doc.etats as { delta: Record<string, unknown> }[])[0]

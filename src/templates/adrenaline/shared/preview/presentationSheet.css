@@ -225,15 +225,6 @@
     font-family: 'Adrenaline Handwriting', var(--font-text-theme);
 }
 
-/* Skill and formation names read as printed text (the Handbook sheet); only the percentages are handwritten. */
-.adr-pj--values-handwritten .adr-pj__competence .adr-pj__metric-name,
-.adr-pj--values-handwritten .adr-pj__formation-name {
-    color: inherit;
-    font-size: inherit;
-    line-height: inherit;
-    font-family: var(--font-text-theme);
-}
-
 .adr-pj--values-end .adr-pj__metric-value,
 .adr-pj--values-end .adr-pj__unit-value {
     text-align: center;
