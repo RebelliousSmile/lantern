@@ -10,6 +10,7 @@ import {
     type LegendInTheMistStoryTheme,
     type LegendInTheMistThemeKit,
     type OtherscapeChallenge,
+    type OtherscapeCharacter,
     type OtherscapeCharacterTrope,
     type OtherscapeLoadoutItem,
     type OtherscapePowerSet,
@@ -30,7 +31,7 @@ import {
 export { carryCanonicalSource, overlayCanonicalSource, stringifyCanonical }
 
 /**
- * The fourteen document types, re-exported so a template module names the
+ * The document types, re-exported so a template module names the
  * contracts layer rather than the package. The dependency stays one import deep:
  * swapping a package version, or a package, is an edit here and nowhere else.
  */
@@ -44,6 +45,7 @@ export type {
     LegendInTheMistStoryTheme,
     LegendInTheMistThemeKit,
     OtherscapeChallenge,
+    OtherscapeCharacter,
     OtherscapeCharacterTrope,
     OtherscapeLoadoutItem,
     OtherscapePowerSet,
@@ -172,6 +174,13 @@ export type OsThemeType = OtherscapeTheme['theme_type']
 export type OsThemePublicationType = Meta<OtherscapeTheme>['publication_type']
 export type OsThemeMeta = Meta<OtherscapeTheme>
 
+export type OsCharacterMeta = Meta<OtherscapeCharacter>
+export type OsCharacterTheme = Item<OtherscapeCharacter['themes']>
+export type OsTagCombo = Item<OtherscapeCharacter['tag_combos']>
+export type OsCharacterLoadoutItem = Item<OtherscapeCharacter['loadout']>
+export type OsCharacterPublicationType =
+    Meta<OtherscapeCharacter>['publication_type']
+
 export type OsKitThemeType = OtherscapeThemeKit['theme_type']
 export type OsKitPublicationType = Meta<OtherscapeThemeKit>['publication_type']
 export type OsThemeKitMeta = Meta<OtherscapeThemeKit>
@@ -179,9 +188,9 @@ export type OsThemeKitMeta = Meta<OtherscapeThemeKit>
 export { MIST_ENGINE_CODECS }
 
 /**
- * The fourteen Mist targets as registry entries, keyed `mist/<game>/<object>`.
+ * The Mist targets as registry entries, keyed `mist/<game>/<object>`.
  * The codecs are the package's own; the canonical-source carry lives in
- * `./canonicalSource`, game-agnostic, and is re-exported here for the fourteen
+ * `./canonicalSource`, game-agnostic, and is re-exported here for the
  * `toml.ts` modules that already import it from this path.
  */
 export const mistDocumentContracts: AnyDocumentContract[] = toDocumentContracts(

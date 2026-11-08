@@ -90,3 +90,19 @@ Legend in the Mist et City of Mist ne sont pas concernés.
 | Theme kits granted | Theme Kits accordés | Accord masculin pluriel. |
 | Theme kit choices | Choix de Theme Kits | Section « Choix » dans le fichier provisoire. |
 | Loadout | Loadout | Même terme que Loadout Item. Une entrée de la trope est une « entrée de loadout », pas un Loadout Item. |
+
+## Fiche de personnage
+
+La fiche n'est pas une carte à nom anglais protégé : le terme de jeu est « personnage ». Les titres de zone
+(Mise à niveau, Combos de tags, Pouvoir) viennent de la présentation publiée du schéma et ne se retraduisent pas ici.
+
+| English term | French term | note |
+| --- | --- | --- |
+| Character (sheet) | Fiche de personnage | Féminin. Titre du modèle ; le nom du personnage lui-même reste « personnage » (voir Commun). |
+| Upgrades | Mise à niveau | Féminin. Libellé imprimé de la zone, lu dans le schéma publié. Distinct de « Évolution », qui traduit *Upgrade (track)* d'un Theme. |
+| Tag combo | Combo de tags | Masculin. Libellé imprimé de la zone, lu dans le schéma publié. |
+| Power (of a combo) | Pouvoir | Masculin. Nombre ajouté par le combo. |
+| Loadout | Loadout | Masculin. Gardé en anglais, comme Loadout Item. |
+| Loaded | Chargé | Case d'un objet de loadout que le personnage a sur lui ; un objet non chargé est estompé sur la fiche. |
+| Feature tag | Tag d'atout | Même terme que pour un Loadout Item. |
+| Themes (of a character) | Themes | Les cartes de la fiche sont des Theme, nom gardé en anglais. L'interface écrit « Theme 2 » pour une position ; « thème du Soi » désigne le type, pas la carte. |

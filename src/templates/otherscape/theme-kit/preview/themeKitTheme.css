@@ -11,6 +11,7 @@
    the skew and the type, comes from `../../shared/tokens.css`. What is here is
    this card's layout only. */
 @import '../../shared/tokens.css';
+@import '../../shared/preview/ruleAndSpecial.css';
 
 /* The book's kit is a slate panel rather than the navy slab of the other
    cards, framed by a lighter edge. Compounded with `.os-card` so the shared
@@ -87,28 +88,6 @@
 
 .os-card .theme-kit-kicker__type {
     color: var(--os-accent);
-}
-
-/* ---------- Labels drawn out by a rule ---------- */
-.os-card .theme-kit-rule-label {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 0.3rem;
-    color: color-mix(in srgb, var(--os-accent) 70%, var(--os-ink-soft));
-    font-weight: 700;
-    font-size: 0.6rem;
-    font-family: var(--os-font-display);
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-}
-
-.os-card .theme-kit-rule-label::after {
-    flex: 1;
-    background: currentColor;
-    max-width: 65%;
-    height: 1px;
-    content: '';
 }
 
 /* ---------- Tag runs ---------- */
@@ -209,54 +188,6 @@
 }
 
 .os-card .theme-kit-quest__text p {
-    margin: 0;
-}
-
-/* ---------- Description and Special ---------- */
-.os-card .theme-kit-description {
-    font-size: 0.85rem;
-    line-height: 1.35;
-}
-
-.os-card .theme-kit-description p {
-    margin: 0 0 0.4rem;
-}
-
-.os-card .theme-kit-description p:last-child {
-    margin-bottom: 0;
-}
-
-.os-card .theme-kit-special {
-    display: flex;
-    flex-direction: column;
-}
-
-.os-card .theme-kit-special__line {
-    display: flex;
-    align-items: flex-start;
-    gap: 0.45rem;
-    font-size: 0.85rem;
-    line-height: 1.3;
-}
-
-/* The box the character ticks when they take the Special: a rounded grey
-   square, as printed. */
-.os-card .theme-kit-special__box {
-    flex: none;
-    margin-top: 0.12rem;
-    border: 1.5px solid #cfd5df;
-    border-radius: 0.2rem;
-    background: #8a919d;
-    width: 0.85rem;
-    height: 0.85rem;
-}
-
-.os-card .theme-kit-special__name {
-    font-weight: 700;
-}
-
-.os-card .theme-kit-special__text p {
-    display: inline;
     margin: 0;
 }
 

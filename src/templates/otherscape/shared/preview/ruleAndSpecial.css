@@ -1,0 +1,75 @@
+/* The two regions every themed :Otherscape card prints the same way: a small
+   label drawn out by a rule, and the description and Special that close the
+   card. The kit, the theme and the character's theme cards share them, so a
+   change reaches all three. Each card stylesheet imports this file next to the
+   shared tokens. */
+
+/* ---------- Labels drawn out by a rule ---------- */
+.os-card .os-rule-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.3rem;
+    color: color-mix(in srgb, var(--os-accent) 70%, var(--os-ink-soft));
+    font-weight: 700;
+    font-size: 0.6rem;
+    font-family: var(--os-font-display);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
+
+.os-card .os-rule-label::after {
+    flex: 1;
+    background: currentColor;
+    max-width: 65%;
+    height: 1px;
+    content: '';
+}
+
+/* ---------- Description and Special ---------- */
+.os-card .os-description {
+    font-size: 0.85rem;
+    line-height: 1.35;
+}
+
+.os-card .os-description p {
+    margin: 0 0 0.4rem;
+}
+
+.os-card .os-description p:last-child {
+    margin-bottom: 0;
+}
+
+.os-card .os-special {
+    display: flex;
+    flex-direction: column;
+}
+
+.os-card .os-special__line {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.45rem;
+    font-size: 0.85rem;
+    line-height: 1.3;
+}
+
+/* The box the character ticks when they take the Special: a rounded grey
+   square, as printed. */
+.os-card .os-special__box {
+    flex: none;
+    margin-top: 0.12rem;
+    border: 1.5px solid #cfd5df;
+    border-radius: 0.2rem;
+    background: #8a919d;
+    width: 0.85rem;
+    height: 0.85rem;
+}
+
+.os-card .os-special__name {
+    font-weight: 700;
+}
+
+.os-card .os-special__text p {
+    display: inline;
+    margin: 0;
+}

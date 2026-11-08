@@ -7,6 +7,19 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [v0.31.0] - 2026-11-08
+
+### Added
+
+- Otherscape Character sheet (`otherscape.character`): name, Upgrades (read-only), Tag combos, Loadout and up to four theme cards, with the Legend in the Mist editing model (a click on a zone opens only its fields), TOML import and export, image export and a Vesper sample.
+- Otherscape Loadout: a `loaded` checkbox on each object; an unloaded object is dimmed in the preview.
+- Otherscape Theme: the description and the Special are entered in the form and printed on the card.
+
+### Changed
+
+- Otherscape Theme and Theme Kit share the Description and Special forms and preview blocks.
+- Otherscape: the character sheet's card types and "Loadout" stay in English in the French locale; the Upgrades, Tag combo, Power and Loaded wordings are in the glossary.
+
 ## [v0.30.0] - 2026-11-08
 
 ### Added

@@ -1,11 +1,38 @@
 import { useUiText } from '@/i18n/text'
-import { useOtherscapeThemeKitSheetStore } from '../hooks'
+import DescriptionForm from '../../shared/DescriptionForm'
+import SpecialForm from '../../shared/SpecialForm'
+import {
+    useOtherscapeThemeKitSheetStore,
+    useOtherscapeThemeKitStore,
+} from '../hooks'
 import BasicForm from './forms/BasicForm'
-import DescriptionForm from './forms/DescriptionForm'
 import MetaForm from './forms/MetaForm'
 import QuestForm from './forms/QuestForm'
-import SpecialForm from './forms/SpecialForm'
 import TagsForm from './forms/TagsForm'
+
+function KitDescriptionForm() {
+    const { otherscapeThemeKit, setDescription } = useOtherscapeThemeKitStore()
+
+    return (
+        <DescriptionForm
+            idPrefix="os-theme-kit"
+            value={otherscapeThemeKit.description}
+            onChange={setDescription}
+        />
+    )
+}
+
+function KitSpecialForm() {
+    const { otherscapeThemeKit, setSpecial } = useOtherscapeThemeKitStore()
+
+    return (
+        <SpecialForm
+            idPrefix="os-theme-kit"
+            special={otherscapeThemeKit.special}
+            onChange={setSpecial}
+        />
+    )
+}
 
 export function ThemeKitEditorPanel() {
     const text = useUiText()
@@ -34,11 +61,11 @@ export function ThemeKitEditorPanel() {
                 />
             )
         case 'description':
-            return <DescriptionForm />
+            return <KitDescriptionForm />
         case 'quest':
             return <QuestForm />
         case 'special':
-            return <SpecialForm />
+            return <KitSpecialForm />
         case 'meta':
             return <MetaForm />
         default:

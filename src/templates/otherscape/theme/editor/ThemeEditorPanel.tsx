@@ -1,23 +1,43 @@
 import { useUiText } from '@/i18n/text'
-import { useOtherscapeThemeSheetStore } from '../hooks'
+import DescriptionForm from '../../shared/DescriptionForm'
+import SpecialForm from '../../shared/SpecialForm'
+import {
+    useOtherscapeThemeSheetStore,
+    useOtherscapeThemeStore,
+    type SheetTarget,
+} from '../hooks'
 import BasicForm from './forms/BasicForm'
 import MetaForm from './forms/MetaForm'
 import QuestForm from './forms/QuestForm'
 import TagsForm from './forms/TagsForm'
 import TracksForm from './forms/TracksForm'
 
-export function ThemeEditorPanel() {
-    const text = useUiText()
-    const { open, target } = useOtherscapeThemeSheetStore()
+function ThemeDescriptionForm() {
+    const { otherscapeTheme, setDescription } = useOtherscapeThemeStore()
 
-    if (!open || !target) {
-        return (
-            <div className="rounded-md border border-dashed px-3 py-4 text-sm text-muted-foreground">
-                {text('otherscape:forms.theme.panel.emptyState')}
-            </div>
-        )
-    }
+    return (
+        <DescriptionForm
+            idPrefix="os-theme"
+            value={otherscapeTheme.description}
+            onChange={setDescription}
+        />
+    )
+}
 
+function ThemeSpecialForm() {
+    const { otherscapeTheme, setSpecial } = useOtherscapeThemeStore()
+
+    return (
+        <SpecialForm
+            idPrefix="os-theme"
+            special={otherscapeTheme.special}
+            onChange={setSpecial}
+        />
+    )
+}
+
+/** The fields of the one zone a click hit: the form the theme's own panel and a character's theme share. */
+export function ThemeZoneForm({ target }: { target: SheetTarget }) {
     switch (target.kind) {
         case 'basic':
             return <BasicForm />
@@ -34,6 +54,10 @@ export function ThemeEditorPanel() {
             )
         case 'quest':
             return <QuestForm />
+        case 'description':
+            return <ThemeDescriptionForm />
+        case 'special':
+            return <ThemeSpecialForm />
         case 'tracks':
             return <TracksForm focusField={target.field} />
         case 'meta':
@@ -41,4 +65,19 @@ export function ThemeEditorPanel() {
         default:
             return null
     }
+}
+
+export function ThemeEditorPanel() {
+    const text = useUiText()
+    const { open, target } = useOtherscapeThemeSheetStore()
+
+    if (!open || !target) {
+        return (
+            <div className="rounded-md border border-dashed px-3 py-4 text-sm text-muted-foreground">
+                {text('otherscape:forms.theme.panel.emptyState')}
+            </div>
+        )
+    }
+
+    return <ThemeZoneForm target={target} />
 }

@@ -30,6 +30,8 @@ export const templateLoaders: Record<string, TemplateLoader> = {
         import('@/templates/legend-in-the-mist/theme-kit/definition'),
     'otherscape.challenge': () =>
         import('@/templates/otherscape/challenge/definition'),
+    'otherscape.character': () =>
+        import('@/templates/otherscape/character/definition'),
     'otherscape.characterTrope': () =>
         import('@/templates/otherscape/character-trope/definition'),
     'otherscape.powerSet': () =>

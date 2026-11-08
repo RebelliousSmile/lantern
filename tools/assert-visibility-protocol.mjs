@@ -5,7 +5,7 @@ import { readFileSync } from 'node:fs'
 const consumers = [
     'city-of-mist/theme-card', 'city-of-mist/theme-kit', 'city-of-mist/custom-move', 'city-of-mist/danger',
     'legend-in-the-mist/theme-kit', 'legend-in-the-mist/story-theme', 'legend-in-the-mist/journey', 'legend-in-the-mist/challenge',
-    'otherscape/theme-kit', 'otherscape/theme', 'otherscape/character-trope', 'otherscape/loadout-item', 'otherscape/power-set', 'otherscape/challenge',
+    'otherscape/theme-kit', 'otherscape/theme', 'otherscape/character', 'otherscape/character-trope', 'otherscape/loadout-item', 'otherscape/power-set', 'otherscape/challenge',
     'pbta/playbook', 'pbta/game-definition', 'urban-shadows/playbook', 'monsterhearts/playbook',
 ]
 for (const consumer of consumers) {

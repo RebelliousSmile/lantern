@@ -7,6 +7,9 @@ import type {
 
 export type { PublicationType, ThemeMeta, ThemeType }
 
+/** The Special a theme closes on: both halves, or nothing (see the payload). */
+export type ThemeSpecial = { name: string; description: string }
+
 export type OtherscapeTheme = {
     title_tag: string
     theme_type: ThemeType
@@ -14,6 +17,10 @@ export type OtherscapeTheme = {
     power_tags: string[]
     weakness_tags: string[]
     quest: string
+    // Free text under the quest and the Special the card closes on. Both are
+    // materialized, like the quest, and dropped by the payload while blank.
+    description: string
+    special: ThemeSpecial
     // The two tracks stay nullable all the way through the document: a theme
     // whose track was never touched has no track, which is not the same object
     // as a track sitting at zero. Materializing them the way `meta` is
@@ -73,6 +80,11 @@ export function toOtherscapeThemeDocument(
         power_tags: otherscapeTheme.power_tags ?? [],
         weakness_tags: otherscapeTheme.weakness_tags ?? [],
         quest: otherscapeTheme.quest ?? '',
+        description: otherscapeTheme.description ?? '',
+        special: {
+            name: otherscapeTheme.special?.name ?? '',
+            description: otherscapeTheme.special?.description ?? '',
+        },
         upgrade: otherscapeTheme.upgrade,
         decay: otherscapeTheme.decay,
         meta: toThemeMeta(otherscapeTheme.meta),
@@ -101,6 +113,18 @@ export function toOtherscapeThemePayload(
     }
     if (otherscapeTheme.quest.trim()) {
         payload.quest = otherscapeTheme.quest
+    }
+    if (otherscapeTheme.description.trim()) {
+        payload.description = otherscapeTheme.description
+    }
+    // The schema requires both halves of a Special, so a half-filled one is
+    // left out whole rather than written as a file the contract refuses.
+    const special = otherscapeTheme.special
+    if (special.name.trim() && special.description.trim()) {
+        payload.special = {
+            name: special.name,
+            description: special.description,
+        }
     }
     // Tested against null rather than truthiness: an imported `upgrade = 0` is
     // a value the file has to carry back out unchanged, and `0` would fall out
@@ -145,6 +169,8 @@ export type SectionId =
     | 'powerTags'
     | 'weaknessTags'
     | 'quest'
+    | 'description'
+    | 'special'
     | 'tracks'
     | 'meta'
 
@@ -169,6 +195,8 @@ export type SheetTarget =
     | { kind: 'basic'; mode?: 'edit' }
     | { kind: 'meta'; mode?: 'edit' }
     | { kind: 'quest'; mode?: 'edit' }
+    | { kind: 'description'; mode?: 'edit' }
+    | { kind: 'special'; mode?: 'edit' }
     | { kind: 'tracks'; field?: TrackField; mode?: 'edit' }
     | {
           kind: 'tags'
@@ -192,6 +220,8 @@ export const defaultHidden: Record<SectionId, boolean> = {
     powerTags: false,
     weaknessTags: false,
     quest: false,
+    description: false,
+    special: false,
     tracks: false,
     meta: false,
 }
@@ -219,6 +249,8 @@ export const blankOtherscapeTheme = (): OtherscapeTheme => ({
     power_tags: [],
     weakness_tags: [],
     quest: '',
+    description: '',
+    special: { name: '', description: '' },
     upgrade: undefined,
     decay: undefined,
     meta: { publication_type: 'homebrew' },

@@ -15,7 +15,7 @@ type ExportableView = {
 /**
  * The one PNG export action every template's `export.actions` installs. Each
  * template supplies its own description and settings panel; the capture,
- * scaling and download logic is otherwise identical across all fourteen.
+ * scaling and download logic is otherwise identical across every template.
  */
 export function createImageExportAction<TView extends ExportableView>(options: {
     description: UiText

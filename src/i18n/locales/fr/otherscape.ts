@@ -1,6 +1,7 @@
 import type { ResourceShape } from '@/i18n/resourceShape'
 import type en from '../en/otherscape'
 import challengeForms from './otherscape/challengeForms'
+import characterForms from './otherscape/characterForms'
 import characterTropeForms from './otherscape/characterTropeForms'
 import loadoutItemForms from './otherscape/loadoutItemForms'
 import powerSetForms from './otherscape/powerSetForms'
@@ -58,6 +59,25 @@ const otherscape: ResourceShape<typeof en> = {
                 'Limite(s) portant un résultat « on_max » sans être une limite de progression : {{limits}}. Ce résultat ne sera jamais atteint.',
             noLimits:
                 'Ce Challenge n’a aucune Limite : rien d’imprimé ne permet de le surmonter.',
+        },
+    },
+    character: {
+        label: 'Fiche de personnage',
+        newTitle: 'Nouvelle fiche de personnage',
+        description:
+            'Une fiche de personnage :Otherscape complète : le nom, jusqu’à quatre thèmes, les combos de tags et le loadout. Partez d’une fiche vierge, ouvrez l’exemple ou importez un fichier TOML.',
+        exportToml: 'Exporter les données du personnage en TOML.',
+        exportPng: 'Exporter la fiche du personnage en PNG.',
+        sections: {
+            upgrades: 'Mise à niveau',
+            combos: 'Combos de tags',
+            loadout: 'Loadout',
+            themes: 'Themes',
+            meta: 'Pied de page méta',
+        },
+        warnings: {
+            incompleteCombos:
+                '{{count}} combo(s) de tags sans nom, sans effet ou sans tag. Ils restent sur la fiche mais ne sont pas écrits dans le fichier exporté.',
         },
     },
     characterTrope: {
@@ -146,6 +166,8 @@ const otherscape: ResourceShape<typeof en> = {
             weaknessTags: 'Tags de faiblesse',
             quest: 'Quête',
             tracks: 'Jauges',
+            description: 'Description',
+            special: 'Spécial',
             meta: 'Pied de page méta',
         },
         warnings: {
@@ -174,6 +196,7 @@ const otherscape: ResourceShape<typeof en> = {
     /* One file per template, so each template's form strings can change on their own. */
     forms: {
         challenge: challengeForms,
+        character: characterForms,
         characterTrope: characterTropeForms,
         loadoutItem: loadoutItemForms,
         powerSet: powerSetForms,

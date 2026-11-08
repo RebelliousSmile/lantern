@@ -1,8 +1,9 @@
 import { useActiveTemplateTab } from '@/core/workspace/selectors'
 import { getActiveTab, useWorkspaceStore } from '@/core/workspace/store'
 import type { WorkspaceTab } from '@/core/workspace/types'
-import { cloneValue } from '@/utils/clone'
 import { setVisibility, toggleVisibility } from '@/templates/shared/visibility'
+import { cloneValue } from '@/utils/clone'
+import { createContext, useContext } from 'react'
 import type {
     OtherscapeTheme,
     OtherscapeThemeSheetState,
@@ -11,6 +12,7 @@ import type {
     SheetTarget,
     TagField,
     ThemeMeta,
+    ThemeSpecial,
     ThemeType,
     TrackField,
 } from './model'
@@ -34,6 +36,31 @@ const TEMPLATE_ID = 'otherscape.theme'
 const TAG_KEY: Record<TagField, 'power_tags' | 'weakness_tags'> = {
     power: 'power_tags',
     weakness: 'weakness_tags',
+}
+
+/**
+ * A theme that lives inside another document, as the four themes of a character do. Its cards and
+ * forms are the theme's own blocks and forms: inside a scope they read and write the theme the
+ * scope holds, and open the zones of the scope's sheet, instead of the active theme tab. The scope
+ * carries no view state, so the cards print with the defaults (every section shown, no zoom).
+ */
+export type ThemeScope = {
+    theme: OtherscapeTheme
+    update: (producer: (current: OtherscapeTheme) => OtherscapeTheme) => void
+    sheet: OtherscapeThemeSheetState
+    openSheet: (target: SheetTarget) => void
+    closeSheet: () => void
+    // The theme types the owner accepts; a character refuses the crew's.
+    themeTypes?: ThemeType[]
+}
+
+const ThemeScopeContext = createContext<ThemeScope | null>(null)
+
+export const ThemeScopeProvider = ThemeScopeContext.Provider
+
+/** The scope the calling form or card sits in, or null on a theme tab of its own. */
+export function useThemeScope() {
+    return useContext(ThemeScopeContext)
 }
 
 const fallbackOtherscapeTheme = blankOtherscapeTheme()
@@ -70,18 +97,26 @@ export type {
     SheetTarget,
     TagField,
     ThemeMeta,
+    ThemeSpecial,
     ThemeType,
     TrackField,
 } from './model'
 
 export function useOtherscapeThemeStore() {
+    const scope = useContext(ThemeScopeContext)
     const tab = useOtherscapeThemeTab()
     const replaceTabDoc = useWorkspaceStore((state) => state.replaceTabDoc)
     const updateTabDoc = useWorkspaceStore((state) => state.updateTabDoc)
 
-    const otherscapeTheme = tab?.doc ?? fallbackOtherscapeTheme
+    const otherscapeTheme = scope
+        ? scope.theme
+        : (tab?.doc ?? fallbackOtherscapeTheme)
 
     const apply = (producer: (current: OtherscapeTheme) => OtherscapeTheme) => {
+        if (scope) {
+            scope.update((current) => producer(cloneValue(current)))
+            return
+        }
         if (!tab) return
 
         updateTabDoc(tab.id, (currentDoc) =>
@@ -109,10 +144,18 @@ export function useOtherscapeThemeStore() {
                 ...update,
             })),
         replaceOtherscapeTheme: (next: OtherscapeTheme) => {
+            if (scope) {
+                scope.update(() => cloneValue(next))
+                return
+            }
             if (!tab) return
             replaceTabDoc(tab.id, cloneValue(next))
         },
         resetOtherscapeTheme: () => {
+            if (scope) {
+                scope.update(() => blankOtherscapeTheme())
+                return
+            }
             if (!tab) return
             replaceTabDoc(tab.id, blankOtherscapeTheme())
         },
@@ -124,6 +167,13 @@ export function useOtherscapeThemeStore() {
             apply((current) => ({ ...current, category })),
         setQuest: (quest: string) =>
             apply((current) => ({ ...current, quest })),
+        setDescription: (description: string) =>
+            apply((current) => ({ ...current, description })),
+        setSpecial: (update: Partial<ThemeSpecial>) =>
+            apply((current) => ({
+                ...current,
+                special: { ...current.special, ...update },
+            })),
         // `undefined` clears the track rather than writing a zero: an untouched
         // track and a track marked back down to nothing are different states,
         // and only the second one belongs in the exported file.
@@ -252,7 +302,18 @@ export function useOtherscapeThemeViewStore() {
 export function useOtherscapeThemeSheetStore() {
     const tab = useOtherscapeThemeTab()
     const setTabSheet = useWorkspaceStore((state) => state.setTabSheet)
-    const sheet = tab?.sheet ?? defaultOtherscapeThemeSheetState
+    const scope = useContext(ThemeScopeContext)
+    const sheet = scope
+        ? scope.sheet
+        : (tab?.sheet ?? defaultOtherscapeThemeSheetState)
+
+    if (scope) {
+        return {
+            ...sheet,
+            openSheet: scope.openSheet,
+            closeSheet: scope.closeSheet,
+        }
+    }
 
     return {
         ...sheet,
@@ -283,6 +344,13 @@ export function isEmptySection(
             return !otherscapeTheme.weakness_tags.length
         case 'quest':
             return !otherscapeTheme.quest.trim()
+        case 'description':
+            return !otherscapeTheme.description.trim()
+        case 'special':
+            return (
+                !otherscapeTheme.special.name.trim() &&
+                !otherscapeTheme.special.description.trim()
+            )
         case 'tracks':
             // A track sitting at zero is still a track a player has taken and
             // cleared, so it prints; only a theme carrying neither has an empty

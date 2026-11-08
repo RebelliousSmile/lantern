@@ -9,6 +9,8 @@ export const themeSections: Array<{ id: SectionId; label: UiText }> = [
     { id: 'weaknessTags', label: 'otherscape:theme.sections.weaknessTags' },
     { id: 'quest', label: 'otherscape:theme.sections.quest' },
     { id: 'tracks', label: 'otherscape:theme.sections.tracks' },
+    { id: 'description', label: 'otherscape:theme.sections.description' },
+    { id: 'special', label: 'otherscape:theme.sections.special' },
     { id: 'meta', label: 'otherscape:theme.sections.meta' },
 ]
 

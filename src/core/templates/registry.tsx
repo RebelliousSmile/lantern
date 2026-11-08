@@ -19,6 +19,7 @@ import motwThreatTemplate from '@/templates/monster-of-the-week/threat/static'
 import monsterheartsPlaybookTemplate from '@/templates/monsterhearts/playbook/static'
 import otherscapeChallengeTemplate from '@/templates/otherscape/challenge/descriptor'
 import otherscapeCharacterTropeTemplate from '@/templates/otherscape/character-trope/descriptor'
+import otherscapeCharacterTemplate from '@/templates/otherscape/character/descriptor'
 import otherscapeLoadoutItemTemplate from '@/templates/otherscape/loadout-item/descriptor'
 import otherscapePowerSetTemplate from '@/templates/otherscape/power-set/descriptor'
 import otherscapeThemeKitTemplate from '@/templates/otherscape/theme-kit/descriptor'
@@ -48,6 +49,7 @@ export const templateRegistry: AnyStaticTemplateDefinition[] = [
     storyThemeTemplate,
     themeKitTemplate,
     otherscapeChallengeTemplate,
+    otherscapeCharacterTemplate,
     otherscapeCharacterTropeTemplate,
     otherscapePowerSetTemplate,
     otherscapeThemeKitTemplate,

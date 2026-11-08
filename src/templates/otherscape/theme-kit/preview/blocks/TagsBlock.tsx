@@ -52,7 +52,7 @@ function TagRun({ field }: { field: TagField }) {
 
     return (
         <div className={`theme-kit-run theme-kit-run--${field}`}>
-            <span className="theme-kit-rule-label">
+            <span className="os-rule-label">
                 {text(
                     field === 'power'
                         ? 'otherscape:themeKit.sections.powerTags'

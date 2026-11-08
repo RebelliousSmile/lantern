@@ -1,4 +1,5 @@
 import challengeForms from './otherscape/challengeForms'
+import characterForms from './otherscape/characterForms'
 import characterTropeForms from './otherscape/characterTropeForms'
 import loadoutItemForms from './otherscape/loadoutItemForms'
 import powerSetForms from './otherscape/powerSetForms'
@@ -54,6 +55,25 @@ const otherscape = {
                 'Limit(s) carrying an "on_max" outcome without being a progress track: {{limits}}. The outcome will never be reached.',
             noLimits:
                 'This Challenge has no Limits, so there is no printed way to overcome it.',
+        },
+    },
+    character: {
+        label: 'Character',
+        newTitle: 'New Character',
+        description:
+            'A Character is a full :Otherscape sheet: the name, up to four themes, the tag combos and the loadout. Start blank, open the example, or import a TOML file.',
+        exportToml: 'Export the current character data as TOML.',
+        exportPng: 'Export the current character sheet as PNG.',
+        sections: {
+            upgrades: 'Upgrades',
+            combos: 'Tag combos',
+            loadout: 'Loadout',
+            themes: 'Themes',
+            meta: 'Meta footer',
+        },
+        warnings: {
+            incompleteCombos:
+                '{{count}} tag combo(s) lack a name, an effect or a tag. They stay on the sheet but are left out of the exported file.',
         },
     },
     characterTrope: {
@@ -142,6 +162,8 @@ const otherscape = {
             weaknessTags: 'Weakness tags',
             quest: 'Quest',
             tracks: 'Tracks',
+            description: 'Description',
+            special: 'Special',
             meta: 'Meta footer',
         },
         warnings: {
@@ -170,6 +192,7 @@ const otherscape = {
     /* One file per template, so each template's form strings can change on their own. */
     forms: {
         challenge: challengeForms,
+        character: characterForms,
         characterTrope: characterTropeForms,
         loadoutItem: loadoutItemForms,
         powerSet: powerSetForms,

@@ -7,6 +7,7 @@
    accents, the skew and the type, comes from `../../shared/tokens.css`. What is
    here is this card's layout only. */
 @import '../../shared/tokens.css';
+@import '../../shared/preview/ruleAndSpecial.css';
 
 .os-card.theme-sheet {
     width: 100%;

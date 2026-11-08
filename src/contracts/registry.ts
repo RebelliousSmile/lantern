@@ -9,8 +9,8 @@ export type DocumentContractRegistry = {
      * The document generic is a claim the caller makes, not a check the registry
      * performs: a key is a string and the table is heterogeneous. It is here so a
      * call site keeps the document type it had when it imported the codec by name,
-     * and so the unsoundness lives on this one line rather than in fourteen
-     * modules that would otherwise hand `any` to their model functions.
+     * and so the unsoundness lives on this one line rather than in each of the
+     * template modules that would otherwise hand `any` to their model functions.
      */
     get: <TDocument = unknown>(
         key: string

@@ -6,13 +6,25 @@ import { getSampleOtherscapeChallenge } from '../src/templates/otherscape/challe
 import * as challenge from '../src/templates/otherscape/challenge/toml'
 import { getSampleOtherscapeCharacterTrope } from '../src/templates/otherscape/character-trope/sample'
 import * as trope from '../src/templates/otherscape/character-trope/toml'
+import {
+    blankCharacterTheme,
+    blankLoadoutItem,
+    blankTagCombo,
+    isCompleteCombo,
+    MAX_THEMES,
+} from '../src/templates/otherscape/character/model'
+import { getSampleOtherscapeCharacter } from '../src/templates/otherscape/character/sample'
+import * as character from '../src/templates/otherscape/character/toml'
 import { getSampleOtherscapePowerSet } from '../src/templates/otherscape/power-set/sample'
 import * as powerSet from '../src/templates/otherscape/power-set/toml'
 import { getSampleOtherscapeThemeKit } from '../src/templates/otherscape/theme-kit/sample'
 import * as themeKit from '../src/templates/otherscape/theme-kit/toml'
+import { getSampleOtherscapeTheme } from '../src/templates/otherscape/theme/sample'
+import * as theme from '../src/templates/otherscape/theme/toml'
 
 /*
- * The fields schema-in-the-mist added to the theme kit (description, Special), the power set
+ * The character sheet (the name, up to four themes, tag combos, loadout and its loaded flag), the
+ * fields schema-in-the-mist added to the theme (description, Special), the theme kit (description, Special), the power set
  * (rating, optional rating, tags and statuses), the challenge (rating, beside the scale) and the character trope (the page of each kit it
  * cites) go through Lantern's codecs and the published contract unchanged:
  *
@@ -75,6 +87,20 @@ const codecs = [
         parse: (text: string) =>
             trope.importFromTOMLWithWarnings(text).otherscapeCharacterTrope,
     } satisfies Codec<ReturnType<typeof getSampleOtherscapeCharacterTrope>>,
+    {
+        name: 'theme',
+        sample: getSampleOtherscapeTheme,
+        exportToTOML: theme.exportToTOML,
+        parse: (text: string) =>
+            theme.importFromTOMLWithWarnings(text).otherscapeTheme,
+    } satisfies Codec<ReturnType<typeof getSampleOtherscapeTheme>>,
+    {
+        name: 'character',
+        sample: getSampleOtherscapeCharacter,
+        exportToTOML: character.exportToTOML,
+        parse: (text: string) =>
+            character.importFromTOMLWithWarnings(text).otherscapeCharacter,
+    } satisfies Codec<ReturnType<typeof getSampleOtherscapeCharacter>>,
 ]
 
 for (const codec of codecs) {
@@ -131,13 +157,69 @@ assert.deepEqual(
     'character-trope: the page of every cited kit is read'
 )
 
+const themeWithSpecial = theme.importFromTOMLWithWarnings(
+    read('valid', 'theme-special')
+).otherscapeTheme
+assert.ok(themeWithSpecial.description.trim(), 'theme: the description is read')
+assert.ok(
+    themeWithSpecial.special.name.trim() &&
+        themeWithSpecial.special.description.trim(),
+    'theme: the Special is read'
+)
+
+// The counts are read off the corpus file itself, so a longer sheet does not
+// make this proof stale.
+const vesperText = read('valid', 'character')
+const tables = (name: string) =>
+    vesperText
+        .split(String.fromCharCode(10))
+        .filter((line) => line.trim() === `[[${name}]]`).length
+const vesper =
+    character.importFromTOMLWithWarnings(vesperText).otherscapeCharacter
+assert.ok(
+    vesper.themes.length > 0 && vesper.themes.length <= MAX_THEMES,
+    'character: the themes are read, within the limit'
+)
+assert.equal(
+    vesper.themes.length,
+    tables('themes'),
+    'character: every theme of the file is read'
+)
+assert.equal(
+    vesper.tag_combos.length,
+    tables('tag_combos'),
+    'character: every tag combo of the file is read'
+)
+assert.equal(
+    vesper.loadout.length,
+    tables('loadout'),
+    'character: every loadout item of the file is read'
+)
+assert.equal(
+    vesper.loadout.filter((item) => item.loaded === true).length,
+    (vesperText.match(/^loaded\s*=\s*true/gm) ?? []).length,
+    'character: the loaded flag of every item is read'
+)
+assert.ok(
+    vesper.themes.every((entry) => entry.special.name.trim()),
+    'character: the Special of each theme is read'
+)
+
 // ---------- What the schema refuses, Lantern refuses ----------
-for (const name of [
+const refused = [
     'challenge-rating-six',
+    'character-crew-theme',
+    'character-five-themes',
+    'character-negative-power',
     'character-trope-page-zero',
     'power-set-rating-six',
-]) {
-    const codec = codecs.find((entry) => name.startsWith(entry.name))
+]
+for (const name of refused) {
+    // The longest codec name that prefixes the file wins: `character-trope-*`
+    // belongs to the trope, not to the character.
+    const codec = codecs
+        .filter((entry) => name.startsWith(entry.name))
+        .sort((a, z) => z.name.length - a.name.length)[0]
     assert.ok(codec, `${name}: a codec reads it`)
     assert.throws(
         () => (codec as Codec<unknown>).parse(read('invalid', name)),
@@ -201,8 +283,39 @@ assert.doesNotMatch(
     'character-trope: a cleared page is not written'
 )
 
+// ---------- A character's half-done edits never reach the file ----------
+const draft = getSampleOtherscapeCharacter()
+const completeCombos = draft.tag_combos.filter(isCompleteCombo).length
+draft.tag_combos.push(blankTagCombo())
+draft.loadout.push(blankLoadoutItem())
+const draftText = character.exportToTOML(draft)
+assert.equal(
+    (draftText.match(/^\[\[tag_combos\]\]/gm) ?? []).length,
+    completeCombos,
+    'character: an incomplete tag combo is not written'
+)
+assert.equal(
+    (draftText.match(/^\[\[loadout\]\]/gm) ?? []).length,
+    draft.loadout.length,
+    'character: a new loadout item is written'
+)
+assert.equal(
+    (draftText.match(/^loaded\s*=\s*false/gm) ?? []).length,
+    draft.loadout.filter((item) => item.loaded === false).length,
+    'character: an item left unloaded is written as such'
+)
+
+const crowded = getSampleOtherscapeCharacter()
+const extra = blankCharacterTheme('self')
+while (crowded.themes.length <= MAX_THEMES) crowded.themes.push(extra)
+assert.equal(
+    (character.exportToTOML(crowded).match(/^\[\[themes\]\]/gm) ?? []).length,
+    MAX_THEMES,
+    'character: no more than the limit of themes reaches the file'
+)
+
 console.log(
-    'assert:otherscape-fields: 4 samples and 4 corpus files round trip through the schema; ' +
-        'description, Special, rating, optional rating, tags and statuses and pages are read; ' +
-        '3 refused corpus files are refused; half-done edits are not written'
+    `assert:otherscape-fields: ${codecs.length} samples and ${codecs.length} corpus files round trip through the schema; ` +
+        'description, Special, rating, optional rating, tags and statuses, pages and the character sheet are read; ' +
+        `${refused.length} refused corpus files are refused; half-done edits are not written`
 )

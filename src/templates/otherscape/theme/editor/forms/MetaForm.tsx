@@ -1,5 +1,9 @@
 import { useMemo, useState } from 'react'
-import { useOtherscapeThemeStore, type PublicationType } from '../../hooks'
+import {
+    useOtherscapeThemeStore,
+    type PublicationType,
+    type ThemeMeta,
+} from '../../hooks'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -208,11 +212,19 @@ function TypeSegment({
     )
 }
 
-/* ---------- Main MetaForm ---------- */
-export default function MetaForm() {
+/* ---------- The meta fields, for any owner holding a meta ---------- */
+/* The theme tab and a character's sheet edit the same footer, so the fields
+   take the meta they edit and the id prefix that keeps them apart. */
+export function MetaFields({
+    idPrefix,
+    meta,
+    updateMeta,
+}: {
+    idPrefix: string
+    meta: ThemeMeta
+    updateMeta: (update: Partial<ThemeMeta>) => void
+}) {
     const text = useUiText()
-    const { otherscapeTheme, updateMeta } = useOtherscapeThemeStore()
-    const meta = otherscapeTheme.meta
 
     const type = meta?.publication_type as PublicationType | undefined
     const authors = useMemo(() => meta?.authors ?? [], [meta?.authors])
@@ -272,7 +284,7 @@ export default function MetaForm() {
 
             <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_110px] sm:items-end">
                 <div className="grid gap-1">
-                    <Label htmlFor="os-theme-meta-source">
+                    <Label htmlFor={`${idPrefix}-meta-source`}>
                         {type === 'cauldron'
                             ? text(
                                   'otherscape:forms.theme.meta.cauldronTitleLabel'
@@ -289,7 +301,7 @@ export default function MetaForm() {
                         </span>
                     </Label>
                     <Input
-                        id="os-theme-meta-source"
+                        id={`${idPrefix}-meta-source`}
                         className="h-8 px-2 text-sm"
                         value={meta?.source ?? ''}
                         onChange={(event) =>
@@ -312,14 +324,14 @@ export default function MetaForm() {
                 </div>
 
                 <div className="grid gap-1">
-                    <Label htmlFor="os-theme-meta-page">
+                    <Label htmlFor={`${idPrefix}-meta-page`}>
                         {text('otherscape:forms.theme.meta.pageLabel')}{' '}
                         <span className="text-muted-foreground">
                             {text('otherscape:forms.theme.meta.optional')}
                         </span>
                     </Label>
                     <Input
-                        id="os-theme-meta-page"
+                        id={`${idPrefix}-meta-page`}
                         className="h-8 px-2 text-sm"
                         type="number"
                         min={1}
@@ -356,5 +368,17 @@ export default function MetaForm() {
                 {text('otherscape:forms.theme.meta.footerHelp')}
             </div>
         </div>
+    )
+}
+
+export default function MetaForm() {
+    const { otherscapeTheme, updateMeta } = useOtherscapeThemeStore()
+
+    return (
+        <MetaFields
+            idPrefix="os-theme"
+            meta={otherscapeTheme.meta}
+            updateMeta={updateMeta}
+        />
     )
 }

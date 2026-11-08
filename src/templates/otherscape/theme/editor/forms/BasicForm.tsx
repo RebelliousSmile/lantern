@@ -3,7 +3,11 @@ import { Label } from '@/components/ui/label'
 import { SegmentedRadioGroup } from '@/components/ui/segmented-radio-group'
 import type { TranslationKey } from '@/i18n/text'
 import { useUiText } from '@/i18n/text'
-import { useOtherscapeThemeStore, type ThemeType } from '../../hooks'
+import {
+    useOtherscapeThemeStore,
+    useThemeScope,
+    type ThemeType,
+} from '../../hooks'
 
 const THEME_TYPES: ThemeType[] = ['self', 'mythos', 'noise', 'crew']
 
@@ -25,6 +29,7 @@ export default function BasicForm() {
     const { otherscapeTheme, setTitleTag, setThemeType, setCategory } =
         useOtherscapeThemeStore()
     const text = useUiText()
+    const themeTypes = useThemeScope()?.themeTypes ?? THEME_TYPES
 
     return (
         <div className="space-y-4">
@@ -54,7 +59,7 @@ export default function BasicForm() {
                     id="os-theme-type"
                     value={otherscapeTheme.theme_type}
                     onValueChange={(value) => setThemeType(value as ThemeType)}
-                    options={THEME_TYPES.map((value) => ({
+                    options={themeTypes.map((value) => ({
                         value,
                         label: text(THEME_TYPE_KEY[value]),
                     }))}
