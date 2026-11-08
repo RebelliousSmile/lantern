@@ -16,7 +16,16 @@ export const themeKitSections: Array<{
 
 export const themeKitZoomOptions = [0.75, 1, 1.25, 1.5]
 
-export const themeKitBackgroundOptions = [
-    { value: 'parchment', label: 'Parchment' },
-    { value: 'plain', label: 'Plain' },
-] as const
+export const themeKitBackgroundOptions: Array<{
+    value: 'parchment' | 'plain'
+    label: TranslationKey
+}> = [
+    {
+        value: 'parchment',
+        label: 'legend:forms.themeKit.appearance.backgroundParchment',
+    },
+    {
+        value: 'plain',
+        label: 'legend:forms.themeKit.appearance.backgroundPlain',
+    },
+]

@@ -1,5 +1,6 @@
 import { cn } from '@/utils/cn'
 import { SectionGate } from '../../shared/preview/components/SectionGate'
+import { otherscapeVariantClass } from '../../shared/variants'
 import {
     groupShouldShow,
     shouldShow,
@@ -7,7 +8,7 @@ import {
     useOtherscapeLoadoutItemViewStore,
 } from '../hooks'
 import DescriptionBlock from './blocks/DescriptionBlock'
-import HeaderBlock from './blocks/HeaderBlock'
+import HeaderBlock, { NameCell } from './blocks/HeaderBlock'
 import MetaFooterBlock from './blocks/MetaFooterBlock'
 import TagsBlock from './blocks/TagsBlock'
 import './loadoutItemTheme.css'
@@ -26,37 +27,41 @@ export function LoadoutItemPreview() {
             <div
                 className={cn(
                     'loadout-item-sheet os-card',
-                    ui.background === 'plain' ? 'bg-plain' : 'bg-neon'
+                    ui.background === 'plain' ? 'bg-plain' : 'bg-neon',
+                    otherscapeVariantClass(ui.variant)
                 )}
                 style={{
                     transform: `scale(${ui.zoom})`,
                     transformOrigin: 'top center',
                 }}
             >
-                {/* The band and the title sit outside the padded body: they are
-                    the card's top edge and run its full width. */}
-                <HeaderBlock />
-
                 <div className="loadout-item-sheet__body">
-                    <SectionGate
-                        show={shouldShow(
-                            otherscapeLoadoutItem,
-                            'description',
-                            ui
-                        )}
-                    >
-                        <DescriptionBlock />
-                    </SectionGate>
+                    <HeaderBlock />
 
-                    <SectionGate
-                        show={groupShouldShow(
-                            otherscapeLoadoutItem,
-                            ['featureTags', 'weaknessTag'],
-                            ui
-                        )}
-                    >
-                        <TagsBlock />
-                    </SectionGate>
+                    {/* One row of the catalog's table: name, prose, feature
+                        tags, weakness. */}
+                    <div className="loadout-item-row">
+                        <NameCell />
+                        <SectionGate
+                            show={shouldShow(
+                                otherscapeLoadoutItem,
+                                'description',
+                                ui
+                            )}
+                        >
+                            <DescriptionBlock />
+                        </SectionGate>
+
+                        <SectionGate
+                            show={groupShouldShow(
+                                otherscapeLoadoutItem,
+                                ['featureTags', 'weaknessTag'],
+                                ui
+                            )}
+                        >
+                            <TagsBlock />
+                        </SectionGate>
+                    </div>
                 </div>
             </div>
 

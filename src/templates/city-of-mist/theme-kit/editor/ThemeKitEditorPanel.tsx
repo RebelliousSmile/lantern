@@ -1,3 +1,4 @@
+import { useUiText } from '@/i18n/text'
 import { useCityOfMistThemeKitSheetStore } from '../hooks'
 import ConceptForm from './forms/ConceptForm'
 import CrewRelationshipsForm from './forms/CrewRelationshipsForm'
@@ -8,12 +9,13 @@ import MotivationForm from './forms/MotivationForm'
 import QuestionsForm from './forms/QuestionsForm'
 
 export function ThemeKitEditorPanel() {
+    const text = useUiText()
     const { open, target } = useCityOfMistThemeKitSheetStore()
 
     if (!open || !target) {
         return (
             <div className="rounded-md border border-dashed px-3 py-4 text-sm text-muted-foreground">
-                Click on the preview to edit a specific section.
+                {text('city:forms.shared.panel.emptyState')}
             </div>
         )
     }

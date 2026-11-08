@@ -1,8 +1,9 @@
 import { useActiveTemplateTab } from '@/core/workspace/selectors'
 import { getActiveTab, useWorkspaceStore } from '@/core/workspace/store'
 import type { WorkspaceTab } from '@/core/workspace/types'
-import { cloneValue } from '@/utils/clone'
 import { setVisibility, toggleVisibility } from '@/templates/shared/visibility'
+import { cloneValue } from '@/utils/clone'
+import { normalizeOtherscapeVariant } from '../shared/variants'
 import type {
     LoadoutItemMeta,
     OtherscapeLoadoutItem,
@@ -186,6 +187,7 @@ export function useOtherscapeLoadoutItemViewStore() {
         ...fallbackView,
         ...tabView,
         background: normalizeBackground(tabView?.background),
+        variant: normalizeOtherscapeVariant(tabView?.variant),
         hidden: {
             ...fallbackView.hidden,
             ...(tabView?.hidden ?? {}),
@@ -214,6 +216,7 @@ export function useOtherscapeLoadoutItemViewStore() {
         setBackground: (
             background: OtherscapeLoadoutItemViewState['background']
         ) => patchView({ background }),
+        setVariant: (variant: string) => patchView({ variant }),
         toggleHidden: (id: SectionId) =>
             patchView({
                 hidden: toggleVisibility(view.hidden, id),

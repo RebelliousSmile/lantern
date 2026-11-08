@@ -1,4 +1,5 @@
 import { SystemMarkdownScope } from '@/components/markdown/SystemMarkdownScope'
+import { useUiText } from '@/i18n/text'
 import { renderLitmMarkdown } from '@/utils/markdown'
 import { useEffect, useMemo, useState } from 'react'
 import { toast } from 'sonner'
@@ -39,6 +40,7 @@ export default function ConsequencesForm({
 }: {
     focusIndex?: number
 }) {
+    const text = useUiText()
     const {
         otherscapeChallenge,
         addGeneralConsequence,
@@ -91,9 +93,9 @@ export default function ConsequencesForm({
         setDraft(DEFAULT_CONSEQUENCE)
     }
 
-    function startEdit(index: number, text: string) {
+    function startEdit(index: number, value: string) {
         setEditing(index)
-        setDraft(text)
+        setDraft(value)
     }
 
     function cancelEdit() {
@@ -105,7 +107,9 @@ export default function ConsequencesForm({
         if (editing == null) return
         const next = draft.trim()
         if (!next) {
-            toast.error('Consequence cannot be empty.')
+            toast.error(
+                text('otherscape:forms.challenge.consequences.errorEmpty')
+            )
             return
         }
 
@@ -121,9 +125,7 @@ export default function ConsequencesForm({
         >
             <div className="space-y-3">
                 <p className="text-xs text-muted-foreground">
-                    What the Challenge costs the Crew whatever Threat is
-                    running. A Threat with consequences of its own keeps them in
-                    the Threats form.
+                    {text('otherscape:forms.challenge.consequences.helperText')}
                 </p>
 
                 <SortableContext
@@ -131,16 +133,16 @@ export default function ConsequencesForm({
                     strategy={verticalListSortingStrategy}
                 >
                     <ul className="space-y-1.5">
-                        {consequences.map((text, index) => {
+                        {consequences.map((rowText, index) => {
                             const isEditing = editing === index
                             return (
                                 <ConsequenceRow
                                     key={ids[index]}
                                     id={ids[index]}
-                                    text={text}
+                                    value={rowText}
                                     dragDisabled={dragDisabled}
                                     isEditing={isEditing}
-                                    onEdit={() => startEdit(index, text)}
+                                    onEdit={() => startEdit(index, rowText)}
                                     onRemove={() =>
                                         removeGeneralConsequence(index)
                                     }
@@ -165,8 +167,10 @@ export default function ConsequencesForm({
                                 className="mt-1 h-8 w-full justify-center gap-1.5 border-dashed px-2.5 text-xs"
                                 onClick={addPlaceholder}
                             >
-                                <Plus className="h-3.5 w-3.5" /> Add general
-                                consequence
+                                <Plus className="h-3.5 w-3.5" />{' '}
+                                {text(
+                                    'otherscape:forms.challenge.consequences.addGeneralConsequence'
+                                )}
                             </Button>
                         </li>
                     </ul>
@@ -178,7 +182,7 @@ export default function ConsequencesForm({
 
 function ConsequenceRow({
     id,
-    text,
+    value,
     dragDisabled,
     isEditing,
     onEdit,
@@ -186,13 +190,14 @@ function ConsequenceRow({
     children,
 }: {
     id: string
-    text: string
+    value: string
     dragDisabled: boolean
     isEditing: boolean
     onEdit: () => void
     onRemove: () => void
     children?: React.ReactNode
 }) {
+    const text = useUiText()
     const {
         attributes,
         listeners,
@@ -219,11 +224,15 @@ function ConsequenceRow({
                 <button
                     className={`inline-flex h-7 w-7 items-center justify-center rounded hover:bg-slate-50
             ${dragDisabled ? 'cursor-not-allowed opacity-40 hover:bg-transparent' : 'cursor-grab active:cursor-grabbing'}`}
-                    aria-label="Drag to reorder consequence"
+                    aria-label={text(
+                        'otherscape:forms.challenge.consequences.dragAriaLabel'
+                    )}
                     title={
                         dragDisabled
-                            ? 'Finish editing to reorder'
-                            : 'Drag to reorder'
+                            ? text(
+                                  'otherscape:forms.challenge.consequences.finishEditingToReorder'
+                              )
+                            : text('actions.dragToReorder')
                     }
                     disabled={dragDisabled}
                     {...(!dragDisabled ? attributes : {})}
@@ -241,7 +250,7 @@ function ConsequenceRow({
                     >
                         <div
                             dangerouslySetInnerHTML={{
-                                __html: renderLitmMarkdown(text),
+                                __html: renderLitmMarkdown(value),
                             }}
                         />
                     </SystemMarkdownScope>
@@ -253,7 +262,7 @@ function ConsequenceRow({
                     variant="ghost"
                     size="icon-sm"
                     className="h-7 w-7"
-                    title="Edit"
+                    title={text('actions.edit')}
                     onClick={onEdit}
                 >
                     <Pencil className="h-3.5 w-3.5" />
@@ -263,7 +272,7 @@ function ConsequenceRow({
                 variant="ghost"
                 size="icon-sm"
                 className="h-7 w-7 text-destructive"
-                title="Remove"
+                title={text('actions.remove')}
                 onClick={onRemove}
             >
                 <Trash2 className="h-3.5 w-3.5" />
@@ -283,6 +292,8 @@ function InlineConsequenceEditor({
     onSave: () => void
     onCancel: () => void
 }) {
+    const text = useUiText()
+
     return (
         <div className="flex items-center gap-1.5">
             <Input
@@ -300,7 +311,7 @@ function InlineConsequenceEditor({
             <Button
                 size="icon-xs"
                 className="h-5 w-5 shrink-0"
-                title="Save"
+                title={text('actions.save')}
                 onClick={onSave}
             >
                 <Check className="h-3 w-3" />
@@ -309,7 +320,7 @@ function InlineConsequenceEditor({
                 size="icon-xs"
                 variant="secondary"
                 className="h-5 w-5 shrink-0"
-                title="Cancel"
+                title={text('actions.cancel')}
                 onClick={onCancel}
             >
                 <X className="h-3 w-3" />

@@ -167,8 +167,10 @@ export default function ConsequencesForm({
                                 className="mt-1 h-8 w-full justify-center gap-1.5 border-dashed px-2.5 text-xs"
                                 onClick={addPlaceholder}
                             >
-                                <Plus className="h-3.5 w-3.5" /> Add general
-                                consequence
+                                <Plus className="h-3.5 w-3.5" />{' '}
+                                {text(
+                                    'otherscape:forms.powerSet.consequences.addButton'
+                                )}
                             </Button>
                         </li>
                     </ul>

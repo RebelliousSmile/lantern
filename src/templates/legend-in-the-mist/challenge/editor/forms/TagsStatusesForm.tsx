@@ -6,6 +6,7 @@ import { useLegendInTheMistChallengeStore } from '../../hooks'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { useUiText } from '@/i18n/text'
 import { GripVertical, Pencil, Plus, Trash2 } from 'lucide-react'
 
 import {
@@ -30,6 +31,7 @@ export default function TagsStatusesForm({
 }: {
     focusIndex?: number
 }) {
+    const text = useUiText()
     const {
         legendInTheMistChallenge,
         addToken,
@@ -118,7 +120,7 @@ export default function TagsStatusesForm({
         if (editingIndex == null) return
         const next = raw.trim()
         if (!next) {
-            setError('Please enter a value.')
+            setError(text('legend:forms.challenge.tags.errorRequired'))
             return
         }
         // allow duplicates intentionally (they’re just strings)
@@ -160,7 +162,9 @@ export default function TagsStatusesForm({
                                                     htmlFor={`tag-raw-${idx}`}
                                                     className="text-xs"
                                                 >
-                                                    Raw value
+                                                    {text(
+                                                        'legend:forms.challenge.tags.rawValueLabel'
+                                                    )}
                                                 </Label>
                                                 <Input
                                                     id={`tag-raw-${idx}`}
@@ -169,7 +173,9 @@ export default function TagsStatusesForm({
                                                     onChange={(e) =>
                                                         setRaw(e.target.value)
                                                     }
-                                                    placeholder="{power tag}, {status-3}, {!weakness tag} or plain text"
+                                                    placeholder={text(
+                                                        'legend:forms.challenge.tags.rawValuePlaceholder'
+                                                    )}
                                                 />
                                             </div>
 
@@ -180,7 +186,9 @@ export default function TagsStatusesForm({
                                                     className="h-7 px-2.5 text-xs"
                                                     onClick={confirmEdit}
                                                 >
-                                                    Save
+                                                    {text(
+                                                        'common:actions.save'
+                                                    )}
                                                 </Button>
                                                 <Button
                                                     type="button"
@@ -188,7 +196,9 @@ export default function TagsStatusesForm({
                                                     className="h-7 px-0 text-xs"
                                                     onClick={cancelEdit}
                                                 >
-                                                    Cancel
+                                                    {text(
+                                                        'common:actions.cancel'
+                                                    )}
                                                 </Button>
                                             </div>
                                         </div>
@@ -206,7 +216,8 @@ export default function TagsStatusesForm({
                                 className="mt-1 h-8 w-full justify-center gap-1.5 border-dashed px-2.5 text-xs"
                                 onClick={addPlaceholder}
                             >
-                                <Plus className="h-3.5 w-3.5" /> Add entry
+                                <Plus className="h-3.5 w-3.5" />{' '}
+                                {text('legend:forms.challenge.tags.addEntry')}
                             </Button>
                         </li>
                     </ul>
@@ -232,6 +243,7 @@ function SortableTokenItem({
     onRemove: () => void
     children?: React.ReactNode
 }) {
+    const text = useUiText()
     const {
         attributes,
         listeners,
@@ -266,11 +278,13 @@ function SortableTokenItem({
                       ? 'opacity-40 cursor-not-allowed hover:bg-transparent'
                       : 'cursor-grab active:cursor-grabbing'
               }`}
-                        aria-label="Drag to reorder"
+                        aria-label={text('common:actions.dragToReorder')}
                         title={
                             dragDisabled
-                                ? 'Finish editing to reorder'
-                                : 'Drag to reorder'
+                                ? text(
+                                      'legend:forms.challenge.shared.finishEditingToReorder'
+                                  )
+                                : text('common:actions.dragToReorder')
                         }
                         disabled={dragDisabled}
                         {...(!dragDisabled ? attributes : {})}
@@ -301,7 +315,7 @@ function SortableTokenItem({
                         size="icon"
                         className="h-7 w-7"
                         onClick={onEdit}
-                        title="Edit"
+                        title={text('common:actions.edit')}
                     >
                         <Pencil className="h-3.5 w-3.5" />
                     </Button>
@@ -311,7 +325,7 @@ function SortableTokenItem({
                         size="icon"
                         className="h-7 w-7 text-destructive"
                         onClick={onRemove}
-                        title="Remove"
+                        title={text('common:actions.remove')}
                     >
                         <Trash2 className="h-3.5 w-3.5" />
                     </Button>

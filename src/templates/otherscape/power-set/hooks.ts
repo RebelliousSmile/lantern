@@ -1,8 +1,8 @@
 import { useActiveTemplateTab } from '@/core/workspace/selectors'
 import { getActiveTab, useWorkspaceStore } from '@/core/workspace/store'
 import type { WorkspaceTab } from '@/core/workspace/types'
-import { cloneValue } from '@/utils/clone'
 import { setVisibility, toggleVisibility } from '@/templates/shared/visibility'
+import { cloneValue } from '@/utils/clone'
 import type {
     OtherscapePowerSet,
     OtherscapePowerSetSheetState,
@@ -18,6 +18,8 @@ import {
     defaultHidden,
     defaultOtherscapePowerSetSheetState,
     defaultOtherscapePowerSetView,
+    PREVIEW_WIDTH_MAX,
+    PREVIEW_WIDTH_MIN,
 } from './model'
 
 type OtherscapePowerSetTab = WorkspaceTab<
@@ -344,6 +346,15 @@ export function useOtherscapePowerSetViewStore() {
     const view: OtherscapePowerSetViewState = {
         ...fallbackView,
         ...tabView,
+        /* A tab saved under the old bounds (700-1400) is brought back into
+           the card's own: past the stage's width the slider did nothing. */
+        previewWidth: Math.min(
+            PREVIEW_WIDTH_MAX,
+            Math.max(
+                PREVIEW_WIDTH_MIN,
+                tabView?.previewWidth ?? fallbackView.previewWidth
+            )
+        ),
         background: normalizeBackground(tabView?.background),
         hidden: {
             ...fallbackView.hidden,
@@ -430,6 +441,8 @@ export function isEmptySection(
     switch (id) {
         case 'description':
             return !otherscapePowerSet.description.trim()
+        case 'tags':
+            return !otherscapePowerSet.tags_and_statuses.length
         case 'specials':
             return !otherscapePowerSet.specials.length
         case 'threats':
@@ -474,7 +487,10 @@ export function groupShouldShow(
 export function getOtherscapePowerSetPreviewWidth(
     view: OtherscapePowerSetViewState
 ) {
-    return view.previewWidth
+    return Math.min(
+        PREVIEW_WIDTH_MAX,
+        Math.max(PREVIEW_WIDTH_MIN, view.previewWidth)
+    )
 }
 
 export function getLiveOtherscapePowerSetTab() {

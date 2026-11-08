@@ -26,7 +26,9 @@ export function ThemeAppearancePanel() {
         <div className="space-y-4">
             <div className="flex items-center justify-between gap-4">
                 <Label htmlFor="os-theme-auto-hide-empty" className="text-xs">
-                    Auto-hide empty sections
+                    {text(
+                        'otherscape:forms.theme.appearance.autoHideEmptySections'
+                    )}
                 </Label>
                 <Switch
                     id="os-theme-auto-hide-empty"
@@ -37,7 +39,7 @@ export function ThemeAppearancePanel() {
 
             <div className="space-y-2">
                 <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                    Sections
+                    {text('otherscape:forms.theme.appearance.sectionsLabel')}
                 </p>
                 <div className="grid grid-cols-[1fr_0.8fr] gap-x-3 gap-y-1.5">
                     {themeSections.map((section) => (
@@ -60,7 +62,9 @@ export function ThemeAppearancePanel() {
             <div className="space-y-2">
                 <div className="flex items-center justify-between gap-2">
                     <Label htmlFor="os-theme-preview-width" className="text-xs">
-                        Preview width
+                        {text(
+                            'otherscape:forms.theme.appearance.previewWidthLabel'
+                        )}
                     </Label>
                     <span className="text-xs font-medium">
                         {previewWidth}px
@@ -77,7 +81,9 @@ export function ThemeAppearancePanel() {
                         setPreviewWidth(Number(event.target.value))
                     }
                     className="w-full accent-primary"
-                    aria-label="Preview width"
+                    aria-label={text(
+                        'otherscape:forms.theme.appearance.previewWidthLabel'
+                    )}
                 />
                 <div className="flex items-center justify-between text-[10px] text-muted-foreground">
                     <span>{PREVIEW_WIDTH_MIN}px</span>
@@ -87,7 +93,7 @@ export function ThemeAppearancePanel() {
 
             <div className="space-y-2">
                 <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                    Background
+                    {text('otherscape:forms.theme.appearance.backgroundLabel')}
                 </p>
                 <RadioGroup
                     value={background}
@@ -105,7 +111,9 @@ export function ThemeAppearancePanel() {
                                 value={option.value}
                                 id={`os-theme-background-${option.value}`}
                             />
-                            <span className="text-xs">{option.label}</span>
+                            <span className="text-xs">
+                                {text(option.label)}
+                            </span>
                         </label>
                     ))}
                 </RadioGroup>
@@ -118,7 +126,7 @@ export function ThemeAppearancePanel() {
                 className="h-8 w-full text-xs"
                 onClick={resetViewPrefs}
             >
-                Reset view
+                {text('otherscape:forms.theme.appearance.resetView')}
             </Button>
         </div>
     )

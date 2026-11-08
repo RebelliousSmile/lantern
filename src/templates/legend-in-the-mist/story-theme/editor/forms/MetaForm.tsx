@@ -19,27 +19,41 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from '@/components/ui/popover'
+import { useUiText, type TranslationKey } from '@/i18n/text'
 import { getCatalogSources, type CatalogItem } from '@/utils/catalog'
 import { cn } from '@/utils/cn'
 import { Check, ChevronsUpDown, X } from 'lucide-react'
 
-const TYPES: { value: PublicationType; label: string }[] = [
-    { value: 'official', label: 'Official' },
-    { value: 'third_party', label: 'Third Party' },
-    { value: 'cauldron', label: 'Cauldron' },
-    { value: 'homebrew', label: 'Homebrew' },
+const TYPES: { value: PublicationType; label: TranslationKey }[] = [
+    {
+        value: 'official',
+        label: 'legend:forms.storyTheme.metaForm.publicationTypes.official',
+    },
+    {
+        value: 'third_party',
+        label: 'legend:forms.storyTheme.metaForm.publicationTypes.thirdParty',
+    },
+    {
+        value: 'cauldron',
+        label: 'legend:forms.storyTheme.metaForm.publicationTypes.cauldron',
+    },
+    {
+        value: 'homebrew',
+        label: 'legend:forms.storyTheme.metaForm.publicationTypes.homebrew',
+    },
 ]
 
 /* ---------- Authors chips input ---------- */
 function AuthorsInput({
     value,
     onChange,
-    placeholder = 'Add author and press Enter',
+    placeholder,
 }: {
     value: string[]
     onChange: (next: string[]) => void
-    placeholder?: string
+    placeholder: string
 }) {
+    const text = useUiText()
     const [draft, setDraft] = useState('')
 
     function commitDraft() {
@@ -61,7 +75,10 @@ function AuthorsInput({
                         <button
                             type="button"
                             className="opacity-70 hover:opacity-100"
-                            aria-label={`Remove ${author}`}
+                            aria-label={text(
+                                'legend:forms.storyTheme.metaForm.removeAuthor',
+                                { author: author }
+                            )}
                             onClick={() =>
                                 onChange(value.filter((x) => x !== author))
                             }
@@ -106,6 +123,7 @@ function SourceCombobox({
     onSelect: (item: CatalogItem) => void
     placeholder: string
 }) {
+    const text = useUiText()
     const [open, setOpen] = useState(false)
     const current = items.find((item) => item.title === value)
 
@@ -124,8 +142,14 @@ function SourceCombobox({
             </PopoverTrigger>
             <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
                 <Command>
-                    <CommandInput placeholder="Search source..." />
-                    <CommandEmpty>No match.</CommandEmpty>
+                    <CommandInput
+                        placeholder={text(
+                            'legend:forms.storyTheme.metaForm.searchSourcePlaceholder'
+                        )}
+                    />
+                    <CommandEmpty>
+                        {text('legend:forms.storyTheme.metaForm.noMatch')}
+                    </CommandEmpty>
                     <CommandGroup>
                         {items.map((item) => (
                             <CommandItem
@@ -162,6 +186,7 @@ function TypeSegment({
     value?: PublicationType
     onChange: (next: PublicationType) => void
 }) {
+    const text = useUiText()
     return (
         <div className="grid grid-cols-2 overflow-hidden rounded-md border sm:inline-grid sm:grid-cols-4">
             {TYPES.map((type) => (
@@ -175,7 +200,7 @@ function TypeSegment({
                     )}
                     onClick={() => onChange(type.value)}
                 >
-                    {type.label}
+                    {text(type.label)}
                 </Button>
             ))}
         </div>
@@ -184,6 +209,7 @@ function TypeSegment({
 
 /* ---------- Main MetaForm ---------- */
 export default function MetaForm() {
+    const text = useUiText()
     const { legendInTheMistStoryTheme, updateMeta } =
         useLegendInTheMistStoryThemeStore()
     const meta = legendInTheMistStoryTheme.meta
@@ -213,26 +239,35 @@ export default function MetaForm() {
     return (
         <div className="space-y-4">
             <div className="grid gap-1">
-                <Label>Publication type</Label>
+                <Label>
+                    {text(
+                        'legend:forms.storyTheme.metaForm.publicationTypeLabel'
+                    )}
+                </Label>
                 <TypeSegment value={type} onChange={setType} />
             </div>
 
             {sourceOptions.length > 0 ? (
                 <div className="grid gap-1">
-                    <Label>Source</Label>
+                    <Label>
+                        {text('legend:forms.storyTheme.metaForm.sourceLabel')}
+                    </Label>
                     <SourceCombobox
                         items={sourceOptions}
                         value={meta?.source}
                         onSelect={pickFromCatalog}
                         placeholder={
                             type === 'official'
-                                ? 'Select an official book...'
-                                : 'Select a third-party source...'
+                                ? text(
+                                      'legend:forms.storyTheme.metaForm.selectOfficialSource'
+                                  )
+                                : text(
+                                      'legend:forms.storyTheme.metaForm.selectThirdPartySource'
+                                  )
                         }
                     />
                     <div className="text-xs text-muted-foreground">
-                        Selecting a source auto-fills authors. You can still
-                        edit below.
+                        {text('legend:forms.storyTheme.metaForm.autoFillHint')}
                     </div>
                 </div>
             ) : null}
@@ -241,12 +276,18 @@ export default function MetaForm() {
                 <div className="grid gap-1">
                     <Label htmlFor="story-theme-meta-source">
                         {type === 'cauldron'
-                            ? 'Cauldron product title'
+                            ? text(
+                                  'legend:forms.storyTheme.metaForm.sourceTitleLabel.cauldron'
+                              )
                             : type === 'homebrew'
-                              ? 'Homebrew title / location'
-                              : 'Source title'}{' '}
+                              ? text(
+                                    'legend:forms.storyTheme.metaForm.sourceTitleLabel.homebrew'
+                                )
+                              : text(
+                                    'legend:forms.storyTheme.metaForm.sourceTitleLabel.default'
+                                )}{' '}
                         <span className="text-muted-foreground">
-                            (optional)
+                            {text('legend:forms.storyTheme.metaForm.optional')}
                         </span>
                     </Label>
                     <Input
@@ -258,19 +299,25 @@ export default function MetaForm() {
                         }
                         placeholder={
                             type === 'cauldron'
-                                ? 'e.g., Cauldron: Shadows in Brine'
+                                ? text(
+                                      'legend:forms.storyTheme.metaForm.sourceTitlePlaceholder.cauldron'
+                                  )
                                 : type === 'homebrew'
-                                  ? 'e.g., Personal blog, campaign doc...'
-                                  : 'Override selected source title'
+                                  ? text(
+                                        'legend:forms.storyTheme.metaForm.sourceTitlePlaceholder.homebrew'
+                                    )
+                                  : text(
+                                        'legend:forms.storyTheme.metaForm.sourceTitlePlaceholder.default'
+                                    )
                         }
                     />
                 </div>
 
                 <div className="grid gap-1">
                     <Label htmlFor="story-theme-meta-page">
-                        Page{' '}
+                        {text('legend:forms.storyTheme.metaForm.pageLabel')}{' '}
                         <span className="text-muted-foreground">
-                            (optional)
+                            {text('legend:forms.storyTheme.metaForm.optional')}
                         </span>
                     </Label>
                     <Input
@@ -295,17 +342,20 @@ export default function MetaForm() {
             </div>
 
             <div className="grid gap-1">
-                <Label>Authors</Label>
+                <Label>
+                    {text('legend:forms.storyTheme.metaForm.authorsLabel')}
+                </Label>
                 <AuthorsInput
                     value={authors}
                     onChange={(next) => updateMeta({ authors: next })}
-                    placeholder="Add author..."
+                    placeholder={text(
+                        'legend:forms.storyTheme.metaForm.authorsPlaceholder'
+                    )}
                 />
             </div>
 
             <div className="text-xs text-muted-foreground">
-                Meta helps attribution & search and is preserved on
-                import/export.
+                {text('legend:forms.storyTheme.metaForm.metaHint')}
             </div>
         </div>
     )

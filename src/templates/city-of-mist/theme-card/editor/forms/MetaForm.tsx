@@ -1,17 +1,18 @@
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { useUiText, type TranslationKey } from '@/i18n/text'
 import { getCatalogSources } from '@/utils/catalog'
 import { cn } from '@/utils/cn'
 import { X } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { useCityOfMistThemeCardStore, type PublicationType } from '../../hooks'
 
-const TYPES: { value: PublicationType; label: string }[] = [
-    { value: 'official', label: 'Official' },
-    { value: 'third_party', label: 'Third Party' },
-    { value: 'cauldron', label: 'Cauldron' },
-    { value: 'homebrew', label: 'Homebrew' },
+const TYPES: { value: PublicationType; label: TranslationKey }[] = [
+    { value: 'official', label: 'city:forms.shared.meta.typeOfficial' },
+    { value: 'third_party', label: 'city:forms.shared.meta.typeThirdParty' },
+    { value: 'cauldron', label: 'city:forms.shared.meta.typeCauldron' },
+    { value: 'homebrew', label: 'city:forms.shared.meta.typeHomebrew' },
 ]
 
 function AuthorsInput({
@@ -21,6 +22,7 @@ function AuthorsInput({
     value: string[]
     onChange: (next: string[]) => void
 }) {
+    const text = useUiText()
     const [draft, setDraft] = useState('')
     function commit() {
         const author = draft.trim()
@@ -38,7 +40,12 @@ function AuthorsInput({
                         {author}
                         <button
                             type="button"
-                            aria-label={`Remove ${author}`}
+                            aria-label={text(
+                                'city:forms.shared.meta.removeAuthorAriaLabel',
+                                {
+                                    author,
+                                }
+                            )}
                             onClick={() =>
                                 onChange(
                                     value.filter((item) => item !== author)
@@ -62,7 +69,13 @@ function AuthorsInput({
                         if (event.key === 'Backspace' && !draft && value.length)
                             onChange(value.slice(0, -1))
                     }}
-                    placeholder={value.length ? '' : 'Add author...'}
+                    placeholder={
+                        value.length
+                            ? ''
+                            : text(
+                                  'city:forms.shared.meta.addAuthorPlaceholder'
+                              )
+                    }
                 />
             </div>
         </div>
@@ -70,6 +83,7 @@ function AuthorsInput({
 }
 
 export default function MetaForm() {
+    const text = useUiText()
     const { cityOfMistThemeCard, updateMeta } = useCityOfMistThemeCardStore()
     const meta = cityOfMistThemeCard.meta
     const type = meta?.publication_type ?? 'homebrew'
@@ -82,7 +96,9 @@ export default function MetaForm() {
     return (
         <div className="space-y-4">
             <div className="grid gap-1">
-                <Label>Publication type</Label>
+                <Label>
+                    {text('city:forms.shared.meta.publicationTypeLabel')}
+                </Label>
                 <div className="grid grid-cols-2 overflow-hidden rounded-md border sm:grid-cols-4">
                     {TYPES.map((item) => (
                         <Button
@@ -101,7 +117,7 @@ export default function MetaForm() {
                                 })
                             }
                         >
-                            {item.label}
+                            {text(item.label)}
                         </Button>
                     ))}
                 </div>
@@ -110,7 +126,7 @@ export default function MetaForm() {
             {sources.length ? (
                 <div className="grid gap-1">
                     <Label htmlFor="theme-card-catalog-source">
-                        Catalog source
+                        {text('city:forms.shared.meta.catalogSourceLabel')}
                     </Label>
                     <select
                         id="theme-card-catalog-source"
@@ -131,7 +147,11 @@ export default function MetaForm() {
                                 })
                         }}
                     >
-                        <option value="">Select a source...</option>
+                        <option value="">
+                            {text(
+                                'city:forms.shared.meta.selectSourcePlaceholder'
+                            )}
+                        </option>
                         {sources.map((item) => (
                             <option key={item.id} value={item.title}>
                                 {item.title}
@@ -144,9 +164,9 @@ export default function MetaForm() {
             <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_110px] sm:items-end">
                 <div className="grid gap-1">
                     <Label htmlFor="theme-card-meta-source">
-                        Source{' '}
+                        {text('city:forms.shared.meta.sourceLabel')}{' '}
                         <span className="text-muted-foreground">
-                            (optional)
+                            {text('city:forms.shared.meta.optional')}
                         </span>
                     </Label>
                     <Input
@@ -160,9 +180,9 @@ export default function MetaForm() {
                 </div>
                 <div className="grid gap-1">
                     <Label htmlFor="theme-card-meta-page">
-                        Page{' '}
+                        {text('city:forms.shared.meta.pageLabel')}{' '}
                         <span className="text-muted-foreground">
-                            (optional)
+                            {text('city:forms.shared.meta.optional')}
                         </span>
                     </Label>
                     <Input
@@ -186,14 +206,14 @@ export default function MetaForm() {
             </div>
 
             <div className="grid gap-1">
-                <Label>Authors</Label>
+                <Label>{text('city:forms.shared.meta.authorsLabel')}</Label>
                 <AuthorsInput
                     value={authors}
                     onChange={(next) => updateMeta({ authors: next })}
                 />
             </div>
             <p className="text-xs text-muted-foreground">
-                Attribution is preserved in TOML exports.
+                {text('city:forms.shared.meta.attributionHelp')}
             </p>
         </div>
     )

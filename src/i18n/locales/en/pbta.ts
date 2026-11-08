@@ -1,3 +1,7 @@
+import gameDefinitionForms from './pbta/gameDefinitionForms'
+import playbookForms from './pbta/playbookForms'
+import sharedForms from './pbta/sharedForms'
+
 /* English source of truth for this game family's templates; the French file is typed against it. */
 const pbta = {
     playbook: {
@@ -109,6 +113,9 @@ const pbta = {
             removePlay: 'Remove “Playing the X”',
         },
         portrait: 'Portrait of {{name}}',
+        errors: {
+            invalidCollection: 'Invalid published collection configuration.',
+        },
     },
     urbanShadows: {
         terms: {
@@ -326,6 +333,12 @@ const pbta = {
             newTitle: 'New corporation',
         },
         sprawlMatrix: { label: 'Matrix', newTitle: 'New matrix' },
+    },
+    /* One file per template, so each template's form strings can change on their own. */
+    forms: {
+        gameDefinition: gameDefinitionForms,
+        playbook: playbookForms,
+        shared: sharedForms,
     },
 }
 

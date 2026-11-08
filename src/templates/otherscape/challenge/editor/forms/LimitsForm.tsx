@@ -212,7 +212,7 @@ export default function LimitsForm({ focusIndex }: { focusIndex?: number }) {
                                                     htmlFor={`limit-name-${idx}`}
                                                     className="text-xs"
                                                 >
-                                                    Name
+                                                    {text('fields.name')}
                                                 </Label>
                                                 <Input
                                                     id={`limit-name-${idx}`}
@@ -230,7 +230,9 @@ export default function LimitsForm({ focusIndex }: { focusIndex?: number }) {
                                                     htmlFor={`limit-level-${idx}`}
                                                     className="text-xs"
                                                 >
-                                                    Level
+                                                    {text(
+                                                        'otherscape:forms.challenge.limits.levelLabel'
+                                                    )}
                                                 </Label>
                                                 <Input
                                                     id={`limit-level-${idx}`}
@@ -253,7 +255,9 @@ export default function LimitsForm({ focusIndex }: { focusIndex?: number }) {
                                                             )
                                                         )
                                                     }
-                                                    title="1–6"
+                                                    title={text(
+                                                        'otherscape:forms.challenge.limits.levelTitle'
+                                                    )}
                                                 />
                                             </div>
                                         </div>
@@ -271,9 +275,13 @@ export default function LimitsForm({ focusIndex }: { focusIndex?: number }) {
                                                 <Label
                                                     htmlFor={`limit-polar-${idx}`}
                                                     className="text-xs"
-                                                    title="Two opposed poles written as one name, joined by a slash"
+                                                    title={text(
+                                                        'otherscape:forms.challenge.limits.polarHint'
+                                                    )}
                                                 >
-                                                    Polar limit
+                                                    {text(
+                                                        'otherscape:forms.challenge.limits.polarLabel'
+                                                    )}
                                                 </Label>
                                             </div>
 
@@ -290,7 +298,9 @@ export default function LimitsForm({ focusIndex }: { focusIndex?: number }) {
                                                     htmlFor={`limit-progress-${idx}`}
                                                     className="text-xs"
                                                 >
-                                                    Progress limit
+                                                    {text(
+                                                        'otherscape:forms.challenge.limits.progressLabel'
+                                                    )}
                                                 </Label>
                                             </div>
                                         </div>
@@ -299,7 +309,9 @@ export default function LimitsForm({ focusIndex }: { focusIndex?: number }) {
                                             <Textarea
                                                 rows={2}
                                                 className="min-h-16 px-2 py-1 text-sm"
-                                                placeholder="When this progress limit fills up…"
+                                                placeholder={text(
+                                                    'otherscape:forms.challenge.limits.onMaxPlaceholder'
+                                                )}
                                                 value={eOnMax}
                                                 onChange={(ev) =>
                                                     setEOnMax(ev.target.value)
@@ -313,14 +325,14 @@ export default function LimitsForm({ focusIndex }: { focusIndex?: number }) {
                                                 className="h-7 px-2.5 text-xs"
                                                 onClick={confirmEdit}
                                             >
-                                                Save
+                                                {text('actions.save')}
                                             </Button>
                                             <Button
                                                 variant="link"
                                                 className="h-7 px-0 text-xs"
                                                 onClick={cancelEdit}
                                             >
-                                                Cancel
+                                                {text('actions.cancel')}
                                             </Button>
                                         </div>
                                     </div>
@@ -337,7 +349,10 @@ export default function LimitsForm({ focusIndex }: { focusIndex?: number }) {
                                 className="mt-1 h-8 w-full justify-center gap-1.5 border-dashed px-2.5 text-xs"
                                 onClick={addPlaceholder}
                             >
-                                <Plus className="h-3.5 w-3.5" /> Add limit
+                                <Plus className="h-3.5 w-3.5" />{' '}
+                                {text(
+                                    'otherscape:forms.challenge.limits.addLimit'
+                                )}
                             </Button>
                         </li>
                     </ul>
@@ -363,6 +378,7 @@ function SortableLimitItem({
     onRemove: () => void
     children?: React.ReactNode // inline editor renders here when open
 }) {
+    const text = useUiText()
     const {
         attributes,
         listeners,
@@ -390,11 +406,13 @@ function SortableLimitItem({
                     <button
                         className={`inline-flex h-7 w-7 items-center justify-center rounded hover:bg-slate-50
               ${dragDisabled ? 'opacity-40 cursor-not-allowed hover:bg-transparent' : 'cursor-grab active:cursor-grabbing'}`}
-                        aria-label="Drag to reorder"
+                        aria-label={text('actions.dragToReorder')}
                         title={
                             dragDisabled
-                                ? 'Finish editing to reorder'
-                                : 'Drag to reorder'
+                                ? text(
+                                      'otherscape:forms.challenge.limits.finishEditingToReorder'
+                                  )
+                                : text('actions.dragToReorder')
                         }
                         disabled={dragDisabled}
                         {...(!dragDisabled ? attributes : {})}
@@ -425,7 +443,9 @@ function SortableLimitItem({
                             {l.is_polar && (
                                 <span
                                     className="text-xs text-slate-500"
-                                    title="Polar limit"
+                                    title={text(
+                                        'otherscape:forms.challenge.limits.polarLabel'
+                                    )}
                                 >
                                     {'\u21C4'}
                                 </span>
@@ -433,7 +453,9 @@ function SortableLimitItem({
                             {l.is_progress && (
                                 <span
                                     className="text-xs text-slate-500"
-                                    title="Progress limit"
+                                    title={text(
+                                        'otherscape:forms.challenge.limits.progressLabel'
+                                    )}
                                 >
                                     {'\u25B6'}
                                 </span>
@@ -458,7 +480,7 @@ function SortableLimitItem({
                         size="icon-sm"
                         className="h-7 w-7"
                         onClick={onEdit}
-                        title="Edit"
+                        title={text('actions.edit')}
                     >
                         <Pencil className="h-3.5 w-3.5" />
                     </Button>
@@ -467,7 +489,7 @@ function SortableLimitItem({
                         size="icon-sm"
                         className="h-7 w-7 text-destructive"
                         onClick={onRemove}
-                        title="Remove"
+                        title={text('actions.remove')}
                     >
                         <Trash2 className="h-3.5 w-3.5" />
                     </Button>

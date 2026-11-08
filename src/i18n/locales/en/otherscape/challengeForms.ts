@@ -8,8 +8,12 @@ const forms = {
         namePlaceholder: 'e.g., Chrome Vulture Runner',
         scaleLabel: 'Scale',
         scaleHint:
-            'Leave the scale empty for a person-sized Challenge. Larger counts up, and smaller counts down.',
-        descriptionPlaceholder: 'Write a short summary of the challenge here...',
+            'Leave the scale empty for a person-sized Challenge. Larger counts up, and smaller counts down. It prints in the text, as the book names it.',
+        ratingLabel: 'Rating',
+        ratingNone: 'None',
+        ratingHint: 'Stars of difficulty printed on the tab, from one to five.',
+        descriptionPlaceholder:
+            'Write a short summary of the challenge here...',
     },
     tags: {
         rawValueLabel: 'Raw value',
@@ -23,8 +27,7 @@ const forms = {
         levelLabel: 'Level',
         levelTitle: '1–6',
         polarLabel: 'Polar limit',
-        polarHint:
-            'Two opposed poles written as one name, joined by a slash',
+        polarHint: 'Two opposed poles written as one name, joined by a slash',
         progressLabel: 'Progress limit',
         onMaxPlaceholder: 'When this progress limit fills up…',
         addLimit: 'Add limit',
@@ -72,6 +75,7 @@ const forms = {
         pageLabel: 'Page',
         authorsLabel: 'Authors',
         authorsPlaceholder: 'Add author...',
+        authorsPlaceholderDefault: 'Add author and press Enter',
         removeAuthorAriaLabel: 'Remove {{author}}',
         footerHint:
             'Meta helps attribution & search and is preserved on import/export.',
@@ -80,6 +84,7 @@ const forms = {
         autoHideEmptyLabel: 'Auto-hide empty sections',
         sectionsHeading: 'Sections',
         previewWidthLabel: 'Preview width',
+        variantHeading: 'Variant',
         backgroundHeading: 'Background',
         backgroundNeon: 'Neon',
         backgroundPlain: 'Plain',

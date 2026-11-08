@@ -25,7 +25,7 @@ export function PlaybookAppearancePanel() {
         <div className="space-y-4">
             <div className="flex items-center justify-between gap-4">
                 <Label htmlFor="pbta-pb-auto-hide-empty" className="text-xs">
-                    Auto-hide empty sections
+                    {text('pbta:forms.shared.appearance.autoHideEmptySections')}
                 </Label>
                 <Switch
                     id="pbta-pb-auto-hide-empty"
@@ -36,7 +36,7 @@ export function PlaybookAppearancePanel() {
 
             <div className="flex items-center justify-between gap-4">
                 <Label htmlFor="pbta-pb-separators" className="text-xs">
-                    Show separators
+                    {text('pbta:forms.shared.appearance.showSeparators')}
                 </Label>
                 <Switch
                     id="pbta-pb-separators"
@@ -47,7 +47,7 @@ export function PlaybookAppearancePanel() {
 
             <div className="space-y-2">
                 <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                    Sections
+                    {text('pbta:forms.shared.appearance.sectionsLabel')}
                 </p>
                 <div className="grid grid-cols-2 gap-x-3 gap-y-1.5">
                     {playbookSections.map((section) => (
@@ -70,7 +70,7 @@ export function PlaybookAppearancePanel() {
             <div className="space-y-2">
                 <div className="flex items-center justify-between gap-2">
                     <Label htmlFor="pbta-pb-preview-width" className="text-xs">
-                        Preview width
+                        {text('pbta:forms.shared.appearance.previewWidthLabel')}
                     </Label>
                     <span className="text-xs font-medium">
                         {previewWidth}px
@@ -87,7 +87,9 @@ export function PlaybookAppearancePanel() {
                         setPreviewWidth(Number(event.target.value))
                     }
                     className="w-full accent-primary"
-                    aria-label="Preview width"
+                    aria-label={text(
+                        'pbta:forms.shared.appearance.previewWidthLabel'
+                    )}
                 />
                 <div className="flex items-center justify-between text-[10px] text-muted-foreground">
                     <span>{PREVIEW_WIDTH_MIN}px</span>
@@ -102,7 +104,7 @@ export function PlaybookAppearancePanel() {
                 className="h-8 w-full text-xs"
                 onClick={resetViewPrefs}
             >
-                Reset view
+                {text('pbta:forms.shared.appearance.resetView')}
             </Button>
         </div>
     )

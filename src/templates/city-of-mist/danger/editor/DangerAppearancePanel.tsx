@@ -39,7 +39,7 @@ export function DangerAppearancePanel() {
         <div className="space-y-4">
             <div className="flex items-center justify-between gap-4">
                 <Label htmlFor="danger-auto-hide-empty" className="text-xs">
-                    Auto-hide empty sections
+                    {text('city:forms.shared.appearance.autoHideEmptySections')}
                 </Label>
                 <Switch
                     id="danger-auto-hide-empty"
@@ -50,7 +50,7 @@ export function DangerAppearancePanel() {
 
             <div className="flex items-center justify-between gap-4">
                 <Label htmlFor="danger-separators" className="text-xs">
-                    Show separators
+                    {text('city:forms.shared.appearance.showSeparators')}
                 </Label>
                 <Switch
                     id="danger-separators"
@@ -61,7 +61,7 @@ export function DangerAppearancePanel() {
 
             <div className="space-y-2">
                 <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                    Sections
+                    {text('city:forms.shared.appearance.sectionsLabel')}
                 </p>
                 <div className="grid grid-cols-2 gap-x-3 gap-y-1.5">
                     {dangerSections.map((section) => (
@@ -84,7 +84,7 @@ export function DangerAppearancePanel() {
             <div className="space-y-2">
                 <div className="flex items-center justify-between gap-2">
                     <Label htmlFor="danger-preview-width" className="text-xs">
-                        Preview width
+                        {text('city:forms.shared.appearance.previewWidthLabel')}
                     </Label>
                     <span className="text-xs font-medium">
                         {previewWidth}px
@@ -101,7 +101,9 @@ export function DangerAppearancePanel() {
                         setPreviewWidth(Number(event.target.value))
                     }
                     className="w-full accent-primary"
-                    aria-label="Preview width"
+                    aria-label={text(
+                        'city:forms.shared.appearance.previewWidthLabel'
+                    )}
                 />
                 <div className="flex items-center justify-between text-[10px] text-muted-foreground">
                     <span>{PREVIEW_WIDTH_MIN}px</span>
@@ -111,7 +113,7 @@ export function DangerAppearancePanel() {
 
             <div className="space-y-2">
                 <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                    Background
+                    {text('city:forms.shared.appearance.backgroundLabel')}
                 </p>
                 <div className="flex flex-wrap items-center gap-2">
                     {dangerBackgroundOptions.map((option) => (
@@ -126,8 +128,13 @@ export function DangerAppearancePanel() {
                             )}
                             style={{ backgroundColor: option.color }}
                             onClick={() => setBackground(option.value)}
-                            aria-label={`Use ${option.label} background`}
-                            title={option.label}
+                            aria-label={text(
+                                'city:forms.shared.appearance.useBackground',
+                                {
+                                    name: text(option.label),
+                                }
+                            )}
+                            title={text(option.label)}
                         />
                     ))}
                 </div>
@@ -137,7 +144,7 @@ export function DangerAppearancePanel() {
                 <div className="flex flex-wrap items-start justify-between gap-3">
                     <div className="space-y-2">
                         <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                            Layout
+                            {text('city:forms.danger.appearance.layoutLabel')}
                         </p>
                         <div className="inline-flex rounded-lg border border-border bg-muted/30 p-1">
                             <button
@@ -151,7 +158,7 @@ export function DangerAppearancePanel() {
                                 onClick={() => setColumnCount(1)}
                                 aria-pressed={columnCount === 1}
                             >
-                                1 column
+                                {text('city:forms.danger.appearance.oneColumn')}
                             </button>
                             <button
                                 type="button"
@@ -164,7 +171,9 @@ export function DangerAppearancePanel() {
                                 onClick={() => setColumnCount(2)}
                                 aria-pressed={columnCount === 2}
                             >
-                                2 columns
+                                {text(
+                                    'city:forms.danger.appearance.twoColumns'
+                                )}
                             </button>
                         </div>
                     </div>
@@ -176,7 +185,9 @@ export function DangerAppearancePanel() {
                         )}
                     >
                         <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                            Title placement
+                            {text(
+                                'city:forms.shared.appearance.titlePlacementLabel'
+                            )}
                         </p>
                         <div className="inline-flex rounded-lg border border-border bg-muted/30 p-1">
                             <button
@@ -191,7 +202,9 @@ export function DangerAppearancePanel() {
                                 onClick={() => setTitlePlacement('outside')}
                                 aria-pressed={titlePlacement === 'outside'}
                             >
-                                Outside
+                                {text(
+                                    'city:forms.shared.appearance.titleOutside'
+                                )}
                             </button>
                             <button
                                 type="button"
@@ -205,7 +218,9 @@ export function DangerAppearancePanel() {
                                 onClick={() => setTitlePlacement('inside')}
                                 aria-pressed={titlePlacement === 'inside'}
                             >
-                                Inside
+                                {text(
+                                    'city:forms.shared.appearance.titleInside'
+                                )}
                             </button>
                         </div>
                     </div>
@@ -220,7 +235,7 @@ export function DangerAppearancePanel() {
             >
                 <div className="flex items-center justify-between gap-2">
                     <Label htmlFor="danger-column-height" className="text-xs">
-                        Block height
+                        {text('city:forms.danger.appearance.blockHeight')}
                     </Label>
                     <span className="text-xs font-medium">
                         {columnHeight}px
@@ -237,7 +252,9 @@ export function DangerAppearancePanel() {
                         setColumnHeight(Number(event.target.value))
                     }
                     className="w-full accent-primary disabled:cursor-not-allowed"
-                    aria-label="Block height"
+                    aria-label={text(
+                        'city:forms.danger.appearance.blockHeight'
+                    )}
                     disabled={columnCount !== 2}
                 />
                 <div className="flex items-center justify-between text-[10px] text-muted-foreground">
@@ -253,7 +270,7 @@ export function DangerAppearancePanel() {
                 className="h-8 w-full text-xs"
                 onClick={resetViewPrefs}
             >
-                Reset view
+                {text('city:forms.shared.appearance.resetView')}
             </Button>
         </div>
     )

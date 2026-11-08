@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
+import { useUiText } from '@/i18n/text'
 import {
     DndContext,
     KeyboardSensor,
@@ -33,6 +34,7 @@ export default function TagsForm({
     focusIndex?: number
     autoCreate?: boolean
 }) {
+    const text = useUiText()
     const { cityOfMistThemeCard, addTag, updateTagAt, removeTagAt, moveTag } =
         useCityOfMistThemeCardStore()
     const tags =
@@ -72,12 +74,14 @@ export default function TagsForm({
 
     return (
         <div className="space-y-2.5">
-            <div className="flex items-baseline justify-between gap-2">
+            <div className="space-y-0.5">
                 <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                    {field === 'power' ? 'Power tags' : 'Weakness tags'}
+                    {field === 'power'
+                        ? text('city:forms.themeCard.tags.powerHeading')
+                        : text('city:forms.themeCard.tags.weaknessHeading')}
                 </p>
                 <p className="text-xs text-muted-foreground">
-                    Letters are optional for homebrew tags.
+                    {text('city:forms.themeCard.tags.lettersHelp')}
                 </p>
             </div>
             <DndContext
@@ -120,11 +124,11 @@ export default function TagsForm({
                     )
                 }
             >
-                <Plus className="h-3.5 w-3.5" /> Add tag
+                <Plus className="h-3.5 w-3.5" />{' '}
+                {text('city:forms.themeCard.tags.add')}
             </Button>
             <p className="text-xs text-muted-foreground">
-                During play, an extra power tag may temporarily exist before its
-                matching weakness is added.
+                {text('city:forms.themeCard.tags.playHelp')}
             </p>
         </div>
     )
@@ -150,6 +154,7 @@ function TagRow({
     onUpdate: (update: Record<string, unknown>) => void
     onRemove: () => void
 }) {
+    const text = useUiText()
     const {
         attributes,
         listeners,
@@ -168,7 +173,7 @@ function TagRow({
                 <button
                     type="button"
                     className="mb-0.5 inline-flex h-7 w-7 cursor-grab items-center justify-center rounded hover:bg-muted"
-                    aria-label="Drag to reorder"
+                    aria-label={text('actions.dragToReorder')}
                     {...attributes}
                     {...listeners}
                 >
@@ -176,7 +181,7 @@ function TagRow({
                 </button>
                 <div className="grid gap-1">
                     <Label htmlFor={`${id}-letter`} className="text-xs">
-                        Letter
+                        {text('city:forms.themeCard.tags.letterLabel')}
                     </Label>
                     <Input
                         id={`${id}-letter`}
@@ -194,7 +199,7 @@ function TagRow({
                 </div>
                 <div className="grid gap-1">
                     <Label htmlFor={`${id}-text`} className="text-xs">
-                        Tag
+                        {text('city:forms.themeCard.tags.tagLabel')}
                     </Label>
                     <Input
                         id={`${id}-text`}
@@ -210,7 +215,7 @@ function TagRow({
                     variant="ghost"
                     size="icon"
                     className="h-8 w-8 text-destructive"
-                    title="Remove"
+                    title={text('actions.remove')}
                     onClick={onRemove}
                 >
                     <Trash2 className="h-3.5 w-3.5" />
@@ -218,7 +223,9 @@ function TagRow({
             </div>
             <div className="mt-2 flex items-center justify-end gap-2">
                 <Label htmlFor={`${id}-state`} className="text-xs">
-                    {field === 'power' ? 'Burnt' : 'Invoked'}
+                    {field === 'power'
+                        ? text('city:forms.themeCard.tags.burnt')
+                        : text('city:forms.themeCard.tags.invoked')}
                 </Label>
                 <Switch
                     id={`${id}-state`}

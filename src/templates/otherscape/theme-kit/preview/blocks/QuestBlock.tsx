@@ -18,7 +18,7 @@ export default function QuestBlock() {
     return (
         <ClickableSection onClick={openQuest} ariaLabel="Edit the quest">
             <div className="theme-kit-quest">
-                <span className="os-label theme-kit-quest__label">
+                <span className="theme-kit-rule-label">
                     {QUEST_LABEL[otherscapeThemeKit.theme_type]}
                 </span>
                 {otherscapeThemeKit.quest ? (

@@ -2,6 +2,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
+import { useUiText } from '@/i18n/text'
 import { useLegendInTheMistStoryThemeStore } from '../../hooks'
 
 function TrackInput({
@@ -31,6 +32,7 @@ function TrackInput({
 }
 
 export default function QuestForm() {
+    const text = useUiText()
     const {
         legendInTheMistStoryTheme,
         setQuest,
@@ -42,30 +44,37 @@ export default function QuestForm() {
     return (
         <div className="space-y-4">
             <div className="grid gap-1">
-                <Label htmlFor="story-theme-quest">Quest</Label>
+                <Label htmlFor="story-theme-quest">
+                    {text('legend:forms.storyTheme.questForm.questLabel')}
+                </Label>
                 <Textarea
                     id="story-theme-quest"
                     className="min-h-24 text-sm"
                     value={legendInTheMistStoryTheme.quest}
                     onChange={(event) => setQuest(event.target.value)}
-                    placeholder="Return home with something worth showing."
+                    placeholder={text(
+                        'legend:forms.storyTheme.questForm.questPlaceholder'
+                    )}
                 />
                 <p className="text-xs text-muted-foreground">
-                    What the theme pushes the hero towards. Markdown and braced
-                    tags are rendered on the card.
+                    {text('legend:forms.storyTheme.questForm.questHint')}
                 </p>
             </div>
 
             <div className="grid gap-3 sm:grid-cols-2">
                 <TrackInput
                     id="story-theme-improve"
-                    label="Improve"
+                    label={text(
+                        'legend:forms.storyTheme.questForm.improveLabel'
+                    )}
                     value={legendInTheMistStoryTheme.improve}
                     onChange={setImprove}
                 />
                 <TrackInput
                     id="story-theme-abandon"
-                    label="Abandon"
+                    label={text(
+                        'legend:forms.storyTheme.questForm.abandonLabel'
+                    )}
                     value={legendInTheMistStoryTheme.abandon}
                     onChange={setAbandon}
                 />
@@ -74,10 +83,14 @@ export default function QuestForm() {
             <div className="flex items-center justify-between gap-4">
                 <div className="grid gap-0.5">
                     <Label htmlFor="story-theme-milestone" className="text-xs">
-                        Milestone
+                        {text(
+                            'legend:forms.storyTheme.questForm.milestoneLabel'
+                        )}
                     </Label>
                     <span className="text-xs text-muted-foreground">
-                        Marked once the theme has reached its turning point.
+                        {text(
+                            'legend:forms.storyTheme.questForm.milestoneHint'
+                        )}
                     </span>
                 </div>
                 <Switch

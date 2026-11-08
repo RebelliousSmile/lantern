@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { useUiText, type TranslationKey } from '@/i18n/text'
 import { cn } from '@/utils/cn'
 import { Trash2 } from 'lucide-react'
 import {
@@ -10,20 +11,21 @@ import {
 } from '../../hooks'
 import StringListInput from './StringListInput'
 
-const KINDS: { value: MotivationKind; label: string }[] = [
-    { value: 'mystery', label: 'Mystery' },
-    { value: 'identity', label: 'Identity' },
-    { value: 'either', label: "Player's choice" },
+const KINDS: { value: MotivationKind; label: TranslationKey }[] = [
+    { value: 'mystery', label: 'city:forms.shared.zone.mystery' },
+    { value: 'identity', label: 'city:forms.shared.zone.identity' },
+    { value: 'either', label: 'city:forms.themeKit.motivation.kindEither' },
 ]
 
-const ZONE_LABEL: Record<ThemeType, string> = {
-    mythos: 'Mystery',
-    logos: 'Identity',
-    extra: 'Motivation',
-    crew: 'Motivation',
+const ZONE_LABEL: Record<ThemeType, TranslationKey> = {
+    mythos: 'city:forms.shared.zone.mystery',
+    logos: 'city:forms.shared.zone.identity',
+    extra: 'city:forms.shared.zone.motivation',
+    crew: 'city:forms.shared.zone.motivation',
 }
 
 export default function MotivationForm() {
+    const text = useUiText()
     const { cityOfMistThemeKit, setMotivation } = useCityOfMistThemeKitStore()
     const motivation = cityOfMistThemeKit.motivation
     const themeType = cityOfMistThemeKit.theme_type
@@ -36,14 +38,15 @@ export default function MotivationForm() {
         <div className="space-y-4">
             {themeType === 'crew' ? (
                 <p className="rounded-md border border-dashed p-2 text-xs text-muted-foreground">
-                    A Crew themebook prints its crew relationships in place of a
-                    motivation, so this zone will not appear on the page.
+                    {text('city:forms.themeKit.motivation.crewNote')}
                 </p>
             ) : null}
 
             {kindIsOpen ? (
                 <div className="grid gap-1">
-                    <Label>Written as</Label>
+                    <Label>
+                        {text('city:forms.themeKit.motivation.writtenAs')}
+                    </Label>
                     <div className="grid grid-cols-3 overflow-hidden rounded-md border">
                         {KINDS.map((kind) => (
                             <Button
@@ -66,20 +69,28 @@ export default function MotivationForm() {
                                     setMotivation({ kind: kind.value })
                                 }
                             >
-                                {kind.label}
+                                {text(kind.label)}
                             </Button>
                         ))}
                     </div>
                 </div>
             ) : (
                 <p className="text-xs text-muted-foreground">
-                    A {themeType === 'mythos' ? 'Mythos' : 'Logos'} themebook
-                    always writes this zone as {ZONE_LABEL[themeType]}.
+                    {text('city:forms.themeKit.motivation.fixedKind', {
+                        type: text(
+                            themeType === 'mythos'
+                                ? 'city:forms.shared.themeType.mythos'
+                                : 'city:forms.shared.themeType.logos'
+                        ),
+                        zone: text(ZONE_LABEL[themeType]),
+                    })}
                 </p>
             )}
 
             <div className="grid gap-1">
-                <Label htmlFor="theme-kit-motivation-intro">Intro line</Label>
+                <Label htmlFor="theme-kit-motivation-intro">
+                    {text('city:forms.themeKit.motivation.introLabel')}
+                </Label>
                 <Textarea
                     id="theme-kit-motivation-intro"
                     className="min-h-20 text-sm"
@@ -87,18 +98,21 @@ export default function MotivationForm() {
                     onChange={(event) =>
                         setMotivation({ intro: event.target.value })
                     }
-                    placeholder="What is the question you cannot stop asking?"
+                    placeholder={text(
+                        'city:forms.themeKit.motivation.introPlaceholder'
+                    )}
                 />
                 <p className="text-xs text-muted-foreground">
-                    The line the themebook prints above the zone. Supports
-                    inline Markdown.
+                    {text('city:forms.themeKit.motivation.introHelp')}
                 </p>
             </div>
 
             <div className="grid gap-1">
                 <Label>
-                    Examples{' '}
-                    <span className="text-muted-foreground">(optional)</span>
+                    {text('city:forms.themeKit.motivation.examplesLabel')}{' '}
+                    <span className="text-muted-foreground">
+                        {text('city:forms.shared.meta.optional')}
+                    </span>
                 </Label>
                 <StringListInput
                     value={motivation?.examples ?? []}
@@ -107,14 +121,18 @@ export default function MotivationForm() {
                             examples: examples.length ? examples : undefined,
                         })
                     }
-                    placeholder="Add example..."
+                    placeholder={text(
+                        'city:forms.themeKit.motivation.examplePlaceholder'
+                    )}
                 />
             </div>
 
             <div className="grid gap-1">
                 <Label>
-                    Closed list{' '}
-                    <span className="text-muted-foreground">(optional)</span>
+                    {text('city:forms.themeKit.motivation.optionsLabel')}{' '}
+                    <span className="text-muted-foreground">
+                        {text('city:forms.shared.meta.optional')}
+                    </span>
                 </Label>
                 <StringListInput
                     value={motivation?.options ?? []}
@@ -123,18 +141,21 @@ export default function MotivationForm() {
                             options: options.length ? options : undefined,
                         })
                     }
-                    placeholder="Add option..."
+                    placeholder={text(
+                        'city:forms.themeKit.motivation.optionPlaceholder'
+                    )}
                 />
                 <p className="text-xs text-muted-foreground">
-                    For the themebooks that offer a list to pick from instead of
-                    a blank line.
+                    {text('city:forms.themeKit.motivation.optionsHelp')}
                 </p>
             </div>
 
             <div className="grid gap-1">
                 <Label htmlFor="theme-kit-motivation-rule">
-                    Rule{' '}
-                    <span className="text-muted-foreground">(optional)</span>
+                    {text('city:forms.themeKit.motivation.ruleLabel')}{' '}
+                    <span className="text-muted-foreground">
+                        {text('city:forms.shared.meta.optional')}
+                    </span>
                 </Label>
                 <Textarea
                     id="theme-kit-motivation-rule"
@@ -143,7 +164,9 @@ export default function MotivationForm() {
                     onChange={(event) =>
                         setMotivation({ rule: event.target.value })
                     }
-                    placeholder="When you answer this Mystery, the theme fades and you lose it."
+                    placeholder={text(
+                        'city:forms.themeKit.motivation.rulePlaceholder'
+                    )}
                 />
             </div>
 
@@ -155,8 +178,8 @@ export default function MotivationForm() {
                     className="h-8 gap-1.5 text-xs text-destructive"
                     onClick={() => setMotivation(null)}
                 >
-                    <Trash2 className="h-3.5 w-3.5" /> Remove the motivation
-                    zone
+                    <Trash2 className="h-3.5 w-3.5" />{' '}
+                    {text('city:forms.themeKit.motivation.remove')}
                 </Button>
             ) : null}
         </div>

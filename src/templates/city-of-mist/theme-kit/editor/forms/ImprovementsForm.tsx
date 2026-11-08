@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { useUiText } from '@/i18n/text'
 import {
     closestCenter,
     DndContext,
@@ -31,6 +32,7 @@ export default function ImprovementsForm({
     focusIndex?: number
     autoCreate?: boolean
 }) {
+    const text = useUiText()
     const {
         cityOfMistThemeKit,
         addImprovement,
@@ -74,13 +76,14 @@ export default function ImprovementsForm({
     return (
         <div className="space-y-2.5">
             <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                Improvements
+                {text('city:forms.themeKit.improvements.heading')}
             </p>
 
             {improvements.length && improvements.length !== PRINTED_COUNT ? (
                 <p className="rounded-md border border-dashed p-2 text-xs text-muted-foreground">
-                    Every themebook the books print carries five improvements;
-                    this one carries {improvements.length}.
+                    {text('city:forms.themeKit.improvements.countWarning', {
+                        count: improvements.length,
+                    })}
                 </p>
             ) : null}
 
@@ -119,7 +122,8 @@ export default function ImprovementsForm({
                 className="h-8 w-full gap-1.5 border-dashed text-xs"
                 onClick={() => addImprovement(BLANK)}
             >
-                <Plus className="h-3.5 w-3.5" /> Add improvement
+                <Plus className="h-3.5 w-3.5" />{' '}
+                {text('city:forms.themeKit.improvements.add')}
             </Button>
         </div>
     )
@@ -142,6 +146,7 @@ function ImprovementRow({
     onUpdate: (update: Partial<Improvement>) => void
     onRemove: () => void
 }) {
+    const text = useUiText()
     const {
         attributes,
         listeners,
@@ -164,7 +169,7 @@ function ImprovementRow({
                 <button
                     type="button"
                     className="inline-flex h-8 w-7 cursor-grab items-center justify-center rounded hover:bg-muted disabled:cursor-default disabled:opacity-40"
-                    aria-label="Drag to reorder"
+                    aria-label={text('actions.dragToReorder')}
                     disabled={!stored}
                     {...attributes}
                     {...listeners}
@@ -173,7 +178,9 @@ function ImprovementRow({
                 </button>
                 <div className="grid min-w-0 flex-1 gap-1">
                     <Label htmlFor={`${id}-name`} className="text-xs">
-                        Improvement {index + 1}
+                        {text('city:forms.themeKit.improvements.rowLabel', {
+                            n: index + 1,
+                        })}
                     </Label>
                     <Input
                         id={`${id}-name`}
@@ -182,7 +189,9 @@ function ImprovementRow({
                         onChange={(event) =>
                             onUpdate({ name: event.target.value })
                         }
-                        placeholder="Second Sight"
+                        placeholder={text(
+                            'city:forms.themeKit.improvements.namePlaceholder'
+                        )}
                     />
                 </div>
                 <Button
@@ -190,7 +199,7 @@ function ImprovementRow({
                     variant="ghost"
                     size="icon"
                     className="h-8 w-8 text-destructive"
-                    title="Remove"
+                    title={text('actions.remove')}
                     disabled={!stored}
                     onClick={onRemove}
                 >
@@ -199,7 +208,7 @@ function ImprovementRow({
             </div>
             <div className="mt-2 grid gap-1 pl-9">
                 <Label htmlFor={`${id}-effect`} className="text-xs">
-                    Effect
+                    {text('city:forms.themeKit.improvements.effectLabel')}
                 </Label>
                 <Textarea
                     id={`${id}-effect`}
@@ -208,7 +217,9 @@ function ImprovementRow({
                     onChange={(event) =>
                         onUpdate({ effect: event.target.value })
                     }
-                    placeholder="Take an additional power tag for this theme."
+                    placeholder={text(
+                        'city:forms.themeKit.improvements.effectPlaceholder'
+                    )}
                 />
             </div>
         </li>

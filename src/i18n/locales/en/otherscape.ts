@@ -2,6 +2,7 @@ import challengeForms from './otherscape/challengeForms'
 import characterTropeForms from './otherscape/characterTropeForms'
 import loadoutItemForms from './otherscape/loadoutItemForms'
 import powerSetForms from './otherscape/powerSetForms'
+import sharedForms from './otherscape/sharedForms'
 import themeForms from './otherscape/themeForms'
 import themeKitForms from './otherscape/themeKitForms'
 
@@ -118,6 +119,7 @@ const otherscape = {
         exportPng: 'Export the current power set preview as PNG.',
         sections: {
             description: 'Description',
+            tags: 'Tags & Statuses',
             specials: 'Specials',
             threats: 'Threats',
             generalConsequences: 'General Consequences',
@@ -154,9 +156,11 @@ const otherscape = {
         exportToml: 'Export the current theme kit data as TOML.',
         exportPng: 'Export the current theme kit card as PNG.',
         sections: {
+            description: 'Description',
             powerTags: 'Power tags',
             weaknessTags: 'Weakness tags',
             quest: 'Quest',
+            special: 'Special',
             meta: 'Meta footer',
         },
         warnings: {
@@ -169,6 +173,7 @@ const otherscape = {
         characterTrope: characterTropeForms,
         loadoutItem: loadoutItemForms,
         powerSet: powerSetForms,
+        shared: sharedForms,
         theme: themeForms,
         themeKit: themeKitForms,
     },

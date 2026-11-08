@@ -6,9 +6,11 @@ import {
     useOtherscapeThemeKitStore,
     useOtherscapeThemeKitViewStore,
 } from '../hooks'
+import DescriptionBlock from './blocks/DescriptionBlock'
 import HeaderBlock from './blocks/HeaderBlock'
 import MetaFooterBlock from './blocks/MetaFooterBlock'
 import QuestBlock from './blocks/QuestBlock'
+import SpecialBlock from './blocks/SpecialBlock'
 import TagsBlock from './blocks/TagsBlock'
 import './themeKitTheme.css'
 
@@ -37,6 +39,12 @@ export function ThemeKitPreview() {
 
                 <div className="theme-kit-sheet__body">
                     <SectionGate
+                        show={shouldShow(otherscapeThemeKit, 'description', ui)}
+                    >
+                        <DescriptionBlock />
+                    </SectionGate>
+
+                    <SectionGate
                         show={groupShouldShow(
                             otherscapeThemeKit,
                             ['powerTags', 'weaknessTags'],
@@ -50,6 +58,12 @@ export function ThemeKitPreview() {
                         show={shouldShow(otherscapeThemeKit, 'quest', ui)}
                     >
                         <QuestBlock />
+                    </SectionGate>
+
+                    <SectionGate
+                        show={shouldShow(otherscapeThemeKit, 'special', ui)}
+                    >
+                        <SpecialBlock />
                     </SectionGate>
                 </div>
             </div>

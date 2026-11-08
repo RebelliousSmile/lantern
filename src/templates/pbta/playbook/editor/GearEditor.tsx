@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { useUiText } from '@/i18n/text'
 import { X } from 'lucide-react'
 import { StringListEditor } from '../../shared/StringListEditor'
 import type { GearEntry } from '../model'
@@ -14,6 +15,7 @@ export type GearEditorProps = {
 /* Array of structured objects, index-based like CreationEntriesEditor:
    gear prints in list order and nothing needs reordering. */
 export function GearEditor({ value, onChange }: GearEditorProps) {
+    const text = useUiText()
     function updateAt(index: number, entry: GearEntry) {
         onChange(value.map((current, i) => (i === index ? entry : current)))
     }
@@ -36,7 +38,7 @@ export function GearEditor({ value, onChange }: GearEditorProps) {
                                     name: event.target.value,
                                 })
                             }
-                            placeholder="Name"
+                            placeholder={text('fields.name')}
                         />
                         <Input
                             className="h-8 w-28 text-xs"
@@ -47,7 +49,9 @@ export function GearEditor({ value, onChange }: GearEditorProps) {
                                     equipmentType: event.target.value,
                                 })
                             }
-                            placeholder="Type key"
+                            placeholder={text(
+                                'pbta:forms.playbook.gear.typeKeyPlaceholder'
+                            )}
                         />
                         <Input
                             className="h-8 w-20 text-xs"
@@ -61,14 +65,20 @@ export function GearEditor({ value, onChange }: GearEditorProps) {
                                         : null,
                                 })
                             }
-                            placeholder="Qty"
+                            placeholder={text(
+                                'pbta:forms.playbook.gear.quantityPlaceholder'
+                            )}
                         />
                         <Button
                             type="button"
                             variant="ghost"
                             size="icon-sm"
                             className="shrink-0"
-                            aria-label={`Remove ${entry.name || 'gear'}`}
+                            aria-label={text('pbta:forms.shared.remove', {
+                                name:
+                                    entry.name ||
+                                    text('pbta:forms.shared.names.gear'),
+                            })}
                             onClick={() => removeAt(index)}
                         >
                             <X className="h-3.5 w-3.5" />
@@ -84,18 +94,20 @@ export function GearEditor({ value, onChange }: GearEditorProps) {
                                 description: event.target.value,
                             })
                         }
-                        placeholder="Description"
+                        placeholder={text('fields.description')}
                     />
                     <div className="grid gap-1">
                         <Label className="text-xs text-muted-foreground">
-                            Tags
+                            {text('pbta:forms.playbook.labels.tags')}
                         </Label>
                         <StringListEditor
                             value={entry.tags}
                             onChange={(tags) =>
                                 updateAt(index, { ...entry, tags })
                             }
-                            placeholder="Add tag and press Enter"
+                            placeholder={text(
+                                'pbta:forms.shared.list.addTagPlaceholder'
+                            )}
                         />
                     </div>
                 </div>
@@ -118,7 +130,7 @@ export function GearEditor({ value, onChange }: GearEditorProps) {
                     ])
                 }
             >
-                Add gear
+                {text('pbta:forms.playbook.gear.add')}
             </Button>
         </div>
     )

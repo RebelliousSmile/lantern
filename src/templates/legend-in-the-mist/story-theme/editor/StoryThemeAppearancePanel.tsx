@@ -29,7 +29,9 @@ export function StoryThemeAppearancePanel() {
                     htmlFor="story-theme-auto-hide-empty"
                     className="text-xs"
                 >
-                    Auto-hide empty sections
+                    {text(
+                        'legend:forms.storyTheme.appearance.autoHideEmptySections'
+                    )}
                 </Label>
                 <Switch
                     id="story-theme-auto-hide-empty"
@@ -40,7 +42,7 @@ export function StoryThemeAppearancePanel() {
 
             <div className="space-y-2">
                 <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                    Sections
+                    {text('legend:forms.storyTheme.appearance.sectionsLabel')}
                 </p>
                 <div className="grid grid-cols-[1fr_0.8fr] gap-x-3 gap-y-1.5">
                     {storyThemeSections.map((section) => (
@@ -66,7 +68,9 @@ export function StoryThemeAppearancePanel() {
                         htmlFor="story-theme-preview-width"
                         className="text-xs"
                     >
-                        Preview width
+                        {text(
+                            'legend:forms.storyTheme.appearance.previewWidthLabel'
+                        )}
                     </Label>
                     <span className="text-xs font-medium">
                         {previewWidth}px
@@ -83,7 +87,9 @@ export function StoryThemeAppearancePanel() {
                         setPreviewWidth(Number(event.target.value))
                     }
                     className="w-full accent-primary"
-                    aria-label="Preview width"
+                    aria-label={text(
+                        'legend:forms.storyTheme.appearance.previewWidthLabel'
+                    )}
                 />
                 <div className="flex items-center justify-between text-[10px] text-muted-foreground">
                     <span>{PREVIEW_WIDTH_MIN}px</span>
@@ -93,7 +99,7 @@ export function StoryThemeAppearancePanel() {
 
             <div className="space-y-2">
                 <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                    Background
+                    {text('legend:forms.storyTheme.appearance.backgroundLabel')}
                 </p>
                 <RadioGroup
                     value={background}
@@ -111,7 +117,9 @@ export function StoryThemeAppearancePanel() {
                                 value={option.value}
                                 id={`story-theme-background-${option.value}`}
                             />
-                            <span className="text-xs">{option.label}</span>
+                            <span className="text-xs">
+                                {text(option.label)}
+                            </span>
                         </label>
                     ))}
                 </RadioGroup>
@@ -124,7 +132,7 @@ export function StoryThemeAppearancePanel() {
                 className="h-8 w-full text-xs"
                 onClick={resetViewPrefs}
             >
-                Reset view
+                {text('legend:forms.storyTheme.appearance.resetView')}
             </Button>
         </div>
     )

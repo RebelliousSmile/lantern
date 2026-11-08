@@ -1,8 +1,9 @@
 import { useActiveTemplateTab } from '@/core/workspace/selectors'
 import { getActiveTab, useWorkspaceStore } from '@/core/workspace/store'
 import type { WorkspaceTab } from '@/core/workspace/types'
-import { cloneValue } from '@/utils/clone'
 import { setVisibility, toggleVisibility } from '@/templates/shared/visibility'
+import { cloneValue } from '@/utils/clone'
+import { normalizeOtherscapeVariant } from '../shared/variants'
 import type {
     ChallengeMeta,
     Limit,
@@ -19,6 +20,8 @@ import {
     defaultHidden,
     defaultOtherscapeChallengeSheetState,
     defaultOtherscapeChallengeView,
+    PREVIEW_WIDTH_MAX,
+    PREVIEW_WIDTH_MIN,
 } from './model'
 
 type OtherscapeChallengeTab = WorkspaceTab<
@@ -442,7 +445,17 @@ export function useOtherscapeChallengeViewStore() {
     const view: OtherscapeChallengeViewState = {
         ...fallbackView,
         ...tabView,
+        /* A tab saved under the old two-column bounds (700-1400) is brought
+           back into the single column's own. */
+        previewWidth: Math.min(
+            PREVIEW_WIDTH_MAX,
+            Math.max(
+                PREVIEW_WIDTH_MIN,
+                tabView?.previewWidth ?? fallbackView.previewWidth
+            )
+        ),
         background: normalizeBackground(tabView?.background),
+        variant: normalizeOtherscapeVariant(tabView?.variant),
         hidden: {
             ...fallbackView.hidden,
             ...(tabView?.hidden ?? {}),
@@ -471,6 +484,7 @@ export function useOtherscapeChallengeViewStore() {
         setBackground: (
             background: OtherscapeChallengeViewState['background']
         ) => patchView({ background }),
+        setVariant: (variant: string) => patchView({ variant }),
         toggleHidden: (id: SectionId) =>
             patchView({
                 hidden: toggleVisibility(view.hidden, id),
@@ -530,7 +544,11 @@ export function isEmptySection(
 ) {
     switch (id) {
         case 'description':
-            return !otherscapeChallenge.description.trim()
+            // The scale is printed in the prose, so it keeps the region alive.
+            return (
+                !otherscapeChallenge.description.trim() &&
+                otherscapeChallenge.scale === null
+            )
         case 'tagsStatuses':
             return !otherscapeChallenge.tags_and_statuses.length
         case 'limits':
@@ -579,7 +597,10 @@ export function groupShouldShow(
 export function getOtherscapeChallengePreviewWidth(
     view: OtherscapeChallengeViewState
 ) {
-    return view.previewWidth
+    return Math.min(
+        PREVIEW_WIDTH_MAX,
+        Math.max(PREVIEW_WIDTH_MIN, view.previewWidth)
+    )
 }
 
 export function getLiveOtherscapeChallengeTab() {

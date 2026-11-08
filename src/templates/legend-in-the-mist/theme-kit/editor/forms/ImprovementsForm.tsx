@@ -162,7 +162,7 @@ export default function ImprovementsForm({
 
     return (
         <div className="space-y-2.5">
-            <div className="flex items-baseline justify-between gap-2">
+            <div className="space-y-0.5">
                 <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                     {text('legend:forms.themeKit.improvements.heading')}
                 </p>
@@ -299,7 +299,10 @@ export default function ImprovementsForm({
                                 className="mt-1 h-8 w-full justify-center gap-1.5 border-dashed px-2.5 text-xs"
                                 onClick={addPlaceholder}
                             >
-                                <Plus className="h-3.5 w-3.5" /> Add improvement
+                                <Plus className="h-3.5 w-3.5" />{' '}
+                                {text(
+                                    'legend:forms.themeKit.improvements.addButton'
+                                )}
                             </Button>
                         </li>
                     </ul>
@@ -325,6 +328,7 @@ function SortableImprovementItem({
     onRemove: () => void
     children?: React.ReactNode
 }) {
+    const text = useUiText()
     const {
         attributes,
         listeners,
@@ -357,11 +361,13 @@ function SortableImprovementItem({
                       ? 'opacity-40 cursor-not-allowed hover:bg-transparent'
                       : 'cursor-grab active:cursor-grabbing'
               }`}
-                        aria-label="Drag to reorder"
+                        aria-label={text('common:actions.dragToReorder')}
                         title={
                             dragDisabled
-                                ? 'Finish editing to reorder'
-                                : 'Drag to reorder'
+                                ? text(
+                                      'legend:forms.themeKit.shared.finishEditingToReorder'
+                                  )
+                                : text('common:actions.dragToReorder')
                         }
                         disabled={dragDisabled}
                         {...(!dragDisabled ? attributes : {})}
@@ -391,7 +397,7 @@ function SortableImprovementItem({
                         size="icon"
                         className="h-7 w-7"
                         onClick={onEdit}
-                        title="Edit"
+                        title={text('common:actions.edit')}
                     >
                         <Pencil className="h-3.5 w-3.5" />
                     </Button>
@@ -401,7 +407,7 @@ function SortableImprovementItem({
                         size="icon"
                         className="h-7 w-7 text-destructive"
                         onClick={onRemove}
-                        title="Remove"
+                        title={text('common:actions.remove')}
                     >
                         <Trash2 className="h-3.5 w-3.5" />
                     </Button>

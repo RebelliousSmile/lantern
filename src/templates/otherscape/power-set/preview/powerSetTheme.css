@@ -1,89 +1,187 @@
-/* The Power Set card is the narrowest of the Otherscape cards: a slanted band
-   naming what the card is and which source it draws on, the name on a coloured
-   slab, the prose, then a single column - the Specials it grants, the Threats it
-   adds, and the Consequences those pay out.
+/* The Power Set card, after the Tokyo book's own (`tokyo-dark-power-set.jpg`,
+   `tokyo-dark-mythos-set.jpg`): a panel tinted by its type - maroon for Self,
+   deep violet for Mythos - in a heavy dark frame with a raised tab on its top
+   edge carrying a neon pill. A small flush-right kicker names the type; the
+   name follows in condensed italic caps of the accent, with the type's mark and
+   the rating. Then the prose, and a single column under flush-right muted
+   labels: the tags and statuses as highlighted italic words, the Specials, the
+   Threats in italics with their Consequences in bold, the general ones closing
+   the list.
 
-   Everything this card shares with the other Otherscape cards, the ground, the
-   accents, the skew and the type, comes from `../../shared/tokens.css`. The
-   accent in particular is left to the type modifier the sheet root carries, so
-   what is here is this card's layout only. */
+   Everything this card shares with the other Otherscape cards, the accents,
+   the skew and the type, comes from `../../shared/tokens.css`. The accent in
+   particular is left to the type modifier the sheet root carries, so what is
+   here is this card's layout only. */
 @import '../../shared/tokens.css';
 
 .os-card.power-set-sheet {
     /* No accent is set here on purpose: the card takes the one its type
-       modifier paints, so Self, Mythos and Noise each read as themselves. */
+       modifier paints, so Self, Mythos and Noise each tint their own panel. */
+    --os-surface: color-mix(in srgb, var(--os-accent) 4%, #201e2e);
+    --os-paper: color-mix(in srgb, var(--os-accent) 22%, #1c0c2e);
+    --os-paper-deep: var(--os-paper);
+    --os-edge: color-mix(
+        in srgb,
+        var(--os-accent) 40%,
+        rgba(220, 212, 228, 0.3)
+    );
+    --os-ink: #f1edf4;
+    /* The labels and their rules: the type's colour, toned down. */
+    --os-ink-soft: color-mix(in srgb, var(--os-accent) 55%, #9a90a8);
+    /* The name: the accent itself, lifted for Mythos (see below). */
+    --ps-title: var(--os-accent);
+    /* The bullets of the Threats and Consequences: the type's colour, in the
+       name's shade (a choice of ours: the book prints them lime on every
+       type). */
+    --ps-bullet: var(--ps-title);
+    /* The book's title face: a heavy extra-condensed sans, bundled by the app. */
+    --os-font-display:
+        'Fira Sans Extra Condensed', 'Oswald', 'Archivo Narrow', 'Arial Narrow',
+        ui-sans-serif, system-ui, sans-serif;
+    --ps-frame: #1c1c2e;
+    position: relative;
+    /* The frame's tab stands above the panel, so the card must not clip it and
+       leaves it room on the page. */
+    margin-top: 18px;
+    /* The thin rim of the type's colour inside the frame. */
+    box-shadow: inset 0 0 0 2px
+        color-mix(in srgb, var(--os-accent) 28%, #1c0c2e);
+    border: 5px solid var(--ps-frame);
     width: 100%;
+    overflow: visible;
+}
+
+.os-card.power-set-sheet.bg-plain {
+    background: var(--os-surface);
+}
+
+/* The panel: slate under the name, warming into the type's colour by the
+   middle and holding it to the foot. */
+.os-card.power-set-sheet.bg-neon {
+    background-image: linear-gradient(
+        180deg,
+        var(--os-surface) 0%,
+        var(--os-surface) 12%,
+        var(--os-paper) 48%,
+        var(--os-paper-deep) 100%
+    );
+}
+
+/* The book prints the Mythos name lighter than the Mythos accent, and its
+   panel bluer than the shared mix gives. */
+.os-card.power-set-sheet.os-card--mythos {
+    --os-paper: color-mix(in srgb, var(--os-accent) 24%, #1c0c3c);
+    --ps-title: color-mix(in srgb, var(--os-accent) 80%, #fff);
+}
+
+/* The raised tab of the frame, a trapezoid centred on the top edge. */
+.os-card.power-set-sheet::before {
+    position: absolute;
+    top: -18px;
+    left: 50%;
+    transform: translateX(-50%);
+    clip-path: polygon(5% 0, 95% 0, 100% 100%, 0 100%);
+    background: var(--ps-frame);
+    width: 36%;
+    height: 14px;
+    content: '';
+}
+
+/* The neon pill set in the tab, in the accent. */
+.os-card.power-set-sheet::after {
+    position: absolute;
+    top: -13px;
+    left: 50%;
+    transform: translateX(-50%);
+    box-shadow:
+        0 0 6px var(--os-accent),
+        0 0 14px color-mix(in srgb, var(--os-accent) 70%, transparent);
+    border-radius: 3px;
+    background: color-mix(in srgb, var(--os-accent) 80%, #fff);
+    width: 46px;
+    height: 4px;
+    content: '';
+}
+
+.os-card .power-set-sheet__head {
+    padding: 0.6rem 1rem 0;
 }
 
 .os-card .power-set-sheet__body {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
-    padding: 1rem 1.15rem 1.35rem;
+    gap: 0.55rem;
+    padding: 0.55rem 1rem 1rem;
 }
 
-/* ---------- Header band ---------- */
-.os-card .power-set-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 0.5rem;
-    /* Wider than the card and pulled back, so the skew runs off both edges
-       instead of leaving a wedge of paper at the corners. */
-    margin: 0 -0.6rem;
-    background: linear-gradient(
-        100deg,
-        var(--os-accent) 0%,
-        color-mix(in srgb, var(--os-accent) 78%, var(--os-paper-deep)) 100%
-    );
-    padding: 0.34rem 1.35rem;
-    min-height: 1.75rem;
-    color: var(--os-accent-ink);
-}
-
-.os-card .power-set-header__kind {
-    /* The band's own label overrides the muted ink `os-label` sets: it sits on
-       the accent, not on the paper. */
-    opacity: 0.95;
-    color: var(--os-accent-ink);
-}
-
-.os-card .power-set-header__type {
-    font-style: italic;
+/* Every flush-right label is muted: on the book's panel the labels whisper and
+   the accent is kept for the name, the marks and the bullets. */
+.os-card.power-set-sheet .section-title {
+    color: var(--os-ink-soft);
     font-weight: 700;
-    font-size: 0.62rem;
-    font-family: var(--os-font-display);
+    font-size: 0.56rem;
+    font-family: var(--os-font-body);
     letter-spacing: 0.16em;
-    text-transform: uppercase;
+}
+
+.os-card.power-set-sheet .section--end .section-line {
+    background: linear-gradient(90deg, transparent 0%, var(--os-ink-soft) 100%);
 }
 
 /* ---------- Name ---------- */
 .os-card .power-set-title {
-    margin: 0.6rem -0.35rem 0;
-    background: linear-gradient(
-        100deg,
-        color-mix(in srgb, var(--os-accent) 86%, #f4faff) 0%,
-        var(--os-accent) 100%
-    );
-    padding: 0.42rem 1.1rem;
-    color: var(--os-accent-ink);
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: 0.2rem;
+    color: var(--ps-title);
+}
+
+.os-card .power-set-title__glyph {
+    flex: none;
+    width: 1.45rem;
+    height: 1.45rem;
 }
 
 .os-card .power-set-title__text {
-    display: block;
-    font-size: 1.6rem;
-    line-height: 1.1;
-    letter-spacing: 0.01em;
+    flex: 1 1 auto;
+    min-width: 0;
+    font-weight: 900;
+    font-size: 1.85rem;
+    line-height: 1;
+    letter-spacing: 0;
+}
+
+.os-card .power-set-title__rating {
+    flex: none;
+    align-self: flex-start;
+    margin-top: 0.25rem;
+    font-weight: 700;
+    font-size: 1rem;
+    font-family: var(--os-font-body);
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+}
+
+/* The crosshairs of the rating, at the height of the text beside them. */
+.os-card .power-set-title__rating {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.08em;
+}
+
+.os-card .power-set-rating__mark {
+    flex: none;
+    width: 0.95em;
+    height: 0.95em;
 }
 
 /* ---------- Description ---------- */
-/* The MC-facing prose, set in the body face rather than the display one: it is
-   the only region of the card meant to be read as sentences. */
 .os-card .power-set-description {
-    padding: 0.7rem 1.15rem 0;
-    color: var(--os-ink-soft);
+    padding-top: 0.4rem;
+    color: var(--os-ink);
     font-size: 0.8rem;
-    line-height: 1.45;
+    line-height: 1.38;
 }
 
 .os-card .power-set-description__text p {
@@ -94,86 +192,154 @@
     margin-bottom: 0;
 }
 
+/* ---------- Inline tokens ---------- */
+/* The book sets tags and statuses as words on a highlight, not as capsules:
+   a tag on lime, a status on green, both italic. Scoped to this card, so the
+   capsules the other cards print are left as they are. */
+.os-card.power-set-sheet .mist-tag,
+.os-card.power-set-sheet .mist-status,
+.os-card.power-set-sheet .mist-limit,
+.os-card.power-set-sheet .mist-weakness {
+    /* Inline rather than the shared inline-flex: the highlight breaks with
+       the line, and a hanging indent is not inherited. */
+    display: inline;
+    box-decoration-break: clone;
+    border: 0;
+    border-radius: 0;
+    padding: 0 0.18em;
+    font-style: italic;
+    font-weight: 600;
+}
+
+.os-card.power-set-sheet .mist-tag {
+    background: #606600;
+    color: #f4f4dc;
+}
+
+.os-card.power-set-sheet .mist-status {
+    background: #00601e;
+    color: #c9f5c0;
+}
+
+.os-card.power-set-sheet .mist-limit {
+    background: #d07a1f;
+    color: #fff4e6;
+}
+
+.os-card.power-set-sheet .mist-weakness {
+    background: #7d7a3a;
+    padding-left: 1.6ch;
+    color: #fbfbe8;
+}
+
+/* ---------- Tags and statuses ---------- */
+/* One run of words with commas between, as the book prints it. */
+.os-card .power-set-tags__list {
+    margin: 0.3rem 0 0;
+    padding: 0;
+    font-size: 0.8rem;
+    line-height: 1.55;
+    list-style: none;
+}
+
+.os-card .power-set-tags__item {
+    display: inline;
+}
+
+.os-card .power-set-tags__item + .power-set-tags__item::before {
+    content: ', ';
+}
+
 /* ---------- Lists ---------- */
 .os-card .power-set-specials__list,
 .os-card .power-set-threats__list,
 .os-card .power-set-consequences__list {
     display: flex;
     flex-direction: column;
-    gap: 0.4rem;
-    margin: 0.45rem 0 0;
+    gap: 0.3rem;
+    margin: 0.35rem 0 0;
     padding: 0;
     list-style: none;
 }
 
 /* ---------- Specials ---------- */
+/* The name in bold caps, the text hanging under it. */
 .os-card .power-set-special {
-    border-left: 3px solid var(--os-ink-faint);
-    padding: 0.05rem 0 0.05rem 0.55rem;
+    padding-left: 1em;
+    font-size: 0.78rem;
+    line-height: 1.4;
+    text-align: left;
+    text-indent: -1em;
+}
+
+.os-card .power-set-special__name {
+    margin-right: 0.3em;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.os-card .power-set-special__name::after {
+    content: ':';
+}
+
+/* ---------- Threats ---------- */
+/* Each Threat is a group of its own, ruled off from the next: the Threat in
+   italics behind the accent's chevron, its Consequences in bold behind a
+   double one. */
+.os-card .power-set-threats__list > li + li {
+    border-top: 1px solid var(--os-edge);
+    padding-top: 0.35rem;
+}
+
+.os-card .power-set-threat__head {
+    position: relative;
+    padding-left: 0.8rem;
+    font-style: italic;
     font-size: 0.78rem;
     line-height: 1.4;
     text-align: left;
 }
 
-.os-card .power-set-special__name {
-    display: block;
-    font-style: italic;
-    font-weight: 700;
-    font-family: var(--os-font-display);
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-}
-
-.os-card .power-set-special__text {
-    display: block;
-    color: var(--os-ink-soft);
-}
-
-/* ---------- Threats ---------- */
-.os-card .power-set-threat__head {
-    display: flex;
-    align-items: baseline;
-    gap: 0.45rem;
+.os-card .power-set-threat__head::before {
+    position: absolute;
+    left: 0;
+    content: '\203A';
+    color: var(--ps-bullet);
+    font-style: normal;
+    font-weight: 800;
 }
 
 .os-card .power-set-threat__name {
-    flex: none;
-    background: var(--os-ink);
-    padding: 0.1rem 0.55rem;
-    color: var(--os-ink-inverse);
-    font-style: italic;
-    font-weight: 700;
-    font-size: 0.74rem;
-    font-family: var(--os-font-display);
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
+    margin-right: 0.3em;
+    font-style: normal;
+    font-weight: 800;
+}
+
+.os-card .power-set-threat__name::after {
+    content: ':';
 }
 
 .os-card .power-set-threat__text {
-    color: var(--os-ink-soft);
-    font-size: 0.78rem;
-    line-height: 1.4;
+    color: var(--os-ink);
 }
 
-/* Indented and ruled off, so the list a Threat carries reads as belonging to
-   that Threat rather than to the card. */
 .os-card .power-set-threat__consequences {
     display: flex;
     flex-direction: column;
-    gap: 0.2rem;
-    margin: 0.3rem 0 0;
-    border-left: 1px solid var(--os-edge);
-    padding: 0 0 0 0.75rem;
+    gap: 0.12rem;
+    margin: 0.15rem 0 0 0.8rem;
+    padding: 0;
     list-style: none;
 }
 
 /* ---------- Consequences ---------- */
-/* One shape for a consequence wherever it is printed, so the general list and a
-   threat's own list read as the same kind of thing. */
+/* One shape for a consequence wherever it is printed: bold, behind the
+   accent's double chevron. */
 .os-card .power-set-consequence {
     position: relative;
     padding-left: 0.85rem;
     color: var(--os-ink);
+    font-weight: 700;
     font-size: 0.76rem;
     line-height: 1.4;
     text-align: left;
@@ -181,15 +347,22 @@
 
 .os-card .power-set-consequence::before {
     position: absolute;
-    top: 0.45em;
     left: 0;
-    /* The diamond the book puts in front of an outcome, drawn rather than
-       loaded. */
-    transform: rotate(45deg);
-    background: var(--os-accent);
-    width: 0.4rem;
-    height: 0.4rem;
-    content: '';
+    content: '\00BB';
+    color: var(--ps-bullet);
+    font-weight: 800;
+}
+
+/* The general Consequences close the Threats' list, ruled off like one more
+   group, with no label of their own. */
+.os-card .power-set-consequences--continued {
+    margin-top: -0.2rem;
+    border-top: 1px solid var(--os-edge);
+    padding-top: 0.35rem;
+}
+
+.os-card .power-set-consequences--continued .power-set-consequences__list {
+    margin-top: 0;
 }
 
 /* ---------- Footer (metadata, badges) ---------- */

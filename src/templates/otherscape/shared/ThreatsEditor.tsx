@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { useUiText } from '@/i18n/text'
 
 import {
     ArrowLeft,
@@ -89,6 +90,7 @@ export default function ThreatsEditor({
     noun: string
     store: ThreatEditorStore
 }) {
+    const text = useUiText()
     const {
         otherscapeChallenge,
         addThreat,
@@ -237,8 +239,14 @@ export default function ThreatsEditor({
         if (editingThreat == null) return
         const name = tName.trim()
         const description = tDesc.trim()
-        if (!name) return setTErr('Threat name is required.')
-        if (!description) return setTErr('Threat description is required.')
+        if (!name)
+            return setTErr(
+                text('otherscape:forms.shared.threats.errorNameRequired')
+            )
+        if (!description)
+            return setTErr(
+                text('otherscape:forms.shared.threats.errorDescriptionRequired')
+            )
 
         updateThreatAt(editingThreat, { name, description })
         cancelEditThreat()
@@ -265,16 +273,18 @@ export default function ThreatsEditor({
         setConsDraft(DEFAULT_CONSEQUENCE)
     }
 
-    function startEditConsequence(cIdx: number, text: string) {
+    function startEditConsequence(cIdx: number, value: string) {
         setEditingCons(cIdx)
-        setConsDraft(text)
+        setConsDraft(value)
     }
 
     function saveConsequence() {
         if (currentThreatIndex == null || editingCons == null) return
         const next = consDraft.trim()
         if (!next) {
-            toast.error('Consequence cannot be empty.')
+            toast.error(
+                text('otherscape:forms.shared.threats.errorConsequenceEmpty')
+            )
             return
         }
 
@@ -346,7 +356,9 @@ export default function ThreatsEditor({
                                                             htmlFor={`t-name-${tIdx}`}
                                                             className="text-xs"
                                                         >
-                                                            Name
+                                                            {text(
+                                                                'fields.name'
+                                                            )}
                                                         </Label>
                                                         <Input
                                                             id={`t-name-${tIdx}`}
@@ -366,10 +378,13 @@ export default function ThreatsEditor({
                                                             htmlFor={`t-desc-${tIdx}`}
                                                             className="text-xs"
                                                         >
-                                                            Short description{' '}
+                                                            {text(
+                                                                'otherscape:forms.shared.threats.descriptionLabel'
+                                                            )}{' '}
                                                             <span className="text-muted-foreground">
-                                                                (Markdown +
-                                                                tokens)
+                                                                {text(
+                                                                    'otherscape:forms.shared.threats.descriptionHint'
+                                                                )}
                                                             </span>
                                                         </Label>
                                                         <Textarea
@@ -383,7 +398,12 @@ export default function ThreatsEditor({
                                                                         .value
                                                                 )
                                                             }
-                                                            placeholder={`What the ${noun.toLowerCase()} starts to do…`}
+                                                            placeholder={text(
+                                                                'otherscape:forms.shared.threats.descriptionPlaceholder',
+                                                                {
+                                                                    noun: noun.toLowerCase(),
+                                                                }
+                                                            )}
                                                         />
                                                     </div>
                                                     <div className="flex items-center gap-2">
@@ -393,7 +413,9 @@ export default function ThreatsEditor({
                                                             onClick={saveThreat}
                                                         >
                                                             <Check className="mr-1 h-3.5 w-3.5" />{' '}
-                                                            Save
+                                                            {text(
+                                                                'actions.save'
+                                                            )}
                                                         </Button>
                                                         <Button
                                                             variant="secondary"
@@ -404,7 +426,9 @@ export default function ThreatsEditor({
                                                             }
                                                         >
                                                             <X className="mr-1 h-3.5 w-3.5" />{' '}
-                                                            Cancel
+                                                            {text(
+                                                                'actions.cancel'
+                                                            )}
                                                         </Button>
                                                     </div>
                                                 </div>
@@ -422,8 +446,10 @@ export default function ThreatsEditor({
                                         className="mt-1 h-8 w-full justify-center gap-1.5 border-dashed px-2.5 text-xs"
                                         onClick={addThreatPlaceholder}
                                     >
-                                        <Plus className="h-3.5 w-3.5" /> Add
-                                        threat
+                                        <Plus className="h-3.5 w-3.5" />{' '}
+                                        {text(
+                                            'otherscape:forms.shared.threats.addThreat'
+                                        )}
                                     </Button>
                                 </li>
                             </ul>
@@ -443,10 +469,14 @@ export default function ThreatsEditor({
                                         onClick={backToThreats}
                                     >
                                         <ArrowLeft className="mr-1 h-3.5 w-3.5" />{' '}
-                                        Back
+                                        {text(
+                                            'otherscape:forms.shared.threats.back'
+                                        )}
                                     </Button>
                                     <div className="font-semibold">
-                                        Consequences for:{' '}
+                                        {text(
+                                            'otherscape:forms.shared.threats.consequencesFor'
+                                        )}{' '}
                                         {
                                             otherscapeChallenge.threats[
                                                 currentThreatIndex
@@ -483,7 +513,7 @@ export default function ThreatsEditor({
                                             otherscapeChallenge.threats[
                                                 currentThreatIndex
                                             ]?.consequences ?? []
-                                        ).map((text, cIdx) => {
+                                        ).map((consText, cIdx) => {
                                             const isEditing =
                                                 editingCons === cIdx
                                             return (
@@ -492,11 +522,11 @@ export default function ThreatsEditor({
                                                     id={`c:${cIdx}`}
                                                     dragDisabled={dragDisabled}
                                                     isEditing={isEditing}
-                                                    text={text}
+                                                    value={consText}
                                                     onEdit={() =>
                                                         startEditConsequence(
                                                             cIdx,
-                                                            text
+                                                            consText
                                                         )
                                                     }
                                                     onRemove={() =>
@@ -539,7 +569,9 @@ export default function ThreatsEditor({
                                                 }
                                             >
                                                 <Plus className="h-3.5 w-3.5" />{' '}
-                                                Add consequence
+                                                {text(
+                                                    'otherscape:forms.shared.threats.addConsequence'
+                                                )}
                                             </Button>
                                         </li>
                                     </ul>
@@ -548,7 +580,9 @@ export default function ThreatsEditor({
                         ) : (
                             <div className="flex items-center justify-center text-muted-foreground">
                                 {/* Filler when panel.kind === "threats" but the slide hasn't moved yet */}
-                                Select a threat to edit its consequences
+                                {text(
+                                    'otherscape:forms.shared.threats.selectThreat'
+                                )}
                             </div>
                         )}
                     </div>
@@ -583,6 +617,7 @@ function ThreatRow({
     onOpenConsequences: () => void
     children?: React.ReactNode
 }) {
+    const text = useUiText()
     const {
         attributes,
         listeners,
@@ -609,11 +644,15 @@ function ThreatRow({
                 <button
                     className={`inline-flex h-7 w-7 shrink-0 items-center justify-center self-center rounded hover:bg-slate-50
               ${dragDisabled ? 'opacity-40 cursor-not-allowed hover:bg-transparent' : 'cursor-grab active:cursor-grabbing'}`}
-                    aria-label="Drag to reorder threat"
+                    aria-label={text(
+                        'otherscape:forms.shared.threats.dragThreatAriaLabel'
+                    )}
                     title={
                         dragDisabled
-                            ? 'Finish editing to reorder'
-                            : 'Drag to reorder'
+                            ? text(
+                                  'otherscape:forms.shared.threats.finishEditingToReorder'
+                              )
+                            : text('actions.dragToReorder')
                     }
                     disabled={dragDisabled}
                     {...(!dragDisabled ? attributes : {})}
@@ -640,8 +679,12 @@ function ThreatRow({
                                 size="icon-sm"
                                 className="h-7 w-7"
                                 onClick={onOpenConsequences}
-                                aria-label="Edit consequences"
-                                title="Consequences"
+                                aria-label={text(
+                                    'otherscape:forms.shared.threats.editConsequencesAriaLabel'
+                                )}
+                                title={text(
+                                    'otherscape:forms.shared.threats.consequencesTitle'
+                                )}
                             >
                                 <img
                                     src="/assets/images/consequence.svg"
@@ -663,7 +706,7 @@ function ThreatRow({
                             variant="ghost"
                             size="icon-sm"
                             className="h-7 w-7"
-                            title="Edit"
+                            title={text('actions.edit')}
                             onClick={onEdit}
                         >
                             <Pencil className="h-3.5 w-3.5" />
@@ -672,7 +715,7 @@ function ThreatRow({
                             variant="ghost"
                             size="icon-sm"
                             className="h-7 w-7 text-destructive"
-                            title="Remove"
+                            title={text('actions.remove')}
                             onClick={onRemove}
                         >
                             <Trash2 className="h-3.5 w-3.5" />
@@ -692,7 +735,9 @@ function ThreatRow({
                         </SystemMarkdownScope>
                     ) : (
                         <div className="col-span-2 text-sm text-muted-foreground">
-                            No description
+                            {text(
+                                'otherscape:forms.shared.threats.noDescription'
+                            )}
                         </div>
                     )}
                 </div>
@@ -706,7 +751,7 @@ function ThreatRow({
 
 function ConsequenceRow({
     id,
-    text,
+    value,
     dragDisabled,
     isEditing,
     onEdit,
@@ -714,13 +759,14 @@ function ConsequenceRow({
     children,
 }: {
     id: string
-    text: string
+    value: string
     dragDisabled: boolean
     isEditing: boolean
     onEdit: () => void
     onRemove: () => void
     children?: React.ReactNode // inline editor when editing
 }) {
+    const text = useUiText()
     const {
         attributes,
         listeners,
@@ -748,11 +794,15 @@ function ConsequenceRow({
                 <button
                     className={`inline-flex h-7 w-7 items-center justify-center rounded hover:bg-slate-50
             ${dragDisabled ? 'opacity-40 cursor-not-allowed hover:bg-transparent' : 'cursor-grab active:cursor-grabbing'}`}
-                    aria-label="Drag to reorder consequence"
+                    aria-label={text(
+                        'otherscape:forms.shared.threats.dragConsequenceAriaLabel'
+                    )}
                     title={
                         dragDisabled
-                            ? 'Finish editing to reorder'
-                            : 'Drag to reorder'
+                            ? text(
+                                  'otherscape:forms.shared.threats.finishEditingToReorder'
+                              )
+                            : text('actions.dragToReorder')
                     }
                     disabled={dragDisabled}
                     {...(!dragDisabled ? attributes : {})}
@@ -770,7 +820,7 @@ function ConsequenceRow({
                     >
                         <div
                             dangerouslySetInnerHTML={{
-                                __html: renderLitmMarkdown(text),
+                                __html: renderLitmMarkdown(value),
                             }}
                         />
                     </SystemMarkdownScope>
@@ -783,7 +833,7 @@ function ConsequenceRow({
                     variant="ghost"
                     size="icon-sm"
                     className="h-7 w-7"
-                    title="Edit"
+                    title={text('actions.edit')}
                     onClick={onEdit}
                 >
                     <Pencil className="h-3.5 w-3.5" />
@@ -793,7 +843,7 @@ function ConsequenceRow({
                 variant="ghost"
                 size="icon-sm"
                 className="h-7 w-7 text-destructive"
-                title="Remove"
+                title={text('actions.remove')}
                 onClick={onRemove}
             >
                 <Trash2 className="h-3.5 w-3.5" />
@@ -813,6 +863,8 @@ function InlineConsequenceEditor({
     onSave: () => void
     onCancel: () => void
 }) {
+    const text = useUiText()
+
     return (
         <div className="flex items-center gap-1.5">
             <Input
@@ -828,7 +880,7 @@ function InlineConsequenceEditor({
             <Button
                 size="icon-xs"
                 className="h-5 w-5 shrink-0"
-                title="Save"
+                title={text('actions.save')}
                 onClick={onSave}
             >
                 <Check className="h-3 w-3" />
@@ -837,7 +889,7 @@ function InlineConsequenceEditor({
                 size="icon-xs"
                 variant="secondary"
                 className="h-5 w-5 shrink-0"
-                title="Cancel"
+                title={text('actions.cancel')}
                 onClick={onCancel}
             >
                 <X className="h-3 w-3" />

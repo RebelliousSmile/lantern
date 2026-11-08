@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { useUiText } from '@/i18n/text'
 import { cn } from '@/utils/cn'
 import { X } from 'lucide-react'
 import { useState } from 'react'
@@ -9,10 +10,10 @@ import { StringListEditor } from '../../shared/StringListEditor'
 import type { MoveInline, MoveResult } from '../model'
 
 const AUDIENCES = [
-    ['none', 'Any', null],
-    ['character', 'Character', 'character'],
-    ['npc', 'NPC', 'npc'],
-    ['mc', 'MC', 'mc'],
+    ['none', 'pbta:forms.playbook.audience.any', null],
+    ['character', 'pbta:forms.playbook.audience.character', 'character'],
+    ['npc', 'pbta:forms.playbook.audience.npc', 'npc'],
+    ['mc', 'pbta:forms.playbook.audience.mc', 'mc'],
 ] as const
 
 function AudienceField({
@@ -22,6 +23,7 @@ function AudienceField({
     value: MoveInline['audience']
     onChange: (next: MoveInline['audience']) => void
 }) {
+    const text = useUiText()
     return (
         <div className="grid grid-cols-4 overflow-hidden rounded-md border">
             {AUDIENCES.map(([key, label, audience]) => (
@@ -34,7 +36,7 @@ function AudienceField({
                     )}
                     onClick={() => onChange(audience)}
                 >
-                    {label}
+                    {text(label)}
                 </button>
             ))}
         </div>
@@ -48,6 +50,7 @@ function MoveResultsEditor({
     value: Record<string, MoveResult>
     onChange: (next: Record<string, MoveResult>) => void
 }) {
+    const text = useUiText()
     const [draftKey, setDraftKey] = useState('')
     const entries = Object.entries(value)
 
@@ -85,14 +88,19 @@ function MoveResultsEditor({
                                     label: event.target.value,
                                 })
                             }
-                            placeholder="Label, e.g. 10+"
+                            placeholder={text(
+                                'pbta:forms.playbook.moveFields.resultLabelPlaceholder'
+                            )}
                         />
                         <Button
                             type="button"
                             variant="ghost"
                             size="icon-sm"
                             className="shrink-0"
-                            aria-label={`Remove ${key} result`}
+                            aria-label={text(
+                                'pbta:forms.playbook.moveFields.removeResult',
+                                { key }
+                            )}
                             onClick={() => removeEntry(key)}
                         >
                             <X className="h-3.5 w-3.5" />
@@ -108,7 +116,7 @@ function MoveResultsEditor({
                                 text: event.target.value,
                             })
                         }
-                        placeholder="Supports Markdown."
+                        placeholder={text('pbta:forms.shared.supportsMarkdown')}
                     />
                 </div>
             ))}
@@ -123,7 +131,9 @@ function MoveResultsEditor({
                             addEntry()
                         }
                     }}
-                    placeholder="Result key, e.g. strong"
+                    placeholder={text(
+                        'pbta:forms.playbook.moveFields.resultKeyPlaceholder'
+                    )}
                 />
                 <Button
                     type="button"
@@ -132,7 +142,7 @@ function MoveResultsEditor({
                     className="shrink-0 text-xs"
                     onClick={addEntry}
                 >
-                    Add result
+                    {text('pbta:forms.playbook.moveFields.addResult')}
                 </Button>
             </div>
         </div>
@@ -147,6 +157,7 @@ export type MoveInlineFieldsProps = {
 /* Shared between MovesEditor's own move entries and ChoiceSetsEditor's
    inline choices - both embed a MoveInline. */
 export function MoveInlineFields({ value, onChange }: MoveInlineFieldsProps) {
+    const text = useUiText()
     return (
         <div className="space-y-2">
             <div className="grid gap-1.5 sm:grid-cols-2">
@@ -156,7 +167,7 @@ export function MoveInlineFields({ value, onChange }: MoveInlineFieldsProps) {
                     onChange={(event) =>
                         onChange({ ...value, name: event.target.value })
                     }
-                    placeholder="Move name"
+                    placeholder={text('pbta:forms.playbook.moveFields.name')}
                 />
                 <Input
                     className="h-8 text-xs"
@@ -164,7 +175,9 @@ export function MoveInlineFields({ value, onChange }: MoveInlineFieldsProps) {
                     onChange={(event) =>
                         onChange({ ...value, moveType: event.target.value })
                     }
-                    placeholder="Move type key"
+                    placeholder={text(
+                        'pbta:forms.playbook.moveFields.moveTypeKeyPlaceholder'
+                    )}
                 />
             </div>
 
@@ -175,12 +188,12 @@ export function MoveInlineFields({ value, onChange }: MoveInlineFieldsProps) {
                 onChange={(event) =>
                     onChange({ ...value, description: event.target.value })
                 }
-                placeholder="Supports Markdown."
+                placeholder={text('pbta:forms.shared.supportsMarkdown')}
             />
 
             <div className="grid gap-1">
                 <Label className="text-xs text-muted-foreground">
-                    Audience
+                    {text('pbta:forms.playbook.moveFields.audience')}
                 </Label>
                 <AudienceField
                     value={value.audience}
@@ -194,11 +207,15 @@ export function MoveInlineFields({ value, onChange }: MoveInlineFieldsProps) {
                 onChange={(event) =>
                     onChange({ ...value, trigger: event.target.value })
                 }
-                placeholder="Trigger, e.g. you act despite danger"
+                placeholder={text(
+                    'pbta:forms.playbook.moveFields.triggerPlaceholder'
+                )}
             />
 
             <div className="grid gap-1">
-                <Label className="text-xs text-muted-foreground">Roll</Label>
+                <Label className="text-xs text-muted-foreground">
+                    {text('pbta:forms.playbook.moveFields.roll')}
+                </Label>
                 {value.roll ? (
                     <div className="flex items-center gap-1.5">
                         <Input
@@ -213,7 +230,9 @@ export function MoveInlineFields({ value, onChange }: MoveInlineFieldsProps) {
                                     },
                                 })
                             }
-                            placeholder="type"
+                            placeholder={text(
+                                'pbta:forms.playbook.moveFields.rollTypePlaceholder'
+                            )}
                         />
                         <Input
                             className="h-8 flex-1 text-xs"
@@ -227,7 +246,9 @@ export function MoveInlineFields({ value, onChange }: MoveInlineFieldsProps) {
                                     },
                                 })
                             }
-                            placeholder="formula, e.g. 2d6+Nerve"
+                            placeholder={text(
+                                'pbta:forms.playbook.moveFields.rollFormulaPlaceholder'
+                            )}
                         />
                         <Input
                             className="h-8 w-16 text-xs"
@@ -246,14 +267,18 @@ export function MoveInlineFields({ value, onChange }: MoveInlineFieldsProps) {
                                     },
                                 })
                             }
-                            placeholder="mod"
+                            placeholder={text(
+                                'pbta:forms.playbook.moveFields.rollModPlaceholder'
+                            )}
                         />
                         <Button
                             type="button"
                             variant="ghost"
                             size="icon-sm"
                             className="shrink-0"
-                            aria-label="Remove roll"
+                            aria-label={text(
+                                'pbta:forms.playbook.moveFields.removeRoll'
+                            )}
                             onClick={() => onChange({ ...value, roll: null })}
                         >
                             <X className="h-3.5 w-3.5" />
@@ -276,13 +301,15 @@ export function MoveInlineFields({ value, onChange }: MoveInlineFieldsProps) {
                             })
                         }
                     >
-                        Add roll
+                        {text('pbta:forms.playbook.moveFields.addRoll')}
                     </Button>
                 )}
             </div>
 
             <div className="grid gap-1">
-                <Label className="text-xs text-muted-foreground">Results</Label>
+                <Label className="text-xs text-muted-foreground">
+                    {text('pbta:forms.playbook.moveFields.results')}
+                </Label>
                 <MoveResultsEditor
                     value={value.results}
                     onChange={(results) => onChange({ ...value, results })}
@@ -302,7 +329,9 @@ export function MoveInlineFields({ value, onChange }: MoveInlineFieldsProps) {
                                 : null,
                         })
                     }
-                    placeholder="Uses (optional)"
+                    placeholder={text(
+                        'pbta:forms.playbook.moveFields.usesPlaceholder'
+                    )}
                 />
                 <Input
                     className="h-8 text-xs"
@@ -310,16 +339,22 @@ export function MoveInlineFields({ value, onChange }: MoveInlineFieldsProps) {
                     onChange={(event) =>
                         onChange({ ...value, choices: event.target.value })
                     }
-                    placeholder="Choices note (optional)"
+                    placeholder={text(
+                        'pbta:forms.playbook.moveFields.choicesPlaceholder'
+                    )}
                 />
             </div>
 
             <div className="grid gap-1">
-                <Label className="text-xs text-muted-foreground">Tags</Label>
+                <Label className="text-xs text-muted-foreground">
+                    {text('pbta:forms.playbook.labels.tags')}
+                </Label>
                 <StringListEditor
                     value={value.tags}
                     onChange={(tags) => onChange({ ...value, tags })}
-                    placeholder="Add tag and press Enter"
+                    placeholder={text(
+                        'pbta:forms.shared.list.addTagPlaceholder'
+                    )}
                 />
             </div>
         </div>

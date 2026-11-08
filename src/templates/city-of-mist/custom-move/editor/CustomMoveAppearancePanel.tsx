@@ -31,7 +31,7 @@ export function CustomMoveAppearancePanel() {
         <div className="space-y-4">
             <div className="flex items-center justify-between gap-4">
                 <Label htmlFor="move-auto-hide-empty" className="text-xs">
-                    Auto-hide empty sections
+                    {text('city:forms.shared.appearance.autoHideEmptySections')}
                 </Label>
                 <Switch
                     id="move-auto-hide-empty"
@@ -42,7 +42,7 @@ export function CustomMoveAppearancePanel() {
 
             <div className="flex items-center justify-between gap-4">
                 <Label htmlFor="move-separators" className="text-xs">
-                    Show separators
+                    {text('city:forms.shared.appearance.showSeparators')}
                 </Label>
                 <Switch
                     id="move-separators"
@@ -53,7 +53,7 @@ export function CustomMoveAppearancePanel() {
 
             <div className="space-y-2">
                 <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                    Sections
+                    {text('city:forms.shared.appearance.sectionsLabel')}
                 </p>
                 <div className="grid grid-cols-2 gap-x-3 gap-y-1.5">
                     {customMoveSections.map((section) => (
@@ -76,7 +76,7 @@ export function CustomMoveAppearancePanel() {
             <div className="space-y-2">
                 <div className="flex items-center justify-between gap-2">
                     <Label htmlFor="move-preview-width" className="text-xs">
-                        Preview width
+                        {text('city:forms.shared.appearance.previewWidthLabel')}
                     </Label>
                     <span className="text-xs font-medium">
                         {previewWidth}px
@@ -93,7 +93,9 @@ export function CustomMoveAppearancePanel() {
                         setPreviewWidth(Number(event.target.value))
                     }
                     className="w-full accent-primary"
-                    aria-label="Preview width"
+                    aria-label={text(
+                        'city:forms.shared.appearance.previewWidthLabel'
+                    )}
                 />
                 <div className="flex items-center justify-between text-[10px] text-muted-foreground">
                     <span>{PREVIEW_WIDTH_MIN}px</span>
@@ -103,7 +105,7 @@ export function CustomMoveAppearancePanel() {
 
             <div className="space-y-2">
                 <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                    Background
+                    {text('city:forms.shared.appearance.backgroundLabel')}
                 </p>
                 <div className="flex flex-wrap items-center gap-2">
                     {customMoveBackgroundOptions.map((option) => (
@@ -118,8 +120,13 @@ export function CustomMoveAppearancePanel() {
                             )}
                             style={{ backgroundColor: option.color }}
                             onClick={() => setBackground(option.value)}
-                            aria-label={`Use ${option.label} background`}
-                            title={option.label}
+                            aria-label={text(
+                                'city:forms.shared.appearance.useBackground',
+                                {
+                                    name: text(option.label),
+                                }
+                            )}
+                            title={text(option.label)}
                         />
                     ))}
                 </div>
@@ -132,7 +139,7 @@ export function CustomMoveAppearancePanel() {
                 className="h-8 w-full text-xs"
                 onClick={resetViewPrefs}
             >
-                Reset view
+                {text('city:forms.shared.appearance.resetView')}
             </Button>
         </div>
     )

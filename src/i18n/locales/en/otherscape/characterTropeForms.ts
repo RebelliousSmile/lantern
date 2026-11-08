@@ -3,6 +3,7 @@ const forms = {
     panel: {
         emptyState: 'Click on the card to edit a specific section.',
     },
+    pageLabel: 'Page (optional)',
     basic: {
         nameLabel: 'Character Trope name',
         namePlaceholder: 'e.g., Neon Exorcist',
@@ -81,6 +82,7 @@ const forms = {
         autoHideEmptyLabel: 'Auto-hide empty sections',
         sectionsHeading: 'Sections',
         previewWidthLabel: 'Preview width',
+        variantHeading: 'Variant',
         backgroundHeading: 'Background',
         backgroundOption: {
             neon: 'Neon',

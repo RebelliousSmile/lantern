@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
+import { useUiText } from '@/i18n/text'
 import { renderLitmMarkdown } from '@/utils/markdown'
 import { GripVertical, Pencil, Plus, Trash2 } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
@@ -29,6 +30,7 @@ import { CSS } from '@dnd-kit/utilities'
 const PRESET_LIMITS = ['Harm', 'Scare', 'Convince', 'Subdue', 'Banish']
 
 export default function LimitsForm({ focusIndex }: { focusIndex?: number }) {
+    const text = useUiText()
     const {
         legendInTheMistChallenge,
         addLimit,
@@ -113,9 +115,14 @@ export default function LimitsForm({ focusIndex }: { focusIndex?: number }) {
     function confirmEdit() {
         if (editingIndex == null) return
         const nm = eName.trim()
-        if (!nm) return setError('Name is required.')
+        if (!nm)
+            return setError(
+                text('legend:forms.challenge.limits.errorNameRequired')
+            )
         if (isDuplicateName(nm, editingIndex))
-            return setError('Limit name already exists.')
+            return setError(
+                text('legend:forms.challenge.limits.errorDuplicateName')
+            )
         updateLimitAt(editingIndex, {
             name: nm,
             level: Math.max(1, Math.min(6, Number(eLevel) || 1)),
@@ -205,7 +212,7 @@ export default function LimitsForm({ focusIndex }: { focusIndex?: number }) {
                                                     htmlFor={`limit-name-${idx}`}
                                                     className="text-xs"
                                                 >
-                                                    Name
+                                                    {text('common:fields.name')}
                                                 </Label>
                                                 <Input
                                                     id={`limit-name-${idx}`}
@@ -223,7 +230,9 @@ export default function LimitsForm({ focusIndex }: { focusIndex?: number }) {
                                                     htmlFor={`limit-level-${idx}`}
                                                     className="text-xs"
                                                 >
-                                                    Level
+                                                    {text(
+                                                        'legend:forms.storyTheme.basicForm.levelLabel'
+                                                    )}
                                                 </Label>
                                                 <Input
                                                     id={`limit-level-${idx}`}
@@ -249,7 +258,9 @@ export default function LimitsForm({ focusIndex }: { focusIndex?: number }) {
                                                     disabled={eImmune}
                                                     title={
                                                         eImmune
-                                                            ? 'Ignored when immune'
+                                                            ? text(
+                                                                  'legend:forms.challenge.limits.immuneLevelTitle'
+                                                              )
                                                             : '1–6'
                                                     }
                                                 />
@@ -270,7 +281,9 @@ export default function LimitsForm({ focusIndex }: { focusIndex?: number }) {
                                                     htmlFor={`limit-immune-${idx}`}
                                                     className="text-xs"
                                                 >
-                                                    Immune
+                                                    {text(
+                                                        'legend:forms.challenge.limits.immuneLabel'
+                                                    )}
                                                 </Label>
                                             </div>
 
@@ -287,7 +300,9 @@ export default function LimitsForm({ focusIndex }: { focusIndex?: number }) {
                                                     htmlFor={`limit-progress-${idx}`}
                                                     className="text-xs"
                                                 >
-                                                    Progress limit
+                                                    {text(
+                                                        'legend:forms.challenge.limits.progressLabel'
+                                                    )}
                                                 </Label>
                                             </div>
                                         </div>
@@ -296,7 +311,9 @@ export default function LimitsForm({ focusIndex }: { focusIndex?: number }) {
                                             <Textarea
                                                 rows={2}
                                                 className="min-h-16 px-2 py-1 text-sm"
-                                                placeholder="When this progress limit is maxed…"
+                                                placeholder={text(
+                                                    'legend:forms.challenge.limits.onMaxPlaceholder'
+                                                )}
                                                 value={eOnMax}
                                                 onChange={(ev) =>
                                                     setEOnMax(ev.target.value)
@@ -310,14 +327,14 @@ export default function LimitsForm({ focusIndex }: { focusIndex?: number }) {
                                                 className="h-7 px-2.5 text-xs"
                                                 onClick={confirmEdit}
                                             >
-                                                Save
+                                                {text('common:actions.save')}
                                             </Button>
                                             <Button
                                                 variant="link"
                                                 className="h-7 px-0 text-xs"
                                                 onClick={cancelEdit}
                                             >
-                                                Cancel
+                                                {text('common:actions.cancel')}
                                             </Button>
                                         </div>
                                     </div>
@@ -334,7 +351,8 @@ export default function LimitsForm({ focusIndex }: { focusIndex?: number }) {
                                 className="mt-1 h-8 w-full justify-center gap-1.5 border-dashed px-2.5 text-xs"
                                 onClick={addPlaceholder}
                             >
-                                <Plus className="h-3.5 w-3.5" /> Add limit
+                                <Plus className="h-3.5 w-3.5" />{' '}
+                                {text('legend:forms.challenge.limits.addLimit')}
                             </Button>
                         </li>
                     </ul>
@@ -360,6 +378,7 @@ function SortableLimitItem({
     onRemove: () => void
     children?: React.ReactNode // inline editor renders here when open
 }) {
+    const text = useUiText()
     const {
         attributes,
         listeners,
@@ -387,11 +406,13 @@ function SortableLimitItem({
                     <button
                         className={`inline-flex h-7 w-7 items-center justify-center rounded hover:bg-slate-50
               ${dragDisabled ? 'opacity-40 cursor-not-allowed hover:bg-transparent' : 'cursor-grab active:cursor-grabbing'}`}
-                        aria-label="Drag to reorder"
+                        aria-label={text('common:actions.dragToReorder')}
                         title={
                             dragDisabled
-                                ? 'Finish editing to reorder'
-                                : 'Drag to reorder'
+                                ? text(
+                                      'legend:forms.challenge.shared.finishEditingToReorder'
+                                  )
+                                : text('common:actions.dragToReorder')
                         }
                         disabled={dragDisabled}
                         {...(!dragDisabled ? attributes : {})}
@@ -451,7 +472,7 @@ function SortableLimitItem({
                         size="icon-sm"
                         className="h-7 w-7"
                         onClick={onEdit}
-                        title="Edit"
+                        title={text('common:actions.edit')}
                     >
                         <Pencil className="h-3.5 w-3.5" />
                     </Button>
@@ -460,7 +481,7 @@ function SortableLimitItem({
                         size="icon-sm"
                         className="h-7 w-7 text-destructive"
                         onClick={onRemove}
-                        title="Remove"
+                        title={text('common:actions.remove')}
                     >
                         <Trash2 className="h-3.5 w-3.5" />
                     </Button>

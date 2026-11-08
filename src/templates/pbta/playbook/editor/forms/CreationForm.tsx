@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
+import { useUiText } from '@/i18n/text'
 import { useState } from 'react'
 import { useGameDefinitionForGame } from '../../../shared/gameDefinition'
 import { usePlaybookStore } from '../../hooks'
@@ -8,6 +9,7 @@ import { usePlaybookStore } from '../../hooks'
 export default function CreationForm() {
     const { playbook, setAttributes } = usePlaybookStore()
     const game = useGameDefinitionForGame(playbook.game)
+    const text = useUiText()
     const [answers, setAnswers] = useState<Record<number, string[]>>({})
 
     return (
@@ -90,9 +92,9 @@ export default function CreationForm() {
                         !validScalarTarget &&
                         !validListTarget ? (
                             <p className="text-sm text-destructive">
-                                This question must target an available Text or
-                                LongText attribute for one answer, or a ListMany
-                                attribute for multiple answers.
+                                {text(
+                                    'pbta:forms.playbook.creationForm.invalidTarget'
+                                )}
                             </p>
                         ) : null}
                         {question.attribute ? (
@@ -107,7 +109,7 @@ export default function CreationForm() {
                                 }
                                 onClick={apply}
                             >
-                                Apply selection
+                                {text('pbta:forms.playbook.creationForm.apply')}
                             </Button>
                         ) : null}
                     </fieldset>

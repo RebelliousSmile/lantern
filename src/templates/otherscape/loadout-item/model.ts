@@ -3,6 +3,7 @@ import type {
     OtherscapeLoadoutItem as OtherscapeLoadoutItemData,
     OsLoadoutPublicationType as PublicationType,
 } from '@/contracts/mist-engine'
+import { defaultOtherscapeVariantId } from '../shared/variants'
 
 export type { LoadoutItemMeta, PublicationType }
 
@@ -119,6 +120,9 @@ export type OtherscapeLoadoutItemViewState = {
     zoom: number
     previewWidth: number
     background: Background
+    /* The :Otherscape variant the card is drawn for (see
+       `../shared/variants.ts`). */
+    variant: string
     autoHideEmpty: boolean
     hidden: Record<SectionId, boolean>
     exportPrefs: ExportPrefs
@@ -159,6 +163,7 @@ export const defaultOtherscapeLoadoutItemView: OtherscapeLoadoutItemViewState =
         zoom: 1,
         previewWidth: PREVIEW_WIDTH_DEFAULT,
         background: 'neon',
+        variant: defaultOtherscapeVariantId,
         autoHideEmpty: false,
         hidden: defaultHidden,
         exportPrefs: {

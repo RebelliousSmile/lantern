@@ -9,6 +9,7 @@ import {
     SelectValue,
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
+import { useUiText } from '@/i18n/text'
 import { cn } from '@/utils/cn'
 import { X } from 'lucide-react'
 import { useState } from 'react'
@@ -107,11 +108,14 @@ function AttributeTypeSpecificFields({
     onChange: (next: Attribute) => void
     readOnly?: boolean
 }) {
+    const text = useUiText()
     switch (attribute.type) {
         case 'Number':
             return (
                 <NumberField
-                    label="Default"
+                    label={text(
+                        'pbta:forms.gameDefinition.attributes.defaultLabel'
+                    )}
                     value={attribute.default}
                     onChange={(value) =>
                         onChange({ ...attribute, default: value })
@@ -131,7 +135,9 @@ function AttributeTypeSpecificFields({
                             default: event.target.value || undefined,
                         })
                     }
-                    placeholder="Default value"
+                    placeholder={text(
+                        'pbta:forms.gameDefinition.attributes.defaultValuePlaceholder'
+                    )}
                 />
             )
         case 'LongText':
@@ -147,7 +153,9 @@ function AttributeTypeSpecificFields({
                             default: event.target.value || undefined,
                         })
                     }
-                    placeholder="Default value"
+                    placeholder={text(
+                        'pbta:forms.gameDefinition.attributes.defaultValuePlaceholder'
+                    )}
                 />
             )
         case 'Resource':
@@ -156,7 +164,9 @@ function AttributeTypeSpecificFields({
             return (
                 <div className="flex items-center gap-3">
                     <NumberField
-                        label="Max"
+                        label={text(
+                            'pbta:forms.gameDefinition.attributes.maxLabel'
+                        )}
                         value={attribute.max}
                         onChange={(value) =>
                             onChange({ ...attribute, max: value })
@@ -164,7 +174,9 @@ function AttributeTypeSpecificFields({
                         readOnly={readOnly}
                     />
                     <NumberField
-                        label="Default"
+                        label={text(
+                            'pbta:forms.gameDefinition.attributes.defaultLabel'
+                        )}
                         value={attribute.default}
                         onChange={(value) =>
                             onChange({ ...attribute, default: value })
@@ -186,7 +198,9 @@ function AttributeTypeSpecificFields({
                                 checkboxLabel: event.target.value || undefined,
                             })
                         }
-                        placeholder="Checkbox label (optional)"
+                        placeholder={text(
+                            'pbta:forms.gameDefinition.attributes.checkboxLabelPlaceholder'
+                        )}
                     />
                     <label className="flex items-center gap-1.5 text-xs whitespace-nowrap">
                         <Checkbox
@@ -199,7 +213,9 @@ function AttributeTypeSpecificFields({
                                 })
                             }
                         />
-                        Default checked
+                        {text(
+                            'pbta:forms.gameDefinition.attributes.defaultChecked'
+                        )}
                     </label>
                 </div>
             )
@@ -220,7 +236,9 @@ function AttributeTypeSpecificFields({
                                 onChange({ ...attribute, sort: !!checked })
                             }
                         />
-                        Sort alphabetically
+                        {text(
+                            'pbta:forms.gameDefinition.attributes.sortAlphabetically'
+                        )}
                     </label>
                 </div>
             )
@@ -245,7 +263,9 @@ function AttributeTypeSpecificFields({
                                     })
                                 }
                             />
-                            Sort alphabetically
+                            {text(
+                                'pbta:forms.gameDefinition.attributes.sortAlphabetically'
+                            )}
                         </label>
                         <label className="flex items-center gap-1.5 text-xs">
                             <Checkbox
@@ -258,7 +278,9 @@ function AttributeTypeSpecificFields({
                                     })
                                 }
                             />
-                            Condition
+                            {text(
+                                'pbta:forms.gameDefinition.attributes.condition'
+                            )}
                         </label>
                     </div>
                 </div>
@@ -276,7 +298,9 @@ function AttributeTypeSpecificFields({
                                 default: event.target.value || undefined,
                             })
                         }
-                        placeholder="Default roll formula"
+                        placeholder={text(
+                            'pbta:forms.gameDefinition.attributes.defaultRollPlaceholder'
+                        )}
                     />
                     <label className="flex items-center gap-1.5 text-xs">
                         <Checkbox
@@ -289,7 +313,9 @@ function AttributeTypeSpecificFields({
                                 })
                             }
                         />
-                        Show results
+                        {text(
+                            'pbta:forms.gameDefinition.attributes.showResults'
+                        )}
                     </label>
                 </div>
             )
@@ -309,6 +335,7 @@ function AttributeRowFields({
     onChange: (next: Attribute) => void
     readOnly?: boolean
 }) {
+    const text = useUiText()
     return (
         <div className="space-y-2">
             <Input
@@ -321,10 +348,14 @@ function AttributeRowFields({
                         description: event.target.value || undefined,
                     })
                 }
-                placeholder="Description (optional)"
+                placeholder={text(
+                    'pbta:forms.gameDefinition.attributes.descriptionPlaceholder'
+                )}
             />
             <div className="flex items-center gap-1.5">
-                <span className="text-xs text-muted-foreground">Column</span>
+                <span className="text-xs text-muted-foreground">
+                    {text('pbta:forms.gameDefinition.attributes.column')}
+                </span>
                 <div className="grid grid-cols-3 overflow-hidden rounded-md border">
                     <button
                         type="button"
@@ -337,7 +368,7 @@ function AttributeRowFields({
                             onChange({ ...attribute, position: undefined })
                         }
                     >
-                        Auto
+                        {text('pbta:forms.gameDefinition.attributes.auto')}
                     </button>
                     {(['top', 'left'] as const).map((position) => (
                         <button
@@ -352,7 +383,11 @@ function AttributeRowFields({
                             )}
                             onClick={() => onChange({ ...attribute, position })}
                         >
-                            {position}
+                            {text(
+                                position === 'top'
+                                    ? 'pbta:forms.gameDefinition.attributes.top'
+                                    : 'pbta:forms.gameDefinition.attributes.left'
+                            )}
                         </button>
                     ))}
                 </div>
@@ -381,6 +416,7 @@ export function AttributeListEditor({
     onChange,
     readOnly,
 }: AttributeListEditorProps) {
+    const text = useUiText()
     const [draftKey, setDraftKey] = useState('')
     const entries = Object.entries(value)
 
@@ -421,7 +457,9 @@ export function AttributeListEditor({
                             onChange={(event) =>
                                 renameEntry(index, event.target.value)
                             }
-                            placeholder="key"
+                            placeholder={text(
+                                'pbta:forms.shared.keyPlaceholder'
+                            )}
                         />
                         <Select
                             value={attribute.type}
@@ -460,7 +498,9 @@ export function AttributeListEditor({
                                     label: event.target.value,
                                 })
                             }
-                            placeholder="Label"
+                            placeholder={text(
+                                'pbta:forms.shared.labelPlaceholder'
+                            )}
                         />
                         {!readOnly && (
                             <Button
@@ -468,7 +508,13 @@ export function AttributeListEditor({
                                 variant="ghost"
                                 size="icon-sm"
                                 className="shrink-0"
-                                aria-label={`Remove ${key || 'attribute'}`}
+                                aria-label={text('pbta:forms.shared.remove', {
+                                    name:
+                                        key ||
+                                        text(
+                                            'pbta:forms.shared.names.attribute'
+                                        ),
+                                })}
                                 onClick={() => removeEntry(key)}
                             >
                                 <X className="h-3.5 w-3.5" />
@@ -494,7 +540,7 @@ export function AttributeListEditor({
                                 addAttribute()
                             }
                         }}
-                        placeholder="key"
+                        placeholder={text('pbta:forms.shared.keyPlaceholder')}
                     />
                     <Button
                         type="button"
@@ -503,7 +549,7 @@ export function AttributeListEditor({
                         className="shrink-0 text-xs"
                         onClick={addAttribute}
                     >
-                        Add attribute
+                        {text('pbta:forms.gameDefinition.attributes.add')}
                     </Button>
                 </div>
             )}

@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { useUiText } from '@/i18n/text'
 import { X } from 'lucide-react'
 import { useState } from 'react'
 import type { RollResult } from '../model'
@@ -12,6 +13,7 @@ export type RollResultsEditorProps = {
 /* Same index-keyed rename pattern as RecordListEditor, three fields per row
    instead of two: key (TOML table key), `range` and `label`. */
 export function RollResultsEditor({ value, onChange }: RollResultsEditorProps) {
+    const text = useUiText()
     const [draftKey, setDraftKey] = useState('')
     const [draftRange, setDraftRange] = useState('')
     const [draftLabel, setDraftLabel] = useState('')
@@ -57,7 +59,7 @@ export function RollResultsEditor({ value, onChange }: RollResultsEditorProps) {
                         onChange={(event) =>
                             renameEntry(index, event.target.value)
                         }
-                        placeholder="key"
+                        placeholder={text('pbta:forms.shared.keyPlaceholder')}
                     />
                     <Input
                         className="h-8 w-20 text-xs"
@@ -68,7 +70,9 @@ export function RollResultsEditor({ value, onChange }: RollResultsEditorProps) {
                                 range: event.target.value,
                             })
                         }
-                        placeholder="Range"
+                        placeholder={text(
+                            'pbta:forms.gameDefinition.rollResults.rangePlaceholder'
+                        )}
                     />
                     <Input
                         className="h-8 flex-1 text-xs"
@@ -79,14 +83,16 @@ export function RollResultsEditor({ value, onChange }: RollResultsEditorProps) {
                                 label: event.target.value,
                             })
                         }
-                        placeholder="Label"
+                        placeholder={text('pbta:forms.shared.labelPlaceholder')}
                     />
                     <Button
                         type="button"
                         variant="ghost"
                         size="icon-sm"
                         className="shrink-0"
-                        aria-label={`Remove ${key || 'result'}`}
+                        aria-label={text('pbta:forms.shared.remove', {
+                            name: key || text('pbta:forms.shared.names.result'),
+                        })}
                         onClick={() => removeEntry(key)}
                     >
                         <X className="h-3.5 w-3.5" />
@@ -104,7 +110,7 @@ export function RollResultsEditor({ value, onChange }: RollResultsEditorProps) {
                             commitDraft()
                         }
                     }}
-                    placeholder="key"
+                    placeholder={text('pbta:forms.shared.keyPlaceholder')}
                 />
                 <Input
                     className="h-8 w-20 text-xs"
@@ -116,7 +122,9 @@ export function RollResultsEditor({ value, onChange }: RollResultsEditorProps) {
                             commitDraft()
                         }
                     }}
-                    placeholder="Range"
+                    placeholder={text(
+                        'pbta:forms.gameDefinition.rollResults.rangePlaceholder'
+                    )}
                 />
                 <Input
                     className="h-8 flex-1 text-xs"
@@ -128,7 +136,7 @@ export function RollResultsEditor({ value, onChange }: RollResultsEditorProps) {
                             commitDraft()
                         }
                     }}
-                    placeholder="Label"
+                    placeholder={text('pbta:forms.shared.labelPlaceholder')}
                 />
                 <Button
                     type="button"
@@ -137,7 +145,7 @@ export function RollResultsEditor({ value, onChange }: RollResultsEditorProps) {
                     className="shrink-0 text-xs"
                     onClick={commitDraft}
                 >
-                    Add
+                    {text('actions.add')}
                 </Button>
             </div>
         </div>

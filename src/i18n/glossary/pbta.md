@@ -36,7 +36,7 @@ Conventions :
 | Gear | Équipement (m.) | Actuel. |
 | Equipment type | Type d’équipement (m.) | Clé de la Définition de jeu. |
 | Look | Apparence (f.) | À confirmer (VF officielle ?). Alternative : « Allure », « Look ». Apparaît dans les exemples, pas dans les libellés. |
-| Harm | Blessures (f. pl.) | Actuel (Monsterhearts, Urban Shadows). Alternative : « Dégâts » (m. pl.). À confirmer (VF officielle ?). |
+| Harm | Blessures (f. pl.) | Urban Shadows. Monsterhearts dit « Dégâts » (voir sa section). |
 | Armor | Armure (f.) | |
 | Hx / History, Bond | Hx / Historique (m.), Lien (m.) | Absents de l’interface actuelle ; pour mémoire. À confirmer (VF officielle ?). |
 | Attribute | Attribut (m.) | Dictionnaire d’attributs de la Définition de jeu. Les types (Number, Text, Clock, Track…) sont des clés techniques : ne pas les traduire dans le TOML, seulement dans les libellés. |
@@ -79,15 +79,15 @@ Conventions :
 
 | English term | French term | note |
 | --- | --- | --- |
-| Skin | Peau (f.) | Actuel. Accord : « Nouvelle peau ». À confirmer (VF officielle ?). Alternative : garder « Skin ». |
-| Strings | Ficelles (f. pl.) | Actuel. Alternative : « Emprises » ; à confirmer (VF officielle ?). |
+| Skin | Mue (f.) | Accord : « Nouvelle mue ». VF officielle validée (2026-11-08), ne pas modifier. |
+| Strings | Réserve d’ascendants (f.) | VF officielle validée (2026-11-08), ne pas modifier. |
 | Conditions | États (m. pl.) | Actuel. Alternative : « Conditions ». |
 | Darkest Self | Moi le plus sombre (m.) | À confirmer (VF officielle ?). Alternative : « Part d’ombre » (f.). Donnée d’en-tête éditorial. |
 | Sex Move | Action sexuelle (f.) | À confirmer (VF officielle ?). Alternative : « Action d’intimité ». Suit le choix fait pour Move. |
 | Ascendants | Ascendants (m. pl.) | Collection `ascendants`. |
 | Backstory | Passé (m.) | Alternative : « Histoire ». |
 | Advances | Avancées (f. pl.) | Actuel. Coexiste avec « Progression » (Advancement) dans la même liste de sections. |
-| Harm | Blessures (f. pl.) | Actuel. |
+| Harm | Dégâts (m. pl.) | VF officielle validée (2026-11-08), ne pas modifier. |
 | MC guidance | Conseils au MC | Donnée d’en-tête éditorial. |
 | Hot, Cold, Volatile, Dark | Ardent, Froid, Instable, Sombre | Données du document. À confirmer (VF officielle ?). |
 
@@ -117,3 +117,31 @@ Conventions :
 | Corruption advances / Corruption moves | Avancées de corruption / Actions de corruption | |
 | End move | Action finale (f.) | Actuel. |
 | Debts | Dettes (f. pl.) | Absent de l’interface actuelle ; pour mémoire. |
+
+## Choix naturels en attente de validation
+
+Ajoutés le 2026-11-08 pour les éditeurs PbtA (livret, définition de jeu, Monsterhearts) ; employés par l'interface sans figurer ci-dessus ; à valider avec le mainteneur.
+
+| English term                                       | French term                                                                | note                                                                                     |
+| -------------------------------------------------- | -------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| Audience (Move)                                    | Destinataire (m.)                                                          | Qui l'action vise : Tous / Personnage / PNJ / MC. Alternative : « Public ».              |
+| Any (audience)                                     | Tous                                                                       |                                                                                          |
+| Choice set: Single / Multi / Repeatable            | Un seul / Plusieurs / Répétable                                            | Mode de sélection d'un jeu de choix.                                                     |
+| Condition (attribute)                              | État (m.)                                                                  | Attribut d'état. Alternative : « Condition » (f.), identique à l'anglais.                |
+| Limited (attribute)                                | Limité                                                                     | Badge d'un attribut à usage limité.                                                      |
+| Results shown                                      | Résultats affichés                                                         | Indication d'un attribut de jet qui montre ses résultats.                                |
+| Slug                                               | Identifiant (m.)                                                           | Même mot que `Game id` (« Identifiant du jeu ») ; le contexte les distingue.             |
+| Ref / Inline (move)                                | Réf. / Intégrée                                                            | Une action par référence à un identifiant, ou écrite sur place.                          |
+| Qty                                                | Qté                                                                        | Abréviation de « Quantité ».                                                             |
+| Mod / modifier                                     | Mod. / Modificateur (m.)                                                   | Min./max. dans la définition de jeu.                                                     |
+| Default checked                                    | Cochée par défaut                                                          |                                                                                          |
+| Sort alphabetically                                | Trier par ordre alphabétique                                               |                                                                                          |
+| Column / Auto / Top / Left                         | Colonne / Auto / Haut / Gauche                                             | Position d'un attribut dans la fiche.                                                    |
+| Stat key (toggle)                                  | Clé de caractéristique                                                     | Clé de la caractéristique que la bascule échange.                                        |
+| Stat toggle: None / Custom                         | Aucune / Personnalisée                                                     | Accord féminin avec « bascule ».                                                         |
+| Uses, Choices note                                 | Utilisations, Note sur les choix                                           | Champs facultatifs d'une action.                                                         |
+| Auto-hide empty sections                           | Masquer automatiquement les sections vides                                 | Panneau d'apparence.                                                                     |
+| Show separators / Reset view / Preview width       | Afficher les séparateurs / Réinitialiser l'affichage / Largeur de l'aperçu | Panneau d'apparence ; identiques aux autres jeux sauf « Largeur de l'aperçu » (nouveau). |
+| Read-only (playbook without a game definition tab) | Lecture seule                                                              |                                                                                          |
+| Invalid published collection configuration         | Configuration de collection publiée invalide                               | Message d'erreur de l'éditeur Monsterhearts.                                             |
+| Placeholders « p. ex. … »                          | p. ex.                                                                     | Même forme que les autres jeux.                                                          |

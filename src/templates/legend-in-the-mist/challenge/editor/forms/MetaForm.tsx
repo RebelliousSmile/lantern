@@ -19,27 +19,41 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from '@/components/ui/popover'
+import { useUiText, type TranslationKey } from '@/i18n/text'
 import { getCatalogSources, type CatalogItem } from '@/utils/catalog'
 import { cn } from '@/utils/cn'
 import { Check, ChevronsUpDown, X } from 'lucide-react'
 
-const TYPES: { value: PublicationType; label: string }[] = [
-    { value: 'official', label: 'Official' },
-    { value: 'third_party', label: 'Third Party' },
-    { value: 'cauldron', label: 'Cauldron' },
-    { value: 'homebrew', label: 'Homebrew' },
+const TYPES: { value: PublicationType; label: TranslationKey }[] = [
+    {
+        value: 'official',
+        label: 'legend:forms.challenge.metaForm.publicationTypes.official',
+    },
+    {
+        value: 'third_party',
+        label: 'legend:forms.challenge.metaForm.publicationTypes.thirdParty',
+    },
+    {
+        value: 'cauldron',
+        label: 'legend:forms.challenge.metaForm.publicationTypes.cauldron',
+    },
+    {
+        value: 'homebrew',
+        label: 'legend:forms.challenge.metaForm.publicationTypes.homebrew',
+    },
 ]
 
 /* ---------- Authors chips input ---------- */
 function AuthorsInput({
     value,
     onChange,
-    placeholder = 'Add author and press Enter',
+    placeholder,
 }: {
     value: string[]
     onChange: (next: string[]) => void
-    placeholder?: string
+    placeholder: string
 }) {
+    const text = useUiText()
     const [draft, setDraft] = useState('')
 
     function commitDraft() {
@@ -61,7 +75,10 @@ function AuthorsInput({
                         <button
                             type="button"
                             className="opacity-70 hover:opacity-100"
-                            aria-label={`Remove ${a}`}
+                            aria-label={text(
+                                'legend:forms.challenge.metaForm.removeAuthor',
+                                { author: a }
+                            )}
                             onClick={() =>
                                 onChange(value.filter((x) => x !== a))
                             }
@@ -102,6 +119,7 @@ function SourceCombobox({
     onSelect: (item: CatalogItem) => void
     placeholder: string
 }) {
+    const text = useUiText()
     const [open, setOpen] = useState(false)
     const current = items.find((item) => item.title === value)
 
@@ -120,8 +138,14 @@ function SourceCombobox({
             </PopoverTrigger>
             <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
                 <Command>
-                    <CommandInput placeholder="Search source..." />
-                    <CommandEmpty>No match.</CommandEmpty>
+                    <CommandInput
+                        placeholder={text(
+                            'legend:forms.challenge.metaForm.searchSourcePlaceholder'
+                        )}
+                    />
+                    <CommandEmpty>
+                        {text('legend:forms.challenge.metaForm.noMatch')}
+                    </CommandEmpty>
                     <CommandGroup>
                         {items.map((item) => (
                             <CommandItem
@@ -158,6 +182,7 @@ function TypeSegment({
     value?: PublicationType
     onChange: (v: PublicationType) => void
 }) {
+    const text = useUiText()
     return (
         <div className="grid grid-cols-2 overflow-hidden rounded-md border sm:inline-grid sm:grid-cols-4">
             {TYPES.map((t) => (
@@ -171,7 +196,7 @@ function TypeSegment({
                     )}
                     onClick={() => onChange(t.value)}
                 >
-                    {t.label}
+                    {text(t.label)}
                 </Button>
             ))}
         </div>
@@ -180,6 +205,7 @@ function TypeSegment({
 
 /* ---------- Main MetaForm ---------- */
 export default function MetaForm() {
+    const text = useUiText()
     const { legendInTheMistChallenge, updateMeta } =
         useLegendInTheMistChallengeStore()
     const m = legendInTheMistChallenge.meta
@@ -209,26 +235,35 @@ export default function MetaForm() {
     return (
         <div className="space-y-4">
             <div className="grid gap-1">
-                <Label>Publication type</Label>
+                <Label>
+                    {text(
+                        'legend:forms.challenge.metaForm.publicationTypeLabel'
+                    )}
+                </Label>
                 <TypeSegment value={type} onChange={setType} />
             </div>
 
             {sourceOptions.length > 0 ? (
                 <div className="grid gap-1">
-                    <Label>Source</Label>
+                    <Label>
+                        {text('legend:forms.challenge.metaForm.sourceLabel')}
+                    </Label>
                     <SourceCombobox
                         items={sourceOptions}
                         value={m?.source}
                         onSelect={pickFromCatalog}
                         placeholder={
                             type === 'official'
-                                ? 'Select an official book...'
-                                : 'Select a third-party source...'
+                                ? text(
+                                      'legend:forms.challenge.metaForm.selectOfficialSource'
+                                  )
+                                : text(
+                                      'legend:forms.challenge.metaForm.selectThirdPartySource'
+                                  )
                         }
                     />
                     <div className="text-xs text-muted-foreground">
-                        Selecting a source auto-fills authors. You can still
-                        edit below.
+                        {text('legend:forms.challenge.metaForm.autoFillHint')}
                     </div>
                 </div>
             ) : null}
@@ -237,12 +272,18 @@ export default function MetaForm() {
                 <div className="grid gap-1">
                     <Label htmlFor="meta-source">
                         {type === 'cauldron'
-                            ? 'Cauldron product title'
+                            ? text(
+                                  'legend:forms.challenge.metaForm.sourceTitleLabel.cauldron'
+                              )
                             : type === 'homebrew'
-                              ? 'Homebrew title / location'
-                              : 'Source title'}{' '}
+                              ? text(
+                                    'legend:forms.challenge.metaForm.sourceTitleLabel.homebrew'
+                                )
+                              : text(
+                                    'legend:forms.challenge.metaForm.sourceTitleLabel.default'
+                                )}{' '}
                         <span className="text-muted-foreground">
-                            (optional)
+                            {text('legend:forms.challenge.metaForm.optional')}
                         </span>
                     </Label>
                     <Input
@@ -252,19 +293,25 @@ export default function MetaForm() {
                         onChange={(e) => updateMeta({ source: e.target.value })}
                         placeholder={
                             type === 'cauldron'
-                                ? 'e.g., Cauldron: Shadows in Brine'
+                                ? text(
+                                      'legend:forms.challenge.metaForm.sourceTitlePlaceholder.cauldron'
+                                  )
                                 : type === 'homebrew'
-                                  ? 'e.g., Personal blog, campaign doc...'
-                                  : 'Override selected source title'
+                                  ? text(
+                                        'legend:forms.challenge.metaForm.sourceTitlePlaceholder.homebrew'
+                                    )
+                                  : text(
+                                        'legend:forms.challenge.metaForm.sourceTitlePlaceholder.default'
+                                    )
                         }
                     />
                 </div>
 
                 <div className="grid gap-1">
                     <Label htmlFor="meta-page">
-                        Page{' '}
+                        {text('legend:forms.challenge.metaForm.pageLabel')}{' '}
                         <span className="text-muted-foreground">
-                            (optional)
+                            {text('legend:forms.challenge.metaForm.optional')}
                         </span>
                     </Label>
                     <Input
@@ -286,17 +333,20 @@ export default function MetaForm() {
             </div>
 
             <div className="grid gap-1">
-                <Label>Authors</Label>
+                <Label>
+                    {text('legend:forms.challenge.metaForm.authorsLabel')}
+                </Label>
                 <AuthorsInput
                     value={authors}
                     onChange={(next) => updateMeta({ authors: next })}
-                    placeholder="Add author..."
+                    placeholder={text(
+                        'legend:forms.challenge.metaForm.authorsPlaceholder'
+                    )}
                 />
             </div>
 
             <div className="text-xs text-muted-foreground">
-                Meta helps attribution & search and is preserved on
-                import/export.
+                {text('legend:forms.challenge.metaForm.metaHint')}
             </div>
         </div>
     )

@@ -1,3 +1,4 @@
+import { useUiText } from '@/i18n/text'
 import { useCityOfMistThemeCardSheetStore } from '../hooks'
 import IdentityForm from './forms/IdentityForm'
 import ImprovementsForm from './forms/ImprovementsForm'
@@ -7,12 +8,13 @@ import TagsForm from './forms/TagsForm'
 import TracksForm from './forms/TracksForm'
 
 export function ThemeCardEditorPanel() {
+    const text = useUiText()
     const { open, target } = useCityOfMistThemeCardSheetStore()
 
     if (!open || !target) {
         return (
             <div className="rounded-md border border-dashed px-3 py-4 text-sm text-muted-foreground">
-                Click on the preview to edit a specific section.
+                {text('city:forms.shared.panel.emptyState')}
             </div>
         )
     }

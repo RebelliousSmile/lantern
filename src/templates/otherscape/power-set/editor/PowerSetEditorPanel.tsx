@@ -4,6 +4,7 @@ import BasicForm from './forms/BasicForm'
 import ConsequencesForm from './forms/ConsequencesForm'
 import MetaForm from './forms/MetaForm'
 import SpecialsForm from './forms/SpecialsForm'
+import TagsForm from './forms/TagsForm'
 import ThreatsForm from './forms/ThreatsForm'
 
 export function PowerSetEditorPanel() {
@@ -27,6 +28,8 @@ export function PowerSetEditorPanel() {
             return <ThreatsForm focusIndex={target.index} />
         case 'consequences':
             return <ConsequencesForm focusIndex={target.index} />
+        case 'tags':
+            return <TagsForm />
         case 'meta':
             return <MetaForm />
         default:

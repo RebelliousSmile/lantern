@@ -1,5 +1,6 @@
 import { cn } from '@/utils/cn'
 import { SectionGate } from '../../shared/preview/components/SectionGate'
+import { otherscapeVariantClass } from '../../shared/variants'
 import {
     shouldShow,
     useOtherscapeChallengeStore,
@@ -14,6 +15,9 @@ import TagsBlock from './blocks/TagsBlock'
 import ThreatsBlock from './blocks/ThreatsBlock'
 import './challengeTheme.css'
 
+/* The card of the core book's Challenges (pp. 302-303): one column, in the
+   book's order - the name and the prose, the Limits, the tags and statuses,
+   the Specials, then the Threats with their Consequences. */
 export function ChallengePreview() {
     const ui = useOtherscapeChallengeViewStore()
     // Read through the store so the card repaints on every edit, even where the
@@ -21,24 +25,29 @@ export function ChallengePreview() {
     const { otherscapeChallenge } = useOtherscapeChallengeStore()
 
     /* No theme-type modifier: a Challenge belongs to no theme type, so the card
-       takes the accent its own stylesheet sets rather than one of the four. */
+       takes the accent its own stylesheet sets for the chosen variant. */
     return (
         <div>
             <div
                 className={cn(
                     'challenge-sheet os-card',
-                    ui.background === 'plain' ? 'bg-plain' : 'bg-neon'
+                    ui.background === 'plain' ? 'bg-plain' : 'bg-neon',
+                    otherscapeVariantClass(ui.variant)
                 )}
                 style={{
                     transform: `scale(${ui.zoom})`,
                     transformOrigin: 'top center',
                 }}
             >
-                {/* The band and the name run the full width of the card: they
-                    are its top edge rather than a region of its body. */}
                 <HeaderBlock />
 
                 <div className="challenge-sheet__body">
+                    <SectionGate
+                        show={shouldShow(otherscapeChallenge, 'limits', ui)}
+                    >
+                        <LimitsBlock />
+                    </SectionGate>
+
                     <SectionGate
                         show={shouldShow(
                             otherscapeChallenge,
@@ -49,54 +58,27 @@ export function ChallengePreview() {
                         <TagsBlock />
                     </SectionGate>
 
-                    {/* Two columns: what the Crew can do to the Challenge on
-                        the left, what the Challenge does to the Crew on the
-                        right. */}
-                    <div className="challenge-sheet__columns">
-                        <div className="challenge-sheet__column">
-                            <SectionGate
-                                show={shouldShow(
-                                    otherscapeChallenge,
-                                    'limits',
-                                    ui
-                                )}
-                            >
-                                <LimitsBlock />
-                            </SectionGate>
+                    <SectionGate
+                        show={shouldShow(otherscapeChallenge, 'specials', ui)}
+                    >
+                        <SpecialsBlock />
+                    </SectionGate>
 
-                            <SectionGate
-                                show={shouldShow(
-                                    otherscapeChallenge,
-                                    'specials',
-                                    ui
-                                )}
-                            >
-                                <SpecialsBlock />
-                            </SectionGate>
-                        </div>
+                    <SectionGate
+                        show={shouldShow(otherscapeChallenge, 'threats', ui)}
+                    >
+                        <ThreatsBlock />
+                    </SectionGate>
 
-                        <div className="challenge-sheet__column">
-                            <SectionGate
-                                show={shouldShow(
-                                    otherscapeChallenge,
-                                    'threats',
-                                    ui
-                                )}
-                            >
-                                <ThreatsBlock />
-                            </SectionGate>
-
-                            <SectionGate
-                                show={shouldShow(
-                                    otherscapeChallenge,
-                                    'generalConsequences',
-                                    ui
-                                )}
-                            >
-                                <ConsequencesBlock />
-                            </SectionGate>
-                        </div>
-                    </div>
+                    <SectionGate
+                        show={shouldShow(
+                            otherscapeChallenge,
+                            'generalConsequences',
+                            ui
+                        )}
+                    >
+                        <ConsequencesBlock />
+                    </SectionGate>
                 </div>
             </div>
 

@@ -1,8 +1,9 @@
 import { useActiveTemplateTab } from '@/core/workspace/selectors'
 import { getActiveTab, useWorkspaceStore } from '@/core/workspace/store'
 import type { WorkspaceTab } from '@/core/workspace/types'
-import { cloneValue } from '@/utils/clone'
 import { setVisibility, toggleVisibility } from '@/templates/shared/visibility'
+import { cloneValue } from '@/utils/clone'
+import { normalizeOtherscapeVariant } from '../shared/variants'
 import type {
     CharacterTropeMeta,
     OtherscapeCharacterTrope,
@@ -17,6 +18,8 @@ import {
     defaultHidden,
     defaultOtherscapeCharacterTropeSheetState,
     defaultOtherscapeCharacterTropeView,
+    PREVIEW_WIDTH_MAX,
+    PREVIEW_WIDTH_MIN,
 } from './model'
 
 type OtherscapeCharacterTropeTab = WorkspaceTab<
@@ -35,10 +38,16 @@ function strOrFallback(v: string | undefined, fallback: string) {
 }
 
 function normalizeThemeKitRef(kit: ThemeKitRef): ThemeKitRef {
-    return {
+    const ref: ThemeKitRef = {
         title_tag: strOrFallback(kit.title_tag, 'Untitled Theme Kit'),
         category: strOrFallback(kit.category, 'UNFILED'),
     }
+    // The page is optional and the schema starts at 1: a cleared or
+    // unreadable field leaves the entry without one rather than at 0.
+    if (kit.page != null && Number.isInteger(kit.page) && kit.page >= 1) {
+        ref.page = kit.page
+    }
+    return ref
 }
 
 function normalizeBackground(
@@ -241,7 +250,17 @@ export function useOtherscapeCharacterTropeViewStore() {
     const view: OtherscapeCharacterTropeViewState = {
         ...fallbackView,
         ...tabView,
+        /* A tab saved under the old bounds (700-1400) is brought back into
+           the card's own: past the stage's width the slider did nothing. */
+        previewWidth: Math.min(
+            PREVIEW_WIDTH_MAX,
+            Math.max(
+                PREVIEW_WIDTH_MIN,
+                tabView?.previewWidth ?? fallbackView.previewWidth
+            )
+        ),
         background: normalizeBackground(tabView?.background),
+        variant: normalizeOtherscapeVariant(tabView?.variant),
         hidden: {
             ...fallbackView.hidden,
             ...(tabView?.hidden ?? {}),
@@ -270,6 +289,7 @@ export function useOtherscapeCharacterTropeViewStore() {
         setBackground: (
             background: OtherscapeCharacterTropeViewState['background']
         ) => patchView({ background }),
+        setVariant: (variant: string) => patchView({ variant }),
         toggleHidden: (id: SectionId) =>
             patchView({
                 hidden: toggleVisibility(view.hidden, id),
@@ -374,7 +394,10 @@ export function groupShouldShow(
 export function getOtherscapeCharacterTropePreviewWidth(
     view: OtherscapeCharacterTropeViewState
 ) {
-    return view.previewWidth
+    return Math.min(
+        PREVIEW_WIDTH_MAX,
+        Math.max(PREVIEW_WIDTH_MIN, view.previewWidth)
+    )
 }
 
 export function getLiveOtherscapeCharacterTropeTab() {

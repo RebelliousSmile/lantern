@@ -1,6 +1,7 @@
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { useUiText } from '@/i18n/text'
 import { cn } from '@/utils/cn'
 import { useGameDefinitionStore } from '../../hooks'
 import type { StatToggle } from '../../model'
@@ -21,6 +22,7 @@ function StatToggleField({
     value: StatToggle | null
     onChange: (next: StatToggle | null) => void
 }) {
+    const text = useUiText()
     const kind = statToggleKind(value)
 
     return (
@@ -28,9 +30,18 @@ function StatToggleField({
             <div className="grid grid-cols-3 overflow-hidden rounded-md border">
                 {(
                     [
-                        ['none', 'None'],
-                        ['stat', 'Stat key'],
-                        ['custom', 'Custom'],
+                        [
+                            'none',
+                            text('pbta:forms.gameDefinition.statToggle.none'),
+                        ],
+                        [
+                            'stat',
+                            text('pbta:forms.gameDefinition.statToggle.stat'),
+                        ],
+                        [
+                            'custom',
+                            text('pbta:forms.gameDefinition.statToggle.custom'),
+                        ],
                     ] as const
                 ).map(([option, optionLabel]) => (
                     <button
@@ -55,7 +66,9 @@ function StatToggleField({
                     className="h-8 text-xs"
                     value={typeof value === 'string' ? value : ''}
                     onChange={(event) => onChange(event.target.value)}
-                    placeholder="Stat key this toggle switches, e.g. cool"
+                    placeholder={text(
+                        'pbta:forms.gameDefinition.statToggle.statPlaceholder'
+                    )}
                 />
             )}
             {kind === 'custom' && typeof value === 'object' && value && (
@@ -66,7 +79,7 @@ function StatToggleField({
                         onChange={(event) =>
                             onChange({ ...value, label: event.target.value })
                         }
-                        placeholder="Label"
+                        placeholder={text('pbta:forms.shared.labelPlaceholder')}
                     />
                     <Input
                         className="h-8 w-20 text-xs"
@@ -80,7 +93,9 @@ function StatToggleField({
                                 ),
                             })
                         }
-                        placeholder="Mod"
+                        placeholder={text(
+                            'pbta:forms.gameDefinition.statToggle.modifierPlaceholder'
+                        )}
                     />
                 </div>
             )}
@@ -90,22 +105,27 @@ function StatToggleField({
 
 export default function CharacterForm() {
     const { gameDefinition, setCharacter } = useGameDefinitionStore()
+    const text = useUiText()
     const character = gameDefinition.character
 
     return (
         <div className="space-y-4">
             <div className="grid gap-1">
-                <Label>Stats</Label>
+                <Label>{text('pbta:forms.gameDefinition.labels.stats')}</Label>
                 <RecordListEditor
                     value={character.stats}
                     onChange={(stats) => setCharacter({ stats })}
-                    keyPlaceholder="key"
-                    valuePlaceholder="Stat label"
+                    keyPlaceholder={text('pbta:forms.shared.keyPlaceholder')}
+                    valuePlaceholder={text(
+                        'pbta:forms.gameDefinition.placeholders.statLabel'
+                    )}
                 />
             </div>
 
             <div className="grid gap-1">
-                <Label>Stat toggle</Label>
+                <Label>
+                    {text('pbta:forms.gameDefinition.labels.statToggle')}
+                </Label>
                 <StatToggleField
                     value={character.statToggle}
                     onChange={(statToggle) => setCharacter({ statToggle })}
@@ -113,7 +133,9 @@ export default function CharacterForm() {
             </div>
 
             <div className="grid gap-1">
-                <Label>Attributes</Label>
+                <Label>
+                    {text('pbta:forms.gameDefinition.labels.attributes')}
+                </Label>
                 <AttributeListEditor
                     value={character.attributes}
                     onChange={(attributes) => setCharacter({ attributes })}
@@ -121,34 +143,44 @@ export default function CharacterForm() {
             </div>
 
             <div className="grid gap-1">
-                <Label>Move types</Label>
+                <Label>
+                    {text('pbta:forms.gameDefinition.labels.moveTypes')}
+                </Label>
                 <RecordListEditor
                     value={character.moveTypes}
                     onChange={(moveTypes) => setCharacter({ moveTypes })}
-                    keyPlaceholder="key"
-                    valuePlaceholder="Move type label"
+                    keyPlaceholder={text('pbta:forms.shared.keyPlaceholder')}
+                    valuePlaceholder={text(
+                        'pbta:forms.gameDefinition.placeholders.moveTypeLabel'
+                    )}
                 />
             </div>
 
             <div className="grid gap-1">
                 <Label>
-                    Equipment types{' '}
-                    <span className="text-muted-foreground">(optional)</span>
+                    {text('pbta:forms.gameDefinition.labels.equipmentTypes')}{' '}
+                    <span className="text-muted-foreground">
+                        {text('pbta:forms.shared.optional')}
+                    </span>
                 </Label>
                 <RecordListEditor
                     value={character.equipmentTypes}
                     onChange={(equipmentTypes) =>
                         setCharacter({ equipmentTypes })
                     }
-                    keyPlaceholder="key"
-                    valuePlaceholder="Equipment type label"
+                    keyPlaceholder={text('pbta:forms.shared.keyPlaceholder')}
+                    valuePlaceholder={text(
+                        'pbta:forms.gameDefinition.placeholders.equipmentTypeLabel'
+                    )}
                 />
             </div>
 
             <div className="grid gap-1">
                 <Label htmlFor="pbta-def-character-description">
-                    Description{' '}
-                    <span className="text-muted-foreground">(optional)</span>
+                    {text('fields.description')}{' '}
+                    <span className="text-muted-foreground">
+                        {text('pbta:forms.shared.optional')}
+                    </span>
                 </Label>
                 <Textarea
                     id="pbta-def-character-description"
@@ -158,7 +190,7 @@ export default function CharacterForm() {
                     onChange={(event) =>
                         setCharacter({ description: event.target.value })
                     }
-                    placeholder="Supports Markdown."
+                    placeholder={text('pbta:forms.shared.supportsMarkdown')}
                 />
             </div>
         </div>

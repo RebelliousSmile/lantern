@@ -1,3 +1,4 @@
+import { useUiText } from '@/i18n/text'
 import { useLegendInTheMistStoryThemeSheetStore } from '../hooks'
 import BasicForm from './forms/BasicForm'
 import MetaForm from './forms/MetaForm'
@@ -5,12 +6,13 @@ import QuestForm from './forms/QuestForm'
 import TagsForm from './forms/TagsForm'
 
 export function StoryThemeEditorPanel() {
+    const text = useUiText()
     const { open, target } = useLegendInTheMistStoryThemeSheetStore()
 
     if (!open || !target) {
         return (
             <div className="rounded-md border border-dashed px-3 py-4 text-sm text-muted-foreground">
-                Click on the preview to edit a specific section.
+                {text('legend:forms.storyTheme.editorPanel.emptyState')}
             </div>
         )
     }

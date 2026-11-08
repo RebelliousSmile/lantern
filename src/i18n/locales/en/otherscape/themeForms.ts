@@ -76,7 +76,8 @@ const forms = {
         decay: 'Decay',
     },
     trackHelp: {
-        upgrade: 'Marked as the theme grows. Three marks and it is ready to improve.',
+        upgrade:
+            'Marked as the theme grows. Three marks and it is ready to improve.',
         decay: 'Marked as the theme frays. Three marks and it is ready to be lost.',
     },
     meta: {
@@ -98,6 +99,7 @@ const forms = {
         cauldronTitlePlaceholder: 'e.g., Cauldron: Neon Debts',
         homebrewTitlePlaceholder: 'e.g., Personal blog, campaign doc...',
         sourceTitlePlaceholder: 'Override selected source title',
+        optional: '(optional)',
         pageLabel: 'Page',
         authorsLabel: 'Authors',
         addAuthorPlaceholder: 'Add author...',

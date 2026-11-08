@@ -15,6 +15,12 @@ export const themeSections: Array<{ id: SectionId; label: UiText }> = [
 export const themeZoomOptions = [0.75, 1, 1.25, 1.5]
 
 export const themeBackgroundOptions = [
-    { value: 'neon', label: 'Neon' },
-    { value: 'plain', label: 'Plain' },
+    {
+        value: 'neon',
+        label: 'otherscape:forms.theme.appearance.background.neon',
+    },
+    {
+        value: 'plain',
+        label: 'otherscape:forms.theme.appearance.background.plain',
+    },
 ] as const

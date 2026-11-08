@@ -15,7 +15,8 @@ export default function ThreatsBlock() {
     return (
         <div className="power-set-threats">
             <SectionHeader
-                title="Threats"
+                title="Threats / Consequences"
+                align="end"
                 onClick={() => openSheet({ kind: 'threats', mode: 'create' })}
             />
 
@@ -35,8 +36,8 @@ export default function ThreatsBlock() {
                             >
                                 <div className="power-set-threat">
                                     <div className="power-set-threat__head">
-                                        <span className="power-set-threat__name os-bar">
-                                            <span>{threat.name}</span>
+                                        <span className="power-set-threat__name">
+                                            {threat.name}
                                         </span>
                                         <span
                                             className="power-set-threat__text"

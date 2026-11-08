@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { useUiText } from '@/i18n/text'
 import { X } from 'lucide-react'
 import { useState } from 'react'
 
@@ -18,10 +19,14 @@ export type RecordListEditorProps = {
 export function RecordListEditor({
     value,
     onChange,
-    keyPlaceholder = 'key',
-    valuePlaceholder = 'Label',
+    keyPlaceholder,
+    valuePlaceholder,
     readOnly,
 }: RecordListEditorProps) {
+    const text = useUiText()
+    const keyHint = keyPlaceholder ?? text('pbta:forms.shared.keyPlaceholder')
+    const valueHint =
+        valuePlaceholder ?? text('pbta:forms.shared.labelPlaceholder')
     const [draftKey, setDraftKey] = useState('')
     const [draftValue, setDraftValue] = useState('')
     const entries = Object.entries(value)
@@ -63,7 +68,7 @@ export function RecordListEditor({
                         onChange={(event) =>
                             renameEntry(index, event.target.value)
                         }
-                        placeholder={keyPlaceholder}
+                        placeholder={keyHint}
                     />
                     <Input
                         className="h-8 flex-1 text-xs"
@@ -72,7 +77,7 @@ export function RecordListEditor({
                         onChange={(event) =>
                             updateEntry(key, event.target.value)
                         }
-                        placeholder={valuePlaceholder}
+                        placeholder={valueHint}
                     />
                     {!readOnly && (
                         <Button
@@ -80,7 +85,11 @@ export function RecordListEditor({
                             variant="ghost"
                             size="icon-sm"
                             className="shrink-0"
-                            aria-label={`Remove ${key || 'entry'}`}
+                            aria-label={text('pbta:forms.shared.remove', {
+                                name:
+                                    key ||
+                                    text('pbta:forms.shared.names.entry'),
+                            })}
                             onClick={() => removeEntry(key)}
                         >
                             <X className="h-3.5 w-3.5" />
@@ -100,7 +109,7 @@ export function RecordListEditor({
                                 commitDraft()
                             }
                         }}
-                        placeholder={keyPlaceholder}
+                        placeholder={keyHint}
                     />
                     <Input
                         className="h-8 flex-1 text-xs"
@@ -112,7 +121,7 @@ export function RecordListEditor({
                                 commitDraft()
                             }
                         }}
-                        placeholder={valuePlaceholder}
+                        placeholder={valueHint}
                     />
                     <Button
                         type="button"
@@ -121,7 +130,7 @@ export function RecordListEditor({
                         className="shrink-0 text-xs"
                         onClick={commitDraft}
                     >
-                        Add
+                        {text('actions.add')}
                     </Button>
                 </div>
             )}

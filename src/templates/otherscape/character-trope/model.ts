@@ -4,6 +4,7 @@ import type {
     OsTropePublicationType as PublicationType,
     OsThemeKitReference as ThemeKitRef,
 } from '@/contracts/mist-engine'
+import { defaultOtherscapeVariantId } from '../shared/variants'
 
 export type { CharacterTropeMeta, PublicationType, ThemeKitRef }
 
@@ -105,6 +106,9 @@ export type OtherscapeCharacterTropeViewState = {
     zoom: number
     previewWidth: number
     background: Background
+    /* The :Otherscape variant the card is drawn for (see
+       `../shared/variants.ts`). */
+    variant: string
     autoHideEmpty: boolean
     hidden: Record<SectionId, boolean>
     exportPrefs: ExportPrefs
@@ -122,9 +126,9 @@ export type OtherscapeCharacterTropeSheetState = {
     target: SheetTarget | null
 }
 
-export const PREVIEW_WIDTH_MIN = 700
-export const PREVIEW_WIDTH_MAX = 1400
-export const PREVIEW_WIDTH_DEFAULT = 1152
+export const PREVIEW_WIDTH_MIN = 320
+export const PREVIEW_WIDTH_MAX = 720
+export const PREVIEW_WIDTH_DEFAULT = 480
 
 export const defaultHidden: Record<SectionId, boolean> = {
     description: false,
@@ -139,6 +143,7 @@ export const defaultOtherscapeCharacterTropeView: OtherscapeCharacterTropeViewSt
         zoom: 1,
         previewWidth: PREVIEW_WIDTH_DEFAULT,
         background: 'neon',
+        variant: defaultOtherscapeVariantId,
         autoHideEmpty: false,
         hidden: defaultHidden,
         exportPrefs: {

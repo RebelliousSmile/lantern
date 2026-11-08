@@ -8,6 +8,27 @@ import {
     useOtherscapeCharacterTropeViewStore,
 } from '../../hooks'
 
+/* The category the book prints on a tab of its own above the panel, gold on
+   dark olive. It falls back on what the card is when the author has not filed
+   the trope under anything. */
+export function CategoryTab() {
+    const { otherscapeCharacterTrope } = useOtherscapeCharacterTropeStore()
+    const { openSheet } = useOtherscapeCharacterTropeSheetStore()
+
+    const category = otherscapeCharacterTrope.category.trim()
+
+    return (
+        <button
+            type="button"
+            className="character-trope-category"
+            onClick={() => openSheet({ kind: 'basic', mode: 'edit' })}
+            aria-label="Edit the category"
+        >
+            {category || 'Character Trope'}
+        </button>
+    )
+}
+
 export default function HeaderBlock() {
     const { otherscapeCharacterTrope } = useOtherscapeCharacterTropeStore()
     const { openSheet } = useOtherscapeCharacterTropeSheetStore()
@@ -15,40 +36,19 @@ export default function HeaderBlock() {
 
     const openBasic = () => openSheet({ kind: 'basic', mode: 'edit' })
 
-    /* The band and the name are the card's top edge rather than sections, so
-       neither is gated: a Character Trope with nothing filled in still prints a
-       frame. The description below is a region of its own and is. */
+    /* The name is the card's head rather than a section, so it is not gated:
+       a Character Trope with nothing filled in still prints it. The
+       description below is a region of its own and is. */
     return (
         <>
             <ClickableSection
                 onClick={openBasic}
-                ariaLabel="Edit the character trope name and category"
-            >
-                <div className="character-trope-header os-bar">
-                    <span className="character-trope-header__kind os-label">
-                        Character Trope
-                    </span>
-                    {/* The category is a free label rather than a themebook, so
-                        the band prints it as written and skips it when the
-                        author has not filed the trope under anything. */}
-                    {otherscapeCharacterTrope.category.trim() ? (
-                        <span className="character-trope-header__category">
-                            {otherscapeCharacterTrope.category}
-                        </span>
-                    ) : null}
-                </div>
-            </ClickableSection>
-
-            <ClickableSection
-                onClick={openBasic}
                 ariaLabel="Edit the character trope name"
             >
-                <div className="character-trope-title os-bar">
-                    <span className="character-trope-title__text os-display">
-                        {otherscapeCharacterTrope.name ||
-                            'Untitled Character Trope'}
-                    </span>
-                </div>
+                <h3 className="character-trope-title">
+                    {otherscapeCharacterTrope.name ||
+                        'Untitled Character Trope'}
+                </h3>
             </ClickableSection>
 
             <SectionGate

@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { useUiText } from '@/i18n/text'
 import { X } from 'lucide-react'
 import { StringListEditor } from '../../shared/StringListEditor'
 import type { CreationEntry } from '../model'
@@ -16,6 +17,7 @@ export function CreationEntriesEditor({
     value,
     onChange,
 }: CreationEntriesEditorProps) {
+    const text = useUiText()
     function updateAt(index: number, entry: CreationEntry) {
         onChange(value.map((current, i) => (i === index ? entry : current)))
     }
@@ -38,14 +40,20 @@ export function CreationEntriesEditor({
                                     label: event.target.value,
                                 })
                             }
-                            placeholder="Label, e.g. Name"
+                            placeholder={text(
+                                'pbta:forms.playbook.creation.labelPlaceholder'
+                            )}
                         />
                         <Button
                             type="button"
                             variant="ghost"
                             size="icon-sm"
                             className="shrink-0"
-                            aria-label={`Remove ${entry.label || 'entry'}`}
+                            aria-label={text('pbta:forms.shared.remove', {
+                                name:
+                                    entry.label ||
+                                    text('pbta:forms.shared.names.entry'),
+                            })}
                             onClick={() => removeAt(index)}
                         >
                             <X className="h-3.5 w-3.5" />
@@ -58,7 +66,9 @@ export function CreationEntriesEditor({
                         onChange={(options) =>
                             updateAt(index, { ...entry, options })
                         }
-                        placeholder="Add option and press Enter"
+                        placeholder={text(
+                            'pbta:forms.shared.list.addOptionPlaceholder'
+                        )}
                     />
                 </div>
             ))}
@@ -74,7 +84,7 @@ export function CreationEntriesEditor({
                     ])
                 }
             >
-                Add entry
+                {text('pbta:forms.playbook.creation.add')}
             </Button>
         </div>
     )

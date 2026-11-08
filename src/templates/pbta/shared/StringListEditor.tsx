@@ -1,3 +1,4 @@
+import { useUiText } from '@/i18n/text'
 import { X } from 'lucide-react'
 import { useState } from 'react'
 
@@ -14,9 +15,12 @@ export type StringListEditorProps = {
 export function StringListEditor({
     value,
     onChange,
-    placeholder = 'Add option and press Enter',
+    placeholder,
     readOnly = false,
 }: StringListEditorProps) {
+    const text = useUiText()
+    const hint =
+        placeholder ?? text('pbta:forms.shared.list.addOptionPlaceholder')
     const [draft, setDraft] = useState('')
 
     function commitDraft() {
@@ -38,7 +42,9 @@ export function StringListEditor({
                         <button
                             type="button"
                             className="opacity-70 hover:opacity-100"
-                            aria-label={`Remove ${entry}`}
+                            aria-label={text('pbta:forms.shared.remove', {
+                                name: entry,
+                            })}
                             disabled={readOnly}
                             onClick={() =>
                                 onChange(value.filter((_, i) => i !== index))
@@ -66,7 +72,7 @@ export function StringListEditor({
                             onChange(value.slice(0, -1))
                         }
                     }}
-                    placeholder={value.length ? '' : placeholder}
+                    placeholder={value.length ? '' : hint}
                 />
             </div>
         </div>

@@ -72,6 +72,7 @@ const forms: ResourceShape<typeof en> = {
         autoHideEmptyLabel: 'Masquer automatiquement les sections vides',
         sectionsTitle: 'Sections',
         previewWidthLabel: "Largeur de l'aperçu",
+        variantTitle: 'Variante',
         backgroundTitle: 'Arrière-plan',
         backgroundNeon: 'Néon',
         backgroundPlain: 'Uni',

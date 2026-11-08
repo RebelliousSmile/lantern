@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { useUiText, type TranslationKey } from '@/i18n/text'
 import { cn } from '@/utils/cn'
 import { renderSystemMarkdownInline } from '@/utils/markdown'
 import {
@@ -25,12 +26,12 @@ import { GripVertical, Pencil, Plus, Trash2 } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { useCityOfMistCustomMoveStore, type OutcomeTier } from '../../hooks'
 
-const TIERS: { value: OutcomeTier; label: string }[] = [
-    { value: 'miss', label: 'Miss' },
-    { value: '7-9', label: '7-9' },
-    { value: '10+', label: '10+' },
-    { value: '12+', label: '12+' },
-    { value: 'hit', label: 'Hit' },
+const TIERS: { value: OutcomeTier; label: TranslationKey }[] = [
+    { value: 'miss', label: 'city:forms.customMove.outcomes.tierMiss' },
+    { value: '7-9', label: 'city:forms.customMove.outcomes.tier7to9' },
+    { value: '10+', label: 'city:forms.customMove.outcomes.tier10plus' },
+    { value: '12+', label: 'city:forms.customMove.outcomes.tier12plus' },
+    { value: 'hit', label: 'city:forms.customMove.outcomes.tierHit' },
 ]
 
 const DEFAULT_OUTCOME = {
@@ -39,6 +40,7 @@ const DEFAULT_OUTCOME = {
 }
 
 export default function OutcomesForm({ focusIndex }: { focusIndex?: number }) {
+    const ui = useUiText()
     const {
         cityOfMistCustomMove,
         addOutcome,
@@ -125,7 +127,7 @@ export default function OutcomesForm({ focusIndex }: { focusIndex?: number }) {
         if (editingIndex == null) return
         const trimmedText = text.trim()
         if (!trimmedText) {
-            setError('Outcome text is required.')
+            setError(ui('city:forms.customMove.outcomes.errorTextRequired'))
             return
         }
 
@@ -178,7 +180,9 @@ export default function OutcomesForm({ focusIndex }: { focusIndex?: number }) {
                                         ) : null}
                                         <div className="grid gap-1">
                                             <Label className="text-xs">
-                                                Tier
+                                                {ui(
+                                                    'city:forms.customMove.outcomes.tierLabel'
+                                                )}
                                             </Label>
                                             <div className="grid grid-cols-5 overflow-hidden rounded-md border">
                                                 {TIERS.map((entry) => (
@@ -200,7 +204,7 @@ export default function OutcomesForm({ focusIndex }: { focusIndex?: number }) {
                                                             setTier(entry.value)
                                                         }
                                                     >
-                                                        {entry.label}
+                                                        {ui(entry.label)}
                                                     </Button>
                                                 ))}
                                             </div>
@@ -210,7 +214,9 @@ export default function OutcomesForm({ focusIndex }: { focusIndex?: number }) {
                                                 htmlFor={`outcome-text-${index}`}
                                                 className="text-xs"
                                             >
-                                                Text
+                                                {ui(
+                                                    'city:forms.customMove.outcomes.textLabel'
+                                                )}
                                             </Label>
                                             <Textarea
                                                 id={`outcome-text-${index}`}
@@ -220,7 +226,9 @@ export default function OutcomesForm({ focusIndex }: { focusIndex?: number }) {
                                                 onChange={(event) =>
                                                     setText(event.target.value)
                                                 }
-                                                placeholder="Describe what happens."
+                                                placeholder={ui(
+                                                    'city:forms.customMove.outcomes.textPlaceholder'
+                                                )}
                                             />
                                         </div>
                                         <div className="grid gap-1">
@@ -228,9 +236,13 @@ export default function OutcomesForm({ focusIndex }: { focusIndex?: number }) {
                                                 htmlFor={`outcome-options-${index}`}
                                                 className="text-xs"
                                             >
-                                                Options, one per line{' '}
+                                                {ui(
+                                                    'city:forms.customMove.outcomes.optionsLabel'
+                                                )}{' '}
                                                 <span className="text-muted-foreground">
-                                                    (optional)
+                                                    {ui(
+                                                        'city:forms.shared.meta.optional'
+                                                    )}
                                                 </span>
                                             </Label>
                                             <Textarea
@@ -243,9 +255,9 @@ export default function OutcomesForm({ focusIndex }: { focusIndex?: number }) {
                                                         event.target.value
                                                     )
                                                 }
-                                                placeholder={
-                                                    'You lose something you carried.\nSomeone notices where you were.'
-                                                }
+                                                placeholder={ui(
+                                                    'city:forms.customMove.outcomes.optionsPlaceholder'
+                                                )}
                                             />
                                         </div>
                                         <div className="grid w-[120px] gap-1">
@@ -253,7 +265,9 @@ export default function OutcomesForm({ focusIndex }: { focusIndex?: number }) {
                                                 htmlFor={`outcome-pick-${index}`}
                                                 className="text-xs"
                                             >
-                                                Choose how many
+                                                {ui(
+                                                    'city:forms.customMove.outcomes.pickCountLabel'
+                                                )}
                                             </Label>
                                             <Input
                                                 id={`outcome-pick-${index}`}
@@ -276,7 +290,7 @@ export default function OutcomesForm({ focusIndex }: { focusIndex?: number }) {
                                                 className="h-7 px-2.5 text-xs"
                                                 onClick={confirmEdit}
                                             >
-                                                Save
+                                                {ui('actions.save')}
                                             </Button>
                                             <Button
                                                 type="button"
@@ -284,7 +298,7 @@ export default function OutcomesForm({ focusIndex }: { focusIndex?: number }) {
                                                 className="h-7 px-0 text-xs"
                                                 onClick={cancelEdit}
                                             >
-                                                Cancel
+                                                {ui('actions.cancel')}
                                             </Button>
                                         </div>
                                     </div>
@@ -300,7 +314,7 @@ export default function OutcomesForm({ focusIndex }: { focusIndex?: number }) {
                                 onClick={addPlaceholder}
                             >
                                 <Plus className="h-3.5 w-3.5" />
-                                Add outcome
+                                {ui('city:forms.customMove.outcomes.add')}
                             </Button>
                         </li>
                     </ul>
@@ -329,6 +343,8 @@ function SortableOutcomeRow({
     onRemove: () => void
     children?: React.ReactNode
 }) {
+    const ui = useUiText()
+    const tierEntry = TIERS.find((entry) => entry.value === tier)
     const {
         attributes,
         listeners,
@@ -358,11 +374,13 @@ function SortableOutcomeRow({
                                 ? 'cursor-not-allowed opacity-40 hover:bg-transparent'
                                 : 'cursor-grab active:cursor-grabbing'
                         }`}
-                        aria-label="Drag to reorder"
+                        aria-label={ui('actions.dragToReorder')}
                         title={
                             dragDisabled
-                                ? 'Finish editing to reorder'
-                                : 'Drag to reorder'
+                                ? ui(
+                                      'city:forms.shared.list.finishEditingToReorder'
+                                  )
+                                : ui('actions.dragToReorder')
                         }
                         disabled={dragDisabled}
                         {...(!dragDisabled ? attributes : {})}
@@ -371,11 +389,15 @@ function SortableOutcomeRow({
                         <GripVertical className="h-4 w-4 text-slate-500" />
                     </button>
                     <div className="truncate font-bold font-[PT_Serif]">
-                        {TIERS.find((entry) => entry.value === tier)?.label ??
-                            tier}
+                        {tierEntry ? ui(tierEntry.label) : tier}
                         {optionCount > 0 ? (
                             <span className="ml-2 text-xs font-normal text-muted-foreground">
-                                {optionCount} options
+                                {ui(
+                                    'city:forms.customMove.outcomes.optionCount',
+                                    {
+                                        count: optionCount,
+                                    }
+                                )}
                             </span>
                         ) : null}
                     </div>
@@ -386,7 +408,7 @@ function SortableOutcomeRow({
                         variant="ghost"
                         className="h-8 w-8"
                         onClick={onEdit}
-                        title="Edit"
+                        title={ui('actions.edit')}
                     >
                         <Pencil className="h-4 w-4" />
                     </Button>
@@ -395,7 +417,7 @@ function SortableOutcomeRow({
                         variant="ghost"
                         className="h-8 w-8 text-destructive"
                         onClick={onRemove}
-                        title="Remove"
+                        title={ui('actions.remove')}
                     >
                         <Trash2 className="h-4 w-4" />
                     </Button>

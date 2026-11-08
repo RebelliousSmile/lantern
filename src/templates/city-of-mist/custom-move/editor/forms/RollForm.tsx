@@ -1,17 +1,19 @@
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { useUiText, type TranslationKey } from '@/i18n/text'
 import { cn } from '@/utils/cn'
 import { useCityOfMistCustomMoveStore, type RollStat } from '../../hooks'
 
-const STATS: { value: RollStat; label: string }[] = [
-    { value: 'power', label: 'Power' },
-    { value: 'mythos', label: 'Mythos' },
-    { value: 'logos', label: 'Logos' },
-    { value: 'custom', label: 'Custom' },
+const STATS: { value: RollStat; label: TranslationKey }[] = [
+    { value: 'power', label: 'city:forms.customMove.roll.statPower' },
+    { value: 'mythos', label: 'city:forms.customMove.roll.statMythos' },
+    { value: 'logos', label: 'city:forms.customMove.roll.statLogos' },
+    { value: 'custom', label: 'city:forms.customMove.roll.statCustom' },
 ]
 
 export default function RollForm() {
+    const text = useUiText()
     const { cityOfMistCustomMove, setRoll, clearRoll } =
         useCityOfMistCustomMoveStore()
     const roll = cityOfMistCustomMove.roll
@@ -20,8 +22,7 @@ export default function RollForm() {
         return (
             <div className="space-y-3">
                 <p className="text-sm text-muted-foreground">
-                    This move calls for no roll: the card prints its outcome
-                    without a roll line.
+                    {text('city:forms.customMove.roll.empty')}
                 </p>
                 <Button
                     type="button"
@@ -29,7 +30,7 @@ export default function RollForm() {
                     className="h-8"
                     onClick={() => setRoll({ stat: 'power' })}
                 >
-                    Add a roll
+                    {text('city:forms.customMove.roll.add')}
                 </Button>
             </div>
         )
@@ -38,7 +39,7 @@ export default function RollForm() {
     return (
         <div className="space-y-4">
             <div className="grid gap-1">
-                <Label>Stat</Label>
+                <Label>{text('city:forms.customMove.roll.statLabel')}</Label>
                 <div className="grid grid-cols-4 overflow-hidden rounded-md border">
                     {STATS.map((stat) => (
                         <Button
@@ -53,7 +54,7 @@ export default function RollForm() {
                             )}
                             onClick={() => setRoll({ stat: stat.value })}
                         >
-                            {stat.label}
+                            {text(stat.label)}
                         </Button>
                     ))}
                 </div>
@@ -63,10 +64,14 @@ export default function RollForm() {
                 <div className="grid gap-1">
                     <Label htmlFor="move-roll-label">
                         {roll.stat === 'custom'
-                            ? 'What is rolled'
-                            : 'Label override'}{' '}
+                            ? text('city:forms.customMove.roll.labelCustom')
+                            : text(
+                                  'city:forms.customMove.roll.labelOverride'
+                              )}{' '}
                         <span className="text-muted-foreground">
-                            {roll.stat === 'custom' ? '' : '(optional)'}
+                            {roll.stat === 'custom'
+                                ? ''
+                                : text('city:forms.shared.meta.optional')}
                         </span>
                     </Label>
                     <Input
@@ -76,12 +81,16 @@ export default function RollForm() {
                         onChange={(event) =>
                             setRoll({ label: event.target.value })
                         }
-                        placeholder="e.g., the tier of the city's {war-torn} status"
+                        placeholder={text(
+                            'city:forms.customMove.roll.labelPlaceholder'
+                        )}
                     />
                 </div>
 
                 <div className="grid gap-1">
-                    <Label htmlFor="move-roll-modifier">Modifier</Label>
+                    <Label htmlFor="move-roll-modifier">
+                        {text('city:forms.customMove.roll.modifierLabel')}
+                    </Label>
                     <Input
                         id="move-roll-modifier"
                         className="h-8 px-2 text-sm"
@@ -113,7 +122,7 @@ export default function RollForm() {
                 className="h-8"
                 onClick={clearRoll}
             >
-                Remove the roll
+                {text('city:forms.customMove.roll.remove')}
             </Button>
         </div>
     )

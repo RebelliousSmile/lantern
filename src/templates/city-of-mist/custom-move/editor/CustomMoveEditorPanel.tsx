@@ -1,3 +1,4 @@
+import { useUiText } from '@/i18n/text'
 import { useCityOfMistCustomMoveSheetStore } from '../hooks'
 import MetaForm from './forms/MetaForm'
 import OutcomesForm from './forms/OutcomesForm'
@@ -5,12 +6,13 @@ import RollForm from './forms/RollForm'
 import TriggerForm from './forms/TriggerForm'
 
 export function CustomMoveEditorPanel() {
+    const text = useUiText()
     const { open, target } = useCityOfMistCustomMoveSheetStore()
 
     if (!open || !target) {
         return (
             <div className="rounded-md border border-dashed px-3 py-4 text-sm text-muted-foreground">
-                Click on the preview to edit a specific section.
+                {text('city:forms.shared.panel.emptyState')}
             </div>
         )
     }

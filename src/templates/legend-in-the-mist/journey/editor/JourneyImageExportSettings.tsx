@@ -1,14 +1,16 @@
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+import { useUiText } from '@/i18n/text'
 import { useLegendInTheMistJourneyViewStore } from '../hooks'
 
 export function JourneyImageExportSettings() {
+    const text = useUiText()
     const { exportPrefs, setExportPrefs } = useLegendInTheMistJourneyViewStore()
 
     return (
         <div className="space-y-4">
             <div className="space-y-2">
                 <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                    Image scale
+                    {text('legend:forms.journey.appearance.imageScaleLabel')}
                 </p>
                 <RadioGroup
                     value={String(exportPrefs.scale)}

@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { useUiText } from '@/i18n/text'
 import { ChevronDown, ChevronUp, X } from 'lucide-react'
 import { useState } from 'react'
 import { StringListEditor } from '../../shared/StringListEditor'
@@ -18,6 +19,7 @@ export function ClockPresetsEditor({
     value,
     onChange,
 }: ClockPresetsEditorProps) {
+    const text = useUiText()
     const [draftKey, setDraftKey] = useState('')
     const [draftLabel, setDraftLabel] = useState('')
 
@@ -70,7 +72,9 @@ export function ClockPresetsEditor({
                                     key: event.target.value,
                                 })
                             }
-                            placeholder="key"
+                            placeholder={text(
+                                'pbta:forms.shared.keyPlaceholder'
+                            )}
                         />
                         <Input
                             className="h-8 flex-1 text-xs"
@@ -81,14 +85,23 @@ export function ClockPresetsEditor({
                                     label: event.target.value,
                                 })
                             }
-                            placeholder="Label"
+                            placeholder={text(
+                                'pbta:forms.shared.labelPlaceholder'
+                            )}
                         />
                         <Button
                             type="button"
                             variant="ghost"
                             size="icon-sm"
                             className="shrink-0"
-                            aria-label={`Move ${preset.label || 'preset'} up`}
+                            aria-label={text(
+                                'pbta:forms.gameDefinition.clockPresets.moveUp',
+                                {
+                                    name:
+                                        preset.label ||
+                                        text('pbta:forms.shared.names.preset'),
+                                }
+                            )}
                             onClick={() => moveAt(index, -1)}
                         >
                             <ChevronUp className="h-3.5 w-3.5" />
@@ -98,7 +111,14 @@ export function ClockPresetsEditor({
                             variant="ghost"
                             size="icon-sm"
                             className="shrink-0"
-                            aria-label={`Move ${preset.label || 'preset'} down`}
+                            aria-label={text(
+                                'pbta:forms.gameDefinition.clockPresets.moveDown',
+                                {
+                                    name:
+                                        preset.label ||
+                                        text('pbta:forms.shared.names.preset'),
+                                }
+                            )}
                             onClick={() => moveAt(index, 1)}
                         >
                             <ChevronDown className="h-3.5 w-3.5" />
@@ -108,7 +128,11 @@ export function ClockPresetsEditor({
                             variant="ghost"
                             size="icon-sm"
                             className="shrink-0"
-                            aria-label={`Remove ${preset.label || 'preset'}`}
+                            aria-label={text('pbta:forms.shared.remove', {
+                                name:
+                                    preset.label ||
+                                    text('pbta:forms.shared.names.preset'),
+                            })}
                             onClick={() => removeAt(index)}
                         >
                             <X className="h-3.5 w-3.5" />
@@ -119,7 +143,9 @@ export function ClockPresetsEditor({
                         onChange={(segments) =>
                             updateAt(index, { ...preset, segments })
                         }
-                        placeholder="Add segment label and press Enter"
+                        placeholder={text(
+                            'pbta:forms.gameDefinition.clockPresets.segmentPlaceholder'
+                        )}
                     />
                 </div>
             ))}
@@ -134,7 +160,7 @@ export function ClockPresetsEditor({
                             addPreset()
                         }
                     }}
-                    placeholder="key"
+                    placeholder={text('pbta:forms.shared.keyPlaceholder')}
                 />
                 <Input
                     className="h-8 flex-1 text-xs"
@@ -146,7 +172,7 @@ export function ClockPresetsEditor({
                             addPreset()
                         }
                     }}
-                    placeholder="Label"
+                    placeholder={text('pbta:forms.shared.labelPlaceholder')}
                 />
                 <Button
                     type="button"
@@ -155,7 +181,7 @@ export function ClockPresetsEditor({
                     className="shrink-0 text-xs"
                     onClick={addPreset}
                 >
-                    Add preset
+                    {text('pbta:forms.gameDefinition.clockPresets.add')}
                 </Button>
             </div>
         </div>

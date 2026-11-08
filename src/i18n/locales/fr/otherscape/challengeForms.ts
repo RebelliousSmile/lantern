@@ -6,12 +6,16 @@ const forms: ResourceShape<typeof en> = {
         emptyState: 'Cliquez sur la carte pour modifier une section précise.',
     },
     basic: {
-        nameLabel: 'Nom du défi',
+        nameLabel: 'Nom du Challenge',
         namePlaceholder: 'p. ex. Chrome Vulture Runner',
         scaleLabel: 'Échelle',
         scaleHint:
-            "Laissez l'échelle vide pour un défi de taille humaine. Plus grand compte vers le haut, plus petit vers le bas.",
-        descriptionPlaceholder: 'Rédigez ici un court résumé du défi...',
+            "Laissez l'échelle vide pour un Challenge de taille humaine. Plus grand compte vers le haut, plus petit vers le bas. Elle s'imprime dans le texte, comme le livre la nomme.",
+        ratingLabel: 'Cote',
+        ratingNone: 'Aucune',
+        ratingHint:
+            "Étoiles de difficulté imprimées sur l'onglet, d'une à cinq.",
+        descriptionPlaceholder: 'Rédigez ici un court résumé du Challenge...',
     },
     tags: {
         rawValueLabel: 'Valeur brute',
@@ -45,7 +49,7 @@ const forms: ResourceShape<typeof en> = {
     },
     consequences: {
         helperText:
-            "Ce que le défi coûte à l'Équipe quelle que soit la menace en cours. Une menace qui a ses propres conséquences les garde dans le formulaire des menaces.",
+            "Ce que le Challenge coûte à l'Équipe quelle que soit la menace en cours. Une menace qui a ses propres conséquences les garde dans le formulaire des menaces.",
         addGeneralConsequence: 'Ajouter une conséquence générale',
         dragAriaLabel: 'Glisser pour réorganiser la conséquence',
         finishEditingToReorder: 'Terminez la modification pour réorganiser',
@@ -76,6 +80,7 @@ const forms: ResourceShape<typeof en> = {
         pageLabel: 'Page',
         authorsLabel: 'Auteurs',
         authorsPlaceholder: 'Ajouter un auteur...',
+        authorsPlaceholderDefault: 'Ajouter un auteur et appuyer sur Entrée',
         removeAuthorAriaLabel: 'Retirer {{author}}',
         footerHint:
             "Les métadonnées aident à l'attribution et à la recherche, et sont conservées à l'import/export.",
@@ -84,6 +89,7 @@ const forms: ResourceShape<typeof en> = {
         autoHideEmptyLabel: 'Masquer automatiquement les sections vides',
         sectionsHeading: 'Sections',
         previewWidthLabel: "Largeur de l'aperçu",
+        variantHeading: 'Variante',
         backgroundHeading: 'Arrière-plan',
         backgroundNeon: 'Néon',
         backgroundPlain: 'Uni',

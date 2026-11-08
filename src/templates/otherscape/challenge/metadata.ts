@@ -1,7 +1,7 @@
 import type { UiText } from '@/i18n/text'
 import type { SectionId } from './model'
 
-/* The header bar is not listed here: name and scale are the card's top edge
+/* The header bar is not listed here: name and rating are the card's top edge
    rather than a section, so they have no visibility toggle and always render.
    The order is the order the regions are printed in. */
 export const challengeSections: Array<{ id: SectionId; label: UiText }> = [
@@ -19,7 +19,16 @@ export const challengeSections: Array<{ id: SectionId; label: UiText }> = [
 
 export const challengeZoomOptions = [0.75, 1, 1.25, 1.5]
 
-export const challengeBackgroundOptions = [
-    { value: 'neon', label: 'Neon' },
-    { value: 'plain', label: 'Plain' },
-] as const
+export const challengeBackgroundOptions: ReadonlyArray<{
+    value: 'neon' | 'plain'
+    label: UiText
+}> = [
+    {
+        value: 'neon',
+        label: 'otherscape:forms.challenge.appearance.backgroundNeon',
+    },
+    {
+        value: 'plain',
+        label: 'otherscape:forms.challenge.appearance.backgroundPlain',
+    },
+]

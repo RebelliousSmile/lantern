@@ -6,45 +6,48 @@ import {
     useOtherscapeChallengeStore,
 } from '../../hooks'
 
+/* The book sets the Limits as a row of tabs, the name and a large level on
+   each, and prints under the row, in one box hanging off the first tab, what
+   maxing out each Limit does. */
 export default function LimitsBlock() {
     const { otherscapeChallenge } = useOtherscapeChallengeStore()
     const { openSheet } = useOtherscapeChallengeSheetStore()
 
     const limits = otherscapeChallenge.limits
+    const outcomes = limits
+        .map((limit, index) => ({ limit, index }))
+        .filter(({ limit }) => limit.on_max?.trim())
+
+    const edit = (index: number) =>
+        openSheet({ kind: 'limits', index, mode: 'edit' })
 
     return (
         <div className="challenge-limits">
             <SectionHeader
                 title="Limits"
+                align="end"
                 onClick={() => openSheet({ kind: 'limits', mode: 'create' })}
             />
 
             {limits.length ? (
-                <ul className="challenge-limits__list">
-                    {limits.map((limit, index) => (
-                        <li key={`limit-${index}-${limit.name}`}>
-                            <ClickableSection
-                                onClick={() =>
-                                    openSheet({
-                                        kind: 'limits',
-                                        index,
-                                        mode: 'edit',
-                                    })
-                                }
-                                ariaLabel={`Edit limit ${limit.name}`}
-                            >
-                                <div className="challenge-limit os-bar">
-                                    <div className="challenge-limit__inner">
+                <>
+                    <ul className="challenge-limits__list">
+                        {limits.map((limit, index) => (
+                            <li key={`limit-${index}-${limit.name}`}>
+                                <ClickableSection
+                                    onClick={() => edit(index)}
+                                    ariaLabel={`Edit limit ${limit.name}`}
+                                >
+                                    <div className="challenge-limit">
                                         <span className="challenge-limit__name">
                                             {limit.name}
                                         </span>
-                                        {/* Two flags, two marks: a polar Limit
-                                            runs both ways, a progress Limit
-                                            fills up. A Limit carrying both
-                                            prints both. */}
+                                        {/* Two flags, two marks: a polar
+                                            Limit runs both ways, a progress
+                                            Limit fills up. */}
                                         {limit.is_polar && (
                                             <span
-                                                className="challenge-limit__mark challenge-limit__mark--polar"
+                                                className="challenge-limit__mark"
                                                 title="Polar limit"
                                             >
                                                 {'\u21C4'}
@@ -52,7 +55,7 @@ export default function LimitsBlock() {
                                         )}
                                         {limit.is_progress && (
                                             <span
-                                                className="challenge-limit__mark challenge-limit__mark--progress"
+                                                className="challenge-limit__mark"
                                                 title="Progress limit"
                                             >
                                                 {'\u25B6'}
@@ -62,25 +65,40 @@ export default function LimitsBlock() {
                                             {limit.level}
                                         </span>
                                     </div>
-                                </div>
+                                </ClickableSection>
+                            </li>
+                        ))}
+                    </ul>
 
-                                {/* Printed only when the Limit says what
-                                    filling it up costs: an empty row would read
-                                    as an outcome the card does not carry. */}
-                                {limit.on_max?.trim() ? (
-                                    <div
-                                        className="challenge-limit__outcome"
-                                        dangerouslySetInnerHTML={{
-                                            __html: renderLitmInline(
-                                                limit.on_max
-                                            ),
-                                        }}
-                                    />
-                                ) : null}
-                            </ClickableSection>
-                        </li>
-                    ))}
-                </ul>
+                    {/* Printed only when a Limit says what maxing it out
+                        does: an empty box would read as an outcome the card
+                        does not carry. */}
+                    {outcomes.length ? (
+                        <ul className="challenge-limits__outcomes">
+                            {outcomes.map(({ limit, index }) => (
+                                <li key={`outcome-${index}-${limit.name}`}>
+                                    <ClickableSection
+                                        onClick={() => edit(index)}
+                                        ariaLabel={`Edit limit ${limit.name}`}
+                                    >
+                                        <div className="challenge-limit__outcome">
+                                            <span className="challenge-limit__outcome-name">
+                                                {limit.name}
+                                            </span>
+                                            <span
+                                                dangerouslySetInnerHTML={{
+                                                    __html: renderLitmInline(
+                                                        limit.on_max ?? ''
+                                                    ),
+                                                }}
+                                            />
+                                        </div>
+                                    </ClickableSection>
+                                </li>
+                            ))}
+                        </ul>
+                    ) : null}
+                </>
             ) : (
                 <button
                     type="button"

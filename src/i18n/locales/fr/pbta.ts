@@ -1,5 +1,8 @@
 import type { ResourceShape } from '@/i18n/resourceShape'
 import type en from '../en/pbta'
+import gameDefinitionForms from './pbta/gameDefinitionForms'
+import playbookForms from './pbta/playbookForms'
+import sharedForms from './pbta/sharedForms'
 
 /* Game terms are provisional until the maintainer validates a French glossary. */
 const pbta: ResourceShape<typeof en> = {
@@ -112,6 +115,9 @@ const pbta: ResourceShape<typeof en> = {
             removePlay: 'Retirer « Jouer la X »',
         },
         portrait: 'Portrait de {{name}}',
+        errors: {
+            invalidCollection: 'Configuration de collection publiée invalide.',
+        },
     },
     urbanShadows: {
         terms: {
@@ -329,6 +335,12 @@ const pbta: ResourceShape<typeof en> = {
             newTitle: 'Nouvelle corporation',
         },
         sprawlMatrix: { label: 'Matrice', newTitle: 'Nouvelle matrice' },
+    },
+    /* One file per template, so each template's form strings can change on their own. */
+    forms: {
+        gameDefinition: gameDefinitionForms,
+        playbook: playbookForms,
+        shared: sharedForms,
     },
 }
 

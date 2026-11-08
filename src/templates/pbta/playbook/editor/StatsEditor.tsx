@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { useUiText } from '@/i18n/text'
 import { X } from 'lucide-react'
 import { useState } from 'react'
 
@@ -12,6 +13,7 @@ export type StatsEditorProps = {
    for a numeric value: a playbook's stats are `Record<string, number>`,
    not `Record<string, string>`. */
 export function StatsEditor({ value, onChange }: StatsEditorProps) {
+    const text = useUiText()
     const [draftKey, setDraftKey] = useState('')
     const [draftValue, setDraftValue] = useState('0')
     const entries = Object.entries(value)
@@ -52,7 +54,7 @@ export function StatsEditor({ value, onChange }: StatsEditorProps) {
                         onChange={(event) =>
                             renameEntry(index, event.target.value)
                         }
-                        placeholder="key"
+                        placeholder={text('pbta:forms.shared.keyPlaceholder')}
                     />
                     <Input
                         className="h-8 w-20 text-xs"
@@ -70,7 +72,9 @@ export function StatsEditor({ value, onChange }: StatsEditorProps) {
                         variant="ghost"
                         size="icon-sm"
                         className="shrink-0"
-                        aria-label={`Remove ${key || 'stat'}`}
+                        aria-label={text('pbta:forms.shared.remove', {
+                            name: key || text('pbta:forms.shared.names.stat'),
+                        })}
                         onClick={() => removeEntry(key)}
                     >
                         <X className="h-3.5 w-3.5" />
@@ -88,7 +92,7 @@ export function StatsEditor({ value, onChange }: StatsEditorProps) {
                             commitDraft()
                         }
                     }}
-                    placeholder="key"
+                    placeholder={text('pbta:forms.shared.keyPlaceholder')}
                 />
                 <Input
                     className="h-8 w-20 text-xs"
@@ -109,7 +113,7 @@ export function StatsEditor({ value, onChange }: StatsEditorProps) {
                     className="shrink-0 text-xs"
                     onClick={commitDraft}
                 >
-                    Add
+                    {text('actions.add')}
                 </Button>
             </div>
         </div>

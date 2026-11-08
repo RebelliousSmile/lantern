@@ -25,6 +25,17 @@ export default function BasicForm() {
         value: option.value,
         label: typeLabels[option.value],
     }))
+    /* An empty value stands for "no stars printed"; the others count them. */
+    const ratingOptions = (max: number) => [
+        {
+            value: '',
+            label: text('otherscape:forms.powerSet.basic.ratingNone'),
+        },
+        ...Array.from({ length: max }, (_, index) => ({
+            value: String(index + 1),
+            label: '⊕'.repeat(index + 1),
+        })),
+    ]
 
     return (
         <div className="space-y-4">
@@ -67,6 +78,60 @@ export default function BasicForm() {
                 />
                 <p className="text-xs text-muted-foreground">
                     {text('otherscape:forms.powerSet.basic.typeHint')}
+                </p>
+            </div>
+
+            <div className="space-y-2">
+                <Label>
+                    {text('otherscape:forms.powerSet.basic.ratingLabel')}
+                </Label>
+                <SegmentedRadioGroup
+                    id="os-power-set-rating"
+                    value={String(otherscapePowerSet.rating ?? '')}
+                    onValueChange={(value) =>
+                        setOtherscapePowerSet(
+                            value
+                                ? { rating: Number(value) }
+                                : // Optional stars mean nothing without a
+                                  // rating, so they go with it.
+                                  { rating: null, optional_rating: null }
+                        )
+                    }
+                    options={ratingOptions(5)}
+                    ariaLabel={text(
+                        'otherscape:forms.powerSet.basic.ratingLabel'
+                    )}
+                    className="sm:inline-grid"
+                />
+                {otherscapePowerSet.rating != null && (
+                    <>
+                        <Label>
+                            {text(
+                                'otherscape:forms.powerSet.basic.optionalRatingLabel'
+                            )}
+                        </Label>
+                        <SegmentedRadioGroup
+                            id="os-power-set-optional-rating"
+                            value={String(
+                                otherscapePowerSet.optional_rating ?? ''
+                            )}
+                            onValueChange={(value) =>
+                                setOtherscapePowerSet({
+                                    optional_rating: value
+                                        ? Number(value)
+                                        : null,
+                                })
+                            }
+                            options={ratingOptions(4)}
+                            ariaLabel={text(
+                                'otherscape:forms.powerSet.basic.optionalRatingLabel'
+                            )}
+                            className="sm:inline-grid"
+                        />
+                    </>
+                )}
+                <p className="text-xs text-muted-foreground">
+                    {text('otherscape:forms.powerSet.basic.ratingHint')}
                 </p>
             </div>
 

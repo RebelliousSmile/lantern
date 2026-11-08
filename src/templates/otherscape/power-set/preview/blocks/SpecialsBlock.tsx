@@ -16,6 +16,7 @@ export default function SpecialsBlock() {
         <div className="power-set-specials">
             <SectionHeader
                 title="Specials"
+                align="end"
                 onClick={() => openSheet({ kind: 'specials', mode: 'create' })}
             />
 

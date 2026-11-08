@@ -3,12 +3,20 @@
 Validé par le mainteneur le 2026-09-18. Fixe les libellés de l'interface (formulaires, sections,
 options) ; les aperçus, les PNG exportés et le TOML restent en anglais.
 
+**Types de carte gardés en anglais (2026-11-08).** Challenge, Character Trope, Loadout Item, Power Set,
+Theme et Theme Kit gardent leur nom anglais dans l'interface française, tant que la traduction
+officielle de Barbus Inc et Antre Monde n'est pas publiée. Mainteneur : « pour les éléments technique
+principaux, il vaut mieux garder les termes originaux pour le moment, sinon on va cliquer sur un élément
+en pensant en avoir un autre. » Les sous-termes (tags, limites, menaces, particularités, quête…) restent
+en français, comme « type de thème » et « thème du Soi », qui désignent la notion de jeu et non la carte.
+Legend in the Mist et City of Mist ne sont pas concernés.
+
 ## Commun
 
 | English term | French term | note |
 | --- | --- | --- |
 | Tag | Tag | Masculin (« tag brûlé »). Décision transversale (2026-09-18) : les trois jeux du moteur Mist partagent ce terme, City of Mist bascule depuis « Étiquette ». |
-| Power tag | Tag de pouvoir | Identique dans `legend.ts` et `otherscape.ts` (Thème, Kit de thème, avertissements). Ne pas confondre avec « Tag d'atout », qui traduit *Feature tag* (voir Loadout Item). |
+| Power tag | Tag de pouvoir | Identique dans `legend.ts` et `otherscape.ts` (Theme, Theme Kit, avertissements). Ne pas confondre avec « Tag d'atout », qui traduit *Feature tag* (voir Loadout Item). |
 | Weakness tag | Tag de faiblesse | Identique dans `legend.ts`. |
 | Title tag | Tag de titre | Masculin. Tag imprimé comme titre du Thème ou du Kit, et nom des kits cités par un Character Trope. |
 | Status | Statut | Masculin. |
@@ -25,7 +33,7 @@ options) ; les aperçus, les PNG exportés et le TOML restent en anglais.
 
 | English term | French term | note |
 | --- | --- | --- |
-| Challenge | Défi | Masculin (« nouveau défi »). Identique dans `legend.ts`. |
+| Challenge | Challenge | Masculin (« nouveau Challenge »). Gardé en anglais (2026-11-08) ; `legend.ts` garde « Défi ». |
 | Tags & Statuses | Tags et statuts | Identique dans `legend.ts`. |
 | Limit | Limite | Féminin (« limite polaire »). Identique dans `legend.ts`. |
 | Level (of a limit, 1-6) | Niveau | Masculin. |
@@ -41,7 +49,7 @@ options) ; les aperçus, les PNG exportés et le TOML restent en anglais.
 
 | English term | French term | note |
 | --- | --- | --- |
-| Power Set | Ensemble de pouvoirs | Masculin. |
+| Power Set | Power Set | Masculin. Gardé en anglais (2026-11-08). |
 | Type (Self / Mythos / Noise) | Type (Soi / Mythos / Bruit) | Voir Commun : même décision que le type de thème. Le formulaire affiche le libellé traduit ; la valeur stockée dans le document et le libellé imprimé sur la carte (aperçu) restent en anglais (Self/Mythos/Noise). |
 | Specials / Threats / General Consequences | Particularités / Menaces / Conséquences générales | Mêmes termes que le Défi, sur lequel l'ensemble se greffe : les garder alignés. |
 
@@ -49,8 +57,8 @@ options) ; les aperçus, les PNG exportés et le TOML restent en anglais.
 
 | English term | French term | note |
 | --- | --- | --- |
-| Theme | Thème | Masculin. |
-| Theme Kit | Kit de thème | Masculin. Identique dans `legend.ts`. |
+| Theme | Theme | Masculin, pour la carte. Gardé en anglais (2026-11-08) ; la notion de jeu reste « thème » (« type de thème », « thème du Soi »). |
+| Theme Kit | Theme Kit | Masculin. Gardé en anglais (2026-11-08) ; `legend.ts` garde « Kit de thème ». |
 | Themebook | Livre de thèmes | Décision transversale (2026-09-18) : terme unique pour tout le moteur Mist, City of Mist bascule depuis « Livret de thème ». |
 | Category (of a theme) | Catégorie | Féminin. Valeurs libres (« Street Trade », « Augmented ») laissées à l'auteur. |
 | Quest | Quête | Féminin. Titre de section ; le champ lui-même prend le libellé propre au type ci-dessous. |
@@ -66,8 +74,8 @@ options) ; les aperçus, les PNG exportés et le TOML restent en anglais.
 
 | English term | French term | note |
 | --- | --- | --- |
-| Loadout Item | Pièce d'équipement | Féminin (« nouvelle pièce d'équipement »). |
-| Loadout | Équipement | Masculin. Même racine que Loadout Item, gardée alignée. |
+| Loadout Item | Loadout Item | Masculin (« nouveau Loadout Item »). Gardé en anglais (2026-11-08). |
+| Loadout | Loadout | Masculin. Même racine que Loadout Item, gardée alignée. |
 | Feature tag | Tag d'atout | Masculin. Seul endroit où apparaît « atout » ; ce n'est pas la traduction de *Power tag*. |
 | Weakness tag (singular) | Tag de faiblesse | Une pièce n'en porte qu'un : section au singulier. |
 | Category (of an item) | Catégorie | Féminin. Terme unifié (2026-09-18) : l'ancien « Rubrique » de la description provisoire est remplacé par « Catégorie », aligné sur le Thème et le Character Trope. |
@@ -77,8 +85,8 @@ options) ; les aperçus, les PNG exportés et le TOML restent en anglais.
 
 | English term | French term | note |
 | --- | --- | --- |
-| Character Trope | Archétype de personnage | Masculin. « Trope » n'a pas d'équivalent établi ; choix retenu. |
+| Character Trope | Character Trope | Masculin. Gardé en anglais (2026-11-08). |
 | Category (of a trope) | Catégorie | Féminin. Valeurs libres (« Mystics & Mediums ») laissées à l'auteur. |
-| Theme kits granted | Kits de thème accordés | Accord masculin pluriel avec « kits ». |
-| Theme kit choices | Choix de kits de thème | Section « Choix » dans le fichier provisoire. |
-| Loadout | Équipement | Même terme que Loadout Item. |
+| Theme kits granted | Theme Kits accordés | Accord masculin pluriel. |
+| Theme kit choices | Choix de Theme Kits | Section « Choix » dans le fichier provisoire. |
+| Loadout | Loadout | Même terme que Loadout Item. Une entrée de la trope est une « entrée de loadout », pas un Loadout Item. |

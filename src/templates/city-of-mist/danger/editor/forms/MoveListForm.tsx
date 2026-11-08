@@ -2,6 +2,7 @@ import { SystemMarkdownScope } from '@/components/markdown/SystemMarkdownScope'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { useUiText } from '@/i18n/text'
 import { renderSystemMarkdownInline } from '@/utils/markdown'
 import {
     DndContext,
@@ -47,6 +48,7 @@ export default function MoveListForm({
     removeValue,
     moveValue,
 }: MoveListFormProps) {
+    const text = useUiText()
     const [editingIndex, setEditingIndex] = useState<number | null>(null)
     const [draft, setDraft] = useState('')
     const [error, setError] = useState<string | null>(null)
@@ -107,7 +109,7 @@ export default function MoveListForm({
         if (editingIndex == null) return
         const next = draft.trim()
         if (!next) {
-            setError('Please enter a value.')
+            setError(text('city:forms.shared.list.valueRequired'))
             return
         }
 
@@ -168,7 +170,7 @@ export default function MoveListForm({
                                                 className="h-7 px-2.5 text-xs"
                                                 onClick={confirmEdit}
                                             >
-                                                Save
+                                                {text('actions.save')}
                                             </Button>
                                             <Button
                                                 type="button"
@@ -176,7 +178,7 @@ export default function MoveListForm({
                                                 className="h-7 px-0 text-xs"
                                                 onClick={cancelEdit}
                                             >
-                                                Cancel
+                                                {text('actions.cancel')}
                                             </Button>
                                         </div>
                                     </div>
@@ -218,6 +220,7 @@ function SortableMoveRow({
     onRemove: () => void
     children?: React.ReactNode
 }) {
+    const text = useUiText()
     const {
         attributes,
         listeners,
@@ -247,11 +250,13 @@ function SortableMoveRow({
                                 ? 'cursor-not-allowed opacity-40 hover:bg-transparent'
                                 : 'cursor-grab active:cursor-grabbing'
                         }`}
-                        aria-label="Drag to reorder"
+                        aria-label={text('actions.dragToReorder')}
                         title={
                             dragDisabled
-                                ? 'Finish editing to reorder'
-                                : 'Drag to reorder'
+                                ? text(
+                                      'city:forms.shared.list.finishEditingToReorder'
+                                  )
+                                : text('actions.dragToReorder')
                         }
                         disabled={dragDisabled}
                         {...(!dragDisabled ? attributes : {})}
@@ -279,7 +284,7 @@ function SortableMoveRow({
                         variant="ghost"
                         className="h-7 w-7"
                         onClick={onEdit}
-                        title="Edit"
+                        title={text('actions.edit')}
                     >
                         <Pencil className="h-3.5 w-3.5" />
                     </Button>
@@ -288,7 +293,7 @@ function SortableMoveRow({
                         variant="ghost"
                         className="h-7 w-7 text-destructive"
                         onClick={onRemove}
-                        title="Remove"
+                        title={text('actions.remove')}
                     >
                         <Trash2 className="h-3.5 w-3.5" />
                     </Button>

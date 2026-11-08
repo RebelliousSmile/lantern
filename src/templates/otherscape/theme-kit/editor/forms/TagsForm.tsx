@@ -149,7 +149,7 @@ export default function TagsForm({
 
     return (
         <div className="space-y-2.5">
-            <div className="flex items-baseline justify-between gap-2">
+            <div className="space-y-0.5">
                 <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                     {text(`otherscape:forms.themeKit.tags.fieldLabel.${field}`)}
                 </p>

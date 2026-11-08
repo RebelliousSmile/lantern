@@ -1,14 +1,16 @@
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+import { useUiText } from '@/i18n/text'
 import { useCityOfMistCustomMoveViewStore } from '../hooks'
 
 export function CustomMoveImageExportSettings() {
+    const text = useUiText()
     const { exportPrefs, setExportPrefs } = useCityOfMistCustomMoveViewStore()
 
     return (
         <div className="space-y-4">
             <div className="space-y-2">
                 <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                    Image scale
+                    {text('city:forms.shared.exportSettings.imageScale')}
                 </p>
                 <RadioGroup
                     value={String(exportPrefs.scale)}

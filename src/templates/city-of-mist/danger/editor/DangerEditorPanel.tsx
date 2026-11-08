@@ -1,3 +1,4 @@
+import { useUiText } from '@/i18n/text'
 import { useCityOfMistDangerSheetStore } from '../hooks'
 import BasicForm from './forms/BasicForm'
 import CustomMovesForm from './forms/CustomMovesForm'
@@ -7,12 +8,13 @@ import SoftMovesForm from './forms/SoftMovesForm'
 import SpectrumsForm from './forms/SpectrumsForm'
 
 export function DangerEditorPanel() {
+    const text = useUiText()
     const { open, target } = useCityOfMistDangerSheetStore()
 
     if (!open || !target) {
         return (
             <div className="rounded-md border border-dashed px-3 py-4 text-sm text-muted-foreground">
-                Click on the preview to edit a specific section.
+                {text('city:forms.shared.panel.emptyState')}
             </div>
         )
     }

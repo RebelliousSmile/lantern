@@ -1,8 +1,8 @@
 import { useActiveTemplateTab } from '@/core/workspace/selectors'
 import { getActiveTab, useWorkspaceStore } from '@/core/workspace/store'
 import type { WorkspaceTab } from '@/core/workspace/types'
-import { cloneValue } from '@/utils/clone'
 import { setVisibility, toggleVisibility } from '@/templates/shared/visibility'
+import { cloneValue } from '@/utils/clone'
 import type {
     OtherscapeThemeKit,
     OtherscapeThemeKitSheetState,
@@ -11,6 +11,7 @@ import type {
     SheetTarget,
     TagField,
     ThemeKitMeta,
+    ThemeKitSpecial,
     ThemeType,
 } from './model'
 import {
@@ -68,6 +69,7 @@ export type {
     SheetTarget,
     TagField,
     ThemeKitMeta,
+    ThemeKitSpecial,
     ThemeType,
 } from './model'
 
@@ -123,6 +125,13 @@ export function useOtherscapeThemeKitStore() {
             apply((current) => ({ ...current, category })),
         setQuest: (quest: string) =>
             apply((current) => ({ ...current, quest })),
+        setDescription: (description: string) =>
+            apply((current) => ({ ...current, description })),
+        setSpecial: (update: Partial<ThemeKitSpecial>) =>
+            apply((current) => ({
+                ...current,
+                special: { ...current.special, ...update },
+            })),
         addTag: (field: TagField, tag: string) =>
             applyToTags(field, (tags) => {
                 const next = tag.trim()
@@ -266,12 +275,19 @@ export function isEmptySection(
     id: SectionId
 ) {
     switch (id) {
+        case 'description':
+            return !otherscapeThemeKit.description.trim()
         case 'powerTags':
             return !otherscapeThemeKit.power_tags.length
         case 'weaknessTags':
             return !otherscapeThemeKit.weakness_tags.length
         case 'quest':
             return !otherscapeThemeKit.quest.trim()
+        case 'special':
+            return (
+                !otherscapeThemeKit.special.name.trim() &&
+                !otherscapeThemeKit.special.description.trim()
+            )
         case 'meta': {
             // `publication_type` is always set, since the document materializes
             // it, so it cannot be what makes the footer worth printing: a kit

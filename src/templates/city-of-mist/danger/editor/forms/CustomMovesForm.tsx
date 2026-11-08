@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { useUiText } from '@/i18n/text'
 import { renderSystemMarkdownInline } from '@/utils/markdown'
 import {
     DndContext,
@@ -34,6 +35,7 @@ export default function CustomMovesForm({
 }: {
     focusIndex?: number
 }) {
+    const text = useUiText()
     const {
         cityOfMistDanger,
         addCustomMove,
@@ -115,11 +117,13 @@ export default function CustomMovesForm({
         const trimmedName = name.trim()
         const trimmedDescription = description.trim()
         if (!trimmedName) {
-            setError('Custom move name is required.')
+            setError(text('city:forms.danger.customMoves.errorNameRequired'))
             return
         }
         if (!trimmedDescription) {
-            setError('Custom move description is required.')
+            setError(
+                text('city:forms.danger.customMoves.errorDescriptionRequired')
+            )
             return
         }
 
@@ -149,7 +153,9 @@ export default function CustomMovesForm({
                                     id={itemIds[index]}
                                     name={
                                         customMove.name ??
-                                        'Untitled custom move'
+                                        text(
+                                            'city:forms.danger.customMoves.untitled'
+                                        )
                                     }
                                     description={customMove.description}
                                     dragDisabled={editingIndex !== null}
@@ -168,7 +174,7 @@ export default function CustomMovesForm({
                                                     htmlFor={`custom-move-name-${index}`}
                                                     className="text-xs"
                                                 >
-                                                    Name
+                                                    {text('fields.name')}
                                                 </Label>
                                                 <Input
                                                     id={`custom-move-name-${index}`}
@@ -179,7 +185,9 @@ export default function CustomMovesForm({
                                                             event.target.value
                                                         )
                                                     }
-                                                    placeholder="Custom Move"
+                                                    placeholder={text(
+                                                        'city:forms.danger.customMoves.namePlaceholder'
+                                                    )}
                                                 />
                                             </div>
                                             <div className="grid gap-1">
@@ -187,7 +195,7 @@ export default function CustomMovesForm({
                                                     htmlFor={`custom-move-description-${index}`}
                                                     className="text-xs"
                                                 >
-                                                    Description
+                                                    {text('fields.description')}
                                                 </Label>
                                                 <Textarea
                                                     id={`custom-move-description-${index}`}
@@ -199,7 +207,9 @@ export default function CustomMovesForm({
                                                             event.target.value
                                                         )
                                                     }
-                                                    placeholder="Describe the custom move."
+                                                    placeholder={text(
+                                                        'city:forms.danger.customMoves.descriptionPlaceholder'
+                                                    )}
                                                 />
                                             </div>
                                             <div className="flex items-center gap-2">
@@ -209,7 +219,7 @@ export default function CustomMovesForm({
                                                     className="h-7 px-2.5 text-xs"
                                                     onClick={confirmEdit}
                                                 >
-                                                    Save
+                                                    {text('actions.save')}
                                                 </Button>
                                                 <Button
                                                     type="button"
@@ -217,7 +227,7 @@ export default function CustomMovesForm({
                                                     className="h-7 px-0 text-xs"
                                                     onClick={cancelEdit}
                                                 >
-                                                    Cancel
+                                                    {text('actions.cancel')}
                                                 </Button>
                                             </div>
                                         </div>
@@ -234,7 +244,7 @@ export default function CustomMovesForm({
                                 onClick={addPlaceholder}
                             >
                                 <Plus className="h-3.5 w-3.5" />
-                                Add custom move
+                                {text('city:forms.danger.customMoves.add')}
                             </Button>
                         </li>
                     </ul>
@@ -261,6 +271,7 @@ function SortableCustomMoveRow({
     onRemove: () => void
     children?: React.ReactNode
 }) {
+    const text = useUiText()
     const {
         attributes,
         listeners,
@@ -290,11 +301,13 @@ function SortableCustomMoveRow({
                                 ? 'cursor-not-allowed opacity-40 hover:bg-transparent'
                                 : 'cursor-grab active:cursor-grabbing'
                         }`}
-                        aria-label="Drag to reorder"
+                        aria-label={text('actions.dragToReorder')}
                         title={
                             dragDisabled
-                                ? 'Finish editing to reorder'
-                                : 'Drag to reorder'
+                                ? text(
+                                      'city:forms.shared.list.finishEditingToReorder'
+                                  )
+                                : text('actions.dragToReorder')
                         }
                         disabled={dragDisabled}
                         {...(!dragDisabled ? attributes : {})}
@@ -314,7 +327,7 @@ function SortableCustomMoveRow({
                         variant="ghost"
                         className="h-8 w-8"
                         onClick={onEdit}
-                        title="Edit"
+                        title={text('actions.edit')}
                     >
                         <Pencil className="h-4 w-4" />
                     </Button>
@@ -323,7 +336,7 @@ function SortableCustomMoveRow({
                         variant="ghost"
                         className="h-8 w-8 text-destructive"
                         onClick={onRemove}
-                        title="Remove"
+                        title={text('actions.remove')}
                     >
                         <Trash2 className="h-4 w-4" />
                     </Button>

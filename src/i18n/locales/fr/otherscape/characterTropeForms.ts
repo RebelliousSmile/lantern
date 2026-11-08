@@ -5,29 +5,30 @@ const forms: ResourceShape<typeof en> = {
     panel: {
         emptyState: 'Cliquez sur la carte pour modifier une section.',
     },
+    pageLabel: 'Page (facultative)',
     basic: {
-        nameLabel: "Nom de l'archétype de personnage",
+        nameLabel: 'Nom du Character Trope',
         namePlaceholder: 'ex. : Exorciste Néon',
         categoryLabel: 'Catégorie',
         categoryPlaceholder: 'ex. : MYSTIQUES & MÉDIUMS',
         categoryHint:
-            "La famille de personnages à laquelle appartient cet archétype, telle que le livre la classe.",
+            'La famille de personnages à laquelle appartient ce Character Trope, telle que le livre la classe.',
         descriptionPlaceholder:
-            "Rédigez ici un court résumé de l'archétype de personnage...",
+            'Rédigez ici un court résumé du Character Trope...',
     },
     themeKits: {
-        hint: "Les kits de thème que cet archétype accorde d'office. Orthographiez le tag de titre et la catégorie comme le kit lui-même les orthographie : c'est cette paire qui pointe vers le kit.",
+        hint: "Les Theme Kits que ce Character Trope accorde d'office. Orthographiez le tag de titre et la catégorie comme le kit lui-même les orthographie : c'est cette paire qui pointe vers le kit.",
         titleTagLabel: 'Tag de titre',
         categoryLabel: 'Catégorie',
         categoryPlaceholder: 'ex. : RITUEL',
-        addButton: 'Ajouter un kit de thème',
+        addButton: 'Ajouter un Theme Kit',
         noCategory: 'Aucune catégorie',
         finishEditingToReorder: "Terminez l'édition pour réorganiser",
         titleTagRequired: 'Le tag de titre est requis.',
         categoryRequired: 'La catégorie est requise.',
     },
     choices: {
-        hint: "L'un de ces kits de thème, au choix du joueur. Orthographiez le tag de titre et la catégorie comme le kit lui-même les orthographie : c'est cette paire qui pointe vers le kit.",
+        hint: "L'un de ces Theme Kits, au choix du joueur. Orthographiez le tag de titre et la catégorie comme le kit lui-même les orthographie : c'est cette paire qui pointe vers le kit.",
         titleTagLabel: 'Tag de titre',
         categoryLabel: 'Catégorie',
         categoryPlaceholder: 'ex. : RITUEL',
@@ -38,10 +39,10 @@ const forms: ResourceShape<typeof en> = {
         categoryRequired: 'La catégorie est requise.',
     },
     loadout: {
-        hint: "L'équipement avec lequel le personnage commence. Rédigez chaque entrée telle qu'elle doit s'imprimer : elle nomme ce qui est emporté plutôt que de pointer vers une pièce d'équipement.",
-        addButton: "Ajouter une pièce d'équipement",
-        emptyEntryError: "Une pièce d'équipement ne peut pas être vide.",
-        dragAriaLabel: "Glisser pour réorganiser la pièce d'équipement",
+        hint: "Le loadout avec lequel le personnage commence. Rédigez chaque entrée telle qu'elle doit s'imprimer : elle nomme ce qui est emporté plutôt que de pointer vers un Loadout Item.",
+        addButton: 'Ajouter une entrée de loadout',
+        emptyEntryError: 'Une entrée de loadout ne peut pas être vide.',
+        dragAriaLabel: "Glisser pour réorganiser l'entrée de loadout",
         finishEditingToReorder: "Terminez l'édition pour réorganiser",
     },
     meta: {
@@ -83,6 +84,7 @@ const forms: ResourceShape<typeof en> = {
         autoHideEmptyLabel: 'Masquer automatiquement les sections vides',
         sectionsHeading: 'Sections',
         previewWidthLabel: "Largeur de l'aperçu",
+        variantHeading: 'Variante',
         backgroundHeading: 'Arrière-plan',
         backgroundOption: {
             neon: 'Néon',

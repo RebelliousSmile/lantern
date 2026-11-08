@@ -9,6 +9,7 @@ import ConsequencesBlock from './blocks/ConsequencesBlock'
 import HeaderBlock from './blocks/HeaderBlock'
 import MetaFooterBlock from './blocks/MetaFooterBlock'
 import SpecialsBlock from './blocks/SpecialsBlock'
+import TagsBlock from './blocks/TagsBlock'
 import ThreatsBlock from './blocks/ThreatsBlock'
 import './powerSetTheme.css'
 
@@ -34,14 +35,22 @@ export function PowerSetPreview() {
                     transformOrigin: 'top center',
                 }}
             >
-                {/* The band and the name run the full width of the card: they
-                    are its top edge rather than a region of its body. */}
-                <HeaderBlock />
+                {/* The kicker, the name and the prose: the card's head, set
+                    apart from the body by its own spacing only. */}
+                <div className="power-set-sheet__head">
+                    <HeaderBlock />
+                </div>
 
                 <div className="power-set-sheet__body">
                     {/* One column rather than the Challenge's two: a Power Set
                         holds nothing the Crew acts on, only what the sheet
                         hands out, so there is no second side to face. */}
+                    <SectionGate
+                        show={shouldShow(otherscapePowerSet, 'tags', ui)}
+                    >
+                        <TagsBlock />
+                    </SectionGate>
+
                     <SectionGate
                         show={shouldShow(otherscapePowerSet, 'specials', ui)}
                     >

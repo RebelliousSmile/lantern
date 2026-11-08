@@ -212,7 +212,7 @@ function FeatureTagsForm({
 
     return (
         <div className="space-y-2.5">
-            <div className="flex items-baseline justify-between gap-2">
+            <div className="space-y-0.5">
                 <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                     {t('otherscape:forms.loadoutItem.tags.featureTitle')}
                 </p>

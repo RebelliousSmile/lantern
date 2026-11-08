@@ -15,6 +15,14 @@ export type OtherscapePowerSet = {
     // neutral source a blank Power Set could sit under.
     type: PowerSetType
     description: string
+    // Stars the Power Set adds to the Challenge it is grafted onto; `null`
+    // when the book prints none. The optional stars only mean something
+    // beside a rating, so the payload drops them without one.
+    rating: number | null
+    optional_rating: number | null
+    // Stored with their own braces, like `otherscape/challenge`, so the list
+    // copies across to a Challenge as it is.
+    tags_and_statuses: string[]
     specials: Special[]
     threats: Threat[]
     general_consequences: string[]
@@ -28,6 +36,9 @@ export function toOtherscapePowerSetDocument(
         name: otherscapePowerSet.name,
         type: otherscapePowerSet.type,
         description: otherscapePowerSet.description ?? '',
+        rating: otherscapePowerSet.rating ?? null,
+        optional_rating: otherscapePowerSet.optional_rating ?? null,
+        tags_and_statuses: otherscapePowerSet.tags_and_statuses ?? [],
         specials: otherscapePowerSet.specials ?? [],
         threats: (otherscapePowerSet.threats ?? []).map((threat) => ({
             ...threat,
@@ -54,6 +65,15 @@ export function toOtherscapePowerSetPayload(
 
     if (otherscapePowerSet.description.trim()) {
         payload.description = otherscapePowerSet.description
+    }
+    if (otherscapePowerSet.rating != null) {
+        payload.rating = otherscapePowerSet.rating
+        if (otherscapePowerSet.optional_rating != null) {
+            payload.optional_rating = otherscapePowerSet.optional_rating
+        }
+    }
+    if (otherscapePowerSet.tags_and_statuses.length) {
+        payload.tags_and_statuses = otherscapePowerSet.tags_and_statuses
     }
     if (otherscapePowerSet.specials.length) {
         payload.specials = otherscapePowerSet.specials
@@ -102,6 +122,7 @@ export function toOtherscapePowerSetPayload(
 
 export type SectionId =
     | 'description'
+    | 'tags'
     | 'specials'
     | 'threats'
     | 'generalConsequences'
@@ -125,6 +146,7 @@ export type OtherscapePowerSetViewState = {
 export type SheetTarget =
     | { kind: 'basic'; mode?: 'edit' }
     | { kind: 'meta'; mode?: 'edit' }
+    | { kind: 'tags'; mode?: 'edit' }
     | { kind: 'specials'; mode?: 'create' | 'edit'; index?: number }
     | { kind: 'threats'; mode?: 'create' | 'edit'; index?: number }
     | { kind: 'consequences'; mode?: 'create' | 'edit'; index?: number }
@@ -134,12 +156,13 @@ export type OtherscapePowerSetSheetState = {
     target: SheetTarget | null
 }
 
-export const PREVIEW_WIDTH_MIN = 700
-export const PREVIEW_WIDTH_MAX = 1400
-export const PREVIEW_WIDTH_DEFAULT = 1152
+export const PREVIEW_WIDTH_MIN = 320
+export const PREVIEW_WIDTH_MAX = 720
+export const PREVIEW_WIDTH_DEFAULT = 480
 
 export const defaultHidden: Record<SectionId, boolean> = {
     description: false,
+    tags: false,
     specials: false,
     threats: false,
     generalConsequences: false,
@@ -170,6 +193,9 @@ export const blankOtherscapePowerSet = (): OtherscapePowerSet => ({
     // Mythos or a Noise origin the author has not chosen.
     type: 'self',
     description: '',
+    rating: null,
+    optional_rating: null,
+    tags_and_statuses: [],
     specials: [],
     threats: [],
     general_consequences: [],

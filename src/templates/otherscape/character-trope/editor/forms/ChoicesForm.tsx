@@ -46,6 +46,7 @@ export default function ChoicesForm({ focusIndex }: { focusIndex?: number }) {
     const [editingIndex, setEditingIndex] = useState<number | null>(null)
     const [eTitleTag, setETitleTag] = useState('')
     const [eCategory, setECategory] = useState('')
+    const [ePage, setEPage] = useState('')
     const [error, setError] = useState<string | null>(null)
 
     // Deep-link open from preview/sheet
@@ -106,6 +107,7 @@ export default function ChoicesForm({ focusIndex }: { focusIndex?: number }) {
         setEditingIndex(newIndex)
         setETitleTag(placeholder.title_tag)
         setECategory(placeholder.category)
+        setEPage('')
         setError(null)
     }
 
@@ -116,6 +118,7 @@ export default function ChoicesForm({ focusIndex }: { focusIndex?: number }) {
         setEditingIndex(index)
         setETitleTag(kit.title_tag || '')
         setECategory(kit.category || '')
+        setEPage(kit.page != null ? String(kit.page) : '')
         setError(null)
     }
 
@@ -123,6 +126,7 @@ export default function ChoicesForm({ focusIndex }: { focusIndex?: number }) {
         setEditingIndex(null)
         setETitleTag('')
         setECategory('')
+        setEPage('')
         setError(null)
     }
 
@@ -140,6 +144,8 @@ export default function ChoicesForm({ focusIndex }: { focusIndex?: number }) {
         updateChoiceAt(editingIndex, {
             title_tag: eTitleTag.trim(),
             category: eCategory.trim(),
+            // Blank or unreadable: the entry goes without a page.
+            page: Number.parseInt(ePage, 10) || undefined,
         })
         cancelEdit()
     }
@@ -218,6 +224,26 @@ export default function ChoicesForm({ focusIndex }: { focusIndex?: number }) {
                                                 placeholder={text(
                                                     'otherscape:forms.characterTrope.choices.categoryPlaceholder'
                                                 )}
+                                            />
+                                        </div>
+                                        <div className="grid gap-1">
+                                            <Label
+                                                htmlFor={`ch-page-${index}`}
+                                                className="text-xs"
+                                            >
+                                                {text(
+                                                    'otherscape:forms.characterTrope.pageLabel'
+                                                )}
+                                            </Label>
+                                            <Input
+                                                id={`ch-page-${index}`}
+                                                type="number"
+                                                min={1}
+                                                className="h-8 w-24 px-2 text-sm"
+                                                value={ePage}
+                                                onChange={(event) =>
+                                                    setEPage(event.target.value)
+                                                }
                                             />
                                         </div>
                                         <div className="flex items-center gap-2">

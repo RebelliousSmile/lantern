@@ -1,4 +1,5 @@
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { useUiText } from '@/i18n/text'
 import { Info } from 'lucide-react'
 import { useGameDefinitionForGame } from '../../shared/gameDefinition'
 import { usePlaybookSheetStore, usePlaybookStore } from '../hooks'
@@ -35,11 +36,12 @@ export function PlaybookEditorPanel() {
     const { open, target } = usePlaybookSheetStore()
     const { playbook } = usePlaybookStore()
     const gameDefinition = useGameDefinitionForGame(playbook.game)
+    const text = useUiText()
 
     if (!open || !target) {
         return (
             <div className="rounded-md border border-dashed px-3 py-4 text-sm text-muted-foreground">
-                Click on the preview to edit a specific section.
+                {text('pbta:forms.shared.panel.emptyState')}
             </div>
         )
     }
@@ -49,11 +51,13 @@ export function PlaybookEditorPanel() {
             <div className="space-y-3">
                 <Alert>
                     <Info />
-                    <AlertTitle>Read-only</AlertTitle>
+                    <AlertTitle>
+                        {text('pbta:forms.playbook.readOnly.title')}
+                    </AlertTitle>
                     <AlertDescription>
-                        Open the "{playbook.game}" game definition tab to edit
-                        this playbook. Without it, its stats and moves can't be
-                        validated against the game, so editing is disabled.
+                        {text('pbta:forms.playbook.readOnly.description', {
+                            game: playbook.game,
+                        })}
                     </AlertDescription>
                 </Alert>
                 <fieldset disabled className="space-y-4">

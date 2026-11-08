@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { useUiText, type TranslationKey } from '@/i18n/text'
 import {
     closestCenter,
     DndContext,
@@ -28,14 +29,17 @@ import {
 } from '../../hooks'
 import StringListInput from './StringListInput'
 
-const COPY: Record<QuestionField, { title: string; placeholder: string }> = {
+const COPY: Record<
+    QuestionField,
+    { title: TranslationKey; placeholder: TranslationKey }
+> = {
     power: {
-        title: 'Power tag questions',
-        placeholder: 'What is the one thing you are best at?',
+        title: 'city:forms.themeKit.questions.powerTitle',
+        placeholder: 'city:forms.themeKit.questions.powerPlaceholder',
     },
     weakness: {
-        title: 'Weakness tag questions',
-        placeholder: 'What does that same strength cost you?',
+        title: 'city:forms.themeKit.questions.weaknessTitle',
+        placeholder: 'city:forms.themeKit.questions.weaknessPlaceholder',
     },
 }
 
@@ -48,6 +52,7 @@ export default function QuestionsForm({
     focusIndex?: number
     autoCreate?: boolean
 }) {
+    const text = useUiText()
     const {
         cityOfMistThemeKit,
         addQuestion,
@@ -97,7 +102,7 @@ export default function QuestionsForm({
     return (
         <div className="space-y-3">
             <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                {COPY[field].title}
+                {text(COPY[field].title)}
             </p>
 
             <DndContext
@@ -115,7 +120,7 @@ export default function QuestionsForm({
                                 key={ids[index]}
                                 id={ids[index]}
                                 question={question}
-                                placeholder={COPY[field].placeholder}
+                                placeholder={text(COPY[field].placeholder)}
                                 highlighted={index === focusIndex}
                                 onUpdate={(update) =>
                                     updateQuestionAt(field, index, update)
@@ -134,7 +139,8 @@ export default function QuestionsForm({
                 className="h-8 w-full gap-1.5 border-dashed text-xs"
                 onClick={() => addQuestion(field)}
             >
-                <Plus className="h-3.5 w-3.5" /> Add question
+                <Plus className="h-3.5 w-3.5" />{' '}
+                {text('city:forms.themeKit.questions.add')}
             </Button>
 
             <RuleFields
@@ -161,6 +167,7 @@ function QuestionRow({
     onUpdate: (update: Partial<Question>) => void
     onRemove: () => void
 }) {
+    const text = useUiText()
     const {
         attributes,
         listeners,
@@ -183,7 +190,7 @@ function QuestionRow({
                 <button
                     type="button"
                     className="inline-flex h-8 w-7 cursor-grab items-center justify-center rounded hover:bg-muted"
-                    aria-label="Drag to reorder"
+                    aria-label={text('actions.dragToReorder')}
                     {...attributes}
                     {...listeners}
                 >
@@ -204,7 +211,7 @@ function QuestionRow({
                     variant="ghost"
                     size="icon"
                     className="h-8 w-8 text-destructive"
-                    title="Remove"
+                    title={text('actions.remove')}
                     onClick={onRemove}
                 >
                     <Trash2 className="h-3.5 w-3.5" />
@@ -212,8 +219,10 @@ function QuestionRow({
             </div>
             <div className="mt-2 grid gap-1 pl-9">
                 <Label className="text-xs">
-                    Examples{' '}
-                    <span className="text-muted-foreground">(optional)</span>
+                    {text('city:forms.themeKit.questions.examplesLabel')}{' '}
+                    <span className="text-muted-foreground">
+                        {text('city:forms.shared.meta.optional')}
+                    </span>
                 </Label>
                 <StringListInput
                     value={question.examples ?? []}
@@ -222,7 +231,9 @@ function QuestionRow({
                             examples: examples.length ? examples : undefined,
                         })
                     }
-                    placeholder="Add example..."
+                    placeholder={text(
+                        'city:forms.themeKit.questions.examplePlaceholder'
+                    )}
                 />
             </div>
         </li>
@@ -238,10 +249,11 @@ function RuleFields({
     rule: SelectionRule | null
     onChange: (update: Partial<SelectionRule>) => void
 }) {
+    const text = useUiText()
     return (
         <div className="grid gap-3 rounded-md border p-2">
             <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                How many are answered
+                {text('city:forms.themeKit.questions.howManyLabel')}
             </p>
             <div className="grid grid-cols-2 gap-2">
                 <div className="grid gap-1">
@@ -249,7 +261,7 @@ function RuleFields({
                         htmlFor={`theme-kit-${field}-required`}
                         className="text-xs"
                     >
-                        Required
+                        {text('city:forms.themeKit.questions.requiredLabel')}
                     </Label>
                     <Input
                         id={`theme-kit-${field}-required`}
@@ -272,7 +284,7 @@ function RuleFields({
                         htmlFor={`theme-kit-${field}-chosen`}
                         className="text-xs"
                     >
-                        Free choice
+                        {text('city:forms.themeKit.questions.freeChoiceLabel')}
                     </Label>
                     <Input
                         id={`theme-kit-${field}-chosen`}
@@ -293,15 +305,19 @@ function RuleFields({
             </div>
             <div className="grid gap-1">
                 <Label htmlFor={`theme-kit-${field}-note`} className="text-xs">
-                    Note{' '}
-                    <span className="text-muted-foreground">(optional)</span>
+                    {text('city:forms.themeKit.questions.noteLabel')}{' '}
+                    <span className="text-muted-foreground">
+                        {text('city:forms.shared.meta.optional')}
+                    </span>
                 </Label>
                 <Textarea
                     id={`theme-kit-${field}-note`}
                     className="min-h-16 text-sm"
                     value={rule?.note ?? ''}
                     onChange={(event) => onChange({ note: event.target.value })}
-                    placeholder="Answer the first question, then two more of your choice."
+                    placeholder={text(
+                        'city:forms.themeKit.questions.notePlaceholder'
+                    )}
                 />
             </div>
         </div>

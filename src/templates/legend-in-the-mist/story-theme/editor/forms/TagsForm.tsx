@@ -2,6 +2,7 @@ import { SystemMarkdownScope } from '@/components/markdown/SystemMarkdownScope'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { useUiText, type TranslationKey } from '@/i18n/text'
 import { renderLitmInline } from '@/utils/markdown'
 import { formatPower, formatWeakness } from '@/utils/tags'
 import {
@@ -31,9 +32,14 @@ const FORMAT: Record<TagField, (name: string) => string> = {
     weakness: formatWeakness,
 }
 
-const FIELD_LABEL: Record<TagField, string> = {
-    power: 'Power tags',
-    weakness: 'Weakness tags',
+const FIELD_LABEL: Record<TagField, TranslationKey> = {
+    power: 'legend:forms.storyTheme.tagsForm.fieldLabel.power',
+    weakness: 'legend:forms.storyTheme.tagsForm.fieldLabel.weakness',
+}
+
+const TAG_PLACEHOLDER: Record<TagField, TranslationKey> = {
+    power: 'legend:forms.storyTheme.tagsForm.placeholder.power',
+    weakness: 'legend:forms.storyTheme.tagsForm.placeholder.weakness',
 }
 
 const PLACEHOLDERS: Record<TagField, string[]> = {
@@ -54,6 +60,7 @@ export default function TagsForm({
     focusIndex?: number
     autoCreate?: boolean
 }) {
+    const text = useUiText()
     const {
         legendInTheMistStoryTheme,
         addTag,
@@ -143,7 +150,7 @@ export default function TagsForm({
 
         const next = raw.trim()
         if (!next) {
-            setError('Please enter a value.')
+            setError(text('legend:forms.storyTheme.tagsForm.emptyValueError'))
             return
         }
 
@@ -153,12 +160,12 @@ export default function TagsForm({
 
     return (
         <div className="space-y-2.5">
-            <div className="flex items-baseline justify-between gap-2">
+            <div className="space-y-0.5">
                 <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                    {FIELD_LABEL[field]}
+                    {text(FIELD_LABEL[field])}
                 </p>
                 <p className="text-xs text-muted-foreground">
-                    Write tags bare, without braces.
+                    {text('legend:forms.storyTheme.tagsForm.bareHint')}
                 </p>
             </div>
 
@@ -194,7 +201,9 @@ export default function TagsForm({
                                                 htmlFor={`story-theme-tag-${field}-${index}`}
                                                 className="text-xs"
                                             >
-                                                Tag
+                                                {text(
+                                                    'legend:forms.storyTheme.tagsForm.tagLabel'
+                                                )}
                                             </Label>
                                             <Input
                                                 id={`story-theme-tag-${field}-${index}`}
@@ -215,7 +224,9 @@ export default function TagsForm({
                                                         cancelEdit()
                                                     }
                                                 }}
-                                                placeholder="knows every face in town"
+                                                placeholder={text(
+                                                    TAG_PLACEHOLDER[field]
+                                                )}
                                             />
                                         </div>
 
@@ -226,7 +237,7 @@ export default function TagsForm({
                                                 className="h-7 px-2.5 text-xs"
                                                 onClick={confirmEdit}
                                             >
-                                                Save
+                                                {text('common:actions.save')}
                                             </Button>
                                             <Button
                                                 type="button"
@@ -234,7 +245,7 @@ export default function TagsForm({
                                                 className="h-7 px-0 text-xs"
                                                 onClick={cancelEdit}
                                             >
-                                                Cancel
+                                                {text('common:actions.cancel')}
                                             </Button>
                                         </div>
                                     </div>
@@ -250,7 +261,10 @@ export default function TagsForm({
                                 className="mt-1 h-8 w-full justify-center gap-1.5 border-dashed px-2.5 text-xs"
                                 onClick={addPlaceholder}
                             >
-                                <Plus className="h-3.5 w-3.5" /> Add tag
+                                <Plus className="h-3.5 w-3.5" />{' '}
+                                {text(
+                                    'legend:forms.storyTheme.tagsForm.addTag'
+                                )}
                             </Button>
                         </li>
                     </ul>
@@ -278,6 +292,7 @@ function SortableTagItem({
     onRemove: () => void
     children?: React.ReactNode
 }) {
+    const text = useUiText()
     const {
         attributes,
         listeners,
@@ -310,11 +325,13 @@ function SortableTagItem({
                       ? 'opacity-40 cursor-not-allowed hover:bg-transparent'
                       : 'cursor-grab active:cursor-grabbing'
               }`}
-                        aria-label="Drag to reorder"
+                        aria-label={text('common:actions.dragToReorder')}
                         title={
                             dragDisabled
-                                ? 'Finish editing to reorder'
-                                : 'Drag to reorder'
+                                ? text(
+                                      'legend:forms.storyTheme.tagsForm.finishEditingToReorder'
+                                  )
+                                : text('common:actions.dragToReorder')
                         }
                         disabled={dragDisabled}
                         {...(!dragDisabled ? attributes : {})}
@@ -344,7 +361,7 @@ function SortableTagItem({
                         size="icon"
                         className="h-7 w-7"
                         onClick={onEdit}
-                        title="Edit"
+                        title={text('common:actions.edit')}
                     >
                         <Pencil className="h-3.5 w-3.5" />
                     </Button>
@@ -354,7 +371,7 @@ function SortableTagItem({
                         size="icon"
                         className="h-7 w-7 text-destructive"
                         onClick={onRemove}
-                        title="Remove"
+                        title={text('common:actions.remove')}
                     >
                         <Trash2 className="h-3.5 w-3.5" />
                     </Button>

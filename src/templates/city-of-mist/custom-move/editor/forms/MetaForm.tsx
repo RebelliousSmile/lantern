@@ -13,28 +13,30 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from '@/components/ui/popover'
+import { useUiText, type TranslationKey } from '@/i18n/text'
 import { getCatalogSources, type CatalogItem } from '@/utils/catalog'
 import { cn } from '@/utils/cn'
 import { Check, ChevronsUpDown, X } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { useCityOfMistCustomMoveStore, type PublicationType } from '../../hooks'
 
-const TYPES: { value: PublicationType; label: string }[] = [
-    { value: 'official', label: 'Official' },
-    { value: 'third_party', label: 'Third Party' },
-    { value: 'cauldron', label: 'Cauldron' },
-    { value: 'homebrew', label: 'Homebrew' },
+const TYPES: { value: PublicationType; label: TranslationKey }[] = [
+    { value: 'official', label: 'city:forms.shared.meta.typeOfficial' },
+    { value: 'third_party', label: 'city:forms.shared.meta.typeThirdParty' },
+    { value: 'cauldron', label: 'city:forms.shared.meta.typeCauldron' },
+    { value: 'homebrew', label: 'city:forms.shared.meta.typeHomebrew' },
 ]
 
 function AuthorsInput({
     value,
     onChange,
-    placeholder = 'Add author and press Enter',
+    placeholder,
 }: {
     value: string[]
     onChange: (next: string[]) => void
     placeholder?: string
 }) {
+    const text = useUiText()
     const [draft, setDraft] = useState('')
 
     function commitDraft() {
@@ -56,7 +58,12 @@ function AuthorsInput({
                         <button
                             type="button"
                             className="opacity-70 hover:opacity-100"
-                            aria-label={`Remove ${author}`}
+                            aria-label={text(
+                                'city:forms.shared.meta.removeAuthorAriaLabel',
+                                {
+                                    author,
+                                }
+                            )}
                             onClick={() =>
                                 onChange(
                                     value.filter((item) => item !== author)
@@ -84,7 +91,14 @@ function AuthorsInput({
                             onChange(value.slice(0, -1))
                         }
                     }}
-                    placeholder={value.length ? '' : placeholder}
+                    placeholder={
+                        value.length
+                            ? ''
+                            : (placeholder ??
+                              text(
+                                  'city:forms.shared.meta.addAuthorAndEnterPlaceholder'
+                              ))
+                    }
                 />
             </div>
         </div>
@@ -102,6 +116,7 @@ function SourceCombobox({
     onSelect: (item: CatalogItem) => void
     placeholder: string
 }) {
+    const text = useUiText()
     const [open, setOpen] = useState(false)
     const current = items.find((item) => item.title === value)
 
@@ -120,8 +135,14 @@ function SourceCombobox({
             </PopoverTrigger>
             <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
                 <Command>
-                    <CommandInput placeholder="Search source..." />
-                    <CommandEmpty>No match.</CommandEmpty>
+                    <CommandInput
+                        placeholder={text(
+                            'city:forms.shared.meta.searchSourcePlaceholder'
+                        )}
+                    />
+                    <CommandEmpty>
+                        {text('city:forms.shared.meta.noMatch')}
+                    </CommandEmpty>
                     <CommandGroup>
                         {items.map((item) => (
                             <CommandItem
@@ -157,6 +178,7 @@ function TypeSegment({
     value?: PublicationType
     onChange: (value: PublicationType) => void
 }) {
+    const text = useUiText()
     return (
         <div className="grid grid-cols-2 overflow-hidden rounded-md border sm:inline-grid sm:grid-cols-4">
             {TYPES.map((type) => (
@@ -170,7 +192,7 @@ function TypeSegment({
                     )}
                     onClick={() => onChange(type.value)}
                 >
-                    {type.label}
+                    {text(type.label)}
                 </Button>
             ))}
         </div>
@@ -178,6 +200,7 @@ function TypeSegment({
 }
 
 export default function MetaForm() {
+    const text = useUiText()
     const { cityOfMistCustomMove, updateMeta } = useCityOfMistCustomMoveStore()
     const meta = cityOfMistCustomMove.meta
     const type = meta?.publication_type as PublicationType | undefined
@@ -205,26 +228,31 @@ export default function MetaForm() {
     return (
         <div className="space-y-4">
             <div className="grid gap-1">
-                <Label>Publication type</Label>
+                <Label>
+                    {text('city:forms.shared.meta.publicationTypeLabel')}
+                </Label>
                 <TypeSegment value={type} onChange={setType} />
             </div>
 
             {sourceOptions.length > 0 ? (
                 <div className="grid gap-1">
-                    <Label>Source</Label>
+                    <Label>{text('city:forms.shared.meta.sourceLabel')}</Label>
                     <SourceCombobox
                         items={sourceOptions}
                         value={meta?.source}
                         onSelect={pickFromCatalog}
                         placeholder={
                             type === 'official'
-                                ? 'Select an official book...'
-                                : 'Select a third-party source...'
+                                ? text(
+                                      'city:forms.shared.meta.selectOfficialPlaceholder'
+                                  )
+                                : text(
+                                      'city:forms.shared.meta.selectThirdPartyPlaceholder'
+                                  )
                         }
                     />
                     <div className="text-xs text-muted-foreground">
-                        Selecting a source auto-fills authors. You can still
-                        edit them below.
+                        {text('city:forms.shared.meta.autoFillHelp')}
                     </div>
                 </div>
             ) : null}
@@ -233,12 +261,16 @@ export default function MetaForm() {
                 <div className="grid gap-1">
                     <Label htmlFor="move-meta-source">
                         {type === 'cauldron'
-                            ? 'Cauldron product title'
+                            ? text('city:forms.shared.meta.cauldronTitleLabel')
                             : type === 'homebrew'
-                              ? 'Homebrew title / location'
-                              : 'Source title'}{' '}
+                              ? text(
+                                    'city:forms.shared.meta.homebrewTitleLabel'
+                                )
+                              : text(
+                                    'city:forms.shared.meta.sourceTitleLabel'
+                                )}{' '}
                         <span className="text-muted-foreground">
-                            (optional)
+                            {text('city:forms.shared.meta.optional')}
                         </span>
                     </Label>
                     <Input
@@ -250,19 +282,25 @@ export default function MetaForm() {
                         }
                         placeholder={
                             type === 'cauldron'
-                                ? 'e.g., Cauldron: Shadows in Brine'
+                                ? text(
+                                      'city:forms.shared.meta.cauldronTitlePlaceholder'
+                                  )
                                 : type === 'homebrew'
-                                  ? 'e.g., Personal campaign notes'
-                                  : 'Override selected source title'
+                                  ? text(
+                                        'city:forms.shared.meta.homebrewTitlePlaceholder'
+                                    )
+                                  : text(
+                                        'city:forms.shared.meta.sourceTitlePlaceholder'
+                                    )
                         }
                     />
                 </div>
 
                 <div className="grid gap-1">
                     <Label htmlFor="move-meta-page">
-                        Page{' '}
+                        {text('city:forms.shared.meta.pageLabel')}{' '}
                         <span className="text-muted-foreground">
-                            (optional)
+                            {text('city:forms.shared.meta.optional')}
                         </span>
                     </Label>
                     <Input
@@ -287,17 +325,18 @@ export default function MetaForm() {
             </div>
 
             <div className="grid gap-1">
-                <Label>Authors</Label>
+                <Label>{text('city:forms.shared.meta.authorsLabel')}</Label>
                 <AuthorsInput
                     value={authors}
                     onChange={(next) => updateMeta({ authors: next })}
-                    placeholder="Add author..."
+                    placeholder={text(
+                        'city:forms.shared.meta.addAuthorPlaceholder'
+                    )}
                 />
             </div>
 
             <div className="text-xs text-muted-foreground">
-                Meta is preserved on import/export and rendered as a small
-                footer in the preview.
+                {text('city:forms.shared.meta.footerHelp')}
             </div>
         </div>
     )

@@ -1,5 +1,6 @@
 import { renderLitmMarkdown } from '@/utils/markdown'
 import { ClickableSection } from '../../../shared/preview/components/Clickable'
+import { RatingMarks } from '../../../shared/preview/components/RatingMarks'
 import { SectionGate } from '../../../shared/preview/components/SectionGate'
 import {
     shouldShow,
@@ -15,37 +16,35 @@ export default function HeaderBlock() {
 
     const openBasic = () => openSheet({ kind: 'basic', mode: 'edit' })
 
-    /* The band and the name are the card's top edge rather than sections, so
+    /* The tab and the name are the card's top edge rather than sections, so
        neither is gated: a Challenge with nothing filled in still prints a
        frame. The description below is a region of its own and is. */
     return (
-        <>
+        <div className="challenge-sheet__head">
             <ClickableSection
                 onClick={openBasic}
-                ariaLabel="Edit the challenge name and scale"
+                ariaLabel="Edit the challenge name and rating"
             >
-                <div className="challenge-header os-bar">
-                    <span className="challenge-header__kind os-label">
-                        Challenge
-                    </span>
-                    {/* Absent scale prints nothing: person-sized is the
-                        Challenge that says nothing about its size. */}
-                    {otherscapeChallenge.scale !== null && (
-                        <span className="challenge-header__scale">
-                            Scale {otherscapeChallenge.scale}
+                {/* The book prints the Challenge's stars in this tab (Core
+                    Book pp. 302-303) and nothing else: the scale belongs to
+                    the prose below. Unrated, the tab stays bare. */}
+                <div className="challenge-tab">
+                    {otherscapeChallenge.rating !== null && (
+                        <span
+                            className="challenge-tab__rating"
+                            role="img"
+                            aria-label={`Rating ${otherscapeChallenge.rating}`}
+                        >
+                            <RatingMarks
+                                count={otherscapeChallenge.rating}
+                                className="challenge-tab__mark"
+                            />
                         </span>
                     )}
                 </div>
-            </ClickableSection>
 
-            <ClickableSection
-                onClick={openBasic}
-                ariaLabel="Edit the challenge name"
-            >
-                <div className="challenge-title os-bar">
-                    <span className="challenge-title__text os-display">
-                        {otherscapeChallenge.name || 'Untitled Challenge'}
-                    </span>
+                <div className="challenge-title os-display">
+                    {otherscapeChallenge.name || 'Untitled Challenge'}
                 </div>
             </ClickableSection>
 
@@ -57,6 +56,13 @@ export default function HeaderBlock() {
                     ariaLabel="Edit the description"
                 >
                     <div className="challenge-description">
+                        {/* The book names the scale in the prose (`with Scale
+                            1`), never on the tab, so it opens the text. */}
+                        {otherscapeChallenge.scale !== null && (
+                            <p className="challenge-description__scale">
+                                Scale {otherscapeChallenge.scale}
+                            </p>
+                        )}
                         {otherscapeChallenge.description.trim() ? (
                             <div
                                 className="challenge-description__text"
@@ -66,7 +72,7 @@ export default function HeaderBlock() {
                                     ),
                                 }}
                             />
-                        ) : (
+                        ) : otherscapeChallenge.scale !== null ? null : (
                             <span className="os-placeholder">
                                 add a short description
                             </span>
@@ -74,6 +80,6 @@ export default function HeaderBlock() {
                     </div>
                 </ClickableSection>
             </SectionGate>
-        </>
+        </div>
     )
 }

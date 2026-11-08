@@ -17,7 +17,16 @@ export const characterTropeSections: Array<{ id: SectionId; label: UiText }> = [
 
 export const characterTropeZoomOptions = [0.75, 1, 1.25, 1.5]
 
-export const characterTropeBackgroundOptions = [
-    { value: 'neon', label: 'Neon' },
-    { value: 'plain', label: 'Plain' },
-] as const
+export const characterTropeBackgroundOptions: ReadonlyArray<{
+    value: 'neon' | 'plain'
+    label: UiText
+}> = [
+    {
+        value: 'neon',
+        label: 'otherscape:forms.characterTrope.appearance.backgroundOption.neon',
+    },
+    {
+        value: 'plain',
+        label: 'otherscape:forms.characterTrope.appearance.backgroundOption.plain',
+    },
+]

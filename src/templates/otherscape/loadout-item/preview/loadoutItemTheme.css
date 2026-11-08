@@ -1,170 +1,233 @@
-/* The Loadout Item card is the small landscape card the Street Catalog prints
-   for one specific item: a slanted band naming the rubric it is filed under, the
-   item's name on a coloured slab, the prose the catalog runs, then the tags it
-   grants stacked one per row with the weakness closing the stack.
+/* The Loadout Item card is one row of the Street Catalog's table, as the core
+   book prints it (Metro, pp. 252-254), the base drawing: on the light page, the rubric it is
+   filed under and, where the row is wide, the grey column heads under a thin
+   rule; then the row on a light grey band - the name in a lime box notched at
+   its foot and underlined in grey, the prose, the feature tags in italics on a
+   pale yellow highlight with the name tag first in bold, and the weakness in a
+   mid-grey box pointed on its left, its words on the same highlight. Colours
+   read off the page. Tokyo (`tokyo-list-items.jpg`) prints the same row a shade
+   warmer, Cairo (`cairo-list-items.jpg`) with a mint name box: both are
+   variant blocks at the end of this file.
 
-   Everything this card shares with the other Otherscape cards, the ground, the
-   accents, the skew and the type, comes from `../../shared/tokens.css`. What is
-   here is this card's layout only. */
+   Everything this card shares with the other Otherscape cards, the accents,
+   the skew and the type, comes from `../../shared/tokens.css`. What is here is
+   this card's layout only. */
 @import '../../shared/tokens.css';
 
 /* Compounded with `.os-card`: the shared tokens are inlined once per card
    stylesheet, and a later copy of the `.os-card` block would reset an accent
-   set on a single class. */
+   set on a single class. The catalog row is a light object, so the ground and
+   the ink are turned round here, for both backgrounds: a neon glow would only
+   muddy the grey. */
 .os-card.loadout-item-sheet {
-    /* A catalog entry belongs to no theme type, so it takes an accent of its
-       own rather than one of the four: amber reads as hardware beside the four
-       theme hues, and never collides with them on a page that mixes cards. */
-    --os-accent: #f2a007;
-    --os-accent-ink: #241703;
-
+    --os-accent: #d2ef8d;
+    --os-accent-ink: #15180c;
+    --os-surface: #edf1f4;
+    --os-paper: #dadfe1;
+    --os-paper-deep: #c9ced1;
+    --os-edge: rgba(30, 36, 48, 0.25);
+    --os-ink: #1d222b;
+    --os-ink-soft: #6e7480;
+    --os-ink-faint: rgba(29, 34, 43, 0.45);
+    --li-highlight: #f4eda9;
+    --li-weakness: #b1b2b7;
+    /* How far the name and weakness boxes run past the band, as in the book. */
+    --li-overhang: 0.4rem;
     width: 100%;
+}
+
+.os-card.loadout-item-sheet.bg-plain,
+.os-card.loadout-item-sheet.bg-neon {
+    background: var(--os-surface);
 }
 
 .os-card .loadout-item-sheet__body {
     display: flex;
     flex-direction: column;
-    gap: 0.85rem;
-    padding: 0.9rem 0.95rem 1.15rem;
+    gap: 0.45rem;
+    container-type: inline-size;
+    padding: 0.7rem 0.95rem 0.95rem;
 }
 
-/* ---------- Header band ---------- */
-.os-card .loadout-item-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 0.5rem;
-    /* Wider than the card and pulled back, so the skew runs off both edges
-       instead of leaving a wedge of paper at the corners. */
-    margin: 0 -0.6rem;
-    background: linear-gradient(
-        100deg,
-        var(--os-accent) 0%,
-        color-mix(in srgb, var(--os-accent) 78%, var(--os-paper-deep)) 100%
-    );
-    padding: 0.34rem 1.25rem;
-    min-height: 1.75rem;
-    color: var(--os-accent-ink);
-}
-
-.os-card .loadout-item-header__category {
-    flex: 1;
-    font-style: italic;
+/* The kicker is the grey of the column heads, not the accent: lime does not
+   read on the page. */
+.os-card.loadout-item-sheet .section-title {
+    color: var(--os-ink-soft);
     font-weight: 700;
-    font-size: 0.74rem;
-    line-height: 1.15;
-    font-family: var(--os-font-display);
-    letter-spacing: 0.14em;
+    font-size: 0.58rem;
+    letter-spacing: 0.12em;
+}
+
+.os-card.loadout-item-sheet .section--end .section-line {
+    background: linear-gradient(90deg, transparent 0%, var(--os-ink-soft) 100%);
+}
+
+/* ---------- Column heads ---------- */
+/* Grey letter-spaced caps under a thin rule, on the row's own grid. Hidden
+   where the row folds, since the columns they name are gone. */
+.os-card .loadout-item-heads {
+    display: grid;
+    grid-template-columns:
+        minmax(7rem, 1fr) minmax(0, 2.2fr) minmax(0, 1.7fr)
+        minmax(7rem, 1.25fr);
+    gap: 0.75rem;
+    border-top: 1px solid #b9bcc4;
+    padding: 0.3rem 0.5rem 0;
+    color: var(--os-ink-soft);
+    font-weight: 600;
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
 }
 
-.os-card .loadout-item-header__kind {
-    opacity: 0.95;
-    font-weight: 600;
-    font-size: 0.55rem;
-    font-family: var(--os-font-display);
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
+/* ---------- Row ---------- */
+/* The four columns of the table on the grey band. Narrow, the tags drop under
+   the name and the prose rather than squeezing them. */
+.os-card .loadout-item-row {
+    display: grid;
+    grid-template-columns:
+        minmax(7rem, 1fr) minmax(0, 2.2fr) minmax(0, 1.7fr)
+        minmax(7rem, 1.25fr);
+    align-items: center;
+    gap: 0.75rem;
+    background: var(--os-paper);
+    padding: 0.35rem 0 0.45rem;
+}
+
+@container (max-width: 34rem) {
+    .os-card .loadout-item-heads {
+        display: none;
+    }
+
+    .os-card .loadout-item-row {
+        grid-template-columns: minmax(7rem, 1fr) minmax(0, 2fr);
+        align-items: start;
+        padding-right: 0.5rem;
+    }
+
+    /* The tags take the whole width under the name and the prose: in the
+       name's column they would break one word per line. */
+    .os-card .loadout-item-cell--feature,
+    .os-card .loadout-item-cell--weakness {
+        grid-column: 1 / -1;
+        padding-left: 0.5rem;
+    }
+
+    /* The row keeps a right padding here, so the box crosses it too. */
+    .os-card .loadout-item-weakness {
+        margin-right: calc(-0.5rem - var(--li-overhang));
+        width: calc(100% + 0.5rem + var(--li-overhang));
+    }
 }
 
 /* ---------- Name ---------- */
-.os-card .loadout-item-title {
-    margin: 0.55rem -0.35rem 0;
-    background: linear-gradient(
-        100deg,
-        color-mix(in srgb, var(--os-accent) 86%, #f4faff) 0%,
-        var(--os-accent) 100%
+/* The book's lime box, in the body face and its own case, its bottom left
+   corner cut, a grey rule running under it. It hangs from the band's top edge
+   and runs a little past its left edge, as the book prints it. */
+.os-card .loadout-item-name {
+    clip-path: polygon(
+        0 0,
+        100% 0,
+        100% 100%,
+        0.45rem 100%,
+        0 calc(100% - 0.45rem)
     );
-    padding: 0.38rem 0.95rem;
+    margin: -0.35rem 0 0 calc(-1 * var(--li-overhang));
+    box-shadow: inset 0 -2px 0 #8d9098;
+    background: var(--os-accent);
+    padding: 0.3rem 0.5rem 0.4rem;
     color: var(--os-accent-ink);
+    font-weight: 700;
+    font-size: 0.78rem;
+    line-height: 1.2;
+    font-family: var(--os-font-body);
 }
 
-.os-card .loadout-item-title__text {
-    display: block;
-    font-size: 1.35rem;
-    line-height: 1.1;
-    letter-spacing: 0.01em;
+/* The name sits at the top of its row, the other cells are centred on it. */
+.os-card .loadout-item-row > :first-child {
+    align-self: start;
 }
 
 /* ---------- Description ---------- */
-/* The catalog's prose, set in the body face rather than the display one: it is
-   the only region of the card meant to be read as sentences. */
 .os-card .loadout-item-description {
-    color: var(--os-ink-soft);
-    font-size: 0.78rem;
-    line-height: 1.4;
+    color: var(--os-ink);
+    font-size: 0.74rem;
+    line-height: 1.38;
 }
 
 .os-card .loadout-item-description__text p {
-    margin: 0 0 0.5rem;
+    margin: 0 0 0.4rem;
 }
 
 .os-card .loadout-item-description__text p:last-child {
     margin-bottom: 0;
 }
 
-/* ---------- Tag rows ---------- */
-.os-card .loadout-item-tag-runs {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
+/* ---------- Feature tags ---------- */
+.os-card .loadout-item-cell {
+    color: var(--os-ink);
+    font-size: 0.74rem;
+    line-height: 1.5;
 }
 
-.os-card .loadout-item-tags {
-    display: flex;
-    flex-direction: column;
-    gap: 0.22rem;
-    margin: 0;
-    padding: 0;
-    list-style: none;
+/* A tag and the comma after it break as one. */
+.os-card .loadout-item-tag {
+    white-space: nowrap;
 }
 
-/* One row per tag, the way the card stacks them, rather than the flowing run
-   the Legend card uses. */
-.os-card .loadout-item-tag-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 0.5rem;
-    border-left: 3px solid var(--os-accent);
-    background: linear-gradient(100deg, var(--os-raised) 0%, transparent 100%);
-    padding: 0.24rem 0.6rem;
-    width: 100%;
-    font-size: 0.78rem;
-    line-height: 1.3;
-    text-align: left;
-}
-
-.os-card .loadout-item-tags--weakness .loadout-item-tag-row {
-    /* The one tag the item turns against its bearer closes the stack on the
-       hue the game gives to what works against you, and keeps its own marker:
-       the row is a single tag, so nothing else would carry it. */
-    border-left-color: var(--os-self);
-}
-
-.os-card .loadout-item-tag-row .mist-tag,
-.os-card .loadout-item-tag-row .mist-weakness {
-    /* Colour comes from the app's token palette; only the fit is set here, so a
-       long tag wraps inside its row instead of widening the card. */
-    display: inline;
+/* Italic words on the catalog's pale yellow highlight. */
+.os-card .loadout-item-feature {
+    box-decoration-break: clone;
+    background: var(--li-highlight);
+    padding: 0 0.15rem;
+    color: var(--os-ink);
+    font-style: italic;
+    font-weight: 400;
     white-space: normal;
 }
 
-/* The check circle the printed card puts at the end of every row: the space a
-   player marks when the tag is burnt. It is part of the frame, so it is drawn
-   rather than loaded. */
-.os-card .loadout-item-tag-row__mark {
-    flex: none;
-    border: 1.5px solid var(--os-ink-faint);
-    border-radius: 999px;
-    width: 0.7rem;
-    height: 0.7rem;
+/* The name tag and its comma stay together; the other tags may break inside
+   themselves, as the book's run of words does. */
+.os-card .loadout-item-cell--feature .loadout-item-tag {
+    white-space: normal;
 }
 
-.os-card .loadout-item-tags__empty {
-    padding: 0.2rem 0;
-    color: var(--os-ink-soft);
-    font-size: 0.72rem;
+.os-card .loadout-item-feature--name {
+    white-space: nowrap;
+}
+
+.os-card .loadout-item-feature--name {
+    font-weight: 700;
+}
+
+/* ---------- Weakness ---------- */
+/* A mid-grey box pointed on its left, running a little past the band's right
+   edge, as the book prints it; the words inside sit on the same highlight as
+   the feature tags. */
+.os-card .loadout-item-weakness {
+    display: block;
+    clip-path: polygon(
+        0.45rem 0,
+        100% 0,
+        100% 100%,
+        0.45rem 100%,
+        0 calc(100% - 0.45rem),
+        0 0.45rem
+    );
+    margin-right: calc(-1 * var(--li-overhang));
+    background: var(--li-weakness);
+    padding: 0.3rem 0.5rem 0.3rem 0.7rem;
+    width: calc(100% + var(--li-overhang));
+    color: var(--os-ink);
+    font-size: 0.74rem;
+    line-height: 1.4;
+}
+
+.os-card .loadout-item-weakness__text {
+    box-decoration-break: clone;
+    background: var(--li-highlight);
+    padding: 0 0.15rem;
+    font-style: italic;
 }
 
 /* ---------- Footer (metadata, badges) ---------- */
@@ -202,4 +265,31 @@
     padding: 0.1rem 0.4rem;
     letter-spacing: 0.08em;
     text-transform: uppercase;
+}
+
+/* ---------- Cairo variant ---------- */
+/* The Cairo catalog (`cairo-list-items.jpg`) draws the same table on a cream
+   page: the name box is mint instead of lime, the band a paler grey; the
+   highlights and the weakness box are the Tokyo ones. Colours read off the
+   mock-up. */
+.os-card.loadout-item-sheet.os-variant-cairo {
+    --os-accent: #a8dcc8;
+    --os-accent-ink: #14201c;
+    --os-surface: #f4f3ec;
+    --os-paper: #dcdcd8;
+    --li-highlight: #f6f0a4;
+    --li-weakness: #b2b2b2;
+}
+
+/* ---------- Tokyo variant ---------- */
+/* The Tokyo catalog (`tokyo-list-items.jpg`): the Metro row, its page and
+   band a shade warmer and its lime a touch brighter. Colours read off the
+   mock-up. */
+.os-card.loadout-item-sheet.os-variant-tokyo {
+    --os-accent: #d5f38d;
+    --os-surface: #f2f2f6;
+    --os-paper: #dadae0;
+    --os-paper-deep: #c9ccd3;
+    --li-highlight: #f2eca4;
+    --li-weakness: #b6b6bc;
 }

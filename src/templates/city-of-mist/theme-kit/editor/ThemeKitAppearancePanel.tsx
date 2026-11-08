@@ -30,7 +30,7 @@ export function ThemeKitAppearancePanel() {
         <div className="space-y-4">
             <div className="flex items-center justify-between gap-4">
                 <Label htmlFor="theme-kit-auto-hide-empty" className="text-xs">
-                    Auto-hide empty sections
+                    {text('city:forms.shared.appearance.autoHideEmptySections')}
                 </Label>
                 <Switch
                     id="theme-kit-auto-hide-empty"
@@ -41,7 +41,7 @@ export function ThemeKitAppearancePanel() {
 
             <div className="space-y-2">
                 <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                    Sections
+                    {text('city:forms.shared.appearance.sectionsLabel')}
                 </p>
                 <div className="grid grid-cols-2 gap-x-3 gap-y-1.5">
                     {themeKitSections.map((section) => (
@@ -67,7 +67,7 @@ export function ThemeKitAppearancePanel() {
                         htmlFor="theme-kit-preview-width"
                         className="text-xs"
                     >
-                        Preview width
+                        {text('city:forms.shared.appearance.previewWidthLabel')}
                     </Label>
                     <span className="text-xs font-medium">
                         {previewWidth}px
@@ -84,13 +84,15 @@ export function ThemeKitAppearancePanel() {
                         setPreviewWidth(Number(event.target.value))
                     }
                     className="w-full accent-primary"
-                    aria-label="Preview width"
+                    aria-label={text(
+                        'city:forms.shared.appearance.previewWidthLabel'
+                    )}
                 />
             </div>
 
             <div className="space-y-2">
                 <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                    Background
+                    {text('city:forms.shared.appearance.backgroundLabel')}
                 </p>
                 <div className="flex flex-wrap items-center gap-2">
                     {themeKitBackgroundOptions.map((option) => (
@@ -105,8 +107,13 @@ export function ThemeKitAppearancePanel() {
                             )}
                             style={{ backgroundColor: option.color }}
                             onClick={() => setBackground(option.value)}
-                            aria-label={`Use ${option.label} background`}
-                            title={option.label}
+                            aria-label={text(
+                                'city:forms.shared.appearance.useBackground',
+                                {
+                                    name: text(option.label),
+                                }
+                            )}
+                            title={text(option.label)}
                         />
                     ))}
                 </div>
@@ -114,7 +121,7 @@ export function ThemeKitAppearancePanel() {
 
             <div className="space-y-2">
                 <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                    Columns
+                    {text('city:forms.themeKit.appearance.columnsLabel')}
                 </p>
                 <div className="grid grid-cols-2 overflow-hidden rounded-md border">
                     {([1, 2] as const).map((count) => (
@@ -127,7 +134,13 @@ export function ThemeKitAppearancePanel() {
                             className="h-8 rounded-none border-none px-2 text-xs"
                             onClick={() => setColumnCount(count)}
                         >
-                            {count === 1 ? 'One column' : 'Two columns'}
+                            {count === 1
+                                ? text(
+                                      'city:forms.themeKit.appearance.oneColumn'
+                                  )
+                                : text(
+                                      'city:forms.themeKit.appearance.twoColumns'
+                                  )}
                         </Button>
                     ))}
                 </div>
@@ -135,7 +148,7 @@ export function ThemeKitAppearancePanel() {
 
             <div className="space-y-2">
                 <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                    Title placement
+                    {text('city:forms.shared.appearance.titlePlacementLabel')}
                 </p>
                 <div className="grid grid-cols-2 overflow-hidden rounded-md border">
                     {(['inside', 'outside'] as const).map((placement) => (
@@ -147,10 +160,14 @@ export function ThemeKitAppearancePanel() {
                                     ? 'default'
                                     : 'ghost'
                             }
-                            className="h-8 rounded-none border-none px-2 text-xs capitalize"
+                            className="h-8 rounded-none border-none px-2 text-xs"
                             onClick={() => setTitlePlacement(placement)}
                         >
-                            {placement}
+                            {text(
+                                placement === 'inside'
+                                    ? 'city:forms.shared.appearance.titleInside'
+                                    : 'city:forms.shared.appearance.titleOutside'
+                            )}
                         </Button>
                     ))}
                 </div>
@@ -163,7 +180,7 @@ export function ThemeKitAppearancePanel() {
                 className="h-8 w-full text-xs"
                 onClick={resetViewPrefs}
             >
-                Reset view
+                {text('city:forms.shared.appearance.resetView')}
             </Button>
         </div>
     )

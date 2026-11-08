@@ -46,6 +46,24 @@ const forms: ResourceShape<typeof en> = {
             crew: "Ce que poursuit un thème d'Équipe. La carte l'imprime sous ce nom. Le markdown et les tags entre accolades sont rendus.",
         },
     },
+    description: {
+        label: 'Description',
+        placeholder:
+            'Vous recousez ceux que les cliniques refoulent, et la rue s’en souvient.',
+        hint: 'Imprimée sous l’en-tête : qui porte ce thème et ce qu’il lui apporte. Laissez une ligne vide entre deux paragraphes. Le Markdown et les tags entre accolades sont rendus.',
+        add: 'ajouter la description de ce kit',
+    },
+    special: {
+        nameLabel: 'Nom du Spécial',
+        namePlaceholder: 'Visites à domicile',
+        descriptionLabel: 'Ce qu’il permet au personnage',
+        descriptionPlaceholder:
+            'Une fois par scène, quand vous soignez quelqu’un là où il est tombé, réduisez l’un de ses statuts d’un palier de plus.',
+        hint: 'Le Spécial unique que suggère le kit, imprimé à son pied derrière une case à cocher. Le Markdown et les tags entre accolades sont rendus.',
+        incomplete:
+            'Un Spécial demande un nom et un texte : tant que les deux ne sont pas remplis, il n’est pas écrit dans le fichier exporté.',
+        add: 'ajouter le Spécial que suggère ce kit',
+    },
     tags: {
         fieldLabel: {
             power: 'Tags de pouvoir',
@@ -83,10 +101,12 @@ const forms: ResourceShape<typeof en> = {
             homebrew: 'ex. Blog personnel, doc de campagne...',
             default: 'Remplace le titre de la source sélectionnée',
         },
+        optional: '(optionnel)',
         pageLabel: 'Page',
         pagePlaceholder: '71',
         authorsLabel: 'Auteurs',
         addAuthorPlaceholder: 'Ajouter un auteur...',
+        addAuthorAndEnterPlaceholder: 'Ajouter un auteur et appuyer sur Entrée',
         removeAuthorAriaLabel: 'Retirer {{author}}',
         metaHint:
             "Les métadonnées aident à l'attribution et à la recherche ; elles sont conservées à l'import comme à l'export.",

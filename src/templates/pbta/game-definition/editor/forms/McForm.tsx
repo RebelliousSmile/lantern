@@ -2,11 +2,13 @@ import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { hasCanonicalSource } from '@/contracts/canonicalSource'
+import { useUiText } from '@/i18n/text'
 import { useGameDefinitionStore } from '../../hooks'
 import { RecordListEditor } from '../RecordListEditor'
 
 export default function McForm() {
     const { gameDefinition, setMc, clearMc } = useGameDefinitionStore()
+    const text = useUiText()
     const mc = gameDefinition.mc
     const importedDoc = hasCanonicalSource(gameDefinition)
 
@@ -14,8 +16,7 @@ export default function McForm() {
         return (
             <div className="space-y-2">
                 <p className="text-sm text-muted-foreground">
-                    This definition has no MC-facing content. Add one to give
-                    the MC their own move types.
+                    {text('pbta:forms.gameDefinition.mc.empty')}
                 </p>
                 <Button
                     type="button"
@@ -23,7 +24,7 @@ export default function McForm() {
                     className="h-8"
                     onClick={() => setMc({})}
                 >
-                    Add an MC section
+                    {text('pbta:forms.gameDefinition.mc.add')}
                 </Button>
             </div>
         )
@@ -32,19 +33,25 @@ export default function McForm() {
     return (
         <div className="space-y-4">
             <div className="grid gap-1">
-                <Label>Move types</Label>
+                <Label>
+                    {text('pbta:forms.gameDefinition.labels.moveTypes')}
+                </Label>
                 <RecordListEditor
                     value={mc.moveTypes}
                     onChange={(moveTypes) => setMc({ moveTypes })}
-                    keyPlaceholder="key"
-                    valuePlaceholder="Move type label"
+                    keyPlaceholder={text('pbta:forms.shared.keyPlaceholder')}
+                    valuePlaceholder={text(
+                        'pbta:forms.gameDefinition.placeholders.moveTypeLabel'
+                    )}
                 />
             </div>
 
             <div className="grid gap-1">
                 <Label htmlFor="pbta-def-mc-description">
-                    Description{' '}
-                    <span className="text-muted-foreground">(optional)</span>
+                    {text('fields.description')}{' '}
+                    <span className="text-muted-foreground">
+                        {text('pbta:forms.shared.optional')}
+                    </span>
                 </Label>
                 <Textarea
                     id="pbta-def-mc-description"
@@ -54,7 +61,7 @@ export default function McForm() {
                     onChange={(event) =>
                         setMc({ description: event.target.value })
                     }
-                    placeholder="Supports Markdown."
+                    placeholder={text('pbta:forms.shared.supportsMarkdown')}
                 />
             </div>
 
@@ -67,16 +74,19 @@ export default function McForm() {
                 disabled={importedDoc}
                 title={
                     importedDoc
-                        ? 'This document was imported from TOML: export re-applies the original file over any field this form leaves blank, so the MC section would come back. Blank each field above instead.'
+                        ? text('pbta:forms.gameDefinition.sectionBlocked', {
+                              section: text(
+                                  'pbta:forms.gameDefinition.sectionNames.mc'
+                              ),
+                          })
                         : undefined
                 }
             >
-                Remove the MC section
+                {text('pbta:forms.gameDefinition.mc.remove')}
             </Button>
             {importedDoc && (
                 <p className="text-xs text-muted-foreground">
-                    Imported from TOML - removing the section here will not drop
-                    it from the exported file. Blank the fields above instead.
+                    {text('pbta:forms.gameDefinition.importedNote')}
                 </p>
             )}
         </div>

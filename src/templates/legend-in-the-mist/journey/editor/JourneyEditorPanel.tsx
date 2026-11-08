@@ -1,3 +1,4 @@
+import { useUiText } from '@/i18n/text'
 import { useLegendInTheMistJourneySheetStore } from '../hooks'
 import BasicForm from './forms/BasicForm'
 import BenefitsForm from './forms/BenefitsForm'
@@ -10,12 +11,13 @@ import VignettesForm from './forms/VignettesForm'
    document and reaches for nothing else, so editing a vignette never rewrites
    the journey-wide list. */
 export function JourneyEditorPanel() {
+    const text = useUiText()
     const { open, target } = useLegendInTheMistJourneySheetStore()
 
     if (!open || !target) {
         return (
             <div className="rounded-md border border-dashed px-3 py-4 text-sm text-muted-foreground">
-                Click on the spread to edit a specific section.
+                {text('legend:forms.journey.panel.emptyState')}
             </div>
         )
     }

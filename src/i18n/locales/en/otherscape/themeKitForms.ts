@@ -44,6 +44,24 @@ const forms = {
             crew: 'What a Crew theme is chasing. The card prints it under that name. Markdown and braced tags are rendered.',
         },
     },
+    description: {
+        label: 'Description',
+        placeholder:
+            'You patch up the people the clinics turn away, and the street remembers it.',
+        hint: 'Printed under the header: who carries this theme and what it does for them. Leave a blank line between paragraphs. Markdown and braced tags are rendered.',
+        add: 'add the description of this kit',
+    },
+    special: {
+        nameLabel: 'Special name',
+        namePlaceholder: 'House Calls',
+        descriptionLabel: 'What it lets the character do',
+        descriptionPlaceholder:
+            'Once per scene, when you patch someone up where they fell, reduce one of their statuses by an extra tier.',
+        hint: 'The one Special the kit suggests, printed at its foot behind a checkbox. Markdown and braced tags are rendered.',
+        incomplete:
+            'A Special needs both a name and a text: until both are filled, it is left out of the exported file.',
+        add: 'add the Special this kit suggests',
+    },
     tags: {
         fieldLabel: {
             power: 'Power tags',
@@ -81,10 +99,12 @@ const forms = {
             homebrew: 'e.g., Personal blog, campaign doc...',
             default: 'Override selected source title',
         },
+        optional: '(optional)',
         pageLabel: 'Page',
         pagePlaceholder: '71',
         authorsLabel: 'Authors',
         addAuthorPlaceholder: 'Add author...',
+        addAuthorAndEnterPlaceholder: 'Add author and press Enter',
         removeAuthorAriaLabel: 'Remove {{author}}',
         metaHint:
             'Meta helps attribution & search and is preserved on import/export.',

@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { useUiText } from '@/i18n/text'
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { Check, Plus, X } from 'lucide-react'
 import { useEffect, useState } from 'react'
@@ -38,6 +39,7 @@ export function ThreatListPanel({
     onOpenConsequences: (index: number) => void
     onOpenGeneral: () => void
 }) {
+    const text = useUiText()
     const editing = editingThreat === null ? null : threats[editingThreat]
     const [name, setName] = useState('')
     const [description, setDescription] = useState('')
@@ -51,8 +53,14 @@ export function ThreatListPanel({
         if (editingThreat === null) return
         const nextName = name.trim()
         const nextDescription = description.trim()
-        if (!nextName) return setError('Threat name is required.')
-        if (!nextDescription) return setError('Threat description is required.')
+        if (!nextName)
+            return setError(
+                text('legend:forms.challenge.threats.errorNameRequired')
+            )
+        if (!nextDescription)
+            return setError(
+                text('legend:forms.challenge.threats.errorDescriptionRequired')
+            )
         onSave(editingThreat, { name: nextName, description: nextDescription })
     }
     return (
@@ -96,7 +104,8 @@ export function ThreatListPanel({
                             className="mt-1 h-8 w-full justify-center gap-1.5 border-dashed px-2.5 text-xs"
                             onClick={onAdd}
                         >
-                            <Plus className="h-3.5 w-3.5" /> Add threat
+                            <Plus className="h-3.5 w-3.5" />{' '}
+                            {text('legend:forms.challenge.threats.addThreat')}
                         </Button>
                     </li>
                 </ul>
@@ -108,7 +117,9 @@ export function ThreatListPanel({
                     className="h-8 px-2.5 text-xs"
                     onClick={onOpenGeneral}
                 >
-                    Edit general consequences
+                    {text(
+                        'legend:forms.challenge.threats.editGeneralConsequences'
+                    )}
                 </Button>
             </div>
         </div>
@@ -134,12 +145,13 @@ function ThreatEditor({
     onSave: () => void
     onCancel: () => void
 }) {
+    const text = useUiText()
     return (
         <div className="mt-2 space-y-2.5 rounded-md border bg-muted/30 p-2.5">
             {error ? <p className="text-sm text-destructive">{error}</p> : null}
             <div className="grid gap-1">
                 <Label htmlFor={`t-name-${index}`} className="text-xs">
-                    Name
+                    {text('common:fields.name')}
                 </Label>
                 <Input
                     id={`t-name-${index}`}
@@ -151,9 +163,9 @@ function ThreatEditor({
             </div>
             <div className="grid gap-1">
                 <Label htmlFor={`t-desc-${index}`} className="text-xs">
-                    Short description{' '}
+                    {text('legend:forms.challenge.threats.descriptionLabel')}{' '}
                     <span className="text-muted-foreground">
-                        (Markdown + tokens)
+                        {text('legend:forms.challenge.threats.descriptionHint')}
                     </span>
                 </Label>
                 <Textarea
@@ -164,11 +176,16 @@ function ThreatEditor({
                     onChange={(event) =>
                         onDescriptionChange(event.target.value)
                     }
-                    placeholder="What the challenge starts to do…"
+                    placeholder={text(
+                        'legend:forms.challenge.threats.descriptionPlaceholder'
+                    )}
                     maxLength={DESCRIPTION_LIMIT}
                 />
                 <div className="text-[11px] text-muted-foreground">
-                    {description.trim().length}/{DESCRIPTION_LIMIT} characters
+                    {text('legend:forms.challenge.threats.charactersCount', {
+                        length: description.trim().length,
+                        max: DESCRIPTION_LIMIT,
+                    })}
                 </div>
             </div>
             <div className="flex items-center gap-2">
@@ -177,7 +194,8 @@ function ThreatEditor({
                     className="h-7 px-2.5 text-xs"
                     onClick={onSave}
                 >
-                    <Check className="mr-1 h-3.5 w-3.5" /> Save
+                    <Check className="mr-1 h-3.5 w-3.5" />{' '}
+                    {text('common:actions.save')}
                 </Button>
                 <Button
                     variant="secondary"
@@ -185,7 +203,8 @@ function ThreatEditor({
                     className="h-7 px-2.5 text-xs"
                     onClick={onCancel}
                 >
-                    <X className="mr-1 h-3.5 w-3.5" /> Cancel
+                    <X className="mr-1 h-3.5 w-3.5" />{' '}
+                    {text('common:actions.cancel')}
                 </Button>
             </div>
         </div>

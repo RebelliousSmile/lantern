@@ -16,15 +16,22 @@ const descriptor: StaticTemplateDefinition<
     OtherscapeChallengeViewState,
     OtherscapeChallengeSheetState
 > = {
-    id: 'otherscape.challenge', gameId: 'otherscape', gameLabel: ':Otherscape',
-    label: 'otherscape:challenge.label', implemented: true,
-    contractKey: 'mist/otherscape/challenge', createBlank: blankOtherscapeChallenge,
+    id: 'otherscape.challenge',
+    gameId: 'otherscape',
+    gameLabel: ':Otherscape',
+    label: 'otherscape:challenge.label',
+    implemented: true,
+    contractKey: 'mist/otherscape/challenge',
+    createBlank: blankOtherscapeChallenge,
     createExample: getSampleOtherscapeChallenge,
     createInitialView: () => cloneValue(defaultOtherscapeChallengeView),
     createInitialSheet: () => cloneValue(defaultOtherscapeChallengeSheetState),
     getTabTitle: (doc: OtherscapeChallenge) => doc.name.trim() || 'Challenge',
     sections: challengeSections,
-    landing: { newTitle: 'otherscape:challenge.newTitle', description: 'otherscape:challenge.description' },
+    landing: {
+        newTitle: 'otherscape:challenge.newTitle',
+        description: 'otherscape:challenge.description',
+    },
 }
 
 export default descriptor

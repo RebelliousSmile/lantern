@@ -92,3 +92,17 @@ question encore ouverte.
 | Themebook | Livre de thèmes | masc. Terme unique pour tout le moteur Mist (décision transversale 2026-09-18) ; `city.ts` bascule depuis « livret de thème ». |
 | Improvements | Améliorations | fém. plur. à confirmer (VF officielle ?) |
 | Quest | Quête | fém. Voir Commun. |
+
+## Éditeurs (formulaires)
+
+| English term | French term | note |
+| --- | --- | --- |
+| Zoom | Zoom | masc. Réglage de l’éditeur de voyage. validé le 2026-11-08 |
+| Raw value | Valeur brute | fém. Champ d’une entrée de tags et statuts. validé le 2026-11-08 |
+| Add entry | Ajouter une entrée | validé le 2026-11-08 |
+| Add might | Ajouter une puissance | validé le 2026-11-08 |
+| Add feature | Ajouter une particularité | validé le 2026-11-08 |
+| Click on the spread to edit a specific section. | Cliquez sur la double page pour modifier une section. | validé le 2026-11-08 |
+| Write tags bare, without braces. | Écrivez les tags sans accolades. | validé le 2026-11-08 |
+| The drowned mile | La lieue noyée | Exemple de nom de vignette. validé le 2026-11-08 |
+| Return home with something worth showing. | Rentrer chez soi avec quelque chose à montrer. | Exemple de quête. validé le 2026-11-08 |

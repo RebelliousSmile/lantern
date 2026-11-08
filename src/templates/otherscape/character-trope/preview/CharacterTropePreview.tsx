@@ -1,12 +1,13 @@
 import { cn } from '@/utils/cn'
 import { SectionGate } from '../../shared/preview/components/SectionGate'
+import { otherscapeVariantClass } from '../../shared/variants'
 import {
     shouldShow,
     useOtherscapeCharacterTropeStore,
     useOtherscapeCharacterTropeViewStore,
 } from '../hooks'
 import ChoicesBlock from './blocks/ChoicesBlock'
-import HeaderBlock from './blocks/HeaderBlock'
+import HeaderBlock, { CategoryTab } from './blocks/HeaderBlock'
 import LoadoutBlock from './blocks/LoadoutBlock'
 import MetaFooterBlock from './blocks/MetaFooterBlock'
 import ThemeKitsBlock from './blocks/ThemeKitsBlock'
@@ -23,52 +24,65 @@ export function CharacterTropePreview() {
        document. */
     return (
         <div>
+            {/* The category tab stands above the panel, off it: the two scale
+                together, and the panel keeps its cut corners to itself. */}
             <div
                 className={cn(
-                    'character-trope-sheet os-card',
-                    ui.background === 'plain' ? 'bg-plain' : 'bg-neon'
+                    'character-trope-frame',
+                    otherscapeVariantClass(ui.variant)
                 )}
                 style={{
                     transform: `scale(${ui.zoom})`,
                     transformOrigin: 'top center',
                 }}
             >
-                {/* The band and the name run the full width of the card: they
-                    are its top edge rather than a region of its body. */}
-                <HeaderBlock />
+                <CategoryTab />
+                <div
+                    className={cn(
+                        'character-trope-sheet os-card',
+                        ui.background === 'plain' ? 'bg-plain' : 'bg-neon',
+                        otherscapeVariantClass(ui.variant)
+                    )}
+                >
+                    {/* The name and the prose: the card's head, set apart from
+                    the body by its own spacing only. */}
+                    <div className="character-trope-sheet__head">
+                        <HeaderBlock />
+                    </div>
 
-                <div className="character-trope-sheet__body">
-                    {/* One column, in the order a player reads the package:
+                    <div className="character-trope-sheet__body">
+                        {/* One column, in the order a player reads the package:
                         what they are given, what they pick, what they carry. */}
-                    <SectionGate
-                        show={shouldShow(
-                            otherscapeCharacterTrope,
-                            'themeKits',
-                            ui
-                        )}
-                    >
-                        <ThemeKitsBlock />
-                    </SectionGate>
+                        <SectionGate
+                            show={shouldShow(
+                                otherscapeCharacterTrope,
+                                'themeKits',
+                                ui
+                            )}
+                        >
+                            <ThemeKitsBlock />
+                        </SectionGate>
 
-                    <SectionGate
-                        show={shouldShow(
-                            otherscapeCharacterTrope,
-                            'choices',
-                            ui
-                        )}
-                    >
-                        <ChoicesBlock />
-                    </SectionGate>
+                        <SectionGate
+                            show={shouldShow(
+                                otherscapeCharacterTrope,
+                                'choices',
+                                ui
+                            )}
+                        >
+                            <ChoicesBlock />
+                        </SectionGate>
 
-                    <SectionGate
-                        show={shouldShow(
-                            otherscapeCharacterTrope,
-                            'loadout',
-                            ui
-                        )}
-                    >
-                        <LoadoutBlock />
-                    </SectionGate>
+                        <SectionGate
+                            show={shouldShow(
+                                otherscapeCharacterTrope,
+                                'loadout',
+                                ui
+                            )}
+                        >
+                            <LoadoutBlock />
+                        </SectionGate>
+                    </div>
                 </div>
             </div>
 

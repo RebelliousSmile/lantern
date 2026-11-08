@@ -6,12 +6,15 @@ import type {
     OsSpecial as Special,
     OsThreat as Threat,
 } from '@/contracts/mist-engine'
+import { defaultOtherscapeVariantId } from '../shared/variants'
 
 export type { ChallengeMeta, Limit, PublicationType, Special, Threat }
 
 export type OtherscapeChallenge = {
     name: string
     description: string
+    // The stars on the tab, one to five; `null` where none are printed.
+    rating: number | null
     // Absent rather than zero: a Challenge with no printed scale is
     // person-sized, and `null` is what says "nothing printed here".
     scale: number | null
@@ -29,6 +32,7 @@ export function toOtherscapeChallengeDocument(
     return {
         name: otherscapeChallenge.name,
         description: otherscapeChallenge.description ?? '',
+        rating: otherscapeChallenge.rating ?? null,
         scale: otherscapeChallenge.scale ?? null,
         tags_and_statuses: otherscapeChallenge.tags_and_statuses ?? [],
         limits: otherscapeChallenge.limits ?? [],
@@ -55,6 +59,9 @@ export function toOtherscapeChallengePayload(
 
     if (otherscapeChallenge.description.trim()) {
         payload.description = otherscapeChallenge.description
+    }
+    if (otherscapeChallenge.rating !== null) {
+        payload.rating = otherscapeChallenge.rating
     }
     if (otherscapeChallenge.scale !== null) {
         payload.scale = otherscapeChallenge.scale
@@ -138,6 +145,9 @@ export type OtherscapeChallengeViewState = {
     zoom: number
     previewWidth: number
     background: Background
+    /* The :Otherscape variant the card is drawn for (see
+       `../shared/variants.ts`). */
+    variant: string
     autoHideEmpty: boolean
     hidden: Record<SectionId, boolean>
     exportPrefs: ExportPrefs
@@ -157,9 +167,10 @@ export type OtherscapeChallengeSheetState = {
     target: SheetTarget | null
 }
 
-export const PREVIEW_WIDTH_MIN = 700
-export const PREVIEW_WIDTH_MAX = 1400
-export const PREVIEW_WIDTH_DEFAULT = 1152
+/* The book's Challenge is a single column, about as wide as a trope. */
+export const PREVIEW_WIDTH_MIN = 320
+export const PREVIEW_WIDTH_MAX = 720
+export const PREVIEW_WIDTH_DEFAULT = 520
 
 export const defaultHidden: Record<SectionId, boolean> = {
     description: false,
@@ -175,6 +186,7 @@ export const defaultOtherscapeChallengeView: OtherscapeChallengeViewState = {
     zoom: 1,
     previewWidth: PREVIEW_WIDTH_DEFAULT,
     background: 'neon',
+    variant: defaultOtherscapeVariantId,
     autoHideEmpty: false,
     hidden: defaultHidden,
     exportPrefs: {
@@ -191,6 +203,7 @@ export const defaultOtherscapeChallengeSheetState: OtherscapeChallengeSheetState
 export const blankOtherscapeChallenge = (): OtherscapeChallenge => ({
     name: 'Untitled Challenge',
     description: '',
+    rating: null,
     scale: null,
     tags_and_statuses: [],
     limits: [],

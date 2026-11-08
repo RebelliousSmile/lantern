@@ -16,6 +16,7 @@ export default function TagsBlock() {
         <div className="challenge-tags">
             <SectionHeader
                 title="Tags & Statuses"
+                align="end"
                 onClick={() => openSheet({ kind: 'tags', mode: 'create' })}
             />
 

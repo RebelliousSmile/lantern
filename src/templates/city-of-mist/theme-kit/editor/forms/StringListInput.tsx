@@ -1,3 +1,4 @@
+import { useUiText } from '@/i18n/text'
 import { X } from 'lucide-react'
 import { useState } from 'react'
 
@@ -13,6 +14,7 @@ export default function StringListInput({
     onChange: (next: string[]) => void
     placeholder?: string
 }) {
+    const text = useUiText()
     const [draft, setDraft] = useState('')
 
     function commit() {
@@ -32,7 +34,10 @@ export default function StringListInput({
                         {entry}
                         <button
                             type="button"
-                            aria-label={`Remove ${entry}`}
+                            aria-label={text(
+                                'city:forms.themeKit.stringList.removeAriaLabel',
+                                { entry }
+                            )}
                             onClick={() =>
                                 onChange(value.filter((item) => item !== entry))
                             }
@@ -59,7 +64,14 @@ export default function StringListInput({
                             onChange(value.slice(0, -1))
                         }
                     }}
-                    placeholder={value.length ? '' : (placeholder ?? 'Add...')}
+                    placeholder={
+                        value.length
+                            ? ''
+                            : (placeholder ??
+                              text(
+                                  'city:forms.themeKit.stringList.addPlaceholder'
+                              ))
+                    }
                 />
             </div>
         </div>

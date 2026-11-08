@@ -2,6 +2,10 @@ import type { ResourceShape } from '@/i18n/resourceShape'
 import type en from '../../en/legend/storyThemeForms'
 
 const forms: ResourceShape<typeof en> = {
+    editorPanel: {
+        emptyState:
+            'Cliquez sur l’aperçu pour modifier une section spécifique.',
+    },
     basicForm: {
         titleTagLabel: 'Tag de titre',
         titleTagPlaceholder: 'Le village que j’ai laissé derrière moi',

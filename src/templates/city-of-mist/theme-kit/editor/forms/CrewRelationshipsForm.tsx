@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { useUiText, type TranslationKey } from '@/i18n/text'
 import { cn } from '@/utils/cn'
 import {
     closestCenter,
@@ -26,10 +27,10 @@ import {
     type CrewRelationship,
 } from '../../hooks'
 
-const OUTCOMES: { value: CrewOutcome; label: string }[] = [
-    { value: 'help', label: 'Helps' },
-    { value: 'hurt', label: 'Hurts' },
-    { value: 'either', label: 'Either' },
+const OUTCOMES: { value: CrewOutcome; label: TranslationKey }[] = [
+    { value: 'help', label: 'city:forms.themeKit.crew.outcomeHelp' },
+    { value: 'hurt', label: 'city:forms.themeKit.crew.outcomeHurt' },
+    { value: 'either', label: 'city:forms.themeKit.crew.outcomeEither' },
 ]
 
 const NEW_RELATIONSHIP: CrewRelationship = {
@@ -44,6 +45,7 @@ export default function CrewRelationshipsForm({
     focusIndex?: number
     autoCreate?: boolean
 }) {
+    const text = useUiText()
     const {
         cityOfMistThemeKit,
         addCrewRelationship,
@@ -83,13 +85,12 @@ export default function CrewRelationshipsForm({
     return (
         <div className="space-y-2.5">
             <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                Crew relationships
+                {text('city:forms.themeKit.crew.heading')}
             </p>
 
             {cityOfMistThemeKit.theme_type !== 'crew' ? (
                 <p className="rounded-md border border-dashed p-2 text-xs text-muted-foreground">
-                    Only a Crew themebook prints these, so they stay off the
-                    page until you switch the theme type.
+                    {text('city:forms.themeKit.crew.offPageNote')}
                 </p>
             ) : null}
 
@@ -126,7 +127,8 @@ export default function CrewRelationshipsForm({
                 className="h-8 w-full gap-1.5 border-dashed text-xs"
                 onClick={() => addCrewRelationship(NEW_RELATIONSHIP)}
             >
-                <Plus className="h-3.5 w-3.5" /> Add relationship
+                <Plus className="h-3.5 w-3.5" />{' '}
+                {text('city:forms.themeKit.crew.add')}
             </Button>
         </div>
     )
@@ -145,6 +147,7 @@ function RelationshipRow({
     onUpdate: (update: Partial<CrewRelationship>) => void
     onRemove: () => void
 }) {
+    const text = useUiText()
     const {
         attributes,
         listeners,
@@ -167,7 +170,7 @@ function RelationshipRow({
                 <button
                     type="button"
                     className="inline-flex h-8 w-7 cursor-grab items-center justify-center rounded hover:bg-muted"
-                    aria-label="Drag to reorder"
+                    aria-label={text('actions.dragToReorder')}
                     {...attributes}
                     {...listeners}
                 >
@@ -175,7 +178,7 @@ function RelationshipRow({
                 </button>
                 <div className="grid min-w-0 flex-1 gap-1">
                     <Label htmlFor={`${id}-scenario`} className="text-xs">
-                        Scenario
+                        {text('city:forms.themeKit.crew.scenarioLabel')}
                     </Label>
                     <Textarea
                         id={`${id}-scenario`}
@@ -191,14 +194,16 @@ function RelationshipRow({
                     variant="ghost"
                     size="icon"
                     className="h-8 w-8 text-destructive"
-                    title="Remove"
+                    title={text('actions.remove')}
                     onClick={onRemove}
                 >
                     <Trash2 className="h-3.5 w-3.5" />
                 </Button>
             </div>
             <div className="mt-2 grid gap-1 pl-9">
-                <Label className="text-xs">What it does to the crew</Label>
+                <Label className="text-xs">
+                    {text('city:forms.themeKit.crew.outcomeLabel')}
+                </Label>
                 <div className="grid grid-cols-3 overflow-hidden rounded-md border">
                     {OUTCOMES.map((outcome) => (
                         <Button
@@ -217,7 +222,7 @@ function RelationshipRow({
                             )}
                             onClick={() => onUpdate({ outcome: outcome.value })}
                         >
-                            {outcome.label}
+                            {text(outcome.label)}
                         </Button>
                     ))}
                 </div>

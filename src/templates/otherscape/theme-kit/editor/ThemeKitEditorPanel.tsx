@@ -1,16 +1,20 @@
+import { useUiText } from '@/i18n/text'
 import { useOtherscapeThemeKitSheetStore } from '../hooks'
 import BasicForm from './forms/BasicForm'
+import DescriptionForm from './forms/DescriptionForm'
 import MetaForm from './forms/MetaForm'
 import QuestForm from './forms/QuestForm'
+import SpecialForm from './forms/SpecialForm'
 import TagsForm from './forms/TagsForm'
 
 export function ThemeKitEditorPanel() {
+    const text = useUiText()
     const { open, target } = useOtherscapeThemeKitSheetStore()
 
     if (!open || !target) {
         return (
             <div className="rounded-md border border-dashed px-3 py-4 text-sm text-muted-foreground">
-                Click on the card to edit a specific section.
+                {text('otherscape:forms.themeKit.editorPanel.emptyState')}
             </div>
         )
     }
@@ -29,8 +33,12 @@ export function ThemeKitEditorPanel() {
                     autoCreate={target.mode === 'create'}
                 />
             )
+        case 'description':
+            return <DescriptionForm />
         case 'quest':
             return <QuestForm />
+        case 'special':
+            return <SpecialForm />
         case 'meta':
             return <MetaForm />
         default:

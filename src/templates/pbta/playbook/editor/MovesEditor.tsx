@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
+import { useUiText } from '@/i18n/text'
 import { cn } from '@/utils/cn'
 import { ChevronDown, ChevronUp, X } from 'lucide-react'
 import type { MoveEntry } from '../model'
@@ -44,6 +45,7 @@ export function MovesEditor({
     allowReorder = true,
     allowChecked = true,
 }: MovesEditorProps) {
+    const text = useUiText()
     function updateAt(index: number, entry: MoveEntry) {
         onChange(value.map((current, i) => (i === index ? entry : current)))
     }
@@ -75,7 +77,9 @@ export function MovesEditor({
                             {allowChecked && (
                                 <Checkbox
                                     checked={entry.checked === true}
-                                    aria-label="Move acquired"
+                                    aria-label={text(
+                                        'pbta:forms.playbook.moves.acquired'
+                                    )}
                                     onCheckedChange={(checked) =>
                                         updateAt(index, {
                                             ...entry,
@@ -103,7 +107,7 @@ export function MovesEditor({
                                         })
                                     }
                                 >
-                                    Ref
+                                    {text('pbta:forms.playbook.entry.ref')}
                                 </button>
                                 <button
                                     type="button"
@@ -118,7 +122,7 @@ export function MovesEditor({
                                         updateAt(index, blankInlineMove())
                                     }
                                 >
-                                    Inline
+                                    {text('pbta:forms.playbook.entry.inline')}
                                 </button>
                             </div>
                             <div className="flex-1" />
@@ -128,7 +132,7 @@ export function MovesEditor({
                                     variant="ghost"
                                     size="icon-sm"
                                     className="shrink-0"
-                                    aria-label="Move up"
+                                    aria-label={text('actions.moveUp')}
                                     onClick={() => moveAt(index, -1)}
                                 >
                                     <ChevronUp className="h-3.5 w-3.5" />
@@ -140,7 +144,7 @@ export function MovesEditor({
                                     variant="ghost"
                                     size="icon-sm"
                                     className="shrink-0"
-                                    aria-label="Move down"
+                                    aria-label={text('actions.moveDown')}
                                     onClick={() => moveAt(index, 1)}
                                 >
                                     <ChevronDown className="h-3.5 w-3.5" />
@@ -152,7 +156,9 @@ export function MovesEditor({
                                     variant="ghost"
                                     size="icon-sm"
                                     className="shrink-0"
-                                    aria-label="Remove move"
+                                    aria-label={text(
+                                        'pbta:forms.playbook.moves.remove'
+                                    )}
                                     onClick={() => removeAt(index)}
                                 >
                                     <X className="h-3.5 w-3.5" />
@@ -192,7 +198,7 @@ export function MovesEditor({
                         className="text-xs"
                         onClick={() => onChange([...value, blankInlineMove()])}
                     >
-                        Add move
+                        {text('pbta:forms.playbook.moves.add')}
                     </Button>
                 )}
             </div>

@@ -1,5 +1,6 @@
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { SegmentedRadioGroup } from '@/components/ui/segmented-radio-group'
 import { Textarea } from '@/components/ui/textarea'
 import { useUiText } from '@/i18n/text'
 import { useOtherscapeChallengeStore } from '../../hooks'
@@ -8,6 +9,18 @@ export default function BasicForm() {
     const text = useUiText()
     const { otherscapeChallenge, setOtherscapeChallenge } =
         useOtherscapeChallengeStore()
+
+    /* An empty value stands for "no stars printed"; the others count them. */
+    const ratingOptions = [
+        {
+            value: '',
+            label: text('otherscape:forms.challenge.basic.ratingNone'),
+        },
+        ...Array.from({ length: 5 }, (_, index) => ({
+            value: String(index + 1),
+            label: '⊕'.repeat(index + 1),
+        })),
+    ]
 
     return (
         <div className="space-y-4">
@@ -58,6 +71,29 @@ export default function BasicForm() {
             <p className="text-xs text-muted-foreground">
                 {text('otherscape:forms.challenge.basic.scaleHint')}
             </p>
+
+            <div className="space-y-2">
+                <Label>
+                    {text('otherscape:forms.challenge.basic.ratingLabel')}
+                </Label>
+                <SegmentedRadioGroup
+                    id="os-challenge-rating"
+                    value={String(otherscapeChallenge.rating ?? '')}
+                    onValueChange={(value) =>
+                        setOtherscapeChallenge({
+                            rating: value ? Number(value) : null,
+                        })
+                    }
+                    options={ratingOptions}
+                    ariaLabel={text(
+                        'otherscape:forms.challenge.basic.ratingLabel'
+                    )}
+                    className="sm:inline-grid"
+                />
+                <p className="text-xs text-muted-foreground">
+                    {text('otherscape:forms.challenge.basic.ratingHint')}
+                </p>
+            </div>
 
             <div className="space-y-2">
                 <Label htmlFor="os-challenge-description">

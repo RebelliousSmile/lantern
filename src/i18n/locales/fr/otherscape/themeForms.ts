@@ -78,7 +78,8 @@ const forms: ResourceShape<typeof en> = {
         decay: 'Déclin',
     },
     trackHelp: {
-        upgrade: 'Marquée à mesure que le thème grandit. Trois marques et il est prêt à évoluer.',
+        upgrade:
+            'Marquée à mesure que le thème grandit. Trois marques et il est prêt à évoluer.',
         decay: "Marquée à mesure que le thème s'effrite. Trois marques et il est prêt à être perdu.",
     },
     meta: {
@@ -100,6 +101,7 @@ const forms: ResourceShape<typeof en> = {
         cauldronTitlePlaceholder: 'ex. Cauldron : Neon Debts',
         homebrewTitlePlaceholder: 'ex. Blog personnel, doc de campagne...',
         sourceTitlePlaceholder: 'Remplacer le titre de la source sélectionnée',
+        optional: '(optionnel)',
         pageLabel: 'Page',
         authorsLabel: 'Auteurs',
         addAuthorPlaceholder: 'Ajouter un auteur...',

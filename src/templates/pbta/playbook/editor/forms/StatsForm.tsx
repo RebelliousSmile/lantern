@@ -1,6 +1,7 @@
 import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Textarea } from '@/components/ui/textarea'
+import { useUiText } from '@/i18n/text'
 import { AttributeField } from '../../../shared/attributeField'
 import { useGameDefinitionForGame } from '../../../shared/gameDefinition'
 import { usePlaybookStore } from '../../hooks'
@@ -17,13 +18,16 @@ export default function StatsForm() {
     const gameDefinition = useGameDefinitionForGame(playbook.game)
     const attributeDefinitions = gameDefinition?.character.attributes ?? {}
     const attributeKeys = Object.keys(attributeDefinitions)
+    const text = useUiText()
 
     return (
         <div className="space-y-4">
             <div className="grid gap-1">
                 {playbook.statProfiles.length ? (
                     <div className="grid gap-1">
-                        <Label>Starting stat profile</Label>
+                        <Label>
+                            {text('pbta:forms.playbook.statsForm.profile')}
+                        </Label>
                         <RadioGroup
                             onValueChange={(key) => {
                                 const profile = playbook.statProfiles.find(
@@ -51,12 +55,16 @@ export default function StatsForm() {
                         </RadioGroup>
                     </div>
                 ) : null}
-                <Label className="text-xs text-muted-foreground">Stats</Label>
+                <Label className="text-xs text-muted-foreground">
+                    {text('pbta:forms.playbook.statsForm.stats')}
+                </Label>
                 <StatsEditor value={playbook.stats} onChange={setStats} />
             </div>
 
             <div className="grid gap-1">
-                <Label htmlFor="pbta-pb-stats-detail">Stats detail</Label>
+                <Label htmlFor="pbta-pb-stats-detail">
+                    {text('pbta:forms.playbook.statsForm.detail')}
+                </Label>
                 <Textarea
                     id="pbta-pb-stats-detail"
                     rows={3}
@@ -65,18 +73,17 @@ export default function StatsForm() {
                     onChange={(event) =>
                         setPlaybook({ statsDetail: event.target.value })
                     }
-                    placeholder="Supports Markdown."
+                    placeholder={text('pbta:forms.shared.supportsMarkdown')}
                 />
             </div>
 
             <div className="grid gap-2">
                 <Label className="text-xs text-muted-foreground">
-                    Attributes
+                    {text('pbta:forms.playbook.statsForm.attributes')}
                 </Label>
                 {attributeKeys.length === 0 ? (
                     <p className="text-xs text-muted-foreground">
-                        Open this playbook&apos;s game definition tab (same game
-                        id) to edit its attributes here.
+                        {text('pbta:forms.playbook.statsForm.attributesHint')}
                     </p>
                 ) : (
                     attributeKeys.map((key) => (

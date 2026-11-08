@@ -1,12 +1,15 @@
 import { createImageExportAction } from '@/core/templates/shell/imageExportAction'
 import { createTomlExportAction } from '@/core/templates/shell/tomlExportAction'
 import type { AnyTemplateDefinition } from '@/core/templates/types'
+import descriptor from './descriptor'
 import { LoadoutItemAppearancePanel } from './editor/LoadoutItemAppearancePanel'
 import { LoadoutItemEditorPanel } from './editor/LoadoutItemEditorPanel'
 import { LoadoutItemImageExportSettings } from './editor/LoadoutItemImageExportSettings'
-import descriptor from './descriptor'
 import { getOtherscapeLoadoutItemPreviewWidth } from './hooks'
-import type { OtherscapeLoadoutItem, OtherscapeLoadoutItemViewState } from './model'
+import type {
+    OtherscapeLoadoutItem,
+    OtherscapeLoadoutItemViewState,
+} from './model'
 import { LoadoutItemPreview } from './preview/LoadoutItemPreview'
 import { exportToTOML, importFromTOMLWithWarnings } from './toml'
 

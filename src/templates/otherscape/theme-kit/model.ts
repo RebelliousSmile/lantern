@@ -7,13 +7,19 @@ import type {
 
 export type { PublicationType, ThemeKitMeta, ThemeType }
 
+export type ThemeKitSpecial = { name: string; description: string }
+
 export type OtherscapeThemeKit = {
     title_tag: string
     theme_type: ThemeType
+    description: string
     category: string
     power_tags: string[]
     weakness_tags: string[]
     quest: string
+    // Kept materialized as two strings: the payload writes the table only when
+    // both are filled, since the schema requires both of a Special's fields.
+    special: ThemeKitSpecial
     meta: ThemeKitMeta
 }
 
@@ -53,10 +59,15 @@ export function toOtherscapeThemeKitDocument(
     return {
         title_tag: otherscapeThemeKit.title_tag,
         theme_type: otherscapeThemeKit.theme_type,
+        description: otherscapeThemeKit.description ?? '',
         category: otherscapeThemeKit.category ?? '',
         power_tags: otherscapeThemeKit.power_tags ?? [],
         weakness_tags: otherscapeThemeKit.weakness_tags ?? [],
         quest: otherscapeThemeKit.quest ?? '',
+        special: {
+            name: otherscapeThemeKit.special?.name ?? '',
+            description: otherscapeThemeKit.special?.description ?? '',
+        },
         meta: toThemeKitMeta(otherscapeThemeKit.meta),
     }
 }
@@ -72,6 +83,9 @@ export function toOtherscapeThemeKitPayload(
         theme_type: otherscapeThemeKit.theme_type,
     }
 
+    if (otherscapeThemeKit.description.trim()) {
+        payload.description = otherscapeThemeKit.description
+    }
     if (otherscapeThemeKit.category.trim()) {
         payload.category = otherscapeThemeKit.category
     }
@@ -83,6 +97,13 @@ export function toOtherscapeThemeKitPayload(
     }
     if (otherscapeThemeKit.quest.trim()) {
         payload.quest = otherscapeThemeKit.quest
+    }
+    const special = otherscapeThemeKit.special
+    if (special.name.trim() && special.description.trim()) {
+        payload.special = {
+            name: special.name,
+            description: special.description,
+        }
     }
 
     // Meta is built key by key for the same reason: a source cleared in the
@@ -114,7 +135,13 @@ export function toOtherscapeThemeKitPayload(
     return payload
 }
 
-export type SectionId = 'powerTags' | 'weaknessTags' | 'quest' | 'meta'
+export type SectionId =
+    | 'description'
+    | 'powerTags'
+    | 'weaknessTags'
+    | 'quest'
+    | 'special'
+    | 'meta'
 
 export type Background = 'neon' | 'plain'
 
@@ -137,6 +164,8 @@ export type SheetTarget =
     | { kind: 'basic'; mode?: 'edit' }
     | { kind: 'meta'; mode?: 'edit' }
     | { kind: 'quest'; mode?: 'edit' }
+    | { kind: 'description'; mode?: 'edit' }
+    | { kind: 'special'; mode?: 'edit' }
     | {
           kind: 'tags'
           field: TagField
@@ -156,9 +185,11 @@ export const PREVIEW_WIDTH_MAX = 640
 export const PREVIEW_WIDTH_DEFAULT = 400
 
 export const defaultHidden: Record<SectionId, boolean> = {
+    description: false,
     powerTags: false,
     weaknessTags: false,
     quest: false,
+    special: false,
     meta: false,
 }
 
@@ -182,9 +213,11 @@ export const defaultOtherscapeThemeKitSheetState: OtherscapeThemeKitSheetState =
 export const blankOtherscapeThemeKit = (): OtherscapeThemeKit => ({
     title_tag: 'Untitled Theme Kit',
     theme_type: 'self',
+    description: '',
     category: '',
     power_tags: [],
     weakness_tags: [],
     quest: '',
+    special: { name: '', description: '' },
     meta: { publication_type: 'homebrew' },
 })

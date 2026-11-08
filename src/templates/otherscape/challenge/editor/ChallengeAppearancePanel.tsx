@@ -4,6 +4,7 @@ import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Switch } from '@/components/ui/switch'
 import { useUiText } from '@/i18n/text'
+import { OtherscapeVariantPicker } from '../../shared/OtherscapeVariantPicker'
 import { useOtherscapeChallengeViewStore } from '../hooks'
 import { challengeBackgroundOptions, challengeSections } from '../metadata'
 import { PREVIEW_WIDTH_MAX, PREVIEW_WIDTH_MIN } from '../model'
@@ -19,6 +20,8 @@ export function ChallengeAppearancePanel() {
         setPreviewWidth,
         background,
         setBackground,
+        variant,
+        setVariant,
         resetViewPrefs,
     } = useOtherscapeChallengeViewStore()
 
@@ -29,7 +32,9 @@ export function ChallengeAppearancePanel() {
                     htmlFor="os-challenge-auto-hide-empty"
                     className="text-xs"
                 >
-                    Auto-hide empty sections
+                    {text(
+                        'otherscape:forms.challenge.appearance.autoHideEmptyLabel'
+                    )}
                 </Label>
                 <Switch
                     id="os-challenge-auto-hide-empty"
@@ -40,7 +45,9 @@ export function ChallengeAppearancePanel() {
 
             <div className="space-y-2">
                 <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                    Sections
+                    {text(
+                        'otherscape:forms.challenge.appearance.sectionsHeading'
+                    )}
                 </p>
                 <div className="grid grid-cols-[1fr_0.8fr] gap-x-3 gap-y-1.5">
                     {challengeSections.map((section) => (
@@ -66,7 +73,9 @@ export function ChallengeAppearancePanel() {
                         htmlFor="os-challenge-preview-width"
                         className="text-xs"
                     >
-                        Preview width
+                        {text(
+                            'otherscape:forms.challenge.appearance.previewWidthLabel'
+                        )}
                     </Label>
                     <span className="text-xs font-medium">
                         {previewWidth}px
@@ -83,7 +92,9 @@ export function ChallengeAppearancePanel() {
                         setPreviewWidth(Number(event.target.value))
                     }
                     className="w-full accent-primary"
-                    aria-label="Preview width"
+                    aria-label={text(
+                        'otherscape:forms.challenge.appearance.previewWidthLabel'
+                    )}
                 />
                 <div className="flex items-center justify-between text-[10px] text-muted-foreground">
                     <span>{PREVIEW_WIDTH_MIN}px</span>
@@ -93,7 +104,9 @@ export function ChallengeAppearancePanel() {
 
             <div className="space-y-2">
                 <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                    Background
+                    {text(
+                        'otherscape:forms.challenge.appearance.backgroundHeading'
+                    )}
                 </p>
                 <RadioGroup
                     value={background}
@@ -111,11 +124,20 @@ export function ChallengeAppearancePanel() {
                                 value={option.value}
                                 id={`os-challenge-background-${option.value}`}
                             />
-                            <span className="text-xs">{option.label}</span>
+                            <span className="text-xs">
+                                {text(option.label)}
+                            </span>
                         </label>
                     ))}
                 </RadioGroup>
             </div>
+
+            <OtherscapeVariantPicker
+                idPrefix="os-challenge"
+                heading="otherscape:forms.challenge.appearance.variantHeading"
+                value={variant}
+                onChange={setVariant}
+            />
 
             <Button
                 type="button"
@@ -124,7 +146,7 @@ export function ChallengeAppearancePanel() {
                 className="h-8 w-full text-xs"
                 onClick={resetViewPrefs}
             >
-                Reset view
+                {text('otherscape:forms.challenge.appearance.resetView')}
             </Button>
         </div>
     )

@@ -16,28 +16,45 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from '@/components/ui/popover'
+import { useUiText, type TranslationKey } from '@/i18n/text'
 import { getCatalogSources, type CatalogItem } from '@/utils/catalog'
 import { cn } from '@/utils/cn'
 import { Check, ChevronsUpDown, X } from 'lucide-react'
 
-const TYPES: { value: PublicationType; label: string }[] = [
-    { value: 'official', label: 'Official' },
-    { value: 'third_party', label: 'Third Party' },
-    { value: 'cauldron', label: 'Cauldron' },
-    { value: 'homebrew', label: 'Homebrew' },
+const TYPES: { value: PublicationType; label: TranslationKey }[] = [
+    {
+        value: 'official',
+        label: 'otherscape:forms.theme.meta.typeOfficial',
+    },
+    {
+        value: 'third_party',
+        label: 'otherscape:forms.theme.meta.typeThirdParty',
+    },
+    {
+        value: 'cauldron',
+        label: 'otherscape:forms.theme.meta.typeCauldron',
+    },
+    {
+        value: 'homebrew',
+        label: 'otherscape:forms.theme.meta.typeHomebrew',
+    },
 ]
 
 /* ---------- Authors chips input ---------- */
 function AuthorsInput({
     value,
     onChange,
-    placeholder = 'Add author and press Enter',
+    placeholder,
 }: {
     value: string[]
     onChange: (next: string[]) => void
     placeholder?: string
 }) {
+    const text = useUiText()
     const [draft, setDraft] = useState('')
+    const resolvedPlaceholder =
+        placeholder ??
+        text('otherscape:forms.theme.meta.addAuthorAndEnterPlaceholder')
 
     function commitDraft() {
         const name = draft.trim()
@@ -58,7 +75,10 @@ function AuthorsInput({
                         <button
                             type="button"
                             className="opacity-70 hover:opacity-100"
-                            aria-label={`Remove ${author}`}
+                            aria-label={text(
+                                'otherscape:forms.theme.meta.removeAuthorAriaLabel',
+                                { author }
+                            )}
                             onClick={() =>
                                 onChange(value.filter((x) => x !== author))
                             }
@@ -84,7 +104,7 @@ function AuthorsInput({
                             onChange(value.slice(0, -1))
                         }
                     }}
-                    placeholder={value.length ? '' : placeholder}
+                    placeholder={value.length ? '' : resolvedPlaceholder}
                 />
             </div>
         </div>
@@ -103,6 +123,7 @@ function SourceCombobox({
     onSelect: (item: CatalogItem) => void
     placeholder: string
 }) {
+    const text = useUiText()
     const [open, setOpen] = useState(false)
     const current = items.find((item) => item.title === value)
 
@@ -121,8 +142,14 @@ function SourceCombobox({
             </PopoverTrigger>
             <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
                 <Command>
-                    <CommandInput placeholder="Search source..." />
-                    <CommandEmpty>No match.</CommandEmpty>
+                    <CommandInput
+                        placeholder={text(
+                            'otherscape:forms.theme.meta.searchSourcePlaceholder'
+                        )}
+                    />
+                    <CommandEmpty>
+                        {text('otherscape:forms.theme.meta.noMatch')}
+                    </CommandEmpty>
                     <CommandGroup>
                         {items.map((item) => (
                             <CommandItem
@@ -159,6 +186,8 @@ function TypeSegment({
     value?: PublicationType
     onChange: (next: PublicationType) => void
 }) {
+    const text = useUiText()
+
     return (
         <div className="grid grid-cols-2 overflow-hidden rounded-md border sm:inline-grid sm:grid-cols-4">
             {TYPES.map((type) => (
@@ -172,7 +201,7 @@ function TypeSegment({
                     )}
                     onClick={() => onChange(type.value)}
                 >
-                    {type.label}
+                    {text(type.label)}
                 </Button>
             ))}
         </div>
@@ -181,6 +210,7 @@ function TypeSegment({
 
 /* ---------- Main MetaForm ---------- */
 export default function MetaForm() {
+    const text = useUiText()
     const { otherscapeTheme, updateMeta } = useOtherscapeThemeStore()
     const meta = otherscapeTheme.meta
 
@@ -209,26 +239,33 @@ export default function MetaForm() {
     return (
         <div className="space-y-4">
             <div className="grid gap-1">
-                <Label>Publication type</Label>
+                <Label>
+                    {text('otherscape:forms.theme.meta.publicationTypeLabel')}
+                </Label>
                 <TypeSegment value={type} onChange={setType} />
             </div>
 
             {sourceOptions.length > 0 ? (
                 <div className="grid gap-1">
-                    <Label>Source</Label>
+                    <Label>
+                        {text('otherscape:forms.theme.meta.sourceLabel')}
+                    </Label>
                     <SourceCombobox
                         items={sourceOptions}
                         value={meta?.source}
                         onSelect={pickFromCatalog}
                         placeholder={
                             type === 'official'
-                                ? 'Select an official book...'
-                                : 'Select a third-party source...'
+                                ? text(
+                                      'otherscape:forms.theme.meta.selectOfficialPlaceholder'
+                                  )
+                                : text(
+                                      'otherscape:forms.theme.meta.selectThirdPartyPlaceholder'
+                                  )
                         }
                     />
                     <div className="text-xs text-muted-foreground">
-                        Selecting a source auto-fills authors. You can still
-                        edit below.
+                        {text('otherscape:forms.theme.meta.autoFillHelp')}
                     </div>
                 </div>
             ) : null}
@@ -237,12 +274,18 @@ export default function MetaForm() {
                 <div className="grid gap-1">
                     <Label htmlFor="os-theme-meta-source">
                         {type === 'cauldron'
-                            ? 'Cauldron product title'
+                            ? text(
+                                  'otherscape:forms.theme.meta.cauldronTitleLabel'
+                              )
                             : type === 'homebrew'
-                              ? 'Homebrew title / location'
-                              : 'Source title'}{' '}
+                              ? text(
+                                    'otherscape:forms.theme.meta.homebrewTitleLabel'
+                                )
+                              : text(
+                                    'otherscape:forms.theme.meta.sourceTitleLabel'
+                                )}{' '}
                         <span className="text-muted-foreground">
-                            (optional)
+                            {text('otherscape:forms.theme.meta.optional')}
                         </span>
                     </Label>
                     <Input
@@ -254,19 +297,25 @@ export default function MetaForm() {
                         }
                         placeholder={
                             type === 'cauldron'
-                                ? 'e.g., Cauldron: Neon Debts'
+                                ? text(
+                                      'otherscape:forms.theme.meta.cauldronTitlePlaceholder'
+                                  )
                                 : type === 'homebrew'
-                                  ? 'e.g., Personal blog, campaign doc...'
-                                  : 'Override selected source title'
+                                  ? text(
+                                        'otherscape:forms.theme.meta.homebrewTitlePlaceholder'
+                                    )
+                                  : text(
+                                        'otherscape:forms.theme.meta.sourceTitlePlaceholder'
+                                    )
                         }
                     />
                 </div>
 
                 <div className="grid gap-1">
                     <Label htmlFor="os-theme-meta-page">
-                        Page{' '}
+                        {text('otherscape:forms.theme.meta.pageLabel')}{' '}
                         <span className="text-muted-foreground">
-                            (optional)
+                            {text('otherscape:forms.theme.meta.optional')}
                         </span>
                     </Label>
                     <Input
@@ -291,17 +340,20 @@ export default function MetaForm() {
             </div>
 
             <div className="grid gap-1">
-                <Label>Authors</Label>
+                <Label>
+                    {text('otherscape:forms.theme.meta.authorsLabel')}
+                </Label>
                 <AuthorsInput
                     value={authors}
                     onChange={(next) => updateMeta({ authors: next })}
-                    placeholder="Add author..."
+                    placeholder={text(
+                        'otherscape:forms.theme.meta.addAuthorPlaceholder'
+                    )}
                 />
             </div>
 
             <div className="text-xs text-muted-foreground">
-                Meta helps attribution & search and is preserved on
-                import/export.
+                {text('otherscape:forms.theme.meta.footerHelp')}
             </div>
         </div>
     )

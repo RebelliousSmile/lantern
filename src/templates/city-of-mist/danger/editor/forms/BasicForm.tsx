@@ -1,9 +1,11 @@
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { useUiText } from '@/i18n/text'
 import { useCityOfMistDangerStore } from '../../hooks'
 
 export default function BasicForm() {
+    const text = useUiText()
     const { cityOfMistDanger, setCityOfMistDanger } = useCityOfMistDangerStore()
     const rating = Math.max(
         0,
@@ -14,7 +16,9 @@ export default function BasicForm() {
         <div className="space-y-4">
             <div className="grid gap-3 md:grid-cols-[1fr_auto] md:items-end">
                 <div className="grid gap-1">
-                    <Label htmlFor="danger-name">Danger name</Label>
+                    <Label htmlFor="danger-name">
+                        {text('city:forms.danger.basic.nameLabel')}
+                    </Label>
                     <Input
                         id="danger-name"
                         className="h-8 px-2 text-sm"
@@ -22,12 +26,16 @@ export default function BasicForm() {
                         onChange={(event) =>
                             setCityOfMistDanger({ name: event.target.value })
                         }
-                        placeholder="e.g., The Red Room"
+                        placeholder={text(
+                            'city:forms.danger.basic.namePlaceholder'
+                        )}
                     />
                 </div>
 
                 <div className="grid w-[88px] gap-1">
-                    <Label htmlFor="danger-rating">Level (0-5)</Label>
+                    <Label htmlFor="danger-rating">
+                        {text('city:forms.danger.basic.levelLabel')}
+                    </Label>
                     <Input
                         id="danger-rating"
                         className="h-8 px-2 text-sm"
@@ -53,7 +61,9 @@ export default function BasicForm() {
             </div>
 
             <div className="space-y-2">
-                <Label htmlFor="danger-description">Description</Label>
+                <Label htmlFor="danger-description">
+                    {text('fields.description')}
+                </Label>
                 <Textarea
                     id="danger-description"
                     rows={4}
@@ -62,10 +72,12 @@ export default function BasicForm() {
                     onChange={(event) =>
                         setCityOfMistDanger({ description: event.target.value })
                     }
-                    placeholder="Describe the danger and how it threatens the crew."
+                    placeholder={text(
+                        'city:forms.danger.basic.descriptionPlaceholder'
+                    )}
                 />
                 <p className="text-xs text-muted-foreground">
-                    Supports Markdown.
+                    {text('city:forms.shared.help.markdown')}
                 </p>
             </div>
         </div>

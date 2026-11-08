@@ -1,14 +1,16 @@
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+import { useUiText } from '@/i18n/text'
 import { useOtherscapePowerSetViewStore } from '../hooks'
 
 export function PowerSetImageExportSettings() {
+    const text = useUiText()
     const { exportPrefs, setExportPrefs } = useOtherscapePowerSetViewStore()
 
     return (
         <div className="space-y-4">
             <div className="space-y-2">
                 <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                    Image scale
+                    {text('otherscape:forms.powerSet.imageExport.scaleHeading')}
                 </p>
                 <RadioGroup
                     value={String(exportPrefs.scale)}

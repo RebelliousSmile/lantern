@@ -1,5 +1,6 @@
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { useUiText } from '@/i18n/text'
 import { useCityOfMistThemeCardStore } from '../../hooks'
 
 function TrackInput({
@@ -37,18 +38,21 @@ function TrackInput({
 }
 
 export default function TracksForm() {
+    const text = useUiText()
     const { cityOfMistThemeCard, setTrack } = useCityOfMistThemeCardStore()
     const attention = cityOfMistThemeCard.attention
     const erosion = cityOfMistThemeCard.erosion
     const erosionLabel =
-        cityOfMistThemeCard.theme_type === 'mythos' ? 'Fade' : 'Crack'
+        cityOfMistThemeCard.theme_type === 'mythos'
+            ? text('city:forms.shared.track.fade')
+            : text('city:forms.shared.track.crack')
 
     return (
         <div className="space-y-4">
             {attention ? (
                 <TrackInput
                     id="theme-card-attention"
-                    label="Attention"
+                    label={text('city:forms.shared.track.attention')}
                     filled={attention.filled}
                     maximum={attention.maximum}
                     onChange={(value) => setTrack('attention', value)}
@@ -66,7 +70,7 @@ export default function TracksForm() {
                 />
             ) : null}
             <p className="text-xs text-muted-foreground">
-                Counts are kept between 0 and the printed maximum.
+                {text('city:forms.themeCard.tracks.help')}
             </p>
         </div>
     )

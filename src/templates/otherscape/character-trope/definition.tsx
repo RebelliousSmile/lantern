@@ -1,12 +1,15 @@
 import { createImageExportAction } from '@/core/templates/shell/imageExportAction'
 import { createTomlExportAction } from '@/core/templates/shell/tomlExportAction'
 import type { AnyTemplateDefinition } from '@/core/templates/types'
+import descriptor from './descriptor'
 import { CharacterTropeAppearancePanel } from './editor/CharacterTropeAppearancePanel'
 import { CharacterTropeEditorPanel } from './editor/CharacterTropeEditorPanel'
 import { CharacterTropeImageExportSettings } from './editor/CharacterTropeImageExportSettings'
-import descriptor from './descriptor'
 import { getOtherscapeCharacterTropePreviewWidth } from './hooks'
-import type { OtherscapeCharacterTrope, OtherscapeCharacterTropeViewState } from './model'
+import type {
+    OtherscapeCharacterTrope,
+    OtherscapeCharacterTropeViewState,
+} from './model'
 import { CharacterTropePreview } from './preview/CharacterTropePreview'
 import { exportToTOML, importFromTOMLWithWarnings } from './toml'
 

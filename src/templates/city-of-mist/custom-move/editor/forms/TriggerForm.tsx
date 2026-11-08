@@ -2,29 +2,35 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { useUiText, type TranslationKey } from '@/i18n/text'
 import { cn } from '@/utils/cn'
 import { useCityOfMistCustomMoveStore, type CustomMoveKind } from '../../hooks'
 import TemplateGuideForm from './TemplateGuideForm'
 
-const KINDS: { value: CustomMoveKind; label: string; hint: string }[] = [
+const KINDS: {
+    value: CustomMoveKind
+    label: TranslationKey
+    hint: TranslationKey
+}[] = [
     {
         value: 'danger',
-        label: 'Danger',
-        hint: 'Belongs to a danger and fires when it acts.',
+        label: 'city:forms.customMove.trigger.kindDanger',
+        hint: 'city:forms.customMove.trigger.kindDangerHint',
     },
     {
         value: 'situational',
-        label: 'Situational',
-        hint: 'Belongs to a place or a situation the crew walks into.',
+        label: 'city:forms.customMove.trigger.kindSituational',
+        hint: 'city:forms.customMove.trigger.kindSituationalHint',
     },
     {
         value: 'improvement',
-        label: 'Improvement',
-        hint: 'Belongs to a theme and is bought as an improvement.',
+        label: 'city:forms.customMove.trigger.kindImprovement',
+        hint: 'city:forms.customMove.trigger.kindImprovementHint',
     },
 ]
 
 export default function TriggerForm() {
+    const text = useUiText()
     const { cityOfMistCustomMove, setCityOfMistCustomMove } =
         useCityOfMistCustomMoveStore()
     const kind = KINDS.find(
@@ -35,7 +41,9 @@ export default function TriggerForm() {
         <div className="space-y-4">
             <div className="grid gap-3 md:grid-cols-[1fr_auto] md:items-end">
                 <div className="grid gap-1">
-                    <Label htmlFor="move-name">Move name</Label>
+                    <Label htmlFor="move-name">
+                        {text('city:forms.customMove.trigger.nameLabel')}
+                    </Label>
                     <Input
                         id="move-name"
                         className="h-8 px-2 text-sm"
@@ -45,12 +53,16 @@ export default function TriggerForm() {
                                 name: event.target.value,
                             })
                         }
-                        placeholder="e.g., War-Torn City"
+                        placeholder={text(
+                            'city:forms.customMove.trigger.namePlaceholder'
+                        )}
                     />
                 </div>
 
                 <div className="grid w-[88px] gap-1">
-                    <Label htmlFor="move-impact">Impact (0-3)</Label>
+                    <Label htmlFor="move-impact">
+                        {text('city:forms.customMove.trigger.impactLabel')}
+                    </Label>
                     <Input
                         id="move-impact"
                         className="h-8 px-2 text-sm"
@@ -76,7 +88,7 @@ export default function TriggerForm() {
             </div>
 
             <div className="grid gap-1">
-                <Label>Kind</Label>
+                <Label>{text('city:forms.customMove.trigger.kindLabel')}</Label>
                 <div className="grid grid-cols-3 overflow-hidden rounded-md border">
                     {KINDS.map((entry) => (
                         <Button
@@ -97,19 +109,23 @@ export default function TriggerForm() {
                                 setCityOfMistCustomMove({ kind: entry.value })
                             }
                         >
-                            {entry.label}
+                            {text(entry.label)}
                         </Button>
                     ))}
                 </div>
                 {kind ? (
-                    <p className="text-xs text-muted-foreground">{kind.hint}</p>
+                    <p className="text-xs text-muted-foreground">
+                        {text(kind.hint)}
+                    </p>
                 ) : null}
             </div>
 
             <TemplateGuideForm />
 
             <div className="space-y-2">
-                <Label htmlFor="move-trigger">Trigger</Label>
+                <Label htmlFor="move-trigger">
+                    {text('city:forms.customMove.trigger.triggerLabel')}
+                </Label>
                 <Textarea
                     id="move-trigger"
                     rows={3}
@@ -118,18 +134,21 @@ export default function TriggerForm() {
                     onChange={(event) =>
                         setCityOfMistCustomMove({ trigger: event.target.value })
                     }
-                    placeholder="When you spend a day in the war-torn city,"
+                    placeholder={text(
+                        'city:forms.customMove.trigger.triggerPlaceholder'
+                    )}
                 />
                 <p className="text-xs text-muted-foreground">
-                    Supports Markdown. A trigger reads as the opening half of a
-                    sentence the outcomes finish.
+                    {text('city:forms.customMove.trigger.triggerHelp')}
                 </p>
             </div>
 
             <div className="space-y-2">
                 <Label htmlFor="move-frequency">
-                    Frequency{' '}
-                    <span className="text-muted-foreground">(optional)</span>
+                    {text('city:forms.customMove.trigger.frequencyLabel')}{' '}
+                    <span className="text-muted-foreground">
+                        {text('city:forms.shared.meta.optional')}
+                    </span>
                 </Label>
                 <Input
                     id="move-frequency"
@@ -140,14 +159,18 @@ export default function TriggerForm() {
                             frequency: event.target.value,
                         })
                     }
-                    placeholder="e.g., Once per day spent in the city."
+                    placeholder={text(
+                        'city:forms.customMove.trigger.frequencyPlaceholder'
+                    )}
                 />
             </div>
 
             <div className="space-y-2">
                 <Label htmlFor="move-mc-note">
-                    MC note{' '}
-                    <span className="text-muted-foreground">(optional)</span>
+                    {text('city:forms.customMove.trigger.mcNoteLabel')}{' '}
+                    <span className="text-muted-foreground">
+                        {text('city:forms.shared.meta.optional')}
+                    </span>
                 </Label>
                 <Textarea
                     id="move-mc-note"
@@ -157,7 +180,9 @@ export default function TriggerForm() {
                     onChange={(event) =>
                         setCityOfMistCustomMove({ mc_note: event.target.value })
                     }
-                    placeholder="How to run the move at the table."
+                    placeholder={text(
+                        'city:forms.customMove.trigger.mcNotePlaceholder'
+                    )}
                 />
             </div>
         </div>

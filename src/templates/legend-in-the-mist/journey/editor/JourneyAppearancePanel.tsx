@@ -34,7 +34,9 @@ export function JourneyAppearancePanel() {
         <div className="space-y-4">
             <div className="flex items-center justify-between gap-4">
                 <Label htmlFor="journey-auto-hide-empty" className="text-xs">
-                    Auto-hide empty sections
+                    {text(
+                        'legend:forms.journey.appearance.autoHideEmptySections'
+                    )}
                 </Label>
                 <Switch
                     id="journey-auto-hide-empty"
@@ -45,7 +47,7 @@ export function JourneyAppearancePanel() {
 
             <div className="space-y-2">
                 <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                    Sections
+                    {text('legend:forms.journey.appearance.sectionsLabel')}
                 </p>
                 <div className="grid grid-cols-[1fr_0.8fr] gap-x-3 gap-y-1.5">
                     {journeySections.map((section) => (
@@ -69,7 +71,7 @@ export function JourneyAppearancePanel() {
                 so the zoom is offered as fixed steps rather than a slider. */}
             <div className="space-y-2">
                 <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                    Zoom
+                    {text('legend:forms.journey.appearance.zoomLabel')}
                 </p>
                 <div className="grid grid-cols-4 overflow-hidden rounded-md border">
                     {journeyZoomOptions.map((option) => (
@@ -91,7 +93,9 @@ export function JourneyAppearancePanel() {
             <div className="space-y-2">
                 <div className="flex items-center justify-between gap-2">
                     <Label htmlFor="journey-preview-width" className="text-xs">
-                        Preview width
+                        {text(
+                            'legend:forms.journey.appearance.previewWidthLabel'
+                        )}
                     </Label>
                     <span className="text-xs font-medium">
                         {previewWidth}px
@@ -108,7 +112,9 @@ export function JourneyAppearancePanel() {
                         setPreviewWidth(Number(event.target.value))
                     }
                     className="w-full accent-primary"
-                    aria-label="Preview width"
+                    aria-label={text(
+                        'legend:forms.journey.appearance.previewWidthLabel'
+                    )}
                 />
                 <div className="flex items-center justify-between text-[10px] text-muted-foreground">
                     <span>{PREVIEW_WIDTH_MIN}px</span>
@@ -118,7 +124,7 @@ export function JourneyAppearancePanel() {
 
             <div className="space-y-2">
                 <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                    Background
+                    {text('legend:forms.journey.appearance.backgroundLabel')}
                 </p>
                 <RadioGroup
                     value={background}
@@ -136,7 +142,9 @@ export function JourneyAppearancePanel() {
                                 value={option.value}
                                 id={`journey-background-${option.value}`}
                             />
-                            <span className="text-xs">{option.label}</span>
+                            <span className="text-xs">
+                                {text(option.label)}
+                            </span>
                         </label>
                     ))}
                 </RadioGroup>
@@ -149,7 +157,7 @@ export function JourneyAppearancePanel() {
                 className="h-8 w-full text-xs"
                 onClick={resetViewPrefs}
             >
-                Reset view
+                {text('legend:forms.journey.appearance.resetView')}
             </Button>
         </div>
     )

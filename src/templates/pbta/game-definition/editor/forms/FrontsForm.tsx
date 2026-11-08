@@ -1,12 +1,14 @@
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { hasCanonicalSource } from '@/contracts/canonicalSource'
+import { useUiText } from '@/i18n/text'
 import { useGameDefinitionStore } from '../../hooks'
 import { ClockPresetsEditor } from '../ClockPresetsEditor'
 import { RecordListEditor } from '../RecordListEditor'
 
 export default function FrontsForm() {
     const { gameDefinition, setFronts, clearFronts } = useGameDefinitionStore()
+    const text = useUiText()
     const fronts = gameDefinition.fronts
     const importedDoc = hasCanonicalSource(gameDefinition)
 
@@ -14,9 +16,7 @@ export default function FrontsForm() {
         return (
             <div className="space-y-2">
                 <p className="text-sm text-muted-foreground">
-                    This definition has no fronts-facing content. Add one to
-                    give fronts their own threat types, impulses and clock
-                    presets.
+                    {text('pbta:forms.gameDefinition.fronts.empty')}
                 </p>
                 <Button
                     type="button"
@@ -24,7 +24,7 @@ export default function FrontsForm() {
                     className="h-8"
                     onClick={() => setFronts({})}
                 >
-                    Add a fronts section
+                    {text('pbta:forms.gameDefinition.fronts.add')}
                 </Button>
             </div>
         )
@@ -33,27 +33,37 @@ export default function FrontsForm() {
     return (
         <div className="space-y-4">
             <div className="grid gap-1">
-                <Label>Threat types</Label>
+                <Label>
+                    {text('pbta:forms.gameDefinition.fronts.threatTypes')}
+                </Label>
                 <RecordListEditor
                     value={fronts.threatTypes}
                     onChange={(threatTypes) => setFronts({ threatTypes })}
-                    keyPlaceholder="key"
-                    valuePlaceholder="Threat type label"
+                    keyPlaceholder={text('pbta:forms.shared.keyPlaceholder')}
+                    valuePlaceholder={text(
+                        'pbta:forms.gameDefinition.fronts.threatTypePlaceholder'
+                    )}
                 />
             </div>
 
             <div className="grid gap-1">
-                <Label>Impulses</Label>
+                <Label>
+                    {text('pbta:forms.gameDefinition.fronts.impulses')}
+                </Label>
                 <RecordListEditor
                     value={fronts.impulses}
                     onChange={(impulses) => setFronts({ impulses })}
-                    keyPlaceholder="key"
-                    valuePlaceholder="Impulse label"
+                    keyPlaceholder={text('pbta:forms.shared.keyPlaceholder')}
+                    valuePlaceholder={text(
+                        'pbta:forms.gameDefinition.fronts.impulsePlaceholder'
+                    )}
                 />
             </div>
 
             <div className="grid gap-1">
-                <Label>Clock presets</Label>
+                <Label>
+                    {text('pbta:forms.gameDefinition.fronts.clockPresets')}
+                </Label>
                 <ClockPresetsEditor
                     value={fronts.clockPresets}
                     onChange={(clockPresets) => setFronts({ clockPresets })}
@@ -69,16 +79,19 @@ export default function FrontsForm() {
                 disabled={importedDoc}
                 title={
                     importedDoc
-                        ? 'This document was imported from TOML: export re-applies the original file over any field this form leaves blank, so the fronts section would come back. Blank each field above instead.'
+                        ? text('pbta:forms.gameDefinition.sectionBlocked', {
+                              section: text(
+                                  'pbta:forms.gameDefinition.sectionNames.fronts'
+                              ),
+                          })
                         : undefined
                 }
             >
-                Remove the fronts section
+                {text('pbta:forms.gameDefinition.fronts.remove')}
             </Button>
             {importedDoc && (
                 <p className="text-xs text-muted-foreground">
-                    Imported from TOML - removing the section here will not drop
-                    it from the exported file. Blank the fields above instead.
+                    {text('pbta:forms.gameDefinition.importedNote')}
                 </p>
             )}
         </div>

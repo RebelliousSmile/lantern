@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
+import { useUiText, type TranslationKey } from '@/i18n/text'
 import { GripVertical, Pencil, Plus, Trash2 } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import {
@@ -29,6 +30,11 @@ import { CSS } from '@dnd-kit/utilities'
 
 // Levels & assets
 const LEVELS: MightLevel[] = ['origin', 'adventure', 'greatness']
+const LEVEL_LABEL: Record<MightLevel, TranslationKey> = {
+    origin: 'legend:forms.storyTheme.basicForm.levels.origin.label',
+    adventure: 'legend:forms.storyTheme.basicForm.levels.adventure.label',
+    greatness: 'legend:forms.storyTheme.basicForm.levels.greatness.label',
+}
 const ICON_BY_LEVEL: Record<MightLevel, string> = {
     origin: '/assets/images/might-origin.svg',
     adventure: '/assets/images/might-adventure.svg',
@@ -36,6 +42,7 @@ const ICON_BY_LEVEL: Record<MightLevel, string> = {
 }
 
 export default function MightForm({ focusIndex }: { focusIndex?: number }) {
+    const text = useUiText()
     const {
         legendInTheMistChallenge,
         addMight,
@@ -158,9 +165,14 @@ export default function MightForm({ focusIndex }: { focusIndex?: number }) {
             vulnerability:
                 hasVuln && eVulnerability.trim() ? eVulnerability.trim() : null,
         }
-        if (!updated.name) return setError('Name is required.')
+        if (!updated.name)
+            return setError(
+                text('legend:forms.challenge.mights.errorNameRequired')
+            )
         if (isDuplicate(updated, editingIndex))
-            return setError('A Might with that name and level already exists.')
+            return setError(
+                text('legend:forms.challenge.mights.errorDuplicate')
+            )
         updateMightAt(editingIndex, updated)
         cancelEdit()
     }
@@ -201,7 +213,7 @@ export default function MightForm({ focusIndex }: { focusIndex?: number }) {
                                                     htmlFor={`might-name-${idx}`}
                                                     className="text-xs"
                                                 >
-                                                    Name
+                                                    {text('common:fields.name')}
                                                 </Label>
                                                 <Input
                                                     id={`might-name-${idx}`}
@@ -216,7 +228,9 @@ export default function MightForm({ focusIndex }: { focusIndex?: number }) {
                                             {/* Level icons (buttons) */}
                                             <div className="grid gap-1">
                                                 <Label className="text-xs">
-                                                    Level
+                                                    {text(
+                                                        'legend:forms.storyTheme.basicForm.levelLabel'
+                                                    )}
                                                 </Label>
                                                 <div className="flex items-center gap-0.5">
                                                     {LEVELS.map((lv) => (
@@ -226,7 +240,9 @@ export default function MightForm({ focusIndex }: { focusIndex?: number }) {
                                                             onClick={() =>
                                                                 setELevel(lv)
                                                             }
-                                                            title={lv} // optional tooltip
+                                                            title={text(
+                                                                LEVEL_LABEL[lv]
+                                                            )}
                                                             className={`rounded-md border p-0.5 transition
                                 ${eLevel === lv ? 'ring-2 ring-slate-400' : 'hover:bg-slate-50'}`}
                                                             aria-pressed={
@@ -239,7 +255,11 @@ export default function MightForm({ focusIndex }: { focusIndex?: number }) {
                                                                         lv
                                                                     ]
                                                                 }
-                                                                alt={lv}
+                                                                alt={text(
+                                                                    LEVEL_LABEL[
+                                                                        lv
+                                                                    ]
+                                                                )}
                                                                 className="h-5 w-5"
                                                             />
                                                         </button>
@@ -261,7 +281,9 @@ export default function MightForm({ focusIndex }: { focusIndex?: number }) {
                                                 htmlFor={`might-vuln-${idx}`}
                                                 className="text-xs"
                                             >
-                                                Vulnerability
+                                                {text(
+                                                    'legend:forms.challenge.mights.vulnerabilityLabel'
+                                                )}
                                             </Label>
                                         </div>
 
@@ -271,12 +293,16 @@ export default function MightForm({ focusIndex }: { focusIndex?: number }) {
                                                     htmlFor={`might-vuln-input-${idx}`}
                                                     className="text-xs"
                                                 >
-                                                    Vulnerability
+                                                    {text(
+                                                        'legend:forms.challenge.mights.vulnerabilityLabel'
+                                                    )}
                                                 </Label>
                                                 <Input
                                                     id={`might-vuln-input-${idx}`}
                                                     className="h-8 px-2 text-sm"
-                                                    placeholder="e.g., flattery"
+                                                    placeholder={text(
+                                                        'legend:forms.challenge.mights.vulnerabilityPlaceholder'
+                                                    )}
                                                     value={eVulnerability}
                                                     onChange={(e) =>
                                                         setEVulnerability(
@@ -293,14 +319,14 @@ export default function MightForm({ focusIndex }: { focusIndex?: number }) {
                                                 className="h-7 px-2.5 text-xs"
                                                 onClick={confirmEdit}
                                             >
-                                                Save
+                                                {text('common:actions.save')}
                                             </Button>
                                             <Button
                                                 variant="link"
                                                 className="h-7 px-0 text-xs"
                                                 onClick={cancelEdit}
                                             >
-                                                Cancel
+                                                {text('common:actions.cancel')}
                                             </Button>
                                         </div>
                                     </div>
@@ -317,7 +343,8 @@ export default function MightForm({ focusIndex }: { focusIndex?: number }) {
                                 className="mt-1 h-8 w-full justify-center gap-1.5 border-dashed px-2.5 text-xs"
                                 onClick={addPlaceholder}
                             >
-                                <Plus className="h-3.5 w-3.5" /> Add might
+                                <Plus className="h-3.5 w-3.5" />{' '}
+                                {text('legend:forms.challenge.mights.addMight')}
                             </Button>
                         </li>
                     </ul>
@@ -344,6 +371,7 @@ function SortableMightItem({
     onRemove: () => void
     children?: React.ReactNode
 }) {
+    const text = useUiText()
     const {
         attributes,
         listeners,
@@ -377,11 +405,13 @@ function SortableMightItem({
                       ? 'opacity-40 cursor-not-allowed hover:bg-transparent'
                       : 'cursor-grab active:cursor-grabbing'
               }`}
-                        aria-label="Drag to reorder"
+                        aria-label={text('common:actions.dragToReorder')}
                         title={
                             dragDisabled
-                                ? 'Finish editing to reorder'
-                                : 'Drag to reorder'
+                                ? text(
+                                      'legend:forms.challenge.shared.finishEditingToReorder'
+                                  )
+                                : text('common:actions.dragToReorder')
                         }
                         disabled={dragDisabled}
                         {...(!dragDisabled ? attributes : {})}
@@ -393,7 +423,7 @@ function SortableMightItem({
                     {/* level icon */}
                     <img
                         src={ICON_BY_LEVEL[m.level]}
-                        alt={m.level}
+                        alt={text(LEVEL_LABEL[m.level])}
                         className="h-5 w-5 shrink-0"
                     />
 
@@ -417,7 +447,7 @@ function SortableMightItem({
                         size="icon-sm"
                         className="h-7 w-7"
                         onClick={onEdit}
-                        title="Edit"
+                        title={text('common:actions.edit')}
                     >
                         <Pencil className="h-3.5 w-3.5" />
                     </Button>
@@ -426,7 +456,7 @@ function SortableMightItem({
                         size="icon-sm"
                         className="h-7 w-7 text-destructive"
                         onClick={onRemove}
-                        title="Remove"
+                        title={text('common:actions.remove')}
                     >
                         <Trash2 className="h-3.5 w-3.5" />
                     </Button>

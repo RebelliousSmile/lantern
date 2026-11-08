@@ -7,6 +7,9 @@ export function getSampleOtherscapeThemeKit(): OtherscapeThemeKit {
     return {
         title_tag: 'Back-Alley Ripperdoc',
         theme_type: 'self',
+        description:
+            'You patch up the people the clinics turn away, and the street remembers it.\n\n' +
+            'The work pays in favours more often than in cash, and every favour has a name attached.',
         category: 'STREET TRADE',
         power_tags: [
             'steady hands',
@@ -26,6 +29,11 @@ export function getSampleOtherscapeThemeKit(): OtherscapeThemeKit {
             'the licence board has a file',
         ],
         quest: 'Keep the clinic open, whatever the district asks in return.',
+        special: {
+            name: 'House Calls',
+            description:
+                'Once per scene, when you patch someone up where they fell, reduce one of their statuses by an extra tier.',
+        },
         meta: {
             publication_type: 'homebrew',
             source: undefined,

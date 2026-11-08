@@ -2,12 +2,14 @@ import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { hasCanonicalSource } from '@/contracts/canonicalSource'
+import { useUiText } from '@/i18n/text'
 import { useGameDefinitionStore } from '../../hooks'
 import { AttributeListEditor } from '../AttributeListEditor'
 import { RecordListEditor } from '../RecordListEditor'
 
 export default function NpcForm() {
     const { gameDefinition, setNpc, clearNpc } = useGameDefinitionStore()
+    const text = useUiText()
     const npc = gameDefinition.npc
     const importedDoc = hasCanonicalSource(gameDefinition)
 
@@ -15,8 +17,7 @@ export default function NpcForm() {
         return (
             <div className="space-y-2">
                 <p className="text-sm text-muted-foreground">
-                    This definition has no NPC-facing content. Add one to give
-                    NPCs their own attributes and move types.
+                    {text('pbta:forms.gameDefinition.npc.empty')}
                 </p>
                 <Button
                     type="button"
@@ -24,7 +25,7 @@ export default function NpcForm() {
                     className="h-8"
                     onClick={() => setNpc({})}
                 >
-                    Add an NPC section
+                    {text('pbta:forms.gameDefinition.npc.add')}
                 </Button>
             </div>
         )
@@ -33,7 +34,9 @@ export default function NpcForm() {
     return (
         <div className="space-y-4">
             <div className="grid gap-1">
-                <Label>Attributes</Label>
+                <Label>
+                    {text('pbta:forms.gameDefinition.labels.attributes')}
+                </Label>
                 <AttributeListEditor
                     value={npc.attributes}
                     onChange={(attributes) => setNpc({ attributes })}
@@ -41,32 +44,42 @@ export default function NpcForm() {
             </div>
 
             <div className="grid gap-1">
-                <Label>Move types</Label>
+                <Label>
+                    {text('pbta:forms.gameDefinition.labels.moveTypes')}
+                </Label>
                 <RecordListEditor
                     value={npc.moveTypes}
                     onChange={(moveTypes) => setNpc({ moveTypes })}
-                    keyPlaceholder="key"
-                    valuePlaceholder="Move type label"
+                    keyPlaceholder={text('pbta:forms.shared.keyPlaceholder')}
+                    valuePlaceholder={text(
+                        'pbta:forms.gameDefinition.placeholders.moveTypeLabel'
+                    )}
                 />
             </div>
 
             <div className="grid gap-1">
                 <Label>
-                    Equipment types{' '}
-                    <span className="text-muted-foreground">(optional)</span>
+                    {text('pbta:forms.gameDefinition.labels.equipmentTypes')}{' '}
+                    <span className="text-muted-foreground">
+                        {text('pbta:forms.shared.optional')}
+                    </span>
                 </Label>
                 <RecordListEditor
                     value={npc.equipmentTypes}
                     onChange={(equipmentTypes) => setNpc({ equipmentTypes })}
-                    keyPlaceholder="key"
-                    valuePlaceholder="Equipment type label"
+                    keyPlaceholder={text('pbta:forms.shared.keyPlaceholder')}
+                    valuePlaceholder={text(
+                        'pbta:forms.gameDefinition.placeholders.equipmentTypeLabel'
+                    )}
                 />
             </div>
 
             <div className="grid gap-1">
                 <Label htmlFor="pbta-def-npc-description">
-                    Description{' '}
-                    <span className="text-muted-foreground">(optional)</span>
+                    {text('fields.description')}{' '}
+                    <span className="text-muted-foreground">
+                        {text('pbta:forms.shared.optional')}
+                    </span>
                 </Label>
                 <Textarea
                     id="pbta-def-npc-description"
@@ -76,7 +89,7 @@ export default function NpcForm() {
                     onChange={(event) =>
                         setNpc({ description: event.target.value })
                     }
-                    placeholder="Supports Markdown."
+                    placeholder={text('pbta:forms.shared.supportsMarkdown')}
                 />
             </div>
 
@@ -89,16 +102,19 @@ export default function NpcForm() {
                 disabled={importedDoc}
                 title={
                     importedDoc
-                        ? 'This document was imported from TOML: export re-applies the original file over any field this form leaves blank, so the NPC section would come back. Blank each field above instead.'
+                        ? text('pbta:forms.gameDefinition.sectionBlocked', {
+                              section: text(
+                                  'pbta:forms.gameDefinition.sectionNames.npc'
+                              ),
+                          })
                         : undefined
                 }
             >
-                Remove the NPC section
+                {text('pbta:forms.gameDefinition.npc.remove')}
             </Button>
             {importedDoc && (
                 <p className="text-xs text-muted-foreground">
-                    Imported from TOML - removing the section here will not drop
-                    it from the exported file. Blank the fields above instead.
+                    {text('pbta:forms.gameDefinition.importedNote')}
                 </p>
             )}
         </div>

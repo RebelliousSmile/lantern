@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
+import { useUiText } from '@/i18n/text'
 import {
     DndContext,
     KeyboardSensor,
@@ -30,6 +31,7 @@ const DEFAULT_SPECTRUM = {
 }
 
 export default function SpectrumsForm({ focusIndex }: { focusIndex?: number }) {
+    const text = useUiText()
     const {
         cityOfMistDanger,
         addSpectrum,
@@ -113,7 +115,7 @@ export default function SpectrumsForm({ focusIndex }: { focusIndex?: number }) {
         if (editingIndex == null) return
         const trimmed = name.trim()
         if (!trimmed) {
-            setError('Spectrum name is required.')
+            setError(text('city:forms.danger.spectrums.errorNameRequired'))
             return
         }
 
@@ -159,7 +161,9 @@ export default function SpectrumsForm({ focusIndex }: { focusIndex?: number }) {
                                                     htmlFor={`spectrum-name-${index}`}
                                                     className="text-xs"
                                                 >
-                                                    Spectrum name
+                                                    {text(
+                                                        'city:forms.danger.spectrums.nameLabel'
+                                                    )}
                                                 </Label>
                                                 <Input
                                                     id={`spectrum-name-${index}`}
@@ -170,7 +174,9 @@ export default function SpectrumsForm({ focusIndex }: { focusIndex?: number }) {
                                                             event.target.value
                                                         )
                                                     }
-                                                    placeholder="hurt"
+                                                    placeholder={text(
+                                                        'city:forms.danger.spectrums.namePlaceholder'
+                                                    )}
                                                 />
                                             </div>
                                             <div className="grid gap-1">
@@ -178,7 +184,9 @@ export default function SpectrumsForm({ focusIndex }: { focusIndex?: number }) {
                                                     htmlFor={`spectrum-maximum-${index}`}
                                                     className="text-xs"
                                                 >
-                                                    Maximum
+                                                    {text(
+                                                        'city:forms.danger.spectrums.maximumLabel'
+                                                    )}
                                                 </Label>
                                                 <Input
                                                     id={`spectrum-maximum-${index}`}
@@ -219,7 +227,9 @@ export default function SpectrumsForm({ focusIndex }: { focusIndex?: number }) {
                                                 htmlFor={`spectrum-immune-${index}`}
                                                 className="text-xs"
                                             >
-                                                Immune
+                                                {text(
+                                                    'city:forms.danger.spectrums.immune'
+                                                )}
                                             </Label>
                                         </div>
                                         <div className="flex items-center gap-2">
@@ -229,7 +239,7 @@ export default function SpectrumsForm({ focusIndex }: { focusIndex?: number }) {
                                                 className="h-7 px-2.5 text-xs"
                                                 onClick={confirmEdit}
                                             >
-                                                Save
+                                                {text('actions.save')}
                                             </Button>
                                             <Button
                                                 type="button"
@@ -237,7 +247,7 @@ export default function SpectrumsForm({ focusIndex }: { focusIndex?: number }) {
                                                 className="h-7 px-0 text-xs"
                                                 onClick={cancelEdit}
                                             >
-                                                Cancel
+                                                {text('actions.cancel')}
                                             </Button>
                                         </div>
                                     </div>
@@ -253,7 +263,7 @@ export default function SpectrumsForm({ focusIndex }: { focusIndex?: number }) {
                                 onClick={addPlaceholder}
                             >
                                 <Plus className="h-3.5 w-3.5" />
-                                Add spectrum
+                                {text('city:forms.danger.spectrums.add')}
                             </Button>
                         </li>
                     </ul>
@@ -278,6 +288,7 @@ function SortableSpectrumRow({
     onRemove: () => void
     children?: React.ReactNode
 }) {
+    const text = useUiText()
     const {
         attributes,
         listeners,
@@ -307,11 +318,13 @@ function SortableSpectrumRow({
                                 ? 'cursor-not-allowed opacity-40 hover:bg-transparent'
                                 : 'cursor-grab active:cursor-grabbing'
                         }`}
-                        aria-label="Drag to reorder"
+                        aria-label={text('actions.dragToReorder')}
                         title={
                             dragDisabled
-                                ? 'Finish editing to reorder'
-                                : 'Drag to reorder'
+                                ? text(
+                                      'city:forms.shared.list.finishEditingToReorder'
+                                  )
+                                : text('actions.dragToReorder')
                         }
                         disabled={dragDisabled}
                         {...(!dragDisabled ? attributes : {})}
@@ -329,7 +342,7 @@ function SortableSpectrumRow({
                         variant="ghost"
                         className="h-7 w-7"
                         onClick={onEdit}
-                        title="Edit"
+                        title={text('actions.edit')}
                     >
                         <Pencil className="h-3.5 w-3.5" />
                     </Button>
@@ -338,7 +351,7 @@ function SortableSpectrumRow({
                         variant="ghost"
                         className="h-7 w-7 text-destructive"
                         onClick={onRemove}
-                        title="Remove"
+                        title={text('actions.remove')}
                     >
                         <Trash2 className="h-3.5 w-3.5" />
                     </Button>

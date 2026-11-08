@@ -3,6 +3,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
+import { useUiText } from '@/i18n/text'
 import {
     DndContext,
     PointerSensor,
@@ -34,6 +35,7 @@ export default function ImprovementsForm({
     focusIndex?: number
     autoCreate?: boolean
 }) {
+    const text = useUiText()
     const {
         cityOfMistThemeCard,
         addImprovement,
@@ -67,7 +69,7 @@ export default function ImprovementsForm({
     return (
         <div className="space-y-2.5">
             <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                Improvements
+                {text('city:forms.themeCard.improvements.heading')}
             </p>
             <DndContext
                 sensors={sensors}
@@ -101,7 +103,8 @@ export default function ImprovementsForm({
                 className="h-8 w-full gap-1.5 border-dashed text-xs"
                 onClick={() => addImprovement(NEW_IMPROVEMENT)}
             >
-                <Plus className="h-3.5 w-3.5" /> Add improvement
+                <Plus className="h-3.5 w-3.5" />{' '}
+                {text('city:forms.themeCard.improvements.add')}
             </Button>
         </div>
     )
@@ -120,6 +123,7 @@ function ImprovementRow({
     onUpdate: (update: Partial<Improvement>) => void
     onRemove: () => void
 }) {
+    const text = useUiText()
     const {
         attributes,
         listeners,
@@ -138,7 +142,7 @@ function ImprovementRow({
                 <button
                     type="button"
                     className="inline-flex h-8 w-7 cursor-grab items-center justify-center rounded hover:bg-muted"
-                    aria-label="Drag to reorder"
+                    aria-label={text('actions.dragToReorder')}
                     {...attributes}
                     {...listeners}
                 >
@@ -146,7 +150,7 @@ function ImprovementRow({
                 </button>
                 <div className="grid min-w-0 flex-1 gap-1">
                     <Label htmlFor={`${id}-name`} className="text-xs">
-                        Name
+                        {text('fields.name')}
                     </Label>
                     <Input
                         id={`${id}-name`}
@@ -162,7 +166,7 @@ function ImprovementRow({
                     variant="ghost"
                     size="icon"
                     className="h-8 w-8 text-destructive"
-                    title="Remove"
+                    title={text('actions.remove')}
                     onClick={onRemove}
                 >
                     <Trash2 className="h-3.5 w-3.5" />
@@ -170,8 +174,10 @@ function ImprovementRow({
             </div>
             <div className="mt-2 grid gap-1">
                 <Label htmlFor={`${id}-effect`} className="text-xs">
-                    Effect{' '}
-                    <span className="text-muted-foreground">(optional)</span>
+                    {text('city:forms.themeCard.improvements.effectLabel')}{' '}
+                    <span className="text-muted-foreground">
+                        {text('city:forms.shared.meta.optional')}
+                    </span>
                 </Label>
                 <Textarea
                     id={`${id}-effect`}
@@ -184,7 +190,7 @@ function ImprovementRow({
             </div>
             <div className="mt-2 flex items-center justify-end gap-2">
                 <Label htmlFor={`${id}-taken`} className="text-xs">
-                    Taken
+                    {text('city:forms.themeCard.improvements.taken')}
                 </Label>
                 <Switch
                     id={`${id}-taken`}

@@ -1,3 +1,9 @@
+import customMoveForms from './city/customMoveForms'
+import dangerForms from './city/dangerForms'
+import sharedForms from './city/sharedForms'
+import themeCardForms from './city/themeCardForms'
+import themeKitForms from './city/themeKitForms'
+
 /* English source of truth for this game family's templates; the French file is typed against it. */
 const city = {
     danger: {
@@ -99,6 +105,14 @@ const city = {
             weaknessLetters:
                 '{{themebook}} has weakness questions A to D, but these tags cite other letters: {{letters}}.',
         },
+    },
+    /* One file per template, so each template's form strings can change on their own. */
+    forms: {
+        customMove: customMoveForms,
+        danger: dangerForms,
+        shared: sharedForms,
+        themeCard: themeCardForms,
+        themeKit: themeKitForms,
     },
 }
 

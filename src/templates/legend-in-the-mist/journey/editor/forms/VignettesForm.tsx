@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { useUiText } from '@/i18n/text'
 import {
     DndContext,
     KeyboardSensor,
@@ -49,6 +50,8 @@ const PLACEHOLDERS: JourneyVignette[] = [
     },
 ]
 
+/* Seed text written into the document when a consequence is added: stored
+   data, so it stays English whatever the interface language. */
 const CONSEQUENCE_PLACEHOLDER = 'What this moment costs when it goes badly.'
 
 export default function VignettesForm({
@@ -58,6 +61,7 @@ export default function VignettesForm({
     focusIndex?: number
     autoCreate?: boolean
 }) {
+    const text = useUiText()
     const {
         legendInTheMistJourney,
         addVignette,
@@ -159,7 +163,7 @@ export default function VignettesForm({
 
         const nextName = name.trim()
         if (!nextName) {
-            setError('A vignette needs a name.')
+            setError(text('legend:forms.journey.vignettes.errorNameRequired'))
             return
         }
 
@@ -179,12 +183,12 @@ export default function VignettesForm({
 
     return (
         <div className="space-y-2.5">
-            <div className="flex items-baseline justify-between gap-2">
+            <div className="space-y-0.5">
                 <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                    Vignettes
+                    {text('legend:forms.journey.vignettes.heading')}
                 </p>
                 <p className="text-xs text-muted-foreground">
-                    The moments this journey breaks down into.
+                    {text('legend:forms.journey.vignettes.subheading')}
                 </p>
             </div>
 
@@ -222,7 +226,7 @@ export default function VignettesForm({
                                                 htmlFor={`journey-vignette-name-${index}`}
                                                 className="text-xs"
                                             >
-                                                Name
+                                                {text('common:fields.name')}
                                             </Label>
                                             <Input
                                                 id={`journey-vignette-name-${index}`}
@@ -243,7 +247,9 @@ export default function VignettesForm({
                                                         cancelEdit()
                                                     }
                                                 }}
-                                                placeholder="The drowned mile"
+                                                placeholder={text(
+                                                    'legend:forms.journey.vignettes.namePlaceholder'
+                                                )}
                                             />
                                         </div>
 
@@ -252,9 +258,13 @@ export default function VignettesForm({
                                                 htmlFor={`journey-vignette-trigger-${index}`}
                                                 className="text-xs"
                                             >
-                                                Trigger{' '}
+                                                {text(
+                                                    'legend:forms.journey.vignettes.triggerLabel'
+                                                )}{' '}
                                                 <span className="text-muted-foreground">
-                                                    (optional)
+                                                    {text(
+                                                        'legend:forms.journey.vignettes.optional'
+                                                    )}
                                                 </span>
                                             </Label>
                                             <Textarea
@@ -274,7 +284,9 @@ export default function VignettesForm({
                                                         cancelEdit()
                                                     }
                                                 }}
-                                                placeholder="What sets this moment off."
+                                                placeholder={text(
+                                                    'legend:forms.journey.vignettes.triggerPlaceholder'
+                                                )}
                                             />
                                         </div>
 
@@ -298,7 +310,7 @@ export default function VignettesForm({
                                                 className="h-7 px-2.5 text-xs"
                                                 onClick={confirmEdit}
                                             >
-                                                Save
+                                                {text('common:actions.save')}
                                             </Button>
                                             <Button
                                                 type="button"
@@ -306,7 +318,7 @@ export default function VignettesForm({
                                                 className="h-7 px-0 text-xs"
                                                 onClick={cancelEdit}
                                             >
-                                                Cancel
+                                                {text('common:actions.cancel')}
                                             </Button>
                                         </div>
                                     </div>
@@ -322,7 +334,10 @@ export default function VignettesForm({
                                 className="mt-1 h-8 w-full justify-center gap-1.5 border-dashed px-2.5 text-xs"
                                 onClick={addPlaceholder}
                             >
-                                <Plus className="h-3.5 w-3.5" /> Add vignette
+                                <Plus className="h-3.5 w-3.5" />{' '}
+                                {text(
+                                    'legend:forms.journey.vignettes.addVignette'
+                                )}
                             </Button>
                         </li>
                     </ul>
@@ -356,6 +371,7 @@ function VignetteConsequences({
     onRemove: (vignetteIndex: number, index: number) => void
     onMove: (vignetteIndex: number, from: number, to: number) => void
 }) {
+    const text = useUiText()
     const [editingIndex, setEditingIndex] = useState<number | null>(null)
     const [raw, setRaw] = useState('')
 
@@ -399,12 +415,12 @@ function VignetteConsequences({
     return (
         <div className="space-y-1.5 rounded-md border bg-background p-2">
             <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                Consequences
+                {text('legend:forms.journey.vignettes.consequencesHeading')}
             </p>
 
             {!consequences.length && (
                 <p className="text-xs text-destructive">
-                    A vignette needs at least one consequence to export.
+                    {text('legend:forms.journey.vignettes.consequencesMissing')}
                 </p>
             )}
 
@@ -446,9 +462,9 @@ function VignetteConsequences({
                                                     setRaw('')
                                                 }
                                             }}
-                                            placeholder={
-                                                CONSEQUENCE_PLACEHOLDER
-                                            }
+                                            placeholder={text(
+                                                'legend:forms.journey.vignettes.consequencePlaceholder'
+                                            )}
                                         />
                                         <div className="flex items-center gap-2">
                                             <Button
@@ -457,7 +473,7 @@ function VignetteConsequences({
                                                 className="h-7 px-2.5 text-xs"
                                                 onClick={confirmEdit}
                                             >
-                                                Save
+                                                {text('common:actions.save')}
                                             </Button>
                                             <Button
                                                 type="button"
@@ -468,7 +484,7 @@ function VignetteConsequences({
                                                     setRaw('')
                                                 }}
                                             >
-                                                Cancel
+                                                {text('common:actions.cancel')}
                                             </Button>
                                         </div>
                                     </div>
@@ -492,7 +508,8 @@ function VignetteConsequences({
                                     setRaw(CONSEQUENCE_PLACEHOLDER)
                                 }}
                             >
-                                <Plus className="h-3.5 w-3.5" /> Add consequence
+                                <Plus className="h-3.5 w-3.5" />{' '}
+                                {text('legend:forms.journey.consequences.add')}
                             </Button>
                         </li>
                     </ul>
@@ -532,6 +549,7 @@ function SortableVignetteItem({
         transition,
     }
 
+    const text = useUiText()
     const count = vignette.consequences.length
 
     return (
@@ -552,11 +570,13 @@ function SortableVignetteItem({
                       ? 'opacity-40 cursor-not-allowed hover:bg-transparent'
                       : 'cursor-grab active:cursor-grabbing'
               }`}
-                        aria-label="Drag to reorder"
+                        aria-label={text('common:actions.dragToReorder')}
                         title={
                             dragDisabled
-                                ? 'Finish editing to reorder'
-                                : 'Drag to reorder'
+                                ? text(
+                                      'legend:forms.journey.shared.dragDisabledTitle'
+                                  )
+                                : text('common:actions.dragToReorder')
                         }
                         disabled={dragDisabled}
                         {...(!dragDisabled ? attributes : {})}
@@ -568,10 +588,13 @@ function SortableVignetteItem({
                     <div className="min-w-0 text-sm leading-6">
                         <span className="font-medium">{vignette.name}</span>
                         <span className="block text-xs text-muted-foreground">
-                            {count === 1
-                                ? '1 consequence'
-                                : `${count} consequences`}
-                            {vignette.trigger.trim() ? '' : ' · no trigger'}
+                            {text(
+                                'legend:forms.journey.vignettes.consequenceCount',
+                                { count }
+                            )}
+                            {vignette.trigger.trim()
+                                ? ''
+                                : ` · ${text('legend:forms.journey.vignettes.noTrigger')}`}
                         </span>
                     </div>
                 </div>
@@ -583,7 +606,7 @@ function SortableVignetteItem({
                         size="icon"
                         className="h-7 w-7"
                         onClick={onEdit}
-                        title="Edit"
+                        title={text('common:actions.edit')}
                     >
                         <Pencil className="h-3.5 w-3.5" />
                     </Button>
@@ -593,7 +616,7 @@ function SortableVignetteItem({
                         size="icon"
                         className="h-7 w-7 text-destructive"
                         onClick={onRemove}
-                        title="Remove"
+                        title={text('common:actions.remove')}
                     >
                         <Trash2 className="h-3.5 w-3.5" />
                     </Button>
@@ -620,6 +643,7 @@ function SortableVignetteConsequenceItem({
     onRemove: () => void
     children?: React.ReactNode
 }) {
+    const text = useUiText()
     const {
         attributes,
         listeners,
@@ -652,7 +676,7 @@ function SortableVignetteConsequenceItem({
                       ? 'opacity-40 cursor-not-allowed hover:bg-transparent'
                       : 'cursor-grab active:cursor-grabbing'
               }`}
-                        aria-label="Drag to reorder"
+                        aria-label={text('common:actions.dragToReorder')}
                         disabled={dragDisabled}
                         {...(!dragDisabled ? attributes : {})}
                         {...(!dragDisabled ? listeners : {})}
@@ -675,7 +699,7 @@ function SortableVignetteConsequenceItem({
                         size="icon"
                         className="h-6 w-6"
                         onClick={onEdit}
-                        title="Edit"
+                        title={text('common:actions.edit')}
                     >
                         <Pencil className="h-3 w-3" />
                     </Button>
@@ -685,7 +709,7 @@ function SortableVignetteConsequenceItem({
                         size="icon"
                         className="h-6 w-6 text-destructive"
                         onClick={onRemove}
-                        title="Remove"
+                        title={text('common:actions.remove')}
                     >
                         <Trash2 className="h-3 w-3" />
                     </Button>

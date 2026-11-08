@@ -1,6 +1,7 @@
 import { SystemMarkdownScope } from '@/components/markdown/SystemMarkdownScope'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { useUiText } from '@/i18n/text'
 import { renderLitmMarkdown } from '@/utils/markdown'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
@@ -36,6 +37,7 @@ export function ThreatRow({
     onRemove: () => void
     onOpenConsequences: () => void
 }) {
+    const ui = useUiText()
     const {
         attributes,
         listeners,
@@ -55,7 +57,9 @@ export function ThreatRow({
                     disabled={dragDisabled}
                     attributes={attributes}
                     listeners={listeners}
-                    label="Drag to reorder threat"
+                    label={ui(
+                        'legend:forms.challenge.threats.dragThreatAriaLabel'
+                    )}
                 />
                 <div className="grid min-w-0 flex-1 grid-cols-[minmax(0,1fr)_auto] items-start gap-x-2 gap-y-1.5">
                     <div className="min-w-0">
@@ -70,8 +74,12 @@ export function ThreatRow({
                                 size="icon-sm"
                                 className="h-7 w-7"
                                 onClick={onOpenConsequences}
-                                aria-label="Edit consequences"
-                                title="Consequences"
+                                aria-label={ui(
+                                    'legend:forms.challenge.threats.editConsequencesAriaLabel'
+                                )}
+                                title={ui(
+                                    'legend:forms.challenge.threats.consequencesTitle'
+                                )}
                             >
                                 <img
                                     src="/assets/images/consequence.svg"
@@ -85,11 +93,14 @@ export function ThreatRow({
                                 </span>
                             ) : null}
                         </div>
-                        <IconButton label="Edit" onClick={onEdit}>
+                        <IconButton
+                            label={ui('common:actions.edit')}
+                            onClick={onEdit}
+                        >
                             <Pencil className="h-3.5 w-3.5" />
                         </IconButton>
                         <IconButton
-                            label="Remove"
+                            label={ui('common:actions.remove')}
                             onClick={onRemove}
                             destructive
                         >
@@ -109,7 +120,7 @@ export function ThreatRow({
                         </SystemMarkdownScope>
                     ) : (
                         <div className="col-span-2 text-sm text-muted-foreground">
-                            No description
+                            {ui('legend:forms.challenge.shared.noDescription')}
                         </div>
                     )}
                 </div>
@@ -133,6 +144,7 @@ export function ConsequenceRow({
     onEdit: () => void
     onRemove: () => void
 }) {
+    const ui = useUiText()
     const {
         attributes,
         listeners,
@@ -152,7 +164,9 @@ export function ConsequenceRow({
                     disabled={dragDisabled}
                     attributes={attributes}
                     listeners={listeners}
-                    label="Drag to reorder consequence"
+                    label={ui(
+                        'legend:forms.challenge.threats.dragConsequenceAriaLabel'
+                    )}
                 />
                 {isEditing ? (
                     <div className="min-w-0 flex-1">{children}</div>
@@ -170,11 +184,15 @@ export function ConsequenceRow({
                 )}
             </div>
             {!isEditing ? (
-                <IconButton label="Edit" onClick={onEdit}>
+                <IconButton label={ui('common:actions.edit')} onClick={onEdit}>
                     <Pencil className="h-3.5 w-3.5" />
                 </IconButton>
             ) : null}
-            <IconButton label="Remove" onClick={onRemove} destructive>
+            <IconButton
+                label={ui('common:actions.remove')}
+                onClick={onRemove}
+                destructive
+            >
                 <Trash2 className="h-3.5 w-3.5" />
             </IconButton>
         </li>
@@ -192,6 +210,7 @@ export function InlineConsequenceEditor({
     onSave: () => void
     onCancel: () => void
 }) {
+    const text = useUiText()
     return (
         <div className="flex items-center gap-1.5">
             <Input
@@ -207,7 +226,7 @@ export function InlineConsequenceEditor({
             <Button
                 size="icon-xs"
                 className="h-5 w-5 shrink-0"
-                title="Save"
+                title={text('common:actions.save')}
                 onClick={onSave}
             >
                 <Check className="h-3 w-3" />
@@ -216,7 +235,7 @@ export function InlineConsequenceEditor({
                 size="icon-xs"
                 variant="secondary"
                 className="h-5 w-5 shrink-0"
-                title="Cancel"
+                title={text('common:actions.cancel')}
                 onClick={onCancel}
             >
                 <X className="h-3 w-3" />
@@ -236,11 +255,18 @@ function DragHandle({
     listeners: SortableBindings['listeners']
     label: string
 }) {
+    const text = useUiText()
     return (
         <button
             className={`inline-flex h-7 w-7 shrink-0 items-center justify-center rounded hover:bg-slate-50 ${disabled ? 'cursor-not-allowed opacity-40 hover:bg-transparent' : 'cursor-grab active:cursor-grabbing'}`}
             aria-label={label}
-            title={disabled ? 'Finish editing to reorder' : label}
+            title={
+                disabled
+                    ? text(
+                          'legend:forms.challenge.shared.finishEditingToReorder'
+                      )
+                    : label
+            }
             disabled={disabled}
             {...(!disabled ? attributes : {})}
             {...(!disabled ? listeners : {})}

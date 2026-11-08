@@ -6,6 +6,7 @@ import type { SectionId } from './model'
    render. The order is the order the regions are printed in. */
 export const powerSetSections: Array<{ id: SectionId; label: UiText }> = [
     { id: 'description', label: 'otherscape:powerSet.sections.description' },
+    { id: 'tags', label: 'otherscape:powerSet.sections.tags' },
     { id: 'specials', label: 'otherscape:powerSet.sections.specials' },
     { id: 'threats', label: 'otherscape:powerSet.sections.threats' },
     {
@@ -17,10 +18,19 @@ export const powerSetSections: Array<{ id: SectionId; label: UiText }> = [
 
 export const powerSetZoomOptions = [0.75, 1, 1.25, 1.5]
 
-export const powerSetBackgroundOptions = [
-    { value: 'neon', label: 'Neon' },
-    { value: 'plain', label: 'Plain' },
-] as const
+export const powerSetBackgroundOptions: ReadonlyArray<{
+    value: 'neon' | 'plain'
+    label: UiText
+}> = [
+    {
+        value: 'neon',
+        label: 'otherscape:forms.powerSet.appearance.backgroundNeon',
+    },
+    {
+        value: 'plain',
+        label: 'otherscape:forms.powerSet.appearance.backgroundPlain',
+    },
+]
 
 /* The three sources a Power Set can draw on, in the order the books print
    them. Each drives the accent the sheet takes. */

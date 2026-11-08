@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { useUiText } from '@/i18n/text'
 import { GripVertical, Pencil, Plus, Trash2 } from 'lucide-react'
 
 import {
@@ -31,6 +32,7 @@ export default function SpecialFeaturesForm({
 }: {
     focusIndex?: number
 }) {
+    const text = useUiText()
     const {
         legendInTheMistChallenge,
         addSpecialFeature,
@@ -130,8 +132,14 @@ export default function SpecialFeaturesForm({
 
     function saveEdit() {
         if (editingIndex == null) return
-        if (!eName.trim()) return setError('Name is required.')
-        if (!eDesc.trim()) return setError('Description is required.')
+        if (!eName.trim())
+            return setError(
+                text('legend:forms.challenge.specials.errorNameRequired')
+            )
+        if (!eDesc.trim())
+            return setError(
+                text('legend:forms.challenge.specials.errorDescriptionRequired')
+            )
         updateSpecialFeatureAt(editingIndex, {
             name: eName.trim(),
             description: eDesc.trim(),
@@ -174,7 +182,7 @@ export default function SpecialFeaturesForm({
                                                     htmlFor={`sf-name-${i}`}
                                                     className="text-xs"
                                                 >
-                                                    Name
+                                                    {text('common:fields.name')}
                                                 </Label>
                                                 <Input
                                                     id={`sf-name-${i}`}
@@ -190,9 +198,13 @@ export default function SpecialFeaturesForm({
                                                     htmlFor={`sf-desc-${i}`}
                                                     className="text-xs"
                                                 >
-                                                    Description{' '}
+                                                    {text(
+                                                        'common:fields.description'
+                                                    )}{' '}
                                                     <span className="text-muted-foreground">
-                                                        (Markdown)
+                                                        {text(
+                                                            'legend:forms.challenge.specials.markdownHint'
+                                                        )}
                                                     </span>
                                                 </Label>
                                                 <Textarea
@@ -203,7 +215,9 @@ export default function SpecialFeaturesForm({
                                                     onChange={(e) =>
                                                         setEDesc(e.target.value)
                                                     }
-                                                    placeholder="When this happens... then do that."
+                                                    placeholder={text(
+                                                        'legend:forms.challenge.specials.descriptionPlaceholder'
+                                                    )}
                                                 />
                                             </div>
                                             <div className="flex items-center gap-2">
@@ -213,7 +227,9 @@ export default function SpecialFeaturesForm({
                                                     className="h-7 px-2.5 text-xs"
                                                     onClick={saveEdit}
                                                 >
-                                                    Save
+                                                    {text(
+                                                        'common:actions.save'
+                                                    )}
                                                 </Button>
                                                 <Button
                                                     type="button"
@@ -221,7 +237,9 @@ export default function SpecialFeaturesForm({
                                                     className="h-7 px-0 text-xs"
                                                     onClick={cancelEdit}
                                                 >
-                                                    Cancel
+                                                    {text(
+                                                        'common:actions.cancel'
+                                                    )}
                                                 </Button>
                                             </div>
                                         </div>
@@ -239,7 +257,10 @@ export default function SpecialFeaturesForm({
                                 className="mt-1 h-8 w-full justify-center gap-1.5 border-dashed px-2.5 text-xs"
                                 onClick={addPlaceholder}
                             >
-                                <Plus className="h-3.5 w-3.5" /> Add feature
+                                <Plus className="h-3.5 w-3.5" />{' '}
+                                {text(
+                                    'legend:forms.challenge.specials.addFeature'
+                                )}
                             </Button>
                         </li>
                     </ul>
@@ -268,6 +289,7 @@ function SortableFeatureItem({
     onRemove: () => void
     children?: React.ReactNode
 }) {
+    const text = useUiText()
     const {
         attributes,
         listeners,
@@ -300,11 +322,13 @@ function SortableFeatureItem({
                       ? 'opacity-40 cursor-not-allowed hover:bg-transparent'
                       : 'cursor-grab active:cursor-grabbing'
               }`}
-                        aria-label="Drag to reorder"
+                        aria-label={text('common:actions.dragToReorder')}
                         title={
                             dragDisabled
-                                ? 'Finish editing to reorder'
-                                : 'Drag to reorder'
+                                ? text(
+                                      'legend:forms.challenge.shared.finishEditingToReorder'
+                                  )
+                                : text('common:actions.dragToReorder')
                         }
                         disabled={dragDisabled}
                         {...(!dragDisabled ? attributes : {})}
@@ -326,7 +350,7 @@ function SortableFeatureItem({
                         variant="ghost"
                         size="icon"
                         className="h-7 w-7"
-                        title="Edit"
+                        title={text('common:actions.edit')}
                         onClick={onEdit}
                     >
                         <Pencil className="h-3.5 w-3.5" />
@@ -336,7 +360,7 @@ function SortableFeatureItem({
                         variant="ghost"
                         size="icon"
                         className="h-7 w-7 text-destructive"
-                        title="Remove"
+                        title={text('common:actions.remove')}
                         onClick={onRemove}
                     >
                         <Trash2 className="h-3.5 w-3.5" />
@@ -354,7 +378,7 @@ function SortableFeatureItem({
                     />
                 ) : (
                     <div className="text-sm text-muted-foreground">
-                        No description
+                        {text('legend:forms.challenge.shared.noDescription')}
                     </div>
                 )}
             </SystemMarkdownScope>

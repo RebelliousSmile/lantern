@@ -187,3 +187,21 @@
     align-items: center;
     gap: 8px;
 }
+
+/* The rule comes in from the left edge and fades towards the label, which
+   sits flush right: the way the Tokyo cards head a region. */
+.os-card .section--end {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 8px;
+}
+
+.os-card .section--end .section-line {
+    background: linear-gradient(
+        90deg,
+        var(--os-edge) 0%,
+        var(--os-accent) 100%
+    );
+    height: 1px;
+}

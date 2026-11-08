@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { useUiText } from '@/i18n/text'
 import { GripVertical, Pencil, Plus, Trash2 } from 'lucide-react'
 
 import {
@@ -27,6 +28,7 @@ import {
 import { CSS } from '@dnd-kit/utilities'
 
 export default function SpecialsForm({ focusIndex }: { focusIndex?: number }) {
+    const text = useUiText()
     const {
         otherscapeChallenge,
         addSpecial,
@@ -126,8 +128,16 @@ export default function SpecialsForm({ focusIndex }: { focusIndex?: number }) {
 
     function saveEdit() {
         if (editingIndex == null) return
-        if (!eName.trim()) return setError('Name is required.')
-        if (!eDesc.trim()) return setError('Description is required.')
+        if (!eName.trim())
+            return setError(
+                text('otherscape:forms.challenge.specials.errorNameRequired')
+            )
+        if (!eDesc.trim())
+            return setError(
+                text(
+                    'otherscape:forms.challenge.specials.errorDescriptionRequired'
+                )
+            )
         updateSpecialAt(editingIndex, {
             name: eName.trim(),
             description: eDesc.trim(),
@@ -169,7 +179,7 @@ export default function SpecialsForm({ focusIndex }: { focusIndex?: number }) {
                                                 htmlFor={`sf-name-${i}`}
                                                 className="text-xs"
                                             >
-                                                Name
+                                                {text('fields.name')}
                                             </Label>
                                             <Input
                                                 id={`sf-name-${i}`}
@@ -185,10 +195,9 @@ export default function SpecialsForm({ focusIndex }: { focusIndex?: number }) {
                                                 htmlFor={`sf-desc-${i}`}
                                                 className="text-xs"
                                             >
-                                                Description{' '}
-                                                <span className="text-muted-foreground">
-                                                    (Markdown)
-                                                </span>
+                                                {text(
+                                                    'otherscape:forms.challenge.specials.descriptionMarkdownLabel'
+                                                )}
                                             </Label>
                                             <Textarea
                                                 id={`sf-desc-${i}`}
@@ -198,7 +207,9 @@ export default function SpecialsForm({ focusIndex }: { focusIndex?: number }) {
                                                 onChange={(e) =>
                                                     setEDesc(e.target.value)
                                                 }
-                                                placeholder="When this happens... then do that."
+                                                placeholder={text(
+                                                    'otherscape:forms.challenge.specials.descriptionPlaceholder'
+                                                )}
                                             />
                                         </div>
                                         <div className="flex items-center gap-2">
@@ -208,7 +219,7 @@ export default function SpecialsForm({ focusIndex }: { focusIndex?: number }) {
                                                 className="h-7 px-2.5 text-xs"
                                                 onClick={saveEdit}
                                             >
-                                                Save
+                                                {text('actions.save')}
                                             </Button>
                                             <Button
                                                 type="button"
@@ -216,7 +227,7 @@ export default function SpecialsForm({ focusIndex }: { focusIndex?: number }) {
                                                 className="h-7 px-0 text-xs"
                                                 onClick={cancelEdit}
                                             >
-                                                Cancel
+                                                {text('actions.cancel')}
                                             </Button>
                                         </div>
                                     </div>
@@ -233,7 +244,10 @@ export default function SpecialsForm({ focusIndex }: { focusIndex?: number }) {
                                 className="mt-1 h-8 w-full justify-center gap-1.5 border-dashed px-2.5 text-xs"
                                 onClick={addPlaceholder}
                             >
-                                <Plus className="h-3.5 w-3.5" /> Add special
+                                <Plus className="h-3.5 w-3.5" />{' '}
+                                {text(
+                                    'otherscape:forms.challenge.specials.addSpecial'
+                                )}
                             </Button>
                         </li>
                     </ul>
@@ -262,6 +276,7 @@ function SortableSpecialItem({
     onRemove: () => void
     children?: React.ReactNode
 }) {
+    const text = useUiText()
     const {
         attributes,
         listeners,
@@ -294,11 +309,13 @@ function SortableSpecialItem({
                       ? 'opacity-40 cursor-not-allowed hover:bg-transparent'
                       : 'cursor-grab active:cursor-grabbing'
               }`}
-                        aria-label="Drag to reorder"
+                        aria-label={text('actions.dragToReorder')}
                         title={
                             dragDisabled
-                                ? 'Finish editing to reorder'
-                                : 'Drag to reorder'
+                                ? text(
+                                      'otherscape:forms.challenge.specials.finishEditingToReorder'
+                                  )
+                                : text('actions.dragToReorder')
                         }
                         disabled={dragDisabled}
                         {...(!dragDisabled ? attributes : {})}
@@ -320,7 +337,7 @@ function SortableSpecialItem({
                         variant="ghost"
                         size="icon"
                         className="h-7 w-7"
-                        title="Edit"
+                        title={text('actions.edit')}
                         onClick={onEdit}
                     >
                         <Pencil className="h-3.5 w-3.5" />
@@ -330,7 +347,7 @@ function SortableSpecialItem({
                         variant="ghost"
                         size="icon"
                         className="h-7 w-7 text-destructive"
-                        title="Remove"
+                        title={text('actions.remove')}
                         onClick={onRemove}
                     >
                         <Trash2 className="h-3.5 w-3.5" />
@@ -348,7 +365,9 @@ function SortableSpecialItem({
                     />
                 ) : (
                     <div className="text-sm text-muted-foreground">
-                        No description
+                        {text(
+                            'otherscape:forms.challenge.specials.noDescription'
+                        )}
                     </div>
                 )}
             </SystemMarkdownScope>

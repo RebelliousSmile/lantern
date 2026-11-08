@@ -1,166 +1,193 @@
-/* The Theme Kit card is the narrow portrait card the Core Book prints for a
-   themebook: a slanted coloured band naming the themebook, the tag legend, the
-   title tag on a coloured slab, then the power tags stacked one per row, the
-   weakness closing the stack, and the quest under its own label.
+/* The Theme Kit card follows the kits the Tokyo book prints: a band in the
+   type's colour naming the kit, with the type's mark in a cartouche at its
+   right; the themebook and the type on one line; the description; then the
+   runs, each under a small label drawn out by a rule. The power run opens on a
+   large slanted banner repeating the kit's name, and every tag is a small
+   slanted pill flowing like words on a line, power pills dark with the type's
+   stripe, weakness pills olive. The quest and the Special close the card under
+   the same labels.
 
-   Everything this card shares with the other Otherscape cards, the ground, the
-   accents, the skew and the type, comes from `../../shared/tokens.css`. What is
-   here is this card's layout only. */
+   Everything this card shares with the other Otherscape cards, the accents,
+   the skew and the type, comes from `../../shared/tokens.css`. What is here is
+   this card's layout only. */
 @import '../../shared/tokens.css';
 
+/* The book's kit is a slate panel rather than the navy slab of the other
+   cards, framed by a lighter edge. Compounded with `.os-card` so the shared
+   block inlined by the other cards cannot reset it. */
 .os-card.theme-kit-sheet {
+    --os-surface: #2a2e37;
+    --os-paper: #2a2e37;
+    --os-paper-deep: #1f222a;
+    --os-edge: rgba(190, 200, 220, 0.28);
+    --os-weakness: #7d8f2c;
+    --os-weakness-stripe: #b9cf52;
     width: 100%;
 }
 
 .os-card .theme-kit-sheet__body {
     display: flex;
     flex-direction: column;
-    gap: 0.85rem;
-    padding: 0.9rem 0.95rem 1.15rem;
+    gap: 0.6rem;
+    padding: 0.35rem 0.85rem 1rem;
 }
 
 /* ---------- Header band ---------- */
 .os-card .theme-kit-header {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 0.5rem;
-    /* Wider than the card and pulled back, so the skew runs off both edges
-       instead of leaving a wedge of paper at the corners. */
-    margin: 0 -0.6rem;
-    background: linear-gradient(
-        100deg,
-        var(--os-accent) 0%,
-        color-mix(in srgb, var(--os-accent) 78%, var(--os-paper-deep)) 100%
-    );
-    padding: 0.34rem 1.25rem;
-    min-height: 1.75rem;
+    align-items: stretch;
+    background: var(--os-accent);
+    min-height: 1.9rem;
     color: var(--os-accent-ink);
 }
 
-.os-card .theme-kit-header__category {
+.os-card .theme-kit-header__title {
+    display: flex;
     flex: 1;
-    font-style: italic;
+    align-items: center;
+    padding: 0.3rem 0.85rem;
     font-weight: 700;
-    font-size: 0.74rem;
-    line-height: 1.15;
+    font-size: 1rem;
+    line-height: 1.1;
+    font-family: var(--os-font-display);
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+}
+
+/* The cartouche: a lighter tint of the band, cut on a slant at its left. */
+.os-card .theme-kit-header__cartouche {
+    display: flex;
+    flex: none;
+    justify-content: center;
+    align-items: center;
+    clip-path: polygon(0.7rem 0, 100% 0, 100% 100%, 0 100%);
+    background: color-mix(in srgb, var(--os-accent) 62%, #ffffff);
+    padding: 0 0.6rem 0 1.15rem;
+    color: var(--os-accent-ink);
+}
+
+.os-card .theme-kit-header__glyph {
+    width: 1.25rem;
+    height: 1.25rem;
+}
+
+.os-card .theme-kit-kicker {
+    margin: 0;
+    padding: 0.4rem 0.85rem 0;
+    font-weight: 700;
+    font-size: 0.78rem;
+    font-family: var(--os-font-display);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.os-card .theme-kit-kicker__category {
+    color: color-mix(in srgb, var(--os-accent) 55%, var(--os-ink-soft));
+}
+
+.os-card .theme-kit-kicker__type {
+    color: var(--os-accent);
+}
+
+/* ---------- Labels drawn out by a rule ---------- */
+.os-card .theme-kit-rule-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.3rem;
+    color: color-mix(in srgb, var(--os-accent) 70%, var(--os-ink-soft));
+    font-weight: 700;
+    font-size: 0.6rem;
     font-family: var(--os-font-display);
     letter-spacing: 0.14em;
     text-transform: uppercase;
 }
 
-.os-card .theme-kit-header__type {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.3rem;
-    opacity: 0.95;
-    font-weight: 600;
-    font-size: 0.55rem;
-    font-family: var(--os-font-display);
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
+.os-card .theme-kit-rule-label::after {
+    flex: 1;
+    background: currentColor;
+    max-width: 65%;
+    height: 1px;
+    content: '';
 }
 
-.os-card .theme-kit-header__glyph {
-    width: 0.95rem;
-    height: 0.95rem;
-    color: currentColor;
-}
-
-/* ---------- Tag legend ---------- */
-/* The printed card names the three kinds of row before it prints any, so the
-   reader knows what the stack below means. */
-.os-card .theme-kit-legend {
-    display: flex;
-    align-items: center;
-    gap: 0.45rem;
-    border-bottom: 1px solid var(--os-edge);
-    padding: 0.5rem 0 0.35rem;
-}
-
-.os-card .theme-kit-legend__key {
-    color: var(--os-accent);
-}
-
-.os-card .theme-kit-legend__sep {
-    color: var(--os-ink-faint);
-}
-
-/* ---------- Title tag ---------- */
-.os-card .theme-kit-title {
-    margin: 0.55rem -0.35rem 0;
-    background: linear-gradient(
-        100deg,
-        color-mix(in srgb, var(--os-accent) 86%, #f4faff) 0%,
-        var(--os-accent) 100%
-    );
-    padding: 0.38rem 0.95rem;
-    color: var(--os-accent-ink);
-}
-
-.os-card .theme-kit-title__text {
-    display: block;
-    font-size: 1.45rem;
-    line-height: 1.1;
-    letter-spacing: 0.01em;
-}
-
-/* ---------- Tag rows ---------- */
+/* ---------- Tag runs ---------- */
 .os-card .theme-kit-tag-runs {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.55rem;
 }
 
-.os-card .theme-kit-tags {
+/* The banner the power run opens on: the kit's name, large, on a slanted
+   slab of the type's colour. */
+.os-card .theme-kit-banner {
+    display: inline-block;
+    transform: skewX(var(--os-skew));
+    margin: 0.1rem 0 0.4rem 0.2rem;
+    box-shadow: 0 0 10px -2px
+        color-mix(in srgb, var(--os-accent) 70%, transparent);
+    background: var(--os-accent);
+    padding: 0.12rem 0.75rem;
+    color: var(--os-accent-ink);
+}
+
+.os-card .theme-kit-banner__text {
+    display: block;
+    transform: skewX(calc(-1 * var(--os-skew)));
+    font-style: italic;
+    font-weight: 700;
+    font-size: 1.3rem;
+    line-height: 1.15;
+    font-family: var(--os-font-display);
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+}
+
+.os-card .theme-kit-pills {
     display: flex;
-    flex-direction: column;
-    gap: 0.22rem;
+    flex-wrap: wrap;
+    gap: 0.3rem 0.45rem;
     margin: 0;
-    padding: 0;
+    padding: 0 0 0 0.25rem;
     list-style: none;
 }
 
-/* One row per tag, the way the card stacks them, rather than the flowing run
-   the Legend card uses. */
-.os-card .theme-kit-tag-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 0.5rem;
-    border-left: 3px solid var(--os-accent);
-    background: linear-gradient(100deg, var(--os-raised) 0%, transparent 100%);
-    padding: 0.24rem 0.6rem;
-    width: 100%;
-    font-size: 0.78rem;
-    line-height: 1.3;
+/* A pill: a dark slanted slab with a thin outline and a light stripe at its
+   left, both in the run's colour. */
+.os-card .theme-kit-pill {
+    --pill-edge: var(--os-accent);
+    --pill-stripe: color-mix(in srgb, var(--os-accent) 55%, #ffffff);
+    --pill-ground: #16181e;
+    display: inline-block;
+    transform: skewX(var(--os-skew));
+    border: 1px solid var(--pill-edge);
+    background: linear-gradient(
+        90deg,
+        var(--pill-stripe) 0,
+        var(--pill-stripe) 0.3rem,
+        var(--pill-ground) 0.3rem
+    );
+    padding: 0.06rem 0.4rem 0.06rem 0.55rem;
+    color: #ffffff;
     text-align: left;
 }
 
-.os-card .theme-kit-tags--weakness .theme-kit-tag-row {
-    /* The weakness closes the stack on its own colour, and keeps its marker:
-       each row is one tag, so the marker belongs to the tag and not to the run
-       the way it does on the Legend card. */
-    border-left-color: var(--os-crew);
+.os-card .theme-kit-pill--weakness {
+    --pill-edge: var(--os-weakness);
+    --pill-stripe: var(--os-weakness-stripe);
+    --pill-ground: var(--os-weakness);
 }
 
-.os-card .theme-kit-tag-row .mist-tag,
-.os-card .theme-kit-tag-row .mist-weakness {
-    /* Colour comes from the app's token palette; only the fit is set here, so a
-       long tag wraps inside its row instead of widening the card. */
-    display: inline;
-    white-space: normal;
-}
-
-/* The check circle the printed card puts at the end of every power row: the
-   space a player marks when the tag is burnt. It is part of the frame, so it
-   is drawn rather than loaded. */
-.os-card .theme-kit-tag-row__mark {
-    flex: none;
-    border: 1.5px solid var(--os-ink-faint);
-    border-radius: 999px;
-    width: 0.7rem;
-    height: 0.7rem;
+.os-card .theme-kit-pill__text {
+    display: block;
+    transform: skewX(calc(-1 * var(--os-skew)));
+    font-style: italic;
+    font-weight: 600;
+    font-size: 0.64rem;
+    line-height: 1.25;
+    font-family: var(--os-font-display);
+    letter-spacing: 0;
+    text-transform: uppercase;
 }
 
 .os-card .theme-kit-tags__empty {
@@ -173,24 +200,63 @@
 .os-card .theme-kit-quest {
     display: flex;
     flex-direction: column;
-    gap: 0.3rem;
-    border-top: 1px solid var(--os-edge);
-    padding-top: 0.6rem;
-}
-
-.os-card .theme-kit-quest__label {
-    color: var(--os-accent);
 }
 
 .os-card .theme-kit-quest__text {
-    font-style: italic;
-    font-size: 0.95rem;
-    line-height: 1.25;
-    font-family: var(--os-font-display);
-    text-transform: uppercase;
+    padding-left: 0.3rem;
+    font-size: 0.85rem;
+    line-height: 1.3;
 }
 
 .os-card .theme-kit-quest__text p {
+    margin: 0;
+}
+
+/* ---------- Description and Special ---------- */
+.os-card .theme-kit-description {
+    font-size: 0.85rem;
+    line-height: 1.35;
+}
+
+.os-card .theme-kit-description p {
+    margin: 0 0 0.4rem;
+}
+
+.os-card .theme-kit-description p:last-child {
+    margin-bottom: 0;
+}
+
+.os-card .theme-kit-special {
+    display: flex;
+    flex-direction: column;
+}
+
+.os-card .theme-kit-special__line {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.45rem;
+    font-size: 0.85rem;
+    line-height: 1.3;
+}
+
+/* The box the character ticks when they take the Special: a rounded grey
+   square, as printed. */
+.os-card .theme-kit-special__box {
+    flex: none;
+    margin-top: 0.12rem;
+    border: 1.5px solid #cfd5df;
+    border-radius: 0.2rem;
+    background: #8a919d;
+    width: 0.85rem;
+    height: 0.85rem;
+}
+
+.os-card .theme-kit-special__name {
+    font-weight: 700;
+}
+
+.os-card .theme-kit-special__text p {
+    display: inline;
     margin: 0;
 }
 

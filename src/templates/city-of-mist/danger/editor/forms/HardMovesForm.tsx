@@ -1,7 +1,9 @@
+import { useUiText } from '@/i18n/text'
 import { useCityOfMistDangerStore } from '../../hooks'
 import MoveListForm from './MoveListForm'
 
 export default function HardMovesForm({ focusIndex }: { focusIndex?: number }) {
+    const text = useUiText()
     const {
         cityOfMistDanger,
         addHardMove,
@@ -14,9 +16,9 @@ export default function HardMovesForm({ focusIndex }: { focusIndex?: number }) {
         <MoveListForm
             values={cityOfMistDanger.hard_moves}
             focusIndex={focusIndex}
-            addLabel="Add hard move"
-            emptyPlaceholder="Describe a hard move."
-            fieldLabel="Hard move"
+            addLabel={text('city:forms.danger.hardMoves.add')}
+            emptyPlaceholder={text('city:forms.danger.hardMoves.placeholder')}
+            fieldLabel={text('city:forms.danger.hardMoves.field')}
             defaultValue="Describe a hard move."
             addValue={addHardMove}
             updateValue={updateHardMoveAt}

@@ -1,7 +1,9 @@
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+import { useUiText } from '@/i18n/text'
 import { useLegendInTheMistStoryThemeViewStore } from '../hooks'
 
 export function StoryThemeImageExportSettings() {
+    const text = useUiText()
     const { exportPrefs, setExportPrefs } =
         useLegendInTheMistStoryThemeViewStore()
 
@@ -9,7 +11,7 @@ export function StoryThemeImageExportSettings() {
         <div className="space-y-4">
             <div className="space-y-2">
                 <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                    Image scale
+                    {text('legend:forms.storyTheme.appearance.imageScaleLabel')}
                 </p>
                 <RadioGroup
                     value={String(exportPrefs.scale)}

@@ -1,21 +1,23 @@
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import { useCityOfMistThemeCardStore } from '../../hooks'
+import { useUiText, type TranslationKey } from '@/i18n/text'
+import { useCityOfMistThemeCardStore, type ThemeType } from '../../hooks'
 
-const LABEL = {
-    mythos: 'Mystery',
-    logos: 'Identity',
-    extra: 'Motivation',
-    crew: 'Motivation',
-} as const
+const LABEL: Record<ThemeType, TranslationKey> = {
+    mythos: 'city:forms.shared.zone.mystery',
+    logos: 'city:forms.shared.zone.identity',
+    extra: 'city:forms.shared.zone.motivation',
+    crew: 'city:forms.shared.zone.motivation',
+}
 
 export default function MotivationForm() {
+    const text = useUiText()
     const { cityOfMistThemeCard, setCityOfMistThemeCard } =
         useCityOfMistThemeCardStore()
     const label = LABEL[cityOfMistThemeCard.theme_type]
 
-    function setText(text: string) {
-        const trimmed = text.trim()
+    function setText(value: string) {
+        const trimmed = value.trim()
         const kind =
             cityOfMistThemeCard.theme_type === 'mythos'
                 ? 'mystery'
@@ -23,13 +25,13 @@ export default function MotivationForm() {
                   ? 'identity'
                   : 'neutral'
         setCityOfMistThemeCard({
-            motivation: trimmed ? { kind, text } : undefined,
+            motivation: trimmed ? { kind, text: value } : undefined,
         })
     }
 
     return (
         <div className="space-y-2">
-            <Label htmlFor="theme-card-motivation">{label}</Label>
+            <Label htmlFor="theme-card-motivation">{text(label)}</Label>
             <Textarea
                 id="theme-card-motivation"
                 className="min-h-24 text-sm"
@@ -37,12 +39,16 @@ export default function MotivationForm() {
                 onChange={(event) => setText(event.target.value)}
                 placeholder={
                     cityOfMistThemeCard.theme_type === 'mythos'
-                        ? 'Who keeps answering when I ask?'
-                        : 'I am the one who stays.'
+                        ? text(
+                              'city:forms.themeCard.motivation.placeholderMythos'
+                          )
+                        : text(
+                              'city:forms.themeCard.motivation.placeholderOther'
+                          )
                 }
             />
             <p className="text-xs text-muted-foreground">
-                Supports inline Markdown.
+                {text('city:forms.shared.help.inlineMarkdown')}
             </p>
         </div>
     )

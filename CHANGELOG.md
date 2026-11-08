@@ -7,6 +7,21 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [v0.30.0] - 2026-11-08
+
+### Added
+
+- Otherscape Challenge: an optional rating (1 to 5 ⊕) entered in the form and printed in the card's tab, as in the Core Book (pp. 302-303); the scale now opens the description (`Scale N`), so a personal setting can write its own measure in the prose (obsidian-handbook#121 follow-up).
+- Otherscape: a variant selector (Metro, Cairo, Tokyo) in the general appearance of the Character Trope and Loadout Item tabs; the list and the default come from the published Handbook pack.
+- Otherscape Theme Kit, Power Set and Character Trope editors enter the fields the schema-in-the-mist release adds to these blocks.
+
+### Changed
+
+- Otherscape previews redrawn after the Design references: Theme Kit (`tokyo-self-theme-kits`), Power Set (`tokyo-dark-power-set`, bullets in the colour of the theme type), Character Trope (`cairo-tropes`) and Loadout Item (`tokyo-list-items`), with Metro as the base design of every card.
+- Otherscape: the six card types keep their English names in the French locale (Challenge, Character Trope, Loadout Item, Power Set, Theme, Theme Kit, and "Loadout" for the trope section) until the official French translation is published; sub-terms stay in French.
+- Editors of every game follow the interface language: no form label, placeholder or accessible name is written in the code any more.
+- Adopts the schema-in-the-mist release that publishes these fields, the look-alike Otherscape fonts and the variant metadata.
+
 ## [v0.29.3] - 2026-11-08
 
 ### Changed

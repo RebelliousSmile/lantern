@@ -3,15 +3,19 @@ const forms = {
     basic: {
         nameLabel: 'Name',
         namePlaceholder: 'Kestrel Whisperlink',
-        nameHelp: "Printed as the card's title, and kept as the first feature tag: the catalog opens the tag list with the item's own name, so renaming the item rewrites that tag too.",
+        nameHelp:
+            "Printed as the card's title, and kept as the first feature tag: the catalog opens the tag list with the item's own name, so renaming the item rewrites that tag too.",
         categoryLabel: 'Category',
         categoryOptional: '(optional)',
         categoryPlaceholder: 'Weapons, Cybernetics, Drones...',
-        categoryHelp: 'The rubric this item is filed under. Printed in the header band; left empty, the band still shows.',
+        categoryHelp:
+            'The rubric this item is filed under. Printed in the header band; left empty, the band still shows.',
         descriptionLabel: 'Description',
         descriptionOptional: '(optional)',
-        descriptionPlaceholder: 'What the item is, and what carrying it says about you.',
-        descriptionHelp: 'Markdown and braced tags are rendered. Leave a blank line between paragraphs.',
+        descriptionPlaceholder:
+            'What the item is, and what carrying it says about you.',
+        descriptionHelp:
+            'Markdown and braced tags are rendered. Leave a blank line between paragraphs.',
     },
     meta: {
         publicationTypeLabel: 'Publication type',
@@ -24,7 +28,8 @@ const forms = {
         sourceEmpty: 'No match.',
         officialPlaceholder: 'Select an official book...',
         thirdPartyPlaceholder: 'Select a third-party source...',
-        autofillHelp: 'Selecting a source auto-fills authors. You can still edit below.',
+        autofillHelp:
+            'Selecting a source auto-fills authors. You can still edit below.',
         sourceTitleCauldronLabel: 'Cauldron product title',
         sourceTitleHomebrewLabel: 'Homebrew title / location',
         sourceTitleDefaultLabel: 'Source title',
@@ -39,13 +44,15 @@ const forms = {
         authorsAddPlaceholder: 'Add author...',
         authorsInputPlaceholder: 'Add author and press Enter',
         removeAuthor: 'Remove {{author}}',
-        footerHelp: 'Meta helps attribution & search and is preserved on import/export.',
+        footerHelp:
+            'Meta helps attribution & search and is preserved on import/export.',
     },
     tags: {
         weaknessLabel: 'Weakness tag',
         weaknessOptional: '(optional)',
         weaknessPlaceholder: 'still answers to the factory handshake',
-        weaknessHelp: 'The one tag this item turns against its bearer. Write it bare: the card adds the braces and the marker. Emptying the field leaves the item with no weakness, which a few catalog entries do.',
+        weaknessHelp:
+            'The one tag this item turns against its bearer. Write it bare: the card adds the braces and the marker. Emptying the field leaves the item with no weakness, which a few catalog entries do.',
         featureTitle: 'Feature tags',
         featureHint: 'Write tags bare, without braces.',
         catalogHint:
@@ -61,6 +68,7 @@ const forms = {
         autoHideEmptyLabel: 'Auto-hide empty sections',
         sectionsTitle: 'Sections',
         previewWidthLabel: 'Preview width',
+        variantTitle: 'Variant',
         backgroundTitle: 'Background',
         backgroundNeon: 'Neon',
         backgroundPlain: 'Plain',

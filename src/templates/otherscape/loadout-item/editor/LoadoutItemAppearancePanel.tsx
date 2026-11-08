@@ -1,11 +1,11 @@
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Switch } from '@/components/ui/switch'
 import { useUiText } from '@/i18n/text'
+import { OtherscapeVariantPicker } from '../../shared/OtherscapeVariantPicker'
 import { useOtherscapeLoadoutItemViewStore } from '../hooks'
-import { loadoutItemBackgroundOptions, loadoutItemSections } from '../metadata'
+import { loadoutItemSections } from '../metadata'
 import { PREVIEW_WIDTH_MAX, PREVIEW_WIDTH_MIN } from '../model'
 
 export function LoadoutItemAppearancePanel() {
@@ -17,8 +17,8 @@ export function LoadoutItemAppearancePanel() {
         setAutoHideEmpty,
         previewWidth,
         setPreviewWidth,
-        background,
-        setBackground,
+        variant,
+        setVariant,
         resetViewPrefs,
     } = useOtherscapeLoadoutItemViewStore()
 
@@ -99,36 +99,15 @@ export function LoadoutItemAppearancePanel() {
                 </div>
             </div>
 
-            <div className="space-y-2">
-                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                    {text(
-                        'otherscape:forms.loadoutItem.appearance.backgroundTitle'
-                    )}
-                </p>
-                <RadioGroup
-                    value={background}
-                    onValueChange={(value) =>
-                        setBackground(value as typeof background)
-                    }
-                    className="flex flex-wrap items-center gap-3"
-                >
-                    {loadoutItemBackgroundOptions.map((option) => (
-                        <label
-                            key={option.value}
-                            className="flex cursor-pointer items-center gap-2"
-                        >
-                            <RadioGroupItem
-                                value={option.value}
-                                id={`os-loadout-item-background-${option.value}`}
-                            />
-                            <span className="text-xs">
-                                {text(option.label)}
-                            </span>
-                        </label>
-                    ))}
-                </RadioGroup>
-            </div>
+            <OtherscapeVariantPicker
+                idPrefix="os-loadout-item"
+                heading="otherscape:forms.loadoutItem.appearance.variantTitle"
+                value={variant}
+                onChange={setVariant}
+            />
 
+            {/* No background choice: the catalog row has one ground, the light
+                page, and neither a neon glow nor a flat fill changed it. */}
             <Button
                 type="button"
                 variant="secondary"

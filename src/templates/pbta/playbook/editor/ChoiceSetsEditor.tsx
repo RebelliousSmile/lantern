@@ -3,6 +3,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
+import { useUiText } from '@/i18n/text'
 import { cn } from '@/utils/cn'
 import { ChevronDown, ChevronUp, X } from 'lucide-react'
 import type { ChoiceEntry, ChoiceSet } from '../model'
@@ -49,6 +50,7 @@ function ChoiceEntriesEditor({
     allowAddRemove: boolean
     allowReorder: boolean
 }) {
+    const text = useUiText()
     function updateAt(index: number, entry: ChoiceEntry) {
         onChange(value.map((current, i) => (i === index ? entry : current)))
     }
@@ -91,7 +93,7 @@ function ChoiceEntriesEditor({
                                     })
                                 }
                             >
-                                Ref
+                                {text('pbta:forms.playbook.entry.ref')}
                             </button>
                             <button
                                 type="button"
@@ -110,7 +112,7 @@ function ChoiceEntriesEditor({
                                     })
                                 }
                             >
-                                Inline
+                                {text('pbta:forms.playbook.entry.inline')}
                             </button>
                         </div>
                         <Input
@@ -125,7 +127,9 @@ function ChoiceEntriesEditor({
                                     ),
                                 })
                             }
-                            placeholder="granted"
+                            placeholder={text(
+                                'pbta:forms.playbook.choiceSets.grantedPlaceholder'
+                            )}
                         />
                         <Input
                             className="h-7 w-24 text-xs"
@@ -139,7 +143,9 @@ function ChoiceEntriesEditor({
                                     ),
                                 })
                             }
-                            placeholder="advancement"
+                            placeholder={text(
+                                'pbta:forms.playbook.choiceSets.advancementPlaceholder'
+                            )}
                         />
                         <div className="flex-1" />
                         {allowReorder && (
@@ -148,7 +154,7 @@ function ChoiceEntriesEditor({
                                 variant="ghost"
                                 size="icon-sm"
                                 className="shrink-0"
-                                aria-label="Move up"
+                                aria-label={text('actions.moveUp')}
                                 onClick={() => moveAt(index, -1)}
                             >
                                 <ChevronUp className="h-3.5 w-3.5" />
@@ -160,7 +166,7 @@ function ChoiceEntriesEditor({
                                 variant="ghost"
                                 size="icon-sm"
                                 className="shrink-0"
-                                aria-label="Move down"
+                                aria-label={text('actions.moveDown')}
                                 onClick={() => moveAt(index, 1)}
                             >
                                 <ChevronDown className="h-3.5 w-3.5" />
@@ -172,7 +178,9 @@ function ChoiceEntriesEditor({
                                 variant="ghost"
                                 size="icon-sm"
                                 className="shrink-0"
-                                aria-label="Remove choice"
+                                aria-label={text(
+                                    'pbta:forms.playbook.choiceSets.removeChoice'
+                                )}
                                 onClick={() => removeAt(index)}
                             >
                                 <X className="h-3.5 w-3.5" />
@@ -220,7 +228,7 @@ function ChoiceEntriesEditor({
                         ])
                     }
                 >
-                    Add choice
+                    {text('pbta:forms.playbook.choiceSets.addChoice')}
                 </Button>
             )}
         </div>
@@ -248,6 +256,7 @@ export function ChoiceSetsEditor({
     allowChoiceAddRemove = true,
     allowChoiceReorder = true,
 }: ChoiceSetsEditorProps) {
+    const text = useUiText()
     function updateAt(index: number, entry: ChoiceSet) {
         onChange(value.map((current, i) => (i === index ? entry : current)))
     }
@@ -279,7 +288,7 @@ export function ChoiceSetsEditor({
                                     title: event.target.value,
                                 })
                             }
-                            placeholder="Title"
+                            placeholder={text('fields.title')}
                         />
                         <div className="flex overflow-hidden rounded-md border">
                             <button
@@ -297,7 +306,7 @@ export function ChoiceSetsEditor({
                                     })
                                 }
                             >
-                                Single
+                                {text('pbta:forms.playbook.choiceSets.single')}
                             </button>
                             <button
                                 type="button"
@@ -314,7 +323,7 @@ export function ChoiceSetsEditor({
                                     })
                                 }
                             >
-                                Multi
+                                {text('pbta:forms.playbook.choiceSets.multi')}
                             </button>
                         </div>
                         {allowReorder && (
@@ -323,7 +332,7 @@ export function ChoiceSetsEditor({
                                 variant="ghost"
                                 size="icon-sm"
                                 className="shrink-0"
-                                aria-label="Move up"
+                                aria-label={text('actions.moveUp')}
                                 onClick={() => moveAt(index, -1)}
                             >
                                 <ChevronUp className="h-3.5 w-3.5" />
@@ -335,7 +344,7 @@ export function ChoiceSetsEditor({
                                 variant="ghost"
                                 size="icon-sm"
                                 className="shrink-0"
-                                aria-label="Move down"
+                                aria-label={text('actions.moveDown')}
                                 onClick={() => moveAt(index, 1)}
                             >
                                 <ChevronDown className="h-3.5 w-3.5" />
@@ -347,7 +356,13 @@ export function ChoiceSetsEditor({
                                 variant="ghost"
                                 size="icon-sm"
                                 className="shrink-0"
-                                aria-label={`Remove ${choiceSet.title || 'choice set'}`}
+                                aria-label={text('pbta:forms.shared.remove', {
+                                    name:
+                                        choiceSet.title ||
+                                        text(
+                                            'pbta:forms.shared.names.choiceSet'
+                                        ),
+                                })}
                                 onClick={() => removeAt(index)}
                             >
                                 <X className="h-3.5 w-3.5" />
@@ -365,7 +380,7 @@ export function ChoiceSetsEditor({
                                 description: event.target.value,
                             })
                         }
-                        placeholder="Description"
+                        placeholder={text('fields.description')}
                     />
 
                     <div className="flex items-center gap-3">
@@ -384,7 +399,9 @@ export function ChoiceSetsEditor({
                                 htmlFor={`choice-set-repeatable-${index}`}
                                 className="text-xs"
                             >
-                                Repeatable
+                                {text(
+                                    'pbta:forms.playbook.choiceSets.repeatable'
+                                )}
                             </Label>
                         </div>
                         <Input
@@ -396,13 +413,15 @@ export function ChoiceSetsEditor({
                                     grantOn: event.target.value,
                                 })
                             }
-                            placeholder="Granted on, e.g. creation"
+                            placeholder={text(
+                                'pbta:forms.playbook.choiceSets.grantOnPlaceholder'
+                            )}
                         />
                     </div>
 
                     <div className="grid gap-1">
                         <Label className="text-xs text-muted-foreground">
-                            Choices
+                            {text('pbta:forms.playbook.choiceSets.choices')}
                         </Label>
                         <ChoiceEntriesEditor
                             value={choiceSet.choices}
@@ -423,7 +442,7 @@ export function ChoiceSetsEditor({
                     className="text-xs"
                     onClick={() => onChange([...value, blankChoiceSet()])}
                 >
-                    Add choice set
+                    {text('pbta:forms.playbook.choiceSets.addChoiceSet')}
                 </Button>
             )}
         </div>

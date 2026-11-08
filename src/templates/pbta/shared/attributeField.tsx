@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Textarea } from '@/components/ui/textarea'
+import { useUiText } from '@/i18n/text'
 import type { GameDefinition } from 'schema-pbta'
 import { StringListEditor } from './StringListEditor'
 
@@ -104,6 +105,7 @@ function SegmentTrack({
 
 export function AttributeField(props: AttributeFieldProps) {
     const { id, attribute, value, onChange, readOnly } = props
+    const text = useUiText()
 
     if (!isVisible(attribute, props.isConditionMet)) return null
 
@@ -123,7 +125,7 @@ export function AttributeField(props: AttributeFieldProps) {
                 />
                 {attribute.limited && (
                     <Badge variant="outline" className="text-[0.6rem]">
-                        Limited
+                        {text('pbta:forms.shared.attribute.limited')}
                     </Badge>
                 )}
             </div>
@@ -132,7 +134,7 @@ export function AttributeField(props: AttributeFieldProps) {
                     {attribute.description}
                 </p>
             )}
-            {renderControl(id, attribute, value, onChange, readOnly)}
+            {renderControl(id, attribute, value, onChange, text, readOnly)}
         </div>
     )
 }
@@ -142,6 +144,7 @@ function renderControl(
     attribute: Attribute,
     value: AttributeValue,
     onChange: (value: AttributeValue) => void,
+    text: ReturnType<typeof useUiText>,
     readOnly?: boolean
 ) {
     switch (attribute.type) {
@@ -290,7 +293,9 @@ function renderControl(
                         value={current}
                         onChange={onChange}
                         readOnly={readOnly}
-                        placeholder="Add value and press Enter"
+                        placeholder={text(
+                            'pbta:forms.shared.list.addValuePlaceholder'
+                        )}
                     />
                 )
             return (
@@ -342,7 +347,7 @@ function renderControl(
                     />
                     {attribute.showResults && (
                         <span className="text-xs text-muted-foreground">
-                            Results shown
+                            {text('pbta:forms.shared.attribute.resultsShown')}
                         </span>
                     )}
                 </div>

@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { useUiText, type TranslationKey } from '@/i18n/text'
 import { cn } from '@/utils/cn'
 import { useState } from 'react'
 import {
@@ -11,14 +12,14 @@ import {
 
 type Blank = {
     key: string
-    label: string
-    placeholder: string
+    label: TranslationKey
+    placeholder: TranslationKey
 }
 
 type Gabarit = {
     value: Exclude<MoveTemplate, 'freeform'>
-    label: string
-    summary: string
+    label: TranslationKey
+    summary: TranslationKey
     blanks: [Blank, Blank]
     build: (values: Record<string, string>) => {
         trigger: string
@@ -34,18 +35,20 @@ type Gabarit = {
 const GABARITS: Gabarit[] = [
     {
         value: 'active_shield',
-        label: 'Active Shield',
-        summary: 'A status that defends on its own against one kind of attack.',
+        label: 'city:forms.customMove.templateGuide.activeShield.name',
+        summary: 'city:forms.customMove.templateGuide.activeShield.summary',
         blanks: [
             {
                 key: 'status',
-                label: 'Shield status',
-                placeholder: 'e.g., warded',
+                label: 'city:forms.customMove.templateGuide.activeShield.statusLabel',
+                placeholder:
+                    'city:forms.customMove.templateGuide.activeShield.statusPlaceholder',
             },
             {
                 key: 'threat',
-                label: 'What it defends against',
-                placeholder: 'e.g., a supernatural attack',
+                label: 'city:forms.customMove.templateGuide.activeShield.threatLabel',
+                placeholder:
+                    'city:forms.customMove.templateGuide.activeShield.threatPlaceholder',
             },
         ],
         build: ({ status, threat }) => ({
@@ -60,19 +63,20 @@ const GABARITS: Gabarit[] = [
     },
     {
         value: 'countdown_outcome',
-        label: 'Countdown Outcome',
-        summary:
-            'A recurring situation whose cost rises as a status climbs its tiers.',
+        label: 'city:forms.customMove.templateGuide.countdownOutcome.name',
+        summary: 'city:forms.customMove.templateGuide.countdownOutcome.summary',
         blanks: [
             {
                 key: 'event',
-                label: 'What the players do',
-                placeholder: 'e.g., spend a day in the war-torn city',
+                label: 'city:forms.customMove.templateGuide.countdownOutcome.eventLabel',
+                placeholder:
+                    'city:forms.customMove.templateGuide.countdownOutcome.eventPlaceholder',
             },
             {
                 key: 'status',
-                label: 'Status that counts up',
-                placeholder: 'e.g., war-torn',
+                label: 'city:forms.customMove.templateGuide.countdownOutcome.statusLabel',
+                placeholder:
+                    'city:forms.customMove.templateGuide.countdownOutcome.statusPlaceholder',
             },
         ],
         build: ({ event, status }) => ({
@@ -99,19 +103,20 @@ const GABARITS: Gabarit[] = [
     },
     {
         value: 'starting_status',
-        label: 'Starting Status',
-        summary:
-            'A scene or a situation that hands out a status before anything is rolled.',
+        label: 'city:forms.customMove.templateGuide.startingStatus.name',
+        summary: 'city:forms.customMove.templateGuide.startingStatus.summary',
         blanks: [
             {
                 key: 'situation',
-                label: 'When it applies',
-                placeholder: 'e.g., you enter the flooded district',
+                label: 'city:forms.customMove.templateGuide.startingStatus.situationLabel',
+                placeholder:
+                    'city:forms.customMove.templateGuide.startingStatus.situationPlaceholder',
             },
             {
                 key: 'status',
-                label: 'Status handed out',
-                placeholder: 'e.g., soaked-2',
+                label: 'city:forms.customMove.templateGuide.startingStatus.statusLabel',
+                placeholder:
+                    'city:forms.customMove.templateGuide.startingStatus.statusPlaceholder',
             },
         ],
         build: ({ situation, status }) => ({
@@ -126,18 +131,20 @@ const GABARITS: Gabarit[] = [
     },
     {
         value: 'status_filter',
-        label: 'Status Filter',
-        summary: 'A status that changes what another move is allowed to do.',
+        label: 'city:forms.customMove.templateGuide.statusFilter.name',
+        summary: 'city:forms.customMove.templateGuide.statusFilter.summary',
         blanks: [
             {
                 key: 'status',
-                label: 'Status doing the filtering',
-                placeholder: 'e.g., unseen',
+                label: 'city:forms.customMove.templateGuide.statusFilter.statusLabel',
+                placeholder:
+                    'city:forms.customMove.templateGuide.statusFilter.statusPlaceholder',
             },
             {
                 key: 'effect',
-                label: 'What it blocks or allows',
-                placeholder: 'e.g., no one can target you directly',
+                label: 'city:forms.customMove.templateGuide.statusFilter.effectLabel',
+                placeholder:
+                    'city:forms.customMove.templateGuide.statusFilter.effectPlaceholder',
             },
         ],
         build: ({ status, effect }) => ({
@@ -154,19 +161,20 @@ const GABARITS: Gabarit[] = [
     },
     {
         value: 'status_payload',
-        label: 'Status Payload',
-        summary:
-            'A status that fires something off once it reaches a given tier.',
+        label: 'city:forms.customMove.templateGuide.statusPayload.name',
+        summary: 'city:forms.customMove.templateGuide.statusPayload.summary',
         blanks: [
             {
                 key: 'status',
-                label: 'Status carrying the payload',
-                placeholder: 'e.g., overloaded',
+                label: 'city:forms.customMove.templateGuide.statusPayload.statusLabel',
+                placeholder:
+                    'city:forms.customMove.templateGuide.statusPayload.statusPlaceholder',
             },
             {
                 key: 'payload',
-                label: 'What it does when it goes off',
-                placeholder: 'e.g., it detonates and hits everyone nearby',
+                label: 'city:forms.customMove.templateGuide.statusPayload.payloadLabel',
+                placeholder:
+                    'city:forms.customMove.templateGuide.statusPayload.payloadPlaceholder',
             },
         ],
         build: ({ status, payload }) => ({
@@ -184,6 +192,7 @@ const GABARITS: Gabarit[] = [
 ]
 
 export default function TemplateGuideForm() {
+    const text = useUiText()
     const { cityOfMistCustomMove, setCityOfMistCustomMove } =
         useCityOfMistCustomMoveStore()
     const [picked, setPicked] = useState<Exclude<MoveTemplate, 'freeform'>>(
@@ -215,7 +224,9 @@ export default function TemplateGuideForm() {
     return (
         <div className="space-y-3 rounded-md border border-dashed px-3 py-3">
             <div className="space-y-1">
-                <Label>Start from a Toolkit template</Label>
+                <Label>
+                    {text('city:forms.customMove.templateGuide.label')}
+                </Label>
                 <div className="grid grid-cols-2 overflow-hidden rounded-md border sm:grid-cols-5">
                     {GABARITS.map((entry) => (
                         <Button
@@ -233,12 +244,12 @@ export default function TemplateGuideForm() {
                                 setValues({})
                             }}
                         >
-                            {entry.label}
+                            {text(entry.label)}
                         </Button>
                     ))}
                 </div>
                 <p className="text-xs text-muted-foreground">
-                    {gabarit.summary}
+                    {text(gabarit.summary)}
                 </p>
             </div>
 
@@ -246,7 +257,7 @@ export default function TemplateGuideForm() {
                 {gabarit.blanks.map((blank) => (
                     <div key={blank.key} className="grid gap-1">
                         <Label htmlFor={`move-blank-${blank.key}`}>
-                            {blank.label}
+                            {text(blank.label)}
                         </Label>
                         <Input
                             id={`move-blank-${blank.key}`}
@@ -258,7 +269,7 @@ export default function TemplateGuideForm() {
                                     [blank.key]: event.target.value,
                                 }))
                             }
-                            placeholder={blank.placeholder}
+                            placeholder={text(blank.placeholder)}
                         />
                     </div>
                 ))}
@@ -272,10 +283,10 @@ export default function TemplateGuideForm() {
                     disabled={!filled}
                     onClick={generate}
                 >
-                    Generate trigger and outcomes
+                    {text('city:forms.customMove.templateGuide.generate')}
                 </Button>
                 <p className="text-xs text-muted-foreground">
-                    Overwrites the trigger and the outcomes with editable text.
+                    {text('city:forms.customMove.templateGuide.overwriteHelp')}
                 </p>
             </div>
         </div>

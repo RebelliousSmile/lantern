@@ -15,6 +15,7 @@ import type {
     ObjectDescriptor,
     ScalarKind,
 } from '@/core/editor-schema/types'
+import { useUiText } from '@/i18n/text'
 import { PublishedCollectionEditor } from '@/templates/pbta/specialized/collectionAdapters'
 import {
     collectionItems,
@@ -222,6 +223,8 @@ function MonsterheartsMovesEditor({
     value: MonsterheartsMove[]
     onChange: (next: MonsterheartsMove[]) => void
 }) {
+    const text = useUiText()
+    const { t } = useTranslation()
     function updateAt(index: number, move: MonsterheartsMove) {
         onChange(value.map((current, i) => (i === index ? move : current)))
     }
@@ -247,7 +250,9 @@ function MonsterheartsMovesEditor({
                         <div className="flex items-center gap-1.5">
                             <Checkbox
                                 checked={move.checked === true}
-                                aria-label="Move acquired"
+                                aria-label={text(
+                                    'pbta:forms.playbook.moves.acquired'
+                                )}
                                 onCheckedChange={(checked) =>
                                     updateAt(
                                         index,
@@ -274,7 +279,7 @@ function MonsterheartsMovesEditor({
                                         })
                                     }
                                 >
-                                    Ref
+                                    {text('pbta:forms.playbook.entry.ref')}
                                 </Button>
                                 <Button
                                     type="button"
@@ -290,7 +295,7 @@ function MonsterheartsMovesEditor({
                                         )
                                     }
                                 >
-                                    Inline
+                                    {text('pbta:forms.playbook.entry.inline')}
                                 </Button>
                             </div>
                             <div className="flex-1" />
@@ -298,7 +303,7 @@ function MonsterheartsMovesEditor({
                                 type="button"
                                 variant="ghost"
                                 size="icon-sm"
-                                aria-label="Move up"
+                                aria-label={text('actions.moveUp')}
                                 onClick={() => moveAt(index, -1)}
                             >
                                 <ChevronUp className="h-3.5 w-3.5" />
@@ -307,7 +312,7 @@ function MonsterheartsMovesEditor({
                                 type="button"
                                 variant="ghost"
                                 size="icon-sm"
-                                aria-label="Move down"
+                                aria-label={text('actions.moveDown')}
                                 onClick={() => moveAt(index, 1)}
                             >
                                 <ChevronDown className="h-3.5 w-3.5" />
@@ -316,7 +321,9 @@ function MonsterheartsMovesEditor({
                                 type="button"
                                 variant="ghost"
                                 size="icon-sm"
-                                aria-label="Remove move"
+                                aria-label={text(
+                                    'pbta:forms.playbook.moves.remove'
+                                )}
                                 onClick={() =>
                                     onChange(
                                         value.filter((_, i) => i !== index)
@@ -340,7 +347,7 @@ function MonsterheartsMovesEditor({
                         ) : (
                             <>
                                 <Label>
-                                    Name
+                                    {text('fields.name')}
                                     <Input
                                         value={move.name}
                                         onChange={(event) =>
@@ -352,7 +359,7 @@ function MonsterheartsMovesEditor({
                                     />
                                 </Label>
                                 <Label>
-                                    Type
+                                    {t('pbta:monsterhearts.fields.moveType')}
                                     <Input
                                         value={move.moveType}
                                         onChange={(event) =>
@@ -364,7 +371,7 @@ function MonsterheartsMovesEditor({
                                     />
                                 </Label>
                                 <Label>
-                                    Description
+                                    {text('fields.description')}
                                     <Textarea
                                         value={move.description}
                                         onChange={(event) =>
@@ -386,7 +393,7 @@ function MonsterheartsMovesEditor({
                 size="sm"
                 onClick={() => onChange([...value, blankMove()])}
             >
-                Add move
+                {text('pbta:forms.playbook.moves.add')}
             </Button>
         </div>
     )
@@ -852,7 +859,7 @@ function MonsterheartsCollection({
     if (!presentation || !items)
         return (
             <p className="text-sm text-destructive">
-                Invalid published collection configuration.
+                {t('pbta:monsterhearts.errors.invalidCollection')}
             </p>
         )
     const collectionLabels = {
