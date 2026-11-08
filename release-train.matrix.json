@@ -2,7 +2,7 @@
     "protocol": 1,
     "handbook": {
         "repository": "RebelliousSmile/obsidian-handbook",
-        "ref": "e71f7730008d26b2113fe64541086ea8550b813b"
+        "ref": "1895d4b5e0454695ab89d3c01fb8f5920e9f48a4"
     },
     "providers": [
         {
@@ -110,7 +110,7 @@
         {
             "provider": "schema-in-the-mist",
             "repository": "RebelliousSmile/schema-in-the-mist",
-            "ref": "c1ad5551b8521dea050e8e9bab70c0e5fc9c9f2e",
+            "ref": "c52a0fbbdf7a34190a60288867bb8b3d6db0cf0e",
             "manifests": [
                 {
                     "path": "release-trains/v1.3.5.json",
@@ -123,6 +123,10 @@
                 {
                     "path": "release-trains/v1.5.0.json",
                     "validatorRef": "c1ad5551b8521dea050e8e9bab70c0e5fc9c9f2e"
+                },
+                {
+                    "path": "release-trains/v1.6.0.json",
+                    "validatorRef": "c52a0fbbdf7a34190a60288867bb8b3d6db0cf0e"
                 }
             ]
         }
