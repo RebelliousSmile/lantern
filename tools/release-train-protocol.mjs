@@ -108,3 +108,46 @@ export function selectLanternFinalConsumer(raw, cwd = process.cwd()) {
     assert.equal(head.stdout.trim(), lantern.ref, 'final manifest Lantern ref does not match checked-out HEAD')
     return { artifact, consumer: lantern }
 }
+
+/**
+ * The candidate manifest schema-in-the-mist writes into each consumer checkout:
+ * `{ candidate, consumer }`, the consumer being Lantern at the checked-out HEAD.
+ */
+export function selectLanternMistCandidate(raw, cwd = process.cwd()) {
+    const value = object(raw, 'Mist candidate manifest')
+    exactKeys(value, ['candidate', 'consumer'], 'Mist candidate manifest')
+    const source = object(value.candidate, 'candidate')
+    exactKeys(source, ['packageName', 'releaseUrl', 'finalTag', 'sha256', 'integrity'], 'candidate')
+    assert.equal(source.packageName, 'schema-in-the-mist', 'candidate.packageName must be schema-in-the-mist')
+    assert.match(text(source.finalTag, 'candidate.finalTag'), /^v\d+\.\d+\.\d+$/, 'candidate.finalTag must be a SemVer tag')
+    const version = source.finalTag.slice(1)
+    assert.match(text(source.sha256, 'candidate.sha256'), SHA256, 'candidate.sha256 must be SHA-256')
+    assert.match(text(source.integrity, 'candidate.integrity'), SRI, 'candidate.integrity must be SHA-512 SRI')
+    const releaseUrl = new URL(text(source.releaseUrl, 'candidate.releaseUrl'))
+    assert.equal(releaseUrl.protocol, 'https:', 'candidate.releaseUrl must use HTTPS')
+    assert.equal(releaseUrl.hostname, 'github.com', 'candidate.releaseUrl must use GitHub')
+    assert.equal(releaseUrl.port, '', 'candidate.releaseUrl must not specify a port')
+    assert.equal(releaseUrl.username, '', 'candidate.releaseUrl must not carry credentials')
+    assert.equal(releaseUrl.password, '', 'candidate.releaseUrl must not carry credentials')
+    assert.equal(releaseUrl.search, '', 'candidate.releaseUrl must not carry a signed query')
+    assert.equal(releaseUrl.hash, '', 'candidate.releaseUrl must not carry a fragment')
+    const [empty, owner, repository, releases, download, stagingTag, file, ...rest] = releaseUrl.pathname.split('/')
+    const stagePrefix = `v${version}-rc.`
+    const staged = typeof stagingTag === 'string' && stagingTag.startsWith(stagePrefix) && /^\d+$/.test(stagingTag.slice(stagePrefix.length))
+    assert.ok(
+        empty === '' && owner === 'RebelliousSmile' && repository === 'schema-in-the-mist' && releases === 'releases' && download === 'download' && staged && file === `schema-in-the-mist-${version}.tgz` && rest.length === 0,
+        'candidate.releaseUrl must name the staged Mist candidate archive'
+    )
+    const lantern = object(value.consumer, 'consumer')
+    exactKeys(lantern, ['role', 'repository', 'ref'], 'consumer')
+    assert.equal(lantern.role, 'lantern', 'consumer.role must be lantern')
+    assert.equal(lantern.repository, REPOSITORIES.lantern, 'consumer has the wrong repository')
+    assert.match(text(lantern.ref, 'consumer.ref'), COMMIT, 'consumer.ref must be a full commit SHA')
+    const head = spawnSync('git', ['rev-parse', 'HEAD'], { cwd, encoding: 'utf8' })
+    assert.equal(head.status, 0, 'could not resolve checked-out Lantern HEAD')
+    assert.equal(head.stdout.trim(), lantern.ref, 'Mist candidate manifest Lantern ref does not match checked-out HEAD')
+    return {
+        candidate: { provider: source.packageName, releaseUrl: source.releaseUrl, sha256: source.sha256, integrity: source.integrity, version },
+        consumer: { role: lantern.role, repository: lantern.repository, ref: lantern.ref },
+    }
+}

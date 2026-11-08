@@ -6,7 +6,7 @@ import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { selectLanternConsumer, selectLanternFinalConsumer } from './release-train-protocol.mjs'
+import { selectLanternConsumer, selectLanternFinalConsumer, selectLanternMistCandidate } from './release-train-protocol.mjs'
 
 const root = process.cwd()
 const checks = []
@@ -229,6 +229,24 @@ function exactKeys(value, keys, label) {
     }
 }
 
+/** The evidence schema-in-the-mist reads back from each consumer of its candidate. */
+export function mistEvidence({ candidate, consumer, installed }) {
+    return {
+        status: 'passed',
+        artifact: {
+            releaseUrl: candidate.releaseUrl,
+            sha256: candidate.sha256,
+            integrity: candidate.integrity,
+            version: installed.version,
+        },
+        consumer: {
+            role: consumer.role,
+            repository: consumer.repository,
+            ref: consumer.ref,
+        },
+    }
+}
+
 export function assertEvidenceShape(evidence) {
     exactKeys(
         evidence,
@@ -321,7 +339,13 @@ async function main() {
     const evidencePath = `${manifestPath}.evidence.json`
     const input = JSON.parse(readFileSync(manifestPath, 'utf8'))
     const finalProof = input.protocol === 2
-    const selection = finalProof ? selectLanternFinalConsumer(input, root) : selectLanternConsumer(input, root)
+    // schema-in-the-mist proves its candidate with its own manifest shape: `{ candidate, consumer }`.
+    const mistProof = input.protocol === undefined && input.candidate?.packageName === 'schema-in-the-mist'
+    const selection = finalProof
+        ? selectLanternFinalConsumer(input, root)
+        : mistProof
+          ? selectLanternMistCandidate(input, root)
+          : selectLanternConsumer(input, root)
     const candidate = finalProof ? selection.artifact : selection.candidate
     const consumer = selection.consumer
     const journey = providerJourney(candidate.provider)
@@ -360,7 +384,9 @@ async function main() {
         run(command.command, command.args, command.check)
     assertRepositoryUnchanged(before)
 
-    const evidence = finalProof
+    const evidence = mistProof
+        ? mistEvidence({ candidate, consumer, installed })
+        : finalProof
         ? {
               protocol: 2,
               status: 'passed',

@@ -13,6 +13,7 @@ import {
     assertFinalEvidenceShape,
     createEvidence,
     frozenInstallCommand,
+    mistEvidence,
     packageResolution,
     providerJourney,
 } from './release-train-assert.mjs'
@@ -20,6 +21,7 @@ import {
     parseProtocolOne,
     selectLanternConsumer,
     selectLanternFinalConsumer,
+    selectLanternMistCandidate,
 } from './release-train-protocol.mjs'
 
 const head = spawnSync('git', ['rev-parse', 'HEAD'], {
@@ -185,6 +187,74 @@ assert.deepEqual(parseProtocolOne({ ...manifest, candidate: mistCandidate }), {
 assert.deepEqual(
     selectLanternConsumer({ ...manifest, candidate: mistCandidate }),
     { candidate: mistCandidate, consumer: manifest.consumers[0] }
+)
+// schema-in-the-mist writes its own candidate manifest into the Lantern checkout.
+const mistManifest = {
+    candidate: {
+        packageName: 'schema-in-the-mist',
+        releaseUrl:
+            'https://github.com/RebelliousSmile/schema-in-the-mist/releases/download/v1.4.0-rc.1/schema-in-the-mist-1.4.0.tgz',
+        finalTag: 'v1.4.0',
+        sha256: 'a'.repeat(64),
+        integrity: pbtaCandidate.integrity,
+    },
+    consumer: {
+        role: 'lantern',
+        repository: 'RebelliousSmile/lantern',
+        ref: head,
+    },
+}
+const mistSelection = selectLanternMistCandidate(mistManifest)
+assert.deepEqual(mistSelection, {
+    candidate: {
+        provider: 'schema-in-the-mist',
+        releaseUrl: mistManifest.candidate.releaseUrl,
+        sha256: mistManifest.candidate.sha256,
+        integrity: mistManifest.candidate.integrity,
+        version: '1.4.0',
+    },
+    consumer: mistManifest.consumer,
+})
+assert.throws(
+    () =>
+        selectLanternMistCandidate({
+            ...mistManifest,
+            consumer: { ...mistManifest.consumer, role: 'handbook' },
+        }),
+    /consumer.role must be lantern/
+)
+assert.throws(
+    () =>
+        selectLanternMistCandidate({
+            ...mistManifest,
+            consumer: { ...mistManifest.consumer, ref: 'c'.repeat(40) },
+        }),
+    /does not match checked-out HEAD/
+)
+assert.throws(
+    () =>
+        selectLanternMistCandidate({
+            ...mistManifest,
+            candidate: { ...mistManifest.candidate, finalTag: 'v1.4.1' },
+        }),
+    /staged Mist candidate archive/
+)
+assert.throws(
+    () => selectLanternMistCandidate({ ...mistManifest, protocol: 1 }),
+    /unexpected or missing fields/
+)
+assert.deepEqual(
+    mistEvidence({ ...mistSelection, installed: { version: '1.4.0' } }),
+    {
+        status: 'passed',
+        artifact: {
+            releaseUrl: mistManifest.candidate.releaseUrl,
+            sha256: mistManifest.candidate.sha256,
+            integrity: mistManifest.candidate.integrity,
+            version: '1.4.0',
+        },
+        consumer: mistManifest.consumer,
+    }
 )
 assert.deepEqual(frozenInstallCommand('isolated-store'), {
     command: 'npx',
