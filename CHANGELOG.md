@@ -7,6 +7,12 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [v0.29.3] - 2026-11-08
+
+### Changed
+
+- Adopts the schema-in-the-mist release that projects the Otherscape variants (Cairo, Tokyo, Metro) and publishes the Otherscape callouts; Lantern's previews are unchanged (obsidian-handbook#121).
+
 ## [v0.29.2] - 2026-10-20
 
 ### Changed
