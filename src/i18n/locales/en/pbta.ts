@@ -124,6 +124,12 @@ const pbta = {
             harmBox: 'Harm {{index}}',
             advances: 'Advances',
         },
+        terms: {
+            hot: 'Hot',
+            cold: 'Cold',
+            volatile: 'Volatile',
+            dark: 'Dark',
+        },
         portrait: 'Portrait of {{name}}',
         errors: {
             invalidCollection: 'Invalid published collection configuration.',

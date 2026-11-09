@@ -89,7 +89,7 @@ Conventions :
 | Advances | Avancées (f. pl.) | Actuel. Coexiste avec « Progression » (Advancement) dans la même liste de sections. |
 | Harm | Dégâts (m. pl.) | VF officielle validée (2026-11-08), ne pas modifier. |
 | MC guidance | Conseils au MC | Donnée d’en-tête éditorial. |
-| Hot, Cold, Volatile, Dark | Ardent, Froid, Instable, Sombre | Données du document. À confirmer (VF officielle ?). |
+| Hot, Cold, Volatile, Dark | Sexy, Glacial, Impulsif, Ténébreux | VF officielle (mue La Selkie, définition de jeu `monsterhearts.toml`). Clés `pbta:monsterhearts.terms.*`, petites capitales dans la fiche. |
 
 ## The Sprawl
 

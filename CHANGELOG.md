@@ -17,6 +17,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - Monsterhearts and Urban Shadows playbook previews are dressed by the host-neutral `playbook.css` published by schema-pbta, the sheet Handbook reads too; the local themes are removed (#76).
 - Monsterhearts playbook preview emits the same DOM as Handbook (sections, move cards, identity lines, strings and conditions, advances, harm), and its regions are buttons only while editing.
+- Monsterhearts playbook preview names the stats in the interface language (Sexy, Glacial, Impulsif, Ténébreux in French, the words of the French edition); strings and conditions sit in one framed area, each condition on one line with its name in bold.
 - Urban Shadows playbook preview groups its regions by face (recto, verso), as Handbook does.
 - The Monsterhearts sample is La Selkie, the skin of schema-pbta's example, so Lantern, Obsidian and the booklet PDF compare one playbook.
 

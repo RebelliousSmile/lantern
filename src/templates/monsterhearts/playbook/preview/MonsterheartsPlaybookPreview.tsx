@@ -122,6 +122,12 @@ const Box = ({ checked, label }: { checked: boolean; label: string }) => (
     <input type="checkbox" checked={checked} aria-label={label} readOnly />
 )
 
+/** Stats are keys of the document; the interface language names the published ones. */
+const STAT_TERMS = ['hot', 'cold', 'volatile', 'dark'] as const
+type StatTerm = (typeof STAT_TERMS)[number]
+const isStatTerm = (key: string): key is StatTerm =>
+    (STAT_TERMS as readonly string[]).includes(key)
+
 const Row = ({ label, value }: { label: string; value: string | number }) => (
     <div className="handbook-monsterhearts-row">
         <dt>{label}</dt>
@@ -327,7 +333,15 @@ export function MonsterheartsPlaybookPreview() {
         const list = (values: Record<string, number>, key: number) => (
             <dl key={key}>
                 {Object.keys(values).map((name) => (
-                    <Row key={name} label={name} value={values[name]} />
+                    <Row
+                        key={name}
+                        label={
+                            isStatTerm(name)
+                                ? t(`pbta:monsterhearts.terms.${name}`)
+                                : name
+                        }
+                        value={values[name]}
+                    />
                 ))}
             </dl>
         )
@@ -410,26 +424,27 @@ export function MonsterheartsPlaybookPreview() {
                         )}
                     </>
                 ) : null}
-                {showConditions && !playbook.conditions.length ? (
+                {showConditions ? (
                     <>
                         <h4 {...openConditions}>
                             {t('pbta:monsterhearts.sections.conditions')}
                         </h4>
-                        {empty('conditions')}
+                        {/* One line per condition, its name in bold, as Handbook renders it. */}
+                        {playbook.conditions.length
+                            ? playbook.conditions.map((condition, index) => (
+                                  <p
+                                      key={`${condition.name}-${index}`}
+                                      {...openConditions}
+                                  >
+                                      <strong>{condition.name}</strong>
+                                      {condition.description ? (
+                                          <span>{` : ${condition.description}`}</span>
+                                      ) : null}
+                                  </p>
+                              ))
+                            : empty('conditions')}
                     </>
                 ) : null}
-                {showConditions
-                    ? playbook.conditions.map((condition, index) => (
-                          <Fragment key={`${condition.name}-${index}`}>
-                              <h4 {...openConditions}>{condition.name}</h4>
-                              {condition.description ? (
-                                  <p {...openConditions}>
-                                      {condition.description}
-                                  </p>
-                              ) : null}
-                          </Fragment>
-                      ))
-                    : null}
             </>,
             getMonsterheartsRegionLabel(id)
         )

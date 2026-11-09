@@ -126,6 +126,13 @@ const pbta: ResourceShape<typeof en> = {
             harmBox: 'Dégât {{index}}',
             advances: 'Avancées',
         },
+        /* Words of the French edition (booklet La Selkie). */
+        terms: {
+            hot: 'Sexy',
+            cold: 'Glacial',
+            volatile: 'Impulsif',
+            dark: 'Ténébreux',
+        },
         portrait: 'Portrait de {{name}}',
         errors: {
             invalidCollection: 'Configuration de collection publiée invalide.',
