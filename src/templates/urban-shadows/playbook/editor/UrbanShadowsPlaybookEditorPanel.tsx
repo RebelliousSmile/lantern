@@ -216,6 +216,7 @@ export function UrbanShadowsPlaybookEditorPanel() {
     /* Fields with a published collection presentation, or more than one part, have their own editor. */
     const custom: Record<string, () => ReactNode> = {
         moves: () => <UrbanCollection path="moves" />,
+        advancementCircles: () => <AdvancementCirclesEditor />,
         advancement: () => <UrbanCollection path="advancement" />,
         corruption: () => (
             <>
@@ -278,6 +279,59 @@ export function UrbanShadowsPlaybookEditorPanel() {
                 )
             })}
         </div>
+    )
+}
+
+/**
+ * The circles printed on the advancement track, ticked among the Circles: the
+ * game's four, then any other circle the document already names. The list is
+ * written back in that order, which is the printed one. This edits the
+ * structure of the sheet, not the marks made in play: the contract carries no
+ * play state for them yet (schema-pbta#51).
+ */
+function AdvancementCirclesEditor() {
+    const text = useUiText() as Text
+    const { playbook, setPlaybook } = useUrbanShadowsPlaybookStore()
+    const selected = playbook.advancementCircles ?? []
+    const options = [
+        ...new Set([
+            ...CIRCLES,
+            ...Object.keys(playbook.statuses ?? {}),
+            ...selected,
+        ]),
+    ]
+    const label = (key: string) =>
+        CIRCLES.includes(key)
+            ? text(`pbta:urbanShadows.terms.${key}` as TranslationKey)
+            : key
+    const toggle = (key: string, on: boolean) => {
+        const next = options.filter((option) =>
+            option === key ? on : selected.includes(option)
+        )
+        setPlaybook({ advancementCircles: next })
+    }
+    return (
+        <fieldset className="space-y-2 rounded-md border p-3">
+            <legend className="px-1 text-sm font-medium">
+                {text('pbta:urbanShadows.fields.advancementCircles')}
+            </legend>
+            <div className="flex flex-wrap gap-x-4 gap-y-2">
+                {options.map((key) => (
+                    <div key={key} className="flex items-center gap-2">
+                        <Checkbox
+                            id={`advancement-circle-${key}`}
+                            checked={selected.includes(key)}
+                            onCheckedChange={(next) =>
+                                toggle(key, next === true)
+                            }
+                        />
+                        <Label htmlFor={`advancement-circle-${key}`}>
+                            {label(key)}
+                        </Label>
+                    </div>
+                ))}
+            </div>
+        </fieldset>
     )
 }
 

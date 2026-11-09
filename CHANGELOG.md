@@ -19,6 +19,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Monsterhearts playbook preview emits the same DOM as Handbook (sections, move cards, identity lines, strings and conditions, advances, harm), and its regions are buttons only while editing.
 - Monsterhearts playbook preview names the stats in the interface language (Sexy, Glacial, Impulsif, Ténébreux in French, the words of the French edition); strings and conditions sit in one framed area, each condition on one line with its name in bold.
 - Urban Shadows playbook preview groups its regions by face (recto, verso), as Handbook does.
+- Urban Shadows playbook editor: the circles printed on the advancement track are ticked among the Circles, on one line, instead of typed one by one, and the field reads "Circles on the advancement track"; the printed order is kept. It edits the sheet, not the marks made in play, which the contract does not carry yet (schema-pbta#51). The editorial frames of the Urban Shadows editor are named instead of showing a raw translation key.
 - The Monsterhearts sample is La Selkie, the skin of schema-pbta's example, so Lantern, Obsidian and the booklet PDF compare one playbook.
 
 ## [v0.31.1] - 2026-11-09
