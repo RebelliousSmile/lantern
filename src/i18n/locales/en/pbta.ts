@@ -112,6 +112,18 @@ const pbta = {
             addPlay: 'Add “Playing the X”',
             removePlay: 'Remove “Playing the X”',
         },
+        preview: {
+            fieldLabel: '{{label}}:',
+            backstory: 'Backstory',
+            portraitMissing: 'Portrait to add',
+            moveAcquired: 'Acquired move',
+            moveNotAcquired: 'Move not acquired',
+            roll: 'Roll: {{roll}}',
+            result: '{{label}}: ',
+            strings: '{{starting}} to start · {{max}} maximum',
+            harmBox: 'Harm {{index}}',
+            advances: 'Advances',
+        },
         portrait: 'Portrait of {{name}}',
         errors: {
             invalidCollection: 'Invalid published collection configuration.',

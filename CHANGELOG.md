@@ -7,6 +7,19 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [v0.32.0] - 2026-11-09
+
+### Added
+
+- `assert:pbta-playbook-styles`: the Monsterhearts and Urban Shadows previews keep no local theme, import the pack's published `playbook.css`, and carry every class and region hook it targets.
+
+### Changed
+
+- Monsterhearts and Urban Shadows playbook previews are dressed by the host-neutral `playbook.css` published by schema-pbta, the sheet Handbook reads too; the local themes are removed (#76).
+- Monsterhearts playbook preview emits the same DOM as Handbook (sections, move cards, identity lines, strings and conditions, advances, harm), and its regions are buttons only while editing.
+- Urban Shadows playbook preview groups its regions by face (recto, verso), as Handbook does.
+- The Monsterhearts sample is La Selkie, the skin of schema-pbta's example, so Lantern, Obsidian and the booklet PDF compare one playbook.
+
 ## [v0.31.1] - 2026-11-09
 
 ### Changed

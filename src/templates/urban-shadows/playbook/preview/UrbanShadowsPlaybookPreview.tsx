@@ -5,6 +5,8 @@ import brushFontUrl from 'schema-pbta/packs/urban-shadows/assets/fonts/caveat-br
 import displayFontUrl from 'schema-pbta/packs/urban-shadows/assets/fonts/league-gothic-latin-400-normal.woff2'
 import textFontUrl from 'schema-pbta/packs/urban-shadows/assets/fonts/source-serif-4-latin-400-normal.woff2'
 import textBoldFontUrl from 'schema-pbta/packs/urban-shadows/assets/fonts/source-serif-4-latin-700-normal.woff2'
+import 'schema-pbta/packs/urban-shadows/assets/styles/playbook.css'
+import '../../../pbta/preview/playbookRegionInteraction.css'
 import {
     useUrbanShadowsPlaybookStore,
     useUrbanShadowsSheetStore,
@@ -17,7 +19,6 @@ import {
     type RegionId,
     type UrbanShadowsPlaybook,
 } from '../model'
-import './urbanShadowsPlaybookTheme.css'
 
 /** Pips under a Circle: the printed sheet shows three. */
 const STATUS_PIPS = 3
@@ -556,44 +557,71 @@ export function UrbanShadowsPlaybookPreview() {
             </section>
         )
     }
+    /* Regions are grouped by the face the contract gives them (recto, verso),
+       as Handbook's renderUrbanShadowsLayout does: each face is one printed page. */
+    type Face = NonNullable<ReturnType<typeof regionById>>['group']
+    const faceOf = (id: RegionId): Face => regionById(id)?.group ?? 'recto'
+    const faces: { face: Face; children: ReactNode[] }[] = []
+    const into = (face: Face, child: ReactNode) => {
+        let entry = faces.find((candidate) => candidate.face === face)
+        if (!entry) {
+            entry = { face, children: [] }
+            faces.push(entry)
+        }
+        entry.children.push(child)
+    }
     const placed = new Set<RegionId>(['game-identity'])
-    for (const columns of presentation.rows)
+    const identity = region('game-identity')
+    if (identity) into(faceOf('game-identity'), identity)
+    presentation.rows.forEach((columns, rowIndex) => {
         for (const ids of columns) for (const id of ids) placed.add(id)
+        into(
+            faceOf(columns[0][0]),
+            <div
+                key={`row-${rowIndex}`}
+                className="handbook-urban-shadows-layout-row"
+                data-row={rowIndex + 1}
+            >
+                {columns.map((ids, columnIndex) => (
+                    <div
+                        key={columnIndex}
+                        className="handbook-urban-shadows-column"
+                        data-column={columnIndex + 1}
+                    >
+                        {ids.map(region)}
+                    </div>
+                ))}
+            </div>
+        )
+    })
+    /* Regions the contract leaves out of every row follow in canonical order. */
+    for (const id of presentation.canonicalOrder) {
+        if (placed.has(id)) continue
+        const content = region(id)
+        if (content) into(faceOf(id), content)
+    }
 
     return (
-        <div className="urban-shadows-doc">
+        <>
             <style>{fontFaces}</style>
             <article
-                className="handbook-urban-shadows-playbook"
+                className="handbook-pbta-playbook handbook-urban-shadows-playbook"
                 style={{
                     ...tokens,
                     transform: `scale(${view.zoom})`,
                     transformOrigin: 'top left',
                 }}
             >
-                {region('game-identity')}
-                {presentation.rows.map((columns, rowIndex) => (
+                {faces.map(({ face, children }) => (
                     <div
-                        key={rowIndex}
-                        className="handbook-urban-shadows-layout-row"
-                        data-row={rowIndex + 1}
+                        key={face}
+                        className="handbook-urban-shadows-face"
+                        data-face={face}
                     >
-                        {columns.map((ids, columnIndex) => (
-                            <div
-                                key={columnIndex}
-                                className="handbook-urban-shadows-column"
-                                data-column={columnIndex + 1}
-                            >
-                                {ids.map(region)}
-                            </div>
-                        ))}
+                        {children}
                     </div>
                 ))}
-                {/* Regions the contract leaves out of every row follow in canonical order. */}
-                {presentation.canonicalOrder
-                    .filter((id) => !placed.has(id))
-                    .map(region)}
             </article>
-        </div>
+        </>
     )
 }

@@ -1,0 +1,19 @@
+/*
+ * Editing affordance of the PbtaPlaybook previews that read the stylesheet
+ * schema-pbta publishes (Monsterhearts, Urban Shadows). It only says that a
+ * region can be clicked: no font, no background, no geometry, which all come
+ * from the published `playbook.css`.
+ */
+:is(.handbook-monsterhearts-playbook, .handbook-urban-shadows-playbook)
+    :is([data-region][role='button'], [data-region] [role='button']) {
+    cursor: pointer;
+}
+
+:is(.handbook-monsterhearts-playbook, .handbook-urban-shadows-playbook)
+    :is([data-region][role='button'], [data-region] [role='button']):is(
+        :hover,
+        :focus-visible
+    ) {
+    outline: 1px dashed currentColor;
+    outline-offset: 2px;
+}

@@ -114,6 +114,18 @@ const pbta: ResourceShape<typeof en> = {
             addPlay: 'Ajouter « Jouer la X »',
             removePlay: 'Retirer « Jouer la X »',
         },
+        preview: {
+            fieldLabel: '{{label}} :',
+            backstory: 'Histoire personnelle',
+            portraitMissing: 'Portrait à ajouter',
+            moveAcquired: 'Action acquise',
+            moveNotAcquired: 'Action non acquise',
+            roll: 'Jet : {{roll}}',
+            result: '{{label}} : ',
+            strings: '{{starting}} au départ · {{max}} maximum',
+            harmBox: 'Dégât {{index}}',
+            advances: 'Avancées',
+        },
         portrait: 'Portrait de {{name}}',
         errors: {
             invalidCollection: 'Configuration de collection publiée invalide.',

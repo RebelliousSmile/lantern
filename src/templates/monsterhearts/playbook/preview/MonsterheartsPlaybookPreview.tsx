@@ -1,4 +1,10 @@
-import type { CSSProperties, ReactNode } from 'react'
+import {
+    Fragment,
+    type CSSProperties,
+    type KeyboardEvent,
+    type MouseEvent,
+    type ReactNode,
+} from 'react'
 import { useTranslation } from 'react-i18next'
 import {
     PBTA_MONSTERHEARTS_APPEARANCE,
@@ -12,19 +18,26 @@ import elMessiriUrl from 'schema-pbta/packs/monsterhearts/assets/fonts/el-messir
 import elMessiriBoldUrl from 'schema-pbta/packs/monsterhearts/assets/fonts/el-messiri-latin-700-normal.woff2'
 import imFellDoublePicaUrl from 'schema-pbta/packs/monsterhearts/assets/fonts/im-fell-double-pica-latin-400-italic.woff2'
 import yellowMagicianUrl from 'schema-pbta/packs/monsterhearts/assets/fonts/yellow-magician-latin-400-normal.woff2'
-import gameMarkUrl from 'schema-pbta/packs/monsterhearts/assets/images/thorn-heart.svg?url&no-inline'
+import 'schema-pbta/packs/monsterhearts/assets/styles/playbook.css'
 import { PBTA_MONSTERHEARTS_APPEARANCE_ASSET_URLS } from 'schema-pbta/presentation/monsterhearts-appearance-assets'
+import '../../../pbta/preview/playbookRegionInteraction.css'
 import {
     useMonsterheartsSheet,
     useMonsterheartsStore,
     useMonsterheartsView,
 } from '../hooks'
-import './monsterheartsPlaybookTheme.css'
+import type { MonsterheartsPlaybook, SectionId } from '../model'
 
-export const getMoveHeart = (checked: boolean) => (checked ? '♥' : '♡')
+/*
+ * Lantern emits the DOM of Handbook's Monsterhearts block
+ * (`obsidian-handbook/src/features/pbta/monsterheartsLayout.ts`): the same
+ * elements, classes and `data-region`, so that the stylesheet schema-pbta
+ * publishes (`packs/monsterhearts/assets/styles/playbook.css`) dresses both
+ * hosts alike. No dressing value is set here.
+ */
 
-export const getAdvanceCheckClass = (checked: boolean | undefined) =>
-    checked ? 'is-checked' : undefined
+type MoveEntry = MonsterheartsPlaybook['moves'][number]
+type Panel = SectionId | 'basic'
 
 const viteAssetUrls = new Map([
     [
@@ -44,7 +57,6 @@ const viteAssetUrls = new Map([
         PBTA_MONSTERHEARTS_APPEARANCE_ASSET_URLS.fonts['IM Fell Double Pica'],
         imFellDoublePicaUrl,
     ],
-    [PBTA_MONSTERHEARTS_APPEARANCE_ASSET_URLS.assets['game-mark'], gameMarkUrl],
 ])
 
 function viteAssetUrl(publishedUrl: string) {
@@ -68,6 +80,7 @@ const fontFaces = [
     { family: 'IM Fell Double Pica', weight: '400', style: 'italic' },
 ] as const
 
+/** `game-identity` is never placed: the name sits under the portrait, as in Handbook. */
 export function getMonsterheartsRegionLayout(
     presentation: PbtaMonsterheartsPlaybookPresentation = PBTA_MONSTERHEARTS_PLAYBOOK_PRESENTATION
 ) {
@@ -88,21 +101,111 @@ export const getMonsterheartsRegionLabel = (
     presentation: PbtaMonsterheartsPlaybookPresentation = PBTA_MONSTERHEARTS_PLAYBOOK_PRESENTATION
 ) => presentation.regions.find((region) => region.id === id)?.label ?? id
 
-function EditorialBlock({
-    block,
-    onClick,
+function foldText(value: string) {
+    return value.toLocaleLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
+}
+
+/** A creation question is already in the booklet prose when most of its options appear there. */
+function coveredByParagraphs(options: string[], paragraphs: readonly string[]) {
+    if (options.length < 2) return false
+    const text = foldText(paragraphs.join(' '))
+    const found = options.filter((option) =>
+        text.includes(foldText(option))
+    ).length
+    return found * 2 >= options.length
+}
+
+/** A blank to fill in at the table: the page shows no choices, only room to write. */
+const Fill = () => <span className="handbook-monsterhearts-fill" />
+
+const Box = ({ checked, label }: { checked: boolean; label: string }) => (
+    <input type="checkbox" checked={checked} aria-label={label} readOnly />
+)
+
+const Row = ({ label, value }: { label: string; value: string | number }) => (
+    <div className="handbook-monsterhearts-row">
+        <dt>{label}</dt>
+        <dd>{String(value)}</dd>
+    </div>
+)
+
+function formatRoll(roll: { rollType: string; rollMod?: number }) {
+    if (roll.rollMod === undefined) return roll.rollType
+    return `${roll.rollType} ${roll.rollMod >= 0 ? '+' : ''}${roll.rollMod}`
+}
+
+function MoveCard({
+    move,
+    startingMoves,
 }: {
-    block: { heading: string; paragraphs: string[] }
-    onClick: () => void
+    move: MoveEntry
+    startingMoves: readonly string[]
 }) {
+    const { t } = useTranslation()
+    const acquired =
+        move.checked ?? ('ref' in move && startingMoves.includes(move.ref))
+    const roll =
+        'ref' in move || !move.roll
+            ? null
+            : t('pbta:monsterhearts.preview.roll', {
+                  roll: formatRoll(move.roll),
+              })
     return (
-        <button type="button" className="mh-editorial" onClick={onClick}>
-            <h2>{block.heading}</h2>
-            {block.paragraphs.map((paragraph, index) => (
-                <p key={`${paragraph}-${index}`}>{paragraph}</p>
-            ))}
-        </button>
+        <article
+            className="handbook-monsterhearts-move"
+            data-acquired={String(acquired)}
+        >
+            <h4>
+                <span
+                    className="handbook-monsterhearts-move-symbol"
+                    aria-label={t(
+                        acquired
+                            ? 'pbta:monsterhearts.preview.moveAcquired'
+                            : 'pbta:monsterhearts.preview.moveNotAcquired'
+                    )}
+                />
+                <span>{'ref' in move ? move.ref : move.name}</span>
+            </h4>
+            {'ref' in move ? null : (
+                <>
+                    <p>{move.description}</p>
+                    {move.trigger ? <p>{move.trigger}</p> : null}
+                    {move.choices ? <p>{move.choices}</p> : null}
+                    {roll ? <p>{roll}</p> : null}
+                    {move.results
+                        ? Object.entries(move.results).map(([key, result]) => (
+                              <p key={key}>
+                                  <strong>
+                                      {t('pbta:monsterhearts.preview.result', {
+                                          label: result.label,
+                                      })}
+                                  </strong>
+                                  <span>{result.text}</span>
+                              </p>
+                          ))
+                        : null}
+                </>
+            )}
+        </article>
     )
+}
+
+/** Opens a panel from an element inside a region, without opening the region's own panel. */
+function innerTrigger(editing: boolean, open: () => void) {
+    if (!editing) return {}
+    return {
+        role: 'button',
+        tabIndex: 0,
+        onClick: (event: MouseEvent) => {
+            event.stopPropagation()
+            open()
+        },
+        onKeyDown: (event: KeyboardEvent) => {
+            if (event.key !== 'Enter') return
+            event.stopPropagation()
+            open()
+        },
+    }
 }
 
 export function MonsterheartsPlaybookPreview() {
@@ -110,294 +213,356 @@ export function MonsterheartsPlaybookPreview() {
     const { open, editing } = useMonsterheartsSheet()
     const view = useMonsterheartsView()
     const { t } = useTranslation()
-    const isVisible = (id: keyof typeof view.hidden) => !view.hidden[id]
+    const isVisible = (id: SectionId) => !view.hidden[id]
     const { editorial } = playbook
-    const ascendants = playbook.ascendants ?? []
-    const gear = playbook.gear ?? []
     const layout = getMonsterheartsRegionLayout()
-    const label = (id: PbtaMonsterheartsRegionId) =>
-        getMonsterheartsRegionLabel(id)
     const appearance = PBTA_MONSTERHEARTS_APPEARANCE.variants[0]
     const assetUrls = PBTA_MONSTERHEARTS_APPEARANCE_ASSET_URLS
-    const gameMark = viteAssetUrl(assetUrls.assets['game-mark'])
+    const empty = (key: 'moves' | 'ascendants' | 'conditions' | 'gear') => (
+        <p>{t(`pbta:monsterhearts.empty.${key}`)}</p>
+    )
 
-    const renderRegion = (id: PbtaMonsterheartsRegionId): ReactNode | null => {
-        switch (id) {
-            case 'monsterhearts-opening':
-                return isVisible('editorial') ? (
-                    <EditorialBlock
-                        block={editorial.opening}
-                        onClick={() => open('editorial')}
-                    />
-                ) : null
-            case 'character-identity':
-                return isVisible('editorial') ? (
-                    <EditorialBlock
-                        block={editorial.identity}
-                        onClick={() => open('editorial')}
-                    />
-                ) : null
-            case 'stat-profiles':
-                return isVisible('stats') ? (
-                    <button
-                        type="button"
-                        className="mh-stat-block"
-                        onClick={() => open('stats')}
-                    >
-                        <h2>{label('stat-profiles')}</h2>
-                        <p>
-                            {Object.entries(playbook.stats)
-                                .map(
-                                    ([name, value]) =>
-                                        `${name} ${value >= 0 ? '+' : ''}${value}`
-                                )
-                                .join(' · ')}
-                        </p>
-                    </button>
-                ) : null
-            case 'playbook-moves':
-                return isVisible('moves') ? (
-                    <section>
-                        <button
-                            type="button"
-                            className="mh-section-title"
-                            onClick={() => open('moves')}
-                        >
-                            {label('playbook-moves')}
-                        </button>
-                        <div className="mh-actions">
-                            {playbook.moves.length ? (
-                                playbook.moves.map((move, index) => (
-                                    <article
-                                        key={`${'ref' in move ? move.ref : move.name}-${index}`}
-                                    >
-                                        <h2>
-                                            {getMoveHeart(
-                                                move.checked === true
-                                            )}{' '}
-                                            {'ref' in move
-                                                ? move.ref
-                                                : move.name}
-                                        </h2>
-                                        {'ref' in move ? null : (
-                                            <p>{move.description}</p>
-                                        )}
-                                    </article>
-                                ))
-                            ) : (
-                                <p className="mh-empty">
-                                    {t('pbta:monsterhearts.empty.moves')}
-                                </p>
-                            )}
-                        </div>
-                    </section>
-                ) : null
-            case 'playbook-portrait':
-                return (
-                    <button
-                        type="button"
-                        className="mh-portrait"
-                        onClick={() => open('basic')}
-                    >
-                        {playbook.playbookImage ? (
-                            <img
-                                src={playbook.playbookImage}
-                                alt={t('pbta:monsterhearts.portrait', {
-                                    name: playbook.name,
-                                })}
-                            />
-                        ) : (
-                            <span>
-                                {t('pbta:monsterhearts.portrait', {
-                                    name: playbook.name,
-                                })}
-                            </span>
-                        )}
-                    </button>
+    /* A region is the clickable unit: while editing it opens its own short panel. */
+    const region = (
+        id: PbtaMonsterheartsRegionId,
+        panel: Panel,
+        children: ReactNode,
+        heading?: string
+    ) => (
+        <section
+            key={id}
+            className="handbook-monsterhearts-region"
+            data-region={id}
+            {...(editing
+                ? {
+                      role: 'button',
+                      tabIndex: 0,
+                      onClick: () => open(panel),
+                      onKeyDown: (event: KeyboardEvent) => {
+                          if (event.key === 'Enter') open(panel)
+                      },
+                  }
+                : {})}
+        >
+            {heading ? <h3>{heading}</h3> : null}
+            {children}
+        </section>
+    )
+    const editorialRegion = (
+        id: PbtaMonsterheartsRegionId,
+        block: { heading: string; paragraphs: string[] } | undefined,
+        heading = block?.heading
+    ) =>
+        block && isVisible('editorial')
+            ? region(
+                  id,
+                  'editorial',
+                  block.paragraphs.map((paragraph, index) => (
+                      <p key={index}>{paragraph}</p>
+                  )),
+                  heading
+              )
+            : null
+
+    const renderIdentity = (id: PbtaMonsterheartsRegionId) => {
+        const paragraphs = editorial.identity.paragraphs
+        const prose: ReactNode[] = []
+        const fields: ReactNode[] = []
+        paragraphs.forEach((paragraph, index) => {
+            const labelled = /^([^:]{1,24}) : ([\s\S]+)$/.exec(paragraph)
+            if (!labelled) {
+                prose.push(<p key={index}>{paragraph}</p>)
+                return
+            }
+            fields.push(
+                <p key={index}>
+                    <span className="handbook-monsterhearts-label">
+                        {t('pbta:monsterhearts.preview.fieldLabel', {
+                            label: labelled[1],
+                        })}
+                    </span>
+                    <Fill />
+                </p>
+            )
+        })
+        const questions = (playbook.creation ?? []).filter(
+            (question) =>
+                !coveredByParagraphs(
+                    question.options.map((option) =>
+                        typeof option === 'string' ? option : option.label
+                    ),
+                    paragraphs
                 )
-            case 'ascendants-and-conditions':
-                return (
+        )
+        return region(
+            id,
+            'editorial',
+            <>
+                {prose}
+                {fields.length ? (
+                    <div className="handbook-monsterhearts-identity-fields">
+                        {fields}
+                    </div>
+                ) : null}
+                {questions.map((question, index) => (
+                    <Fragment key={`${question.label}-${index}`}>
+                        <h4>{question.label}</h4>
+                        <Fill />
+                    </Fragment>
+                ))}
+                {playbook.backstory?.length && !questions.length ? (
                     <>
-                        {isVisible('ascendants') && (
-                            <button
-                                type="button"
-                                className="mh-stat-block"
-                                onClick={() => open('ascendants')}
-                            >
-                                <h2>
-                                    {t(
-                                        'pbta:monsterhearts.sections.ascendants'
-                                    )}
-                                </h2>
-                                {ascendants.length ? (
-                                    <ul className="mh-conditions">
-                                        {ascendants.map((ascendant, index) => (
-                                            <li
-                                                key={`${ascendant.name}-${index}`}
-                                            >
-                                                <strong>
-                                                    {ascendant.name}
-                                                </strong>
-                                                <span>
-                                                    {t(
-                                                        'pbta:monsterhearts.fields.value'
-                                                    )}{' '}
-                                                    {ascendant.value}
-                                                </span>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                ) : (
-                                    <p className="mh-empty">
-                                        {t(
-                                            'pbta:monsterhearts.empty.ascendants'
-                                        )}
-                                    </p>
-                                )}
-                            </button>
-                        )}
-                        {isVisible('conditions') && (
-                            <button
-                                type="button"
-                                className="mh-stat-block"
-                                onClick={() => open('conditions')}
-                            >
-                                <h2>
-                                    {t(
-                                        'pbta:monsterhearts.sections.conditions'
-                                    )}
-                                </h2>
-                                {playbook.conditions.length ? (
-                                    <ul className="mh-conditions">
-                                        {playbook.conditions.map(
-                                            (condition) => (
-                                                <li key={condition.name}>
-                                                    <strong>
-                                                        {condition.name}
-                                                    </strong>
-                                                    {condition.description && (
-                                                        <span>
-                                                            {
-                                                                condition.description
-                                                            }
-                                                        </span>
-                                                    )}
-                                                </li>
-                                            )
-                                        )}
-                                    </ul>
-                                ) : (
-                                    <p className="mh-empty">
-                                        {t(
-                                            'pbta:monsterhearts.empty.conditions'
-                                        )}
-                                    </p>
-                                )}
-                            </button>
-                        )}
+                        <h4>{t('pbta:monsterhearts.preview.backstory')}</h4>
+                        <Fill />
                     </>
-                )
-            case 'harm-tracker':
-                return isVisible('harm') ? (
-                    <button
-                        type="button"
-                        className="mh-harm"
-                        onClick={() => open('harm')}
-                    >
-                        {label('harm-tracker')}{' '}
-                        {Array.from({ length: 4 }, (_, index) => (
-                            <span
-                                key={index}
-                                className={
-                                    index < playbook.harm ? 'is-marked' : ''
-                                }
-                            />
-                        ))}
-                    </button>
-                ) : null
-            case 'gear':
-                /* An empty gear list is drawn only while editing, so that it can be filled. */
-                return isVisible('gear') && (gear.length || editing) ? (
-                    <button
-                        type="button"
-                        className="mh-stat-block"
-                        onClick={() => open('gear')}
-                    >
-                        <h2>{t('pbta:monsterhearts.sections.gear')}</h2>
-                        {gear.length ? (
-                            <ul className="mh-conditions">
-                                {gear.map((item, index) => (
-                                    <li key={`${item.name}-${index}`}>
-                                        <strong>{item.name}</strong>
-                                        {item.description && (
-                                            <span>{item.description}</span>
-                                        )}
-                                    </li>
+                ) : null}
+            </>,
+            editorial.identity.heading
+        )
+    }
+
+    const renderStats = (id: PbtaMonsterheartsRegionId) => {
+        const profiles = playbook.statProfiles ?? []
+        if (!Object.keys(playbook.stats).length && !profiles.length) return null
+        const list = (values: Record<string, number>, key: number) => (
+            <dl key={key}>
+                {Object.keys(values).map((name) => (
+                    <Row key={name} label={name} value={values[name]} />
+                ))}
+            </dl>
+        )
+        return region(
+            id,
+            'stats',
+            <div className="handbook-monsterhearts-stats">
+                {profiles.length
+                    ? profiles.map((profile, index) =>
+                          list(profile.stats, index)
+                      )
+                    : list(playbook.stats, 0)}
+            </div>,
+            getMonsterheartsRegionLabel(id)
+        )
+    }
+
+    const renderPortrait = (id: PbtaMonsterheartsRegionId) => {
+        const image = playbook.playbookImage?.trim()
+        const source = image && /^https:\/\//i.test(image) ? image : null
+        return region(
+            id,
+            'basic',
+            <figure
+                className={`handbook-monsterhearts-portrait${source ? '' : ' handbook-monsterhearts-portrait--empty'}`}
+            >
+                {source ? (
+                    <img
+                        src={source}
+                        alt={t('pbta:monsterhearts.portrait', {
+                            name: playbook.name,
+                        })}
+                    />
+                ) : (
+                    <span>
+                        {t('pbta:monsterhearts.preview.portraitMissing')}
+                    </span>
+                )}
+                <figcaption className="handbook-monsterhearts-portrait-name">
+                    {playbook.name}
+                </figcaption>
+            </figure>
+        )
+    }
+
+    /* Two panels share this region: the region opens the strings, each
+       condition opens the conditions. */
+    const renderStringsAndConditions = (id: PbtaMonsterheartsRegionId) => {
+        const ascendants = playbook.ascendants ?? []
+        const showStrings = isVisible('ascendants')
+        const showConditions =
+            isVisible('conditions') &&
+            (playbook.conditions.length > 0 || editing)
+        if (!showStrings && !showConditions) return null
+        const openConditions = innerTrigger(editing, () => open('conditions'))
+        return region(
+            id,
+            showStrings ? 'ascendants' : 'conditions',
+            <>
+                {showStrings ? (
+                    <>
+                        <h4>{t('pbta:monsterhearts.sections.ascendants')}</h4>
+                        {ascendants.length ? (
+                            <dl>
+                                {ascendants.map((item, index) => (
+                                    <Row
+                                        key={`${item.name}-${index}`}
+                                        label={item.name}
+                                        value={item.value}
+                                    />
                                 ))}
-                            </ul>
+                            </dl>
                         ) : (
-                            <p className="mh-empty">
-                                {t('pbta:monsterhearts.empty.gear')}
+                            <p>
+                                {t('pbta:monsterhearts.preview.strings', {
+                                    starting: playbook.strings.starting ?? 0,
+                                    max: playbook.strings.max,
+                                })}
                             </p>
                         )}
-                    </button>
-                ) : null
-            case 'monsterhearts-darkest-self':
-                return isVisible('editorial') ? (
-                    <EditorialBlock
-                        block={editorial.darkestSelf}
-                        onClick={() => open('editorial')}
-                    />
-                ) : null
-            case 'monsterhearts-sex-move':
-                return isVisible('editorial') ? (
-                    <EditorialBlock
-                        block={editorial.sexMove}
-                        onClick={() => open('editorial')}
-                    />
-                ) : null
-            case 'monsterhearts-play':
-                return isVisible('editorial') && editorial.play ? (
-                    <EditorialBlock
-                        block={editorial.play}
-                        onClick={() => open('editorial')}
-                    />
-                ) : null
-            case 'monsterhearts-progression':
-                return isVisible('advances') ? (
-                    <section>
-                        <button
-                            type="button"
-                            className="mh-section-title"
-                            onClick={() => open('advances')}
-                        >
-                            {label('monsterhearts-progression')} □ □ □ □ □
-                        </button>
-                        <ul className="mh-checklist">
+                    </>
+                ) : null}
+                {showConditions && !playbook.conditions.length ? (
+                    <>
+                        <h4 {...openConditions}>
+                            {t('pbta:monsterhearts.sections.conditions')}
+                        </h4>
+                        {empty('conditions')}
+                    </>
+                ) : null}
+                {showConditions
+                    ? playbook.conditions.map((condition, index) => (
+                          <Fragment key={`${condition.name}-${index}`}>
+                              <h4 {...openConditions}>{condition.name}</h4>
+                              {condition.description ? (
+                                  <p {...openConditions}>
+                                      {condition.description}
+                                  </p>
+                              ) : null}
+                          </Fragment>
+                      ))
+                    : null}
+            </>,
+            getMonsterheartsRegionLabel(id)
+        )
+    }
+
+    const renderProgression = (id: PbtaMonsterheartsRegionId) =>
+        region(
+            id,
+            'advances',
+            <>
+                {editorial.progression.paragraphs.map((paragraph, index) => {
+                    const named = /^([^:.]{1,40}) : ([\s\S]+)$/.exec(paragraph)
+                    return named ? (
+                        <MoveCard
+                            key={index}
+                            move={{
+                                name: named[1],
+                                moveType: 'skin',
+                                description: named[2],
+                                checked: false,
+                            }}
+                            startingMoves={[]}
+                        />
+                    ) : (
+                        <p key={index}>{paragraph}</p>
+                    )
+                })}
+                {playbook.advances.length ? (
+                    <>
+                        <h4>{t('pbta:monsterhearts.preview.advances')}</h4>
+                        <ul>
                             {playbook.advances.map((advance, index) => (
-                                <li
-                                    key={`${advance.label}-${index}`}
-                                    className={getAdvanceCheckClass(
-                                        advance.checked
-                                    )}
-                                >
-                                    {advance.label}
+                                <li key={`${advance.label}-${index}`}>
+                                    <Box
+                                        checked={advance.checked === true}
+                                        label={advance.label}
+                                    />
+                                    <span>{advance.label}</span>
                                 </li>
                             ))}
                         </ul>
-                    </section>
-                ) : null
+                    </>
+                ) : null}
+            </>,
+            editorial.progression.heading
+        )
+
+    /* An empty list is drawn only while editing, so that it can be filled;
+       otherwise the region is left out, as in Handbook. */
+    const renderRegion = (id: PbtaMonsterheartsRegionId): ReactNode => {
+        switch (id) {
             case 'game-identity':
                 return null
+            case 'monsterhearts-opening':
+                return editorialRegion(id, editorial.opening, '')
+            case 'character-identity':
+                return isVisible('editorial') ? renderIdentity(id) : null
+            case 'stat-profiles':
+                return isVisible('stats') ? renderStats(id) : null
+            case 'playbook-portrait':
+                return renderPortrait(id)
+            case 'playbook-moves':
+                if (!isVisible('moves')) return null
+                if (!playbook.moves.length && !editing) return null
+                return region(
+                    id,
+                    'moves',
+                    playbook.moves.length
+                        ? playbook.moves.map((move, index) => (
+                              <MoveCard
+                                  key={`${'ref' in move ? move.ref : move.name}-${index}`}
+                                  move={move}
+                                  startingMoves={playbook.startingMoves ?? []}
+                              />
+                          ))
+                        : empty('moves'),
+                    getMonsterheartsRegionLabel(id)
+                )
+            case 'ascendants-and-conditions':
+                return renderStringsAndConditions(id)
+            case 'harm-tracker':
+                if (!isVisible('harm')) return null
+                return region(
+                    id,
+                    'harm',
+                    <div className="handbook-monsterhearts-harm">
+                        {[1, 2, 3, 4].map((index) => (
+                            <Box
+                                key={index}
+                                checked={index <= playbook.harm}
+                                label={t('pbta:monsterhearts.preview.harmBox', {
+                                    index,
+                                })}
+                            />
+                        ))}
+                    </div>,
+                    getMonsterheartsRegionLabel(id)
+                )
+            case 'gear': {
+                const gear = playbook.gear ?? []
+                if (!isVisible('gear') || (!gear.length && !editing))
+                    return null
+                return region(
+                    id,
+                    'gear',
+                    gear.length ? (
+                        <ul>
+                            {gear.map((item, index) => (
+                                <li key={`${item.name}-${index}`}>
+                                    {`${item.name}${item.quantity ? ` × ${item.quantity}` : ''}${item.description ? ` — ${item.description}` : ''}`}
+                                </li>
+                            ))}
+                        </ul>
+                    ) : (
+                        empty('gear')
+                    ),
+                    getMonsterheartsRegionLabel(id)
+                )
+            }
+            case 'monsterhearts-darkest-self':
+                return editorialRegion(id, editorial.darkestSelf)
+            case 'monsterhearts-sex-move':
+                return editorialRegion(id, editorial.sexMove)
+            case 'monsterhearts-play':
+                return editorialRegion(id, editorial.play)
+            case 'monsterhearts-progression':
+                return isVisible('advances') ? renderProgression(id) : null
         }
+        return null
     }
 
     return (
-        <div
-            className="monsterhearts-doc"
-            data-appearance-variant={appearance.id}
-            style={appearance.tokens as CSSProperties}
-        >
+        <>
             <style>
                 {fontFaces
                     .map(
@@ -406,41 +571,40 @@ export function MonsterheartsPlaybookPreview() {
                     )
                     .join(' ')}
             </style>
-            <article className="monsterhearts-sheet">
-                <button
-                    type="button"
-                    className="mh-header"
-                    onClick={() => open('basic')}
-                >
-                    <h1>{playbook.name}</h1>
-                    <p>{playbook.description}</p>
-                    <img className="mh-game-mark" src={gameMark} alt="" />
-                </button>
-                <div className="mh-layout">
-                    {layout.rows.map((row, rowIndex) => (
-                        <div className="mh-row" key={rowIndex}>
-                            {row.map((column, columnIndex) => (
-                                <div className="mh-column" key={columnIndex}>
-                                    {column.map((id) => (
-                                        <div className="mh-region" key={id}>
-                                            {renderRegion(id)}
-                                        </div>
-                                    ))}
-                                </div>
-                            ))}
-                        </div>
-                    ))}
-                    {layout.trailing.length > 0 && (
-                        <div className="mh-fallback">
-                            {layout.trailing.map((id) => (
-                                <div className="mh-region" key={id}>
-                                    {renderRegion(id)}
-                                </div>
-                            ))}
-                        </div>
-                    )}
-                </div>
+            {/* The page width and the zoom belong to the host; every dressing
+                value comes from the published stylesheet. */}
+            <article
+                className="handbook-pbta-playbook handbook-monsterhearts-playbook"
+                data-appearance-variant={appearance.id}
+                style={
+                    {
+                        ...appearance.tokens,
+                        width: `${view.previewWidth}px`,
+                        transform: `scale(${view.zoom})`,
+                        transformOrigin: 'top left',
+                    } as CSSProperties
+                }
+            >
+                {layout.rows.map((columns, rowIndex) => (
+                    <div
+                        key={rowIndex}
+                        className="handbook-monsterhearts-layout-row"
+                        data-row={rowIndex + 1}
+                    >
+                        {columns.map((ids, columnIndex) => (
+                            <div
+                                key={columnIndex}
+                                className="handbook-monsterhearts-column"
+                                data-column={columnIndex + 1}
+                            >
+                                {ids.map(renderRegion)}
+                            </div>
+                        ))}
+                    </div>
+                ))}
+                {/* Regions the contract leaves out of every row follow in canonical order. */}
+                {layout.trailing.map(renderRegion)}
             </article>
-        </div>
+        </>
     )
 }

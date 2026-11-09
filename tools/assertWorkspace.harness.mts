@@ -1,12 +1,12 @@
 import assert from 'node:assert/strict'
 import { migrateLegacyChallengeWorkspace } from '../src/templates/legend-in-the-mist/challenge/legacyWorkspaceMigration'
 import { getSampleLegendInTheMistChallenge } from '../src/templates/legend-in-the-mist/challenge/sample'
-import { cloneValue } from '../src/utils/clone'
 import {
     mergeVisibility,
     setVisibility,
     toggleVisibility,
 } from '../src/templates/shared/visibility'
+import { cloneValue } from '../src/utils/clone'
 
 const visibilityDefaults = { moves: false, gear: true }
 const mergedVisibility = mergeVisibility(visibilityDefaults, { moves: true })
@@ -106,9 +106,6 @@ assert.equal(
     'workspace hydration restores absent sheet fields'
 )
 
-const { getAdvanceCheckClass, getMoveHeart } = await import(
-    '../src/templates/monsterhearts/playbook/preview/MonsterheartsPlaybookPreview'
-)
 const { getMonsterheartsRegionLayout, getMonsterheartsRegionLabel } =
     await import(
         '../src/templates/monsterhearts/playbook/preview/MonsterheartsPlaybookPreview'
@@ -127,13 +124,6 @@ const { sections: monsterheartsSections } = await import(
 assert.ok(
     monsterheartsSections.some((section) => section.id === 'stats'),
     'Monsterhearts stats are exposed as a preview and editor section'
-)
-assert.equal(getMoveHeart(false), '♡', 'unchecked moves render an empty heart')
-assert.equal(getMoveHeart(true), '♥', 'checked moves render a filled heart')
-assert.equal(
-    getAdvanceCheckClass(true),
-    'is-checked',
-    'checked advances use the checklist marker instead of a second glyph'
 )
 const monsterheartsLayout = getMonsterheartsRegionLayout()
 assert.deepEqual(
@@ -209,9 +199,12 @@ assert.equal(
     'a failed workspace write marks the in-memory workspace unsaved'
 )
 assert.equal(
-    (useWorkspaceStore.getState().tabs.find((tab) => tab.id === tabId)?.doc as {
-        persistenceProbe?: boolean
-    }).persistenceProbe,
+    (
+        useWorkspaceStore.getState().tabs.find((tab) => tab.id === tabId)
+            ?.doc as {
+            persistenceProbe?: boolean
+        }
+    ).persistenceProbe,
     true,
     'a failed workspace write preserves the current in-memory changes for export'
 )
