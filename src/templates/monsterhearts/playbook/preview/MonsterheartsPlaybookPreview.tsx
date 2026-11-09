@@ -72,9 +72,7 @@ export function getMonsterheartsRegionLayout(
     presentation: PbtaMonsterheartsPlaybookPresentation = PBTA_MONSTERHEARTS_PLAYBOOK_PRESENTATION
 ) {
     const header = 'game-identity' as const
-    const rows = presentation.rows ?? [
-        [presentation.canonicalOrder.filter((id) => id !== header)],
-    ]
+    const rows = presentation.rows
     const placed = new Set(rows.flat(2))
     return {
         header,

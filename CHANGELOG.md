@@ -7,6 +7,12 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [v0.31.1] - 2026-11-09
+
+### Changed
+
+- Monsterhearts playbook preview: the grid is read from the required `rows` of the published presentation; no fallback grid is built locally (#75). The preview is unchanged.
+
 ## [v0.31.0] - 2026-11-08
 
 ### Added
