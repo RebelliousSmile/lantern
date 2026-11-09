@@ -17,6 +17,7 @@ export const getSampleUrbanShadowsPlaybook = () => ({
     statuses: { mortalis: 1, night: 0, power: 0, wild: 1 },
     statsDetail: 'Add 1 to one of them.',
     advancementCircles: ['mortalis', 'night', 'power', 'wild'],
+    markedCircles: ['mortalis'],
     laterAdvancement: [{ label: 'Retire your character to safety.' }],
     letItOut: [
         'Take something from someone without them noticing.',

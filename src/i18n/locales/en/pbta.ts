@@ -192,6 +192,7 @@ const pbta = {
             startingMoves: 'Starting moves',
             advancement: 'Advances',
             advancementCircles: 'Circles on the advancement track',
+            markedCircles: 'Circles marked since the last advance',
             laterAdvancement: 'Later advances',
             label: 'Label',
             checked: 'Checked',

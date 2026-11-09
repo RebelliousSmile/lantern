@@ -195,6 +195,7 @@ const pbta: ResourceShape<typeof en> = {
             startingMoves: 'Actions de départ',
             advancement: 'Progressions',
             advancementCircles: 'Cercles de la piste de progression',
+            markedCircles: 'Cercles cochés depuis la dernière progression',
             laterAdvancement: 'Progressions tardives',
             label: 'Intitulé',
             checked: 'Coché',

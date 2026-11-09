@@ -99,6 +99,7 @@ function descriptors(text: Text): Record<string, EditorDescriptor> {
         statuses: numbers('statuses', CIRCLES, term),
         startingMoves: strings('startingMoves'),
         advancementCircles: strings('advancementCircles'),
+        markedCircles: strings('markedCircles'),
         laterAdvancement: records('laterAdvancement', [
             scalar('label'),
             scalar('checked', 'boolean'),
@@ -217,6 +218,7 @@ export function UrbanShadowsPlaybookEditorPanel() {
     const custom: Record<string, () => ReactNode> = {
         moves: () => <UrbanCollection path="moves" />,
         advancementCircles: () => <AdvancementCirclesEditor />,
+        markedCircles: () => <MarkedCirclesEditor />,
         advancement: () => <UrbanCollection path="advancement" />,
         corruption: () => (
             <>
@@ -286,8 +288,8 @@ export function UrbanShadowsPlaybookEditorPanel() {
  * The circles printed on the advancement track, ticked among the Circles: the
  * game's four, then any other circle the document already names. The list is
  * written back in that order, which is the printed one. This edits the
- * structure of the sheet, not the marks made in play: the contract carries no
- * play state for them yet (schema-pbta#51).
+ * structure of the sheet; the marks made in play are `markedCircles`, and a
+ * circle taken off the track loses its mark with it.
  */
 function AdvancementCirclesEditor() {
     const text = useUiText() as Text
@@ -308,7 +310,12 @@ function AdvancementCirclesEditor() {
         const next = options.filter((option) =>
             option === key ? on : selected.includes(option)
         )
-        setPlaybook({ advancementCircles: next })
+        setPlaybook({
+            advancementCircles: next,
+            markedCircles: (playbook.markedCircles ?? []).filter((circle) =>
+                next.includes(circle)
+            ),
+        })
     }
     return (
         <fieldset className="space-y-2 rounded-md border p-3">
@@ -326,6 +333,52 @@ function AdvancementCirclesEditor() {
                             }
                         />
                         <Label htmlFor={`advancement-circle-${key}`}>
+                            {label(key)}
+                        </Label>
+                    </div>
+                ))}
+            </div>
+        </fieldset>
+    )
+}
+
+/**
+ * The marks made in play on the advancement track: one box per circle the
+ * track prints, ticked and unticked without touching the track itself. The
+ * marks are written back in the printed order.
+ */
+function MarkedCirclesEditor() {
+    const text = useUiText() as Text
+    const { playbook, setPlaybook } = useUrbanShadowsPlaybookStore()
+    const circles = playbook.advancementCircles ?? []
+    const marked = playbook.markedCircles ?? []
+    if (!circles.length) return null
+    const label = (key: string) =>
+        CIRCLES.includes(key)
+            ? text(`pbta:urbanShadows.terms.${key}` as TranslationKey)
+            : key
+    const toggle = (key: string, on: boolean) =>
+        setPlaybook({
+            markedCircles: circles.filter((circle) =>
+                circle === key ? on : marked.includes(circle)
+            ),
+        })
+    return (
+        <fieldset className="space-y-2 rounded-md border p-3">
+            <legend className="px-1 text-sm font-medium">
+                {text('pbta:urbanShadows.fields.markedCircles')}
+            </legend>
+            <div className="flex flex-wrap gap-x-4 gap-y-2">
+                {circles.map((key) => (
+                    <div key={key} className="flex items-center gap-2">
+                        <Checkbox
+                            id={`marked-circle-${key}`}
+                            checked={marked.includes(key)}
+                            onCheckedChange={(next) =>
+                                toggle(key, next === true)
+                            }
+                        />
+                        <Label htmlFor={`marked-circle-${key}`}>
                             {label(key)}
                         </Label>
                     </div>

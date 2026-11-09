@@ -308,6 +308,7 @@ const RENDERERS: Record<string, Renderer> = {
         ) : null,
     'urban-shadows-advancement': ({ playbook, text }, id) => {
         const circles = playbook.advancementCircles ?? []
+        const marked = playbook.markedCircles ?? []
         const first = playbook.advancement ?? []
         const later = playbook.laterAdvancement ?? []
         if (!circles.length && !first.length && !later.length) return null
@@ -326,7 +327,7 @@ const RENDERERS: Record<string, Renderer> = {
                         {circles.map((key) => (
                             <label key={key}>
                                 <span>{statLabel(text, key)}</span>
-                                <Box />
+                                <Box checked={marked.includes(key)} />
                             </label>
                         ))}
                     </div>
