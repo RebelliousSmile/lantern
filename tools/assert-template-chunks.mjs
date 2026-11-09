@@ -249,34 +249,18 @@ async function main() {
         monsterheartsFonts.length > 0,
         'Monsterhearts must import its fonts from the published pack'
     )
-    const assets = [
-        ...monsterheartsFonts.map((font) =>
-            emittedAsset(
-                manifest,
-                `/monsterhearts/assets/fonts/${font}.woff2`,
-                'woff2'
-            )
-        ),
+    /* The sheet follows the playbook PDF, which prints no game mark: the preview imports fonts only. */
+    const assets = monsterheartsFonts.map((font) =>
         emittedAsset(
             manifest,
-            '/monsterhearts/assets/images/thorn-heart.svg',
-            'svg'
-        ),
-    ]
-    assert.match(
-        monsterheartsPreview,
-        /thorn-heart\.svg\?url&no-inline/,
-        'Monsterhearts must import the thorn heart as a Vite URL'
+            `/monsterhearts/assets/fonts/${font}.woff2`,
+            'woff2'
+        )
     )
     assert.doesNotMatch(
         monsterheartsPreview,
         /drowned-lake|zine-lake|im-fell-english/,
         'Monsterhearts must not reference retired variant or font assets'
-    )
-    assert.match(
-        monsterheartsPreview,
-        /<img\s+className="mh-game-mark"\s+src=\{gameMark\}/,
-        'Monsterhearts must render the bundled game mark URL'
     )
     assert.doesNotMatch(
         monsterheartsPreview,
