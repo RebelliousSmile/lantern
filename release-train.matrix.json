@@ -2,13 +2,13 @@
     "protocol": 1,
     "handbook": {
         "repository": "RebelliousSmile/obsidian-handbook",
-        "ref": "2c117bfda2a681d214526211b96465ebe708a417"
+        "ref": "2af2898bff7fd09196549ae18b1e4afc7fb0efbf"
     },
     "providers": [
         {
             "provider": "schema-pbta",
             "repository": "RebelliousSmile/schema-pbta",
-            "ref": "17421280c346839463bc0f80ab8014f3a52d4ab9",
+            "ref": "0981995038aba7c52cc96f4d2212cd664c339e2e",
             "manifests": [
                 {
                     "path": "release-train/schema-pbta-v8.4.2.json",
@@ -53,13 +53,17 @@
                 {
                     "path": "release-train/schema-pbta-v14.0.0.json",
                     "validatorRef": "17421280c346839463bc0f80ab8014f3a52d4ab9"
+                },
+                {
+                    "path": "release-train/schema-pbta-v15.0.0.json",
+                    "validatorRef": "0981995038aba7c52cc96f4d2212cd664c339e2e"
                 }
             ]
         },
         {
             "provider": "schema-adrenaline",
             "repository": "RebelliousSmile/schema-adrenaline",
-            "ref": "645d9c1924284cf1e89a6be40add8d933cec6d68",
+            "ref": "12ee42be21b6ea973a5247f12c08a7f2e6b52f1e",
             "manifests": [
                 {
                     "path": "release-train/schema-adrenaline-v2.4.0.json",
@@ -122,7 +126,7 @@
         {
             "provider": "schema-in-the-mist",
             "repository": "RebelliousSmile/schema-in-the-mist",
-            "ref": "c52a0fbbdf7a34190a60288867bb8b3d6db0cf0e",
+            "ref": "1f1a39a50e919bc9656427de811d83b5e273d72e",
             "manifests": [
                 {
                     "path": "release-trains/v1.3.5.json",
@@ -139,6 +143,10 @@
                 {
                     "path": "release-trains/v1.6.0.json",
                     "validatorRef": "c52a0fbbdf7a34190a60288867bb8b3d6db0cf0e"
+                },
+                {
+                    "path": "release-trains/v1.7.0.json",
+                    "validatorRef": "1f1a39a50e919bc9656427de811d83b5e273d72e"
                 }
             ]
         }
