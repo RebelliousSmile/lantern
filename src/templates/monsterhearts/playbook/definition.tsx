@@ -1,6 +1,10 @@
 import { createImageExportAction } from '@/core/templates/shell/imageExportAction'
 import { createTomlExportAction } from '@/core/templates/shell/tomlExportAction'
 import type { AnyTemplateDefinition } from '@/core/templates/types'
+import {
+    exportPagesOf,
+    withoutSessionNotes,
+} from '@/templates/pbta/shared/sessionNotes'
 import { MonsterheartsPlaybookAppearancePanel } from './editor/MonsterheartsPlaybookAppearancePanel'
 import { MonsterheartsPlaybookEditorPanel } from './editor/MonsterheartsPlaybookEditorPanel'
 import { MonsterheartsPlaybookImageExportSettings } from './editor/MonsterheartsPlaybookImageExportSettings'
@@ -28,6 +32,9 @@ const template: AnyTemplateDefinition = {
         renderPanel: () => <MonsterheartsPlaybookAppearancePanel />,
     },
     export: {
+        /* The pages are the ones the pack publishes (the sheet, then the notes). */
+        pages: () => exportPagesOf('monsterhearts-playbook'),
+        withoutNotes: withoutSessionNotes,
         actions: [
             createTomlExportAction({
                 exportToml: exportToTOML,

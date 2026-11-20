@@ -16,6 +16,7 @@ const adrenaline = {
         states: 'States',
         contagion: 'Contagion',
         narrative: 'Narrative',
+        notes: 'Session notes',
         meta: 'Provenance',
     },
     appearance: {

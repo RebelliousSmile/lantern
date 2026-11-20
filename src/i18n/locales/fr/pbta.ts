@@ -10,7 +10,7 @@ const pbta: ResourceShape<typeof en> = {
         label: 'Livret',
         newTitle: 'Nouveau livret',
         description:
-            'Un livret est un type de personnage d’Apocalypse World : ses caractéristiques, ses actions, les choix faits à la création et l’équipement de départ. Partez d’une page blanche, ouvrez l’exemple ou importez un fichier TOML.',
+            'Un livret est un type de personnage PbtA : ses caractéristiques, ses actions, les choix faits à la création et l’équipement de départ. Partez d’une page blanche, ouvrez l’exemple ou importez un fichier TOML.',
         exportToml: 'Exporter le livret courant en TOML.',
         exportPng: 'Exporter la fiche du livret courant en PNG.',
         sections: {
@@ -26,7 +26,7 @@ const pbta: ResourceShape<typeof en> = {
         label: 'Définition de jeu',
         newTitle: 'Nouvelle définition de jeu',
         description:
-            'Une définition de jeu décrit un jeu Apocalypse World comme Salvage Run : ses caractéristiques, ses types d’actions, les résultats possibles d’un jet et qui reçoit une fiche de personnage. Partez d’une page blanche, ouvrez l’exemple ou importez un fichier TOML.',
+            'Une définition de jeu décrit un jeu PbtA : ses caractéristiques, ses types d’actions, les résultats possibles d’un jet et qui reçoit une fiche de personnage. Partez d’une page blanche, ouvrez l’exemple ou importez un fichier TOML.',
         exportToml: 'Exporter la définition de jeu courante en TOML.',
         exportPng: 'Exporter la fiche de la définition de jeu courante en PNG.',
         sections: {
@@ -269,44 +269,6 @@ const pbta: ResourceShape<typeof en> = {
             drives_options: 'Drives',
         },
     },
-    motw: {
-        editor: {
-            hint: 'Cliquez sur une région de la fiche pour la modifier.',
-            invalidCollection: 'Configuration de collection publiée invalide.',
-            previewWidth: 'Largeur de l’aperçu',
-            unknownField: 'Champ sans éditeur :',
-        },
-        tracks: {
-            luck: 'Chance',
-            harm: 'Blessures',
-            unstable: 'Instable',
-            experience: 'Expérience',
-        },
-        fields: {
-            name: 'Nom',
-            heroName: 'Nom du chasseur',
-            description: 'Description',
-            stats: 'Caractéristiques',
-            ratings: 'Ressources',
-            statChoices: 'Choix de caractéristiques',
-            luckMax: 'Cases de Chance',
-            luckMarked: 'Chance cochée',
-            harmMax: 'Cases de blessures',
-            harmMarked: 'Blessures cochées',
-            unstable: 'Instable',
-            experienceMax: 'Cases d’expérience',
-            experienceMarked: 'Expérience cochée',
-            specialWeapon: 'Arme spéciale',
-            moves: 'Moves',
-            startingMoves: 'Moves de départ',
-            look: 'Apparence',
-            introductions: 'Présentations',
-            history: 'Histoire',
-            improvements: 'Améliorations',
-            advancements: 'Améliorations avancées',
-            notes: 'Notes',
-        },
-    },
     sprawl: {
         editor: {
             hint: 'Cliquez sur une zone de la feuille pour la modifier.',
@@ -345,9 +307,6 @@ const pbta: ResourceShape<typeof en> = {
     },
     blocks: {
         masksNpc: { label: 'PNJ', newTitle: 'Nouveau PNJ' },
-        motwMonster: { label: 'Monstre', newTitle: 'Nouveau monstre' },
-        motwThreat: { label: 'Menace', newTitle: 'Nouvelle menace' },
-        motwTeam: { label: 'Équipe', newTitle: 'Nouvelle équipe' },
         sprawlMission: { label: 'Mission', newTitle: 'Nouvelle mission' },
         sprawlThreat: { label: 'Menace', newTitle: 'Nouvelle menace' },
         sprawlResource: { label: 'Ressource', newTitle: 'Nouvelle ressource' },

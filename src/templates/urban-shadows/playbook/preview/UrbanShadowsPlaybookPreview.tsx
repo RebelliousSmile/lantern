@@ -1,5 +1,9 @@
 import { useUiText, type TranslationKey } from '@/i18n/text'
 import type { CSSProperties, ReactNode } from 'react'
+import {
+    NOTES_TARGET,
+    PlaybookNotesPage,
+} from '@/templates/pbta/shared/sessionNotes'
 import appearance from 'schema-pbta/packs/urban-shadows/appearance-contract.json'
 import brushFontUrl from 'schema-pbta/packs/urban-shadows/assets/fonts/caveat-brush-400-normal.woff2'
 import displayFontUrl from 'schema-pbta/packs/urban-shadows/assets/fonts/league-gothic-latin-400-normal.woff2'
@@ -618,11 +622,24 @@ export function UrbanShadowsPlaybookPreview() {
                         key={face}
                         className="handbook-urban-shadows-face"
                         data-face={face}
+                        data-export-page={face}
                     >
                         {children}
                     </div>
                 ))}
             </article>
+            {/* The notes page: one more sheet on the same paper, after the faces. */}
+            <PlaybookNotesPage
+                target="urban-shadows-playbook"
+                value={playbook.sessionNotes}
+                className="handbook-pbta-playbook handbook-urban-shadows-playbook"
+                style={{
+                    ...tokens,
+                    transform: `scale(${view.zoom})`,
+                    transformOrigin: 'top left',
+                }}
+                onOpen={() => openSheet({ kind: NOTES_TARGET })}
+            />
         </>
     )
 }

@@ -1,6 +1,6 @@
 import type { PbtaPlaybook } from './model'
 
-/* An original Salvage Run playbook for the Apocalypse World pack, paired
+/* An original sample playbook for the generic PbtA templates, paired
    with game-definition/sample.ts so the two samples can be opened together.
    Exercises every section: a stat block, one attribute, a ref move and an
    inline move, a choice set mixing a ref and an inline choice, advancement,
@@ -9,7 +9,7 @@ export function getSamplePbtaPlaybook(): PbtaPlaybook {
     return {
         slug: 'the-wrench',
         name: 'The Wrench',
-        game: 'salvage-run',
+        game: 'sample-game',
         actorType: 'character',
         description:
             'The crew member who keeps the rig running past what the manual allows.',

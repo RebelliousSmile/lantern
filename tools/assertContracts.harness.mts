@@ -128,10 +128,6 @@ const LANTERN_MODULES: Record<
                 import(
                     '../src/templates/pbta/playbook/toml.ts'
                 ) as Promise<TemplateCodec>,
-            'salvage-run-playbook': () =>
-                import(
-                    '../src/templates/pbta/playbook/toml.ts'
-                ) as Promise<TemplateCodec>,
             'monsterhearts-playbook': () =>
                 import(
                     '../src/templates/monsterhearts/playbook/toml.ts'
@@ -143,10 +139,6 @@ const LANTERN_MODULES: Record<
             'masks-playbook': () =>
                 import(
                     '../src/templates/masks/playbook/toml.ts'
-                ) as Promise<TemplateCodec>,
-            'monster-of-the-week-playbook': () =>
-                import(
-                    '../src/templates/monster-of-the-week/playbook/toml.ts'
                 ) as Promise<TemplateCodec>,
             'the-sprawl-playbook': () =>
                 import(
@@ -440,8 +432,7 @@ async function assertLanternModules(cases: NormalizedCase[]) {
         for (const witness of witnesses) {
             const codec = await resolve(witness.target)
             const key =
-                witness.target === 'playbook' ||
-                witness.target === 'salvage-run-playbook'
+                witness.target === 'playbook'
                     ? 'playbook'
                     : keyFor(witness.target)
             const source = fs.readFileSync(witness.file, 'utf8')
@@ -1276,9 +1267,9 @@ type ProviderDescriptors = {
  *   - an unknown token in `capabilities.lantern`, or in a pack's `requirements.lantern`, fails the
  *     run: it is a claim on Lantern that Lantern does not honour;
  *   - a pack's `documents[].target` with no matching `edit:<contractKey>` is only reported. A pack
- *     may legitimately carry a document addressed to another consumer — `schema-pbta/packs/salvage-run`
- *     names `salvage-run-playbook` today and asks nothing of Lantern beyond `edit:pbta`. A pack that
- *     does want the fine guarantee declares `edit:pbta/salvage-run-playbook`, and the first rule
+ *     may legitimately carry a document addressed to another consumer — `schema-pbta/packs/masks`
+ *     names `masks-playbook` today and asks nothing of Lantern beyond `edit:pbta`. A pack that
+ *     does want the fine guarantee declares `edit:pbta/masks-playbook`, and the first rule
  *     refuses that until the template ships.
  */
 function assertDeclaredCapabilities(descriptors: ProviderDescriptors): string {

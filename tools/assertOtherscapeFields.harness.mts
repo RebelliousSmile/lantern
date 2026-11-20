@@ -13,6 +13,10 @@ import {
     isCompleteCombo,
     MAX_THEMES,
 } from '../src/templates/otherscape/character/model'
+import {
+    OTHERSCAPE_CHARACTER_PAGES,
+    SESSION_NOTES_CAPACITY,
+} from '../src/templates/otherscape/character/pages'
 import { getSampleOtherscapeCharacter } from '../src/templates/otherscape/character/sample'
 import * as character from '../src/templates/otherscape/character/toml'
 import { getSampleOtherscapePowerSet } from '../src/templates/otherscape/power-set/sample'
@@ -312,6 +316,44 @@ assert.equal(
     (character.exportToTOML(crowded).match(/^\[\[themes\]\]/gm) ?? []).length,
     MAX_THEMES,
     'character: no more than the limit of themes reaches the file'
+)
+
+// ---------- The session notes: written when filled, absent when empty, not resurrected ----------
+const noted = getSampleOtherscapeCharacter()
+noted.session_notes = 'Rail Yard, second night.'
+assert.match(
+    character.exportToTOML(noted),
+    /^session_notes\s*=/m,
+    'character: filled session notes are written'
+)
+assert.equal(
+    character.importFromTOMLWithWarnings(character.exportToTOML(noted))
+        .otherscapeCharacter.session_notes,
+    noted.session_notes,
+    'character: the session notes come back from the file'
+)
+const unnoted = getSampleOtherscapeCharacter()
+unnoted.session_notes = undefined
+assert.doesNotMatch(
+    character.exportToTOML(unnoted),
+    /session_notes/,
+    'character: empty session notes are not written'
+)
+const reopened = character.importFromTOMLWithWarnings(
+    character.exportToTOML(noted)
+).otherscapeCharacter
+reopened.session_notes = undefined
+assert.equal(
+    character.importFromTOMLWithWarnings(character.exportToTOML(reopened))
+        .otherscapeCharacter.session_notes ?? '',
+    '',
+    'character: notes the author emptied do not come back from the import'
+)
+assert.ok(
+    SESSION_NOTES_CAPACITY > 0 &&
+        OTHERSCAPE_CHARACTER_PAGES[OTHERSCAPE_CHARACTER_PAGES.length - 1]
+            .notes_field === 'session_notes',
+    'character: the notes page is last and names the field the sheet writes'
 )
 
 console.log(

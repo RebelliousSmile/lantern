@@ -13,7 +13,7 @@ Conventions :
 
 | English term | French term | note |
 | --- | --- | --- |
-| Playbook | Livret (m.) | Actuel. Alternative : garder « Playbook » (m.), très répandu chez les joueurs francophones. À confirmer (VF officielle ?). La description actuelle dit « un type de personnage d’Apocalypse World » : exact pour le livret générique, mais le même libellé sert à Masks, MotW, The Sprawl et Urban Shadows. |
+| Playbook | Livret (m.) | Actuel. Alternative : garder « Playbook » (m.), très répandu chez les joueurs francophones. À confirmer (VF officielle ?). La description dit « un type de personnage PbtA » : le même libellé sert à Masks, Monsterhearts, The Sprawl et Urban Shadows. |
 | Game Definition | Définition de jeu (f.) | Actuel. Terme propre à Lantern, pas un terme de jeu publié : pas de VF à attendre. Accord : « Nouvelle définition de jeu », « courante ». |
 | Move | Action (f.) | Actuel. Alternative : « Manœuvre » (f.). « Action » est l’usage le plus courant dans les traductions PbtA, mais reste à confirmer (VF officielle ?) jeu par jeu. Accord : « Nouvelle action ». |
 | Basic move | Action de base (f.) | À confirmer (VF officielle ?). |

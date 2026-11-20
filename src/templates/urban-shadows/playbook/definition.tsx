@@ -1,6 +1,10 @@
 import { createImageExportAction } from '@/core/templates/shell/imageExportAction'
 import { createTomlExportAction } from '@/core/templates/shell/tomlExportAction'
 import type { AnyTemplateDefinition } from '@/core/templates/types'
+import {
+    exportPagesOf,
+    withoutSessionNotes,
+} from '@/templates/pbta/shared/sessionNotes'
 import { UrbanShadowsPlaybookAppearancePanel } from './editor/UrbanShadowsPlaybookAppearancePanel'
 import { UrbanShadowsPlaybookEditorPanel } from './editor/UrbanShadowsPlaybookEditorPanel'
 import { UrbanShadowsPlaybookImageExportSettings } from './editor/UrbanShadowsPlaybookImageExportSettings'
@@ -30,6 +34,9 @@ const template: AnyTemplateDefinition = {
         renderPanel: () => <UrbanShadowsPlaybookAppearancePanel />,
     },
     export: {
+        /* The pages are the ones the pack publishes (both faces, then the notes). */
+        pages: () => exportPagesOf('urban-shadows-playbook'),
+        withoutNotes: withoutSessionNotes,
         actions: [
             createTomlExportAction({
                 exportToml: exportToTOML,

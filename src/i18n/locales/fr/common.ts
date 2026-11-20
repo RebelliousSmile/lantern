@@ -123,6 +123,20 @@ const common: ResourceShape<typeof en> = {
         exportedToml: 'TOML exporté.',
         png: 'PNG',
         exportPng: 'Exporter le PNG',
+        pdf: 'PDF',
+        exportPdf: 'Exporter le PDF',
+        pdfDescription:
+            'Toutes les pages, par l’impression du navigateur : choisissez « Enregistrer au format PDF ». Le texte reste sélectionnable. Si les couleurs manquent, cochez « Graphiques d’arrière-plan ».',
+        exportedArchive: 'Archive exportée.',
+        pages: 'Pages',
+        allPagesArchive: 'Toutes les pages (archive, un PNG par page)',
+        includeNotesPage: 'Inclure la page de notes',
+        includeNotes: 'Inclure les notes',
+    },
+    notes: {
+        heading: 'Notes de partie',
+        full: 'La page est pleine : rien d’autre n’y tient.',
+        counter: '{{used}} / {{capacity}} caractères',
     },
     workspace: {
         persistenceFailed:
@@ -178,6 +192,7 @@ const common: ResourceShape<typeof en> = {
         exportFailed: 'Échec de l’export.',
         generateTomlFailed: 'Échec de la génération du TOML.',
         exportPngFailed: 'Échec de l’export PNG.',
+        exportPdfFailed: 'Échec de l’export PDF.',
         exportTomlFailed: 'Échec de l’export TOML.',
     },
 }

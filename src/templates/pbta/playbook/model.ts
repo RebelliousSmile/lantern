@@ -1,3 +1,4 @@
+import { NOTES_TARGET } from '@/templates/pbta/shared/sessionNotes'
 import type { Playbook as PlaybookData } from './schema'
 
 export type MoveRef = { ref: string; checked?: boolean }
@@ -85,6 +86,8 @@ export type PbtaPlaybook = {
     advancement: AdvancementEntry[]
     creation: CreationEntry[]
     gear: GearEntry[]
+    /** Free notes taken in play, printed on the notes page after the sheet. */
+    sessionNotes?: string
 }
 
 function toMoveInline(raw: {
@@ -206,6 +209,7 @@ export function toPlaybookDocument(raw: PlaybookData): PbtaPlaybook {
             quantity: entry.quantity ?? null,
             tags: entry.tags ?? [],
         })),
+        ...(raw.sessionNotes ? { sessionNotes: raw.sessionNotes } : {}),
     }
 }
 
@@ -297,6 +301,7 @@ export function toPlaybookPayload(doc: PbtaPlaybook): Record<string, unknown> {
             return gearPayload
         })
     }
+    if (doc.sessionNotes) payload.sessionNotes = doc.sessionNotes
 
     return payload
 }
@@ -333,6 +338,7 @@ export type SheetTarget =
     | { kind: 'advancement'; mode?: 'edit' }
     | { kind: 'creation'; mode?: 'edit' }
     | { kind: 'gear'; mode?: 'edit' }
+    | { kind: typeof NOTES_TARGET; mode?: 'edit' }
 
 export type PlaybookSheetState = {
     open: boolean

@@ -1,5 +1,9 @@
 import { useUiText, type TranslationKey } from '@/i18n/text'
 import type { CSSProperties, ReactNode } from 'react'
+import {
+    NOTES_TARGET,
+    PlaybookNotesPage,
+} from '@/templates/pbta/shared/sessionNotes'
 import appearance from 'schema-pbta/packs/the-sprawl/appearance-contract.json'
 import {
     useSprawlPlaybookStore,
@@ -280,6 +284,7 @@ export function SprawlPlaybookPreview() {
                         key={face.id}
                         className="handbook-sprawl-face"
                         data-face={face.id}
+                        data-export-page={face.id}
                     >
                         {region(face.header as RegionId)}
                         {face.columns.map((ids, columnIndex) => (
@@ -298,6 +303,18 @@ export function SprawlPlaybookPreview() {
                     .filter((id) => !placed.has(id))
                     .map(region)}
             </article>
+            {/* The notes page: one more sheet on the same paper, after the faces. */}
+            <PlaybookNotesPage
+                target="the-sprawl-playbook"
+                value={playbook.sessionNotes}
+                className="handbook-sprawl-playbook"
+                style={{
+                    ...tokens,
+                    transform: `scale(${view.zoom})`,
+                    transformOrigin: 'top left',
+                }}
+                onOpen={() => openSheet({ kind: NOTES_TARGET })}
+            />
         </div>
     )
 }

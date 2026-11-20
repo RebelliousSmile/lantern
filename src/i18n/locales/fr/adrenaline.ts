@@ -18,6 +18,7 @@ const adrenaline: ResourceShape<typeof en> = {
         states: 'États',
         contagion: 'Contagion',
         narrative: 'Narratif',
+        notes: 'Notes de partie',
         meta: 'Provenance',
     },
     appearance: {

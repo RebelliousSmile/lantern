@@ -122,6 +122,20 @@ const common = {
         exportedToml: 'Exported TOML.',
         png: 'PNG',
         exportPng: 'Export PNG',
+        pdf: 'PDF',
+        exportPdf: 'Export PDF',
+        pdfDescription:
+            'Every page, through the browser’s printing: choose “Save as PDF”. The text stays selectable. If colours are missing, tick “Background graphics”.',
+        exportedArchive: 'Exported archive.',
+        pages: 'Pages',
+        allPagesArchive: 'All pages (archive, one PNG per page)',
+        includeNotesPage: 'Include the notes page',
+        includeNotes: 'Include the notes',
+    },
+    notes: {
+        heading: 'Session notes',
+        full: 'The page is full: nothing more fits.',
+        counter: '{{used}} / {{capacity}} characters',
     },
     workspace: {
         persistenceFailed:
@@ -180,6 +194,7 @@ const common = {
         exportFailed: 'Failed to export.',
         generateTomlFailed: 'Failed to generate TOML.',
         exportPngFailed: 'Failed to export PNG.',
+        exportPdfFailed: 'Failed to export PDF.',
         exportTomlFailed: 'Failed to export TOML.',
     },
 }

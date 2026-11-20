@@ -1,5 +1,7 @@
+import i18n from '@/i18n'
 import { useEffect } from 'react'
 import { PJ_PRESENTATION } from 'schema-adrenaline/presentation'
+import { NotesPage } from '../../../shared/notes/NotesPage'
 import { useAdrenalineDocument } from '../../shared/hooks'
 import {
     adrenalineSheetTokens,
@@ -32,95 +34,147 @@ const liftsNotes = (
     block.placement !== undefined &&
     (block.placement.columnSpan ?? 1) < (section.columns ?? 1)
 
+type Row = ReturnType<typeof sheetRows>[number]
+type Document = Record<string, unknown>
+type Open = (
+    section: PjSection,
+    side?: undefined,
+    keys?: readonly string[]
+) => void
+
+/** One published row of a page: its sections side by side, a folding section with nothing entered left out. */
+function PjRow({
+    row,
+    document,
+    openSection,
+}: {
+    row: Row
+    document: Document
+    openSection: Open
+}) {
+    const { appearance, sheet } = PJ_PRESENTATION
+    /* A folding section with nothing entered is not drawn (nor printed): the editor panel offers the way in. */
+    const sections = row.sections.filter(
+        ({ section }) =>
+            !section.collapsible ||
+            section.blocks.some((block) =>
+                block.paths.some((path) => hasContent(at(document, path)))
+            )
+    )
+    if (sections.length === 0) return null
+    const rendered = sections.map(({ section, span }) => (
+        <PresentationSection
+            key={section.id}
+            section={section}
+            span={sections.length > 1 ? span : undefined}
+        >
+            {sortedBlocks(section).map((block) => [
+                block.form === 'game-parameters' ? (
+                    <PresentationBrand
+                        key={`${block.id}-brand`}
+                        sheetLabel={sheet.label}
+                        subtitle={parametersSubtitle(block, document)}
+                        variant={appearance.variant}
+                    />
+                ) : null,
+                <PresentationBlock
+                    block={block}
+                    withNotes={!liftsNotes(section, block)}
+                    key={block.id}
+                    source={document}
+                    onOpen={
+                        block.paths.length > 0
+                            ? (zone) =>
+                                  openSection(
+                                      editTarget(block),
+                                      undefined,
+                                      zone ? [block.id, zone] : [block.id]
+                                  )
+                            : undefined
+                    }
+                />,
+            ])}
+            {sortedBlocks(section)
+                .filter((block) => liftsNotes(section, block))
+                .flatMap((block) =>
+                    (block.notes ?? []).map((note) => (
+                        <p
+                            className="adr-pj__note adr-pj__block-note"
+                            key={`${block.id}:${note}`}
+                        >
+                            {note}
+                        </p>
+                    ))
+                )}
+        </PresentationSection>
+    ))
+    return sections.length > 1 ? (
+        <div className={`adr-pj__row adr-pj--row-${row.id}`}>{rendered}</div>
+    ) : (
+        <>{rendered}</>
+    )
+}
+
 /*
  * The sheet is laid out by the published presentation: sections, block order, placements,
- * decorations and appearance all come from schema-adrenaline, colours and fonts from its pack.
+ * decorations and appearance all come from schema-adrenaline, colours and fonts from its pack. It
+ * is drawn page by page as the presentation declares the pages: each page is a node of its own, so
+ * it leaves as one image and prints on one sheet, and the notes page comes last.
  */
 export function PjPreview() {
     const { document, openSection } = useAdrenalineDocument<
-        Record<string, unknown>,
+        Document,
         PjSection
-    >('adrenaline.pj', blankPj() as unknown as Record<string, unknown>)
-    const { appearance, sheet } = PJ_PRESENTATION
+    >('adrenaline.pj', blankPj() as unknown as Document)
     useEffect(installAdrenalineFontFaces, [])
+    const classes = ['adr-pj', ...appearanceClasses(PJ_PRESENTATION)].join(' ')
+    const rows = sheetRows(PJ_PRESENTATION)
     return (
-        <article
-            className={['adr-pj', ...appearanceClasses(PJ_PRESENTATION)].join(
-                ' '
-            )}
-            style={adrenalineSheetTokens}
-        >
-            {sheetRows(PJ_PRESENTATION).map(({ id, sections: listed }) => {
-                /* A folding section with nothing entered is not drawn (nor printed): the editor panel offers the way in. */
-                const sections = listed.filter(
-                    ({ section }) =>
-                        !section.collapsible ||
-                        section.blocks.some((block) =>
-                            block.paths.some((path) =>
-                                hasContent(at(document, path))
-                            )
-                        )
-                )
-                if (sections.length === 0) return null
-                const rendered = sections.map(({ section, span }) => (
-                    <PresentationSection
-                        key={section.id}
-                        section={section}
-                        span={sections.length > 1 ? span : undefined}
+        <div className="adr-pj-pages">
+            {PJ_PRESENTATION.pages.map((page) => {
+                if ('notesPath' in page)
+                    return (
+                        <NotesPage
+                            key={page.id}
+                            id={page.id}
+                            title={
+                                i18n.language.startsWith('fr')
+                                    ? page.label.fr
+                                    : page.label.en
+                            }
+                            value={document.notesDePartie as string | undefined}
+                            className={classes}
+                            style={adrenalineSheetTokens}
+                            onOpen={() => openSection('notes')}
+                        />
+                    )
+                const ids = page.sections as readonly string[]
+                return (
+                    <article
+                        key={page.id}
+                        className={classes}
+                        style={adrenalineSheetTokens}
+                        data-export-page={page.id}
                     >
-                        {sortedBlocks(section).map((block) => [
-                            block.form === 'game-parameters' ? (
-                                <PresentationBrand
-                                    key={`${block.id}-brand`}
-                                    sheetLabel={sheet.label}
-                                    subtitle={parametersSubtitle(
-                                        block,
-                                        document
-                                    )}
-                                    variant={appearance.variant}
+                        {rows
+                            .map((row) => ({
+                                ...row,
+                                sections: row.sections.filter(({ section }) =>
+                                    ids.includes(section.id)
+                                ),
+                            }))
+                            .filter(({ sections }) => sections.length > 0)
+                            .map((row) => (
+                                <PjRow
+                                    key={row.sections[0].section.id}
+                                    row={row}
+                                    document={document}
+                                    openSection={openSection as Open}
                                 />
-                            ) : null,
-                            <PresentationBlock
-                                block={block}
-                                withNotes={!liftsNotes(section, block)}
-                                key={block.id}
-                                source={document}
-                                onOpen={
-                                    block.paths.length > 0
-                                        ? (zone) =>
-                                              openSection(
-                                                  editTarget(block),
-                                                  undefined,
-                                                  zone
-                                                      ? [block.id, zone]
-                                                      : [block.id]
-                                              )
-                                        : undefined
-                                }
-                            />,
-                        ])}
-                        {sortedBlocks(section)
-                            .filter((block) => liftsNotes(section, block))
-                            .flatMap((block) =>
-                                (block.notes ?? []).map((note) => (
-                                    <p
-                                        className="adr-pj__note adr-pj__block-note"
-                                        key={`${block.id}:${note}`}
-                                    >
-                                        {note}
-                                    </p>
-                                ))
-                            )}
-                    </PresentationSection>
-                ))
-                return sections.length > 1 ? (
-                    <div className={`adr-pj__row adr-pj--row-${id}`} key={id}>
-                        {rendered}
-                    </div>
-                ) : (
-                    rendered
+                            ))}
+                    </article>
                 )
             })}
-        </article>
+        </div>
     )
 }

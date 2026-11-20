@@ -111,6 +111,22 @@ const typed = {
 const back = roundTrip(typed)
 assert.deepEqual(back, typed, 'a sheet with the fields added in 5.0.0')
 
+/* The session notes travel with the sheet, and a sheet without them writes no key. */
+const noted = {
+    ...typed,
+    notesDePartie: 'Session 3 : le pont est piégé.\n\nPNJ : Marek, informateur.',
+} as unknown as AdrenalinePj
+assert.deepEqual(roundTrip(noted), noted, 'the session notes round trip')
+assert.ok(
+    /notesDePartie/.test(exportToTOML(noted)),
+    'the notes are in the TOML'
+)
+assert.equal(
+    /notesDePartie/.test(exportToTOML(typed)),
+    false,
+    'no notes key without notes'
+)
+
 /* A second pass changes nothing, and equipment holds no mental weapons. */
 assert.equal(exportToTOML(back), exportToTOML(typed), 'a stable export')
 assert.equal(
@@ -1142,6 +1158,11 @@ runAll(
     const printed = sheetBlocks.flatMap(pointersOf).map(strip)
     const declared = new Set(leaves.map((leaf) => strip(leaf.pointer)))
     const notEditableStripped = new Set([...notEditable].map(strip))
+    /* The notes page prints the free text: its own form edits it, not a block's zone. */
+    for (const page of PJ_PRESENTATION.pages as readonly {
+        notesPath?: string
+    }[])
+        if (page.notesPath) notEditableStripped.add(strip(page.notesPath))
     /*
      * Who owns a leaf: the block that prints the most specific pointer holding it. A leaf no block
      * prints (a hidden path of the contract) goes to the zone that prints its siblings, as the

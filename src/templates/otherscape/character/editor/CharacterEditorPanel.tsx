@@ -1,5 +1,11 @@
 import { useUiText } from '@/i18n/text'
-import { useOtherscapeCharacterSheetStore, type SheetTarget } from '../hooks'
+import { NotesForm } from '../../../shared/notes/NotesForm'
+import {
+    useOtherscapeCharacterSheetStore,
+    useOtherscapeCharacterStore,
+    type SheetTarget,
+} from '../hooks'
+import { SESSION_NOTES_CAPACITY } from '../pages'
 import BasicForm from './forms/BasicForm'
 import ComboForm from './forms/ComboForm'
 import LoadoutForm from './forms/LoadoutForm'
@@ -39,9 +45,29 @@ function CharacterZoneForm({ target }: { target: SheetTarget }) {
             )
         case 'meta':
             return <MetaForm />
+        case 'notes':
+            return <SessionNotesForm />
         default:
             return null
     }
+}
+
+/** The notes page's text, held to the room the schema gives it and to the page it is drawn on. */
+function SessionNotesForm() {
+    const text = useUiText()
+    const { otherscapeCharacter, setSessionNotes } =
+        useOtherscapeCharacterStore()
+    return (
+        <section className="grid gap-3">
+            <h3 className="font-semibold">{text('notes.heading')}</h3>
+            <NotesForm
+                label={text('notes.heading')}
+                value={otherscapeCharacter.session_notes ?? ''}
+                capacity={SESSION_NOTES_CAPACITY}
+                onChange={setSessionNotes}
+            />
+        </section>
+    )
 }
 
 export function CharacterEditorPanel() {

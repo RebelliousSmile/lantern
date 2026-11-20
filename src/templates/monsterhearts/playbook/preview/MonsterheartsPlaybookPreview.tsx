@@ -20,6 +20,11 @@ import imFellDoublePicaUrl from 'schema-pbta/packs/monsterhearts/assets/fonts/im
 import yellowMagicianUrl from 'schema-pbta/packs/monsterhearts/assets/fonts/yellow-magician-latin-400-normal.woff2'
 import 'schema-pbta/packs/monsterhearts/assets/styles/playbook.css'
 import { PBTA_MONSTERHEARTS_APPEARANCE_ASSET_URLS } from 'schema-pbta/presentation/monsterhearts-appearance-assets'
+import {
+    NOTES_TARGET,
+    PlaybookNotesPage,
+    sheetPageIdOf,
+} from '@/templates/pbta/shared/sessionNotes'
 import '../../../pbta/preview/playbookRegionInteraction.css'
 import {
     useMonsterheartsSheet,
@@ -576,6 +581,13 @@ export function MonsterheartsPlaybookPreview() {
         return null
     }
 
+    const sheetStyle = {
+        ...appearance.tokens,
+        width: `${view.previewWidth}px`,
+        transform: `scale(${view.zoom})`,
+        transformOrigin: 'top left',
+    } as CSSProperties
+
     return (
         <>
             <style>
@@ -591,14 +603,8 @@ export function MonsterheartsPlaybookPreview() {
             <article
                 className="handbook-pbta-playbook handbook-monsterhearts-playbook"
                 data-appearance-variant={appearance.id}
-                style={
-                    {
-                        ...appearance.tokens,
-                        width: `${view.previewWidth}px`,
-                        transform: `scale(${view.zoom})`,
-                        transformOrigin: 'top left',
-                    } as CSSProperties
-                }
+                data-export-page={sheetPageIdOf('monsterhearts-playbook')}
+                style={sheetStyle}
             >
                 {layout.rows.map((columns, rowIndex) => (
                     <div
@@ -620,6 +626,14 @@ export function MonsterheartsPlaybookPreview() {
                 {/* Regions the contract leaves out of every row follow in canonical order. */}
                 {layout.trailing.map(renderRegion)}
             </article>
+            {/* The notes page: one more sheet on the same paper, after the sheet. */}
+            <PlaybookNotesPage
+                target="monsterhearts-playbook"
+                value={playbook.sessionNotes}
+                className="handbook-pbta-playbook handbook-monsterhearts-playbook"
+                style={sheetStyle}
+                onOpen={() => open(NOTES_TARGET)}
+            />
         </>
     )
 }

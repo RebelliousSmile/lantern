@@ -16,6 +16,11 @@ import type {
     ScalarKind,
 } from '@/core/editor-schema/types'
 import { useUiText } from '@/i18n/text'
+import {
+    NOTES_TARGET,
+    SessionNotesPanel,
+    withSessionNotes,
+} from '@/templates/pbta/shared/sessionNotes'
 import { PublishedCollectionEditor } from '@/templates/pbta/specialized/collectionAdapters'
 import {
     collectionItems,
@@ -667,6 +672,15 @@ export function MonsterheartsPlaybookEditorPanel() {
             <p className="text-sm text-muted-foreground">
                 {t('pbta:monsterhearts.editor.hint')}
             </p>
+        )
+    if (sheet.target === NOTES_TARGET)
+        return (
+            <SessionNotesPanel
+                value={playbook.sessionNotes}
+                onChange={(notes) =>
+                    setPlaybook(withSessionNotes(playbook, notes))
+                }
+            />
         )
     if (sheet.target === 'basic')
         return (

@@ -1,12 +1,14 @@
 import { createImageExportAction } from '@/core/templates/shell/imageExportAction'
 import { createTomlExportAction } from '@/core/templates/shell/tomlExportAction'
 import type { AnyTemplateDefinition } from '@/core/templates/types'
+import i18n from '@/i18n'
 import descriptor from './descriptor'
 import { CharacterAppearancePanel } from './editor/CharacterAppearancePanel'
 import { CharacterEditorPanel } from './editor/CharacterEditorPanel'
 import { CharacterImageExportSettings } from './editor/CharacterImageExportSettings'
 import { getOtherscapeCharacterPreviewWidth } from './hooks'
 import type { OtherscapeCharacter, OtherscapeCharacterViewState } from './model'
+import { OTHERSCAPE_CHARACTER_PAGES, isNotesPage, pageLabel } from './pages'
 import { CharacterPreview } from './preview/CharacterPreview'
 import { exportToTOML, importFromTOMLWithWarnings } from './toml'
 
@@ -37,6 +39,18 @@ const characterTemplate: AnyTemplateDefinition = {
         renderPanel: () => <CharacterAppearancePanel />,
     },
     export: {
+        /* The pages are the ones the published schema declares, the notes page last. */
+        pages: () =>
+            OTHERSCAPE_CHARACTER_PAGES.map((page) => ({
+                id: page.id,
+                label: { text: pageLabel(page, i18n.language) },
+                notes: isNotesPage(page),
+            })),
+        withoutNotes: (doc: OtherscapeCharacter) => {
+            const rest = { ...doc }
+            delete rest.session_notes
+            return rest
+        },
         actions: [
             createTomlExportAction({
                 exportToml: exportToTOML,

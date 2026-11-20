@@ -5,7 +5,20 @@ All notable changes to this project are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [v0.33.0] - 2026-11-20
+
+### Added
+
+- Session notes: a last page, "Session notes", on the Adrenaline PJ sheet, a free text of fixed size (A4). The editor shows how much of the page is used, flags "The page is full" and refuses what no longer fits, by the capacity the schema publishes and by the height the page really holds. The notes are part of the TOML (no key when empty) and of every export.
+- A single Export panel with a PNG / PDF / TOML switch that shows the options of the chosen format. PNG: one page, or an archive with one PNG per page. PDF: the browser's native print, every page, selectable text. TOML: with or without the session notes. The notes page can be left out of any export.
+- Session notes on the Otherscape character sheet and on the PbtA booklets (Masks, The Sprawl, Urban Shadows, Monsterhearts and the generic playbook): the same last page, the same form and the same export rule, drawn by one shared component. The pages of each booklet are the ones schema-pbta publishes (front, back, notes for Masks, The Sprawl and Urban Shadows; sheet, notes for Monsterhearts and the generic playbook).
+- `assert:pbta-notes`: each booklet declares the pages its pack publishes, draws them once each, writes the notes in the TOML, leaves them out of a TOML exported without them, and no template draws a notes page of its own.
+- `assert:export-pages`: the pages a template declares are drawn once each, the notes page comes last and can be excluded, the archive reads back, and the notes fit test cuts a paste where the page ends.
+
+### Changed
+
+- The Adrenaline PJ preview is drawn page by page as the published presentation declares them (front, back, notes); each page leaves as one image and prints on one sheet. The Masks playbook preview marks its faces the same way.
+- Monster of the Week, Salvage Run and Apocalypse World are gone from Lantern with schema-pbta's removal of the packs: their templates, samples and strings are removed. The generic playbook and game definition now sit under a neutral "PbtA" group (id `pbta`); a hidden-packs setting stored under the former id is read back as `pbta`.
 
 ## [v0.32.0] - 2026-11-09
 

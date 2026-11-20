@@ -1,10 +1,15 @@
-import type { TemplateExportAction } from '@/core/templates/types'
+import type {
+    TemplateExportAction,
+    TemplateExportSelection,
+} from '@/core/templates/types'
 import i18n from '@/i18n'
 import { formatError } from '@/i18n/formatError'
 import type { UiText } from '@/i18n/text'
 import { snapdom, type CaptureResult } from '@zumer/snapdom'
 import type { ReactNode } from 'react'
 import { toast } from 'sonner'
+import { createZip, downloadBlob } from './archiveExport'
+import { findPageNode, numberedPageSlug, pageSlug } from './exportPages'
 
 type ExportableView = {
     exportPrefs: {
@@ -30,10 +35,12 @@ export function createImageExportAction<TView extends ExportableView>(options: {
         run: async ({
             fileStem,
             getPreviewNode,
+            selection,
             view,
         }: {
             fileStem: string
             getPreviewNode: () => HTMLElement | null
+            selection: TemplateExportSelection
             view: TView
         }) => {
             const node = getPreviewNode()
@@ -45,17 +52,56 @@ export function createImageExportAction<TView extends ExportableView>(options: {
             node.classList.add('exporting')
             try {
                 const pixelRatio = Number(view.exportPrefs.scale) || 1
-                const snap: CaptureResult = await snapdom(node, {
-                    scale: pixelRatio,
-                    embedFonts: true,
-                })
+                const capture = (target: HTMLElement) =>
+                    snapdom(target, { scale: pixelRatio, embedFonts: true })
 
-                await snap.download({
-                    type: 'png',
-                    filename: `${fileStem}@${pixelRatio}x.png`,
-                })
+                /* A template without pages is one image of the whole preview. */
+                if (selection.pages.length === 0) {
+                    const snap: CaptureResult = await capture(node)
+                    await snap.download({
+                        type: 'png',
+                        filename: `${fileStem}@${pixelRatio}x.png`,
+                    })
+                    toast.success(i18n.t('export.exportedPng'))
+                    return
+                }
 
-                toast.success(i18n.t('export.exportedPng'))
+                const targets = selection.pages.map((page, index) => ({
+                    page,
+                    index,
+                    node: findPageNode(node, page),
+                }))
+                const missing = targets.find((target) => !target.node)
+                if (missing) {
+                    toast.error(i18n.t('export.previewNotFound'))
+                    return
+                }
+
+                if (!selection.archive) {
+                    const [{ page, node: pageNode }] = targets
+                    const snap = await capture(pageNode as HTMLElement)
+                    await snap.download({
+                        type: 'png',
+                        filename: `${fileStem}-${pageSlug(page)}@${pixelRatio}x.png`,
+                    })
+                    toast.success(i18n.t('export.exportedPng'))
+                    return
+                }
+
+                const entries = []
+                for (const { page, index, node: pageNode } of targets) {
+                    const snap = await capture(pageNode as HTMLElement)
+                    const blob = await snap.toBlob({ type: 'png' })
+                    entries.push({
+                        name: `${fileStem}-${numberedPageSlug(page, index)}.png`,
+                        data: new Uint8Array(await blob.arrayBuffer()),
+                    })
+                }
+                downloadBlob(
+                    new Blob([createZip(entries)], { type: 'application/zip' }),
+                    `${fileStem}@${pixelRatio}x.zip`
+                )
+                toast.success(i18n.t('export.exportedArchive'))
             } catch (error) {
                 toast.error(formatError(error, 'errors.exportPngFailed'))
             } finally {

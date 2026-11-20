@@ -224,5 +224,6 @@ export function getSampleOtherscapeCharacter(): OtherscapeCharacter {
             publication_type: 'homebrew',
             authors: ['schema-in-the-mist contributors'],
         },
+        session_notes: 'Session 1: the crew meets at the Rail Yard.',
     }
 }

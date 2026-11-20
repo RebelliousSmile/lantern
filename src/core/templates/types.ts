@@ -34,6 +34,25 @@ export type LegacyWorkspaceMigration<TDoc = unknown> = {
     migrate: (raw: unknown) => TDoc | null
 }
 
+/**
+ * One page of a sheet, as the published presentation declares it. The preview marks the node of
+ * each page with `data-export-page="<id>"`; a template that declares none exports its whole preview.
+ */
+export type TemplateExportPage = {
+    id: string
+    label: UiText
+    /** The page of session notes: always last, and left out of an export when the player unticks it. */
+    notes?: boolean
+}
+
+/** What the player chose in the export panel, resolved before an action runs. */
+export type TemplateExportSelection = {
+    /** The pages to export, in sheet order. Empty when the template declares no pages (the whole preview). */
+    pages: TemplateExportPage[]
+    /** All the selected pages in one archive (PNG) rather than the single chosen one. */
+    archive: boolean
+}
+
 export type TemplateExportAction<
     TDoc = unknown,
     TView = unknown,
@@ -51,6 +70,7 @@ export type TemplateExportAction<
         view: TView
         sheet: TSheet
         getPreviewNode: () => HTMLElement | null
+        selection: TemplateExportSelection
         fileStem: string
     }) => Promise<void> | void
 }
@@ -117,6 +137,10 @@ export type TemplateDefinition<
 
     export: {
         actions: TemplateExportAction<TDoc, TView, TSheet>[]
+        /** The pages of the sheet; absent for a template that is one page. */
+        pages?: (doc: TDoc) => TemplateExportPage[]
+        /** The document without its session notes, for an export the player wants to share. */
+        withoutNotes?: (doc: TDoc) => TDoc
     }
 }
 

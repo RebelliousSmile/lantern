@@ -47,22 +47,22 @@ assert.equal(original.nested.value, 1, 'clone is independent')
 
 storage.set(
     'mist:game-packs:v1',
-    JSON.stringify({ disabled: ['pbta', 'pbta'], open: ['pbta'] })
+    JSON.stringify({ disabled: ['apocalypse-world', 'pbta'], open: ['apocalypse-world'] })
 )
 const { GAME_PACKS_STORAGE_KEY, readGamePacks, useGamePackStore } =
     await import('../src/core/gamePacks')
 const initialPacks = useGamePackStore.getState()
-assert.deepEqual(initialPacks.disabledGameIds, ['apocalypse-world'])
+assert.deepEqual(initialPacks.disabledGameIds, ['pbta'])
 assert.deepEqual(initialPacks.openGameIds, [])
 assert.deepEqual(JSON.parse(storage.get(GAME_PACKS_STORAGE_KEY) ?? '{}'), {
-    disabled: ['apocalypse-world'],
+    disabled: ['pbta'],
 })
 
-initialPacks.setGamePackOpen('apocalypse-world', true)
-initialPacks.setGamePackEnabled('apocalypse-world', false)
-assert.deepEqual(useGamePackStore.getState().openGameIds, ['apocalypse-world'])
+initialPacks.setGamePackOpen('pbta', true)
+initialPacks.setGamePackEnabled('pbta', false)
+assert.deepEqual(useGamePackStore.getState().openGameIds, ['pbta'])
 assert.deepEqual(JSON.parse(storage.get(GAME_PACKS_STORAGE_KEY) ?? '{}'), {
-    disabled: ['apocalypse-world'],
+    disabled: ['pbta'],
 })
 
 const { useWorkspaceStore } = await import('../src/core/workspace/store')

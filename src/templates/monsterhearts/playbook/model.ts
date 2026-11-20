@@ -1,4 +1,5 @@
 import type { TranslationKey } from '@/i18n/text'
+import { NOTES_TARGET } from '@/templates/pbta/shared/sessionNotes'
 import type { MonsterheartsPlaybook as Published } from 'schema-pbta'
 
 export type EditorialBlock = { heading: string; paragraphs: string[] }
@@ -31,7 +32,10 @@ export type ViewState = {
     hidden: Record<SectionId, boolean>
     exportPrefs: { scale: 1 | 2 | 3 }
 }
-export type SheetState = { open: boolean; target: SectionId | 'basic' | null }
+export type SheetState = {
+    open: boolean
+    target: SectionId | 'basic' | typeof NOTES_TARGET | null
+}
 export const sections: Array<{ id: SectionId; label: TranslationKey }> = [
     { id: 'stats', label: 'pbta:monsterhearts.sections.stats' },
     { id: 'ascendants', label: 'pbta:monsterhearts.sections.ascendants' },

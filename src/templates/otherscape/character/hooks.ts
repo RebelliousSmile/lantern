@@ -127,6 +127,12 @@ export function useOtherscapeCharacterStore() {
             replaceTabDoc(tab.id, blankOtherscapeCharacter())
         },
         setName: (name: string) => apply((current) => ({ ...current, name })),
+        /** The session notes; an empty text leaves the field out of the document. */
+        setSessionNotes: (notes: string) =>
+            apply((current) => ({
+                ...current,
+                session_notes: notes === '' ? undefined : notes,
+            })),
 
         /** Adds a blank theme. Returns false, and changes nothing, once the character holds four. */
         addTheme: (type: ThemeType = 'self'): boolean => {

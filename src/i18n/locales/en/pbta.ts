@@ -8,7 +8,7 @@ const pbta = {
         label: 'Playbook',
         newTitle: 'New Playbook',
         description:
-            'A Playbook is an Apocalypse World character type: its stats, its moves, the choices made at creation, and the gear it starts with. Start blank, open the example, or import a TOML file.',
+            'A Playbook is a PbtA character type: its stats, its moves, the choices made at creation, and the gear it starts with. Start blank, open the example, or import a TOML file.',
         exportToml: 'Export the current playbook as TOML.',
         exportPng: 'Export the current playbook sheet as PNG.',
         sections: {
@@ -24,7 +24,7 @@ const pbta = {
         label: 'Game Definition',
         newTitle: 'New Game Definition',
         description:
-            'A Game Definition defines an Apocalypse World game such as Salvage Run: its stats, its move types, the results a roll can land on, and who gets a character sheet. Start blank, open the example, or import a TOML file.',
+            'A Game Definition defines a PbtA game: its stats, its move types, the results a roll can land on, and who gets a character sheet. Start blank, open the example, or import a TOML file.',
         exportToml: 'Export the current game definition as TOML.',
         exportPng: 'Export the current game definition sheet as PNG.',
         sections: {
@@ -266,44 +266,6 @@ const pbta = {
             drives_options: 'Drives',
         },
     },
-    motw: {
-        editor: {
-            hint: 'Click a region of the sheet to edit it.',
-            invalidCollection: 'Invalid published collection configuration.',
-            previewWidth: 'Preview width',
-            unknownField: 'Field without an editor:',
-        },
-        tracks: {
-            luck: 'Luck',
-            harm: 'Harm',
-            unstable: 'Unstable',
-            experience: 'Experience',
-        },
-        fields: {
-            name: 'Name',
-            heroName: 'Hunter name',
-            description: 'Description',
-            stats: 'Ratings',
-            ratings: 'Resources',
-            statChoices: 'Rating choices',
-            luckMax: 'Luck boxes',
-            luckMarked: 'Luck marked',
-            harmMax: 'Harm boxes',
-            harmMarked: 'Harm marked',
-            unstable: 'Unstable',
-            experienceMax: 'Experience boxes',
-            experienceMarked: 'Experience marked',
-            specialWeapon: 'Special weapon',
-            moves: 'Moves',
-            startingMoves: 'Starting moves',
-            look: 'Look',
-            introductions: 'Introductions',
-            history: 'History',
-            improvements: 'Improvements',
-            advancements: 'Advanced improvements',
-            notes: 'Notes',
-        },
-    },
     sprawl: {
         editor: {
             hint: 'Click a region of the sheet to edit it.',
@@ -342,9 +304,6 @@ const pbta = {
     },
     blocks: {
         masksNpc: { label: 'NPC', newTitle: 'New NPC' },
-        motwMonster: { label: 'Monster', newTitle: 'New monster' },
-        motwThreat: { label: 'Threat', newTitle: 'New threat' },
-        motwTeam: { label: 'Team', newTitle: 'New team' },
         sprawlMission: { label: 'Mission', newTitle: 'New mission' },
         sprawlThreat: { label: 'Threat', newTitle: 'New threat' },
         sprawlResource: { label: 'Resource', newTitle: 'New resource' },

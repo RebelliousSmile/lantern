@@ -1,10 +1,6 @@
 import type { TranslationKey } from '@/i18n/text'
 import masksAppearance from 'schema-pbta/packs/masks/appearance-contract.json'
 import masksNpc from 'schema-pbta/packs/masks/npc-presentation-contract.json'
-import motwAppearance from 'schema-pbta/packs/monster-of-the-week/appearance-contract.json'
-import motwMonster from 'schema-pbta/packs/monster-of-the-week/monster-presentation-contract.json'
-import motwTeam from 'schema-pbta/packs/monster-of-the-week/team-presentation-contract.json'
-import motwThreat from 'schema-pbta/packs/monster-of-the-week/threat-presentation-contract.json'
 import sprawlAppearance from 'schema-pbta/packs/the-sprawl/appearance-contract.json'
 import sprawlCorporation from 'schema-pbta/packs/the-sprawl/corporation-presentation-contract.json'
 import sprawlMatrix from 'schema-pbta/packs/the-sprawl/matrix-presentation-contract.json'
@@ -41,7 +37,6 @@ const baseTokens = (appearance: Appearance): Record<string, string> =>
 
 const APPEARANCES: Record<string, Appearance> = {
     masks: masksAppearance,
-    'monster-of-the-week': motwAppearance,
     'the-sprawl': sprawlAppearance,
 }
 
@@ -68,30 +63,6 @@ const BLOCK_SPECS: BlockSpec[] = [
         labelKey: 'pbta:blocks.masksNpc.label',
         newTitleKey: 'pbta:blocks.masksNpc.newTitle',
         contract: masksNpc,
-    },
-    {
-        id: 'monster-of-the-week.monster',
-        gameId: 'monster-of-the-week',
-        gameLabel: 'Monster of the Week',
-        labelKey: 'pbta:blocks.motwMonster.label',
-        newTitleKey: 'pbta:blocks.motwMonster.newTitle',
-        contract: motwMonster,
-    },
-    {
-        id: 'monster-of-the-week.threat',
-        gameId: 'monster-of-the-week',
-        gameLabel: 'Monster of the Week',
-        labelKey: 'pbta:blocks.motwThreat.label',
-        newTitleKey: 'pbta:blocks.motwThreat.newTitle',
-        contract: motwThreat,
-    },
-    {
-        id: 'monster-of-the-week.team',
-        gameId: 'monster-of-the-week',
-        gameLabel: 'Monster of the Week',
-        labelKey: 'pbta:blocks.motwTeam.label',
-        newTitleKey: 'pbta:blocks.motwTeam.newTitle',
-        contract: motwTeam,
     },
     {
         id: 'the-sprawl.mission',

@@ -1,4 +1,6 @@
 import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useResolvedTemplate } from '@/core/templates/TemplateModuleBoundary'
 import { useActiveTab } from '@/core/workspace/selectors'
@@ -6,8 +8,26 @@ import { formatError } from '@/i18n/formatError'
 import { translateEnglish, useUiText } from '@/i18n/text'
 import { slugify } from '@/utils/strings'
 import { useEffect, useMemo, useState } from 'react'
+import { selectPages } from './exportPages'
+import { createPdfExportAction } from './pdfExportAction'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
+
+/** The formats in the order the player reads them: PNG, PDF, TOML, then anything a template adds. */
+const FORMAT_ORDER = ['png', 'pdf', 'toml']
+const pdfAction = createPdfExportAction()
+
+/** Every template that exports an image also prints to PDF: the page is the same node. */
+function withPdf<T extends { id: string }>(actions: readonly T[]): T[] {
+    const all = [...actions] as unknown[] as T[]
+    if (actions.some((action) => action.id === 'png'))
+        all.push(pdfAction as unknown as T)
+    const rank = (id: string) => {
+        const at = FORMAT_ORDER.indexOf(id)
+        return at === -1 ? FORMAT_ORDER.length : at
+    }
+    return all.sort((a, b) => rank(a.id) - rank(b.id))
+}
 
 function copyWithLegacyClipboard(text: string) {
     const textarea = document.createElement('textarea')
@@ -36,9 +56,13 @@ export function TemplateExportPanel() {
     const [busyActionId, setBusyActionId] = useState<string | null>(null)
 
     const actions = useMemo(
-        () => activeTemplate?.export.actions ?? [],
+        () => withPdf(activeTemplate?.export.actions ?? []),
         [activeTemplate]
     )
+    /* 'all' exports every page; otherwise the id of the one page chosen. */
+    const [pageChoice, setPageChoice] = useState('all')
+    const [includeNotesPage, setIncludeNotesPage] = useState(true)
+    const [includeTomlNotes, setIncludeTomlNotes] = useState(true)
     const activeAction =
         actions.find((action) => action.id === activeActionId) ??
         actions[0] ??
@@ -54,6 +78,12 @@ export function TemplateExportPanel() {
         setTomlText(null)
     }, [activeTab?.id, activeAction?.id])
 
+    useEffect(() => {
+        setPageChoice('all')
+        setIncludeNotesPage(true)
+        setIncludeTomlNotes(true)
+    }, [activeTab?.id])
+
     if (!activeTab || !activeTemplate || !activeAction) {
         return (
             <p className="text-sm text-muted-foreground">
@@ -66,6 +96,20 @@ export function TemplateExportPanel() {
     const template = activeTemplate
     const exportToml = template.io.exportToml
     const isTomlAction = activeAction.id === 'toml' && exportToml != null
+    const pages = template.export.pages?.(tab.doc) ?? []
+    const hasNotesPage = pages.some((page) => page.notes)
+    const withoutNotes = template.export.withoutNotes
+    /* A PDF is always every page; a PNG is one page or all of them in an archive. */
+    const selection = selectPages(pages, {
+        scope:
+            activeAction.id === 'pdf' || pageChoice === 'all' ? 'all' : 'one',
+        pageId: pageChoice,
+        includeNotes: includeNotesPage,
+    })
+    const exportedDoc =
+        isTomlAction && !includeTomlNotes && withoutNotes
+            ? withoutNotes(tab.doc)
+            : tab.doc
 
     const getPreviewNode = () => {
         const selector = template.preview.getRootSelector(tab.id)
@@ -80,10 +124,11 @@ export function TemplateExportPanel() {
             await activeAction.run({
                 tabId: tab.id,
                 title: tab.title,
-                doc: tab.doc,
+                doc: exportedDoc,
                 view: tab.view,
                 sheet: tab.sheet,
                 getPreviewNode,
+                selection,
                 // English whatever the UI language: a file name must not depend on it.
                 fileStem: slugify(
                     tab.title || translateEnglish(template.label)
@@ -99,7 +144,7 @@ export function TemplateExportPanel() {
 
         let toml: string
         try {
-            toml = exportToml(tab.doc)
+            toml = exportToml(exportedDoc)
         } catch (error) {
             toast.error(formatError(error, 'errors.generateTomlFailed'))
             return
@@ -147,6 +192,53 @@ export function TemplateExportPanel() {
                     {text(activeAction.description)}
                 </p>
                 {activeAction.renderSettings?.()}
+                {pages.length > 1 && activeAction.id === 'png' && (
+                    <RadioGroup
+                        value={pageChoice}
+                        onValueChange={setPageChoice}
+                        aria-label={t('export.pages')}
+                    >
+                        <label className="flex items-center gap-2 text-sm">
+                            <RadioGroupItem value="all" />
+                            {t('export.allPagesArchive')}
+                        </label>
+                        {pages
+                            .filter((page) => includeNotesPage || !page.notes)
+                            .map((page) => (
+                                <label
+                                    key={page.id}
+                                    className="flex items-center gap-2 text-sm"
+                                >
+                                    <RadioGroupItem value={page.id} />
+                                    {text(page.label)}
+                                </label>
+                            ))}
+                    </RadioGroup>
+                )}
+                {hasNotesPage &&
+                    (activeAction.id === 'png' ||
+                        activeAction.id === 'pdf') && (
+                        <label className="flex items-center gap-2 text-sm">
+                            <Checkbox
+                                checked={includeNotesPage}
+                                onCheckedChange={(checked) =>
+                                    setIncludeNotesPage(checked === true)
+                                }
+                            />
+                            {t('export.includeNotesPage')}
+                        </label>
+                    )}
+                {isTomlAction && withoutNotes && (
+                    <label className="flex items-center gap-2 text-sm">
+                        <Checkbox
+                            checked={includeTomlNotes}
+                            onCheckedChange={(checked) =>
+                                setIncludeTomlNotes(checked === true)
+                            }
+                        />
+                        {t('export.includeNotes')}
+                    </label>
+                )}
             </div>
 
             {isTomlAction ? (

@@ -1,5 +1,9 @@
 import { useUiText, type TranslationKey } from '@/i18n/text'
 import type { CSSProperties, ReactNode } from 'react'
+import {
+    NOTES_TARGET,
+    PlaybookNotesPage,
+} from '@/templates/pbta/shared/sessionNotes'
 import appearance from 'schema-pbta/packs/masks/appearance-contract.json'
 import {
     useMasksPlaybookStore,
@@ -311,6 +315,7 @@ export function MasksPlaybookPreview() {
                         key={face.id}
                         className="handbook-masks-face"
                         data-face={face.id}
+                        data-export-page={face.id}
                     >
                         {region(face.header as RegionId)}
                         {face.columns.map((ids, columnIndex) => (
@@ -329,6 +334,18 @@ export function MasksPlaybookPreview() {
                     .filter((id) => !placed.has(id))
                     .map(region)}
             </article>
+            {/* The notes page: one more sheet on the same paper, after the faces. */}
+            <PlaybookNotesPage
+                target="masks-playbook"
+                value={playbook.sessionNotes}
+                className="handbook-masks-playbook"
+                style={{
+                    ...tokens,
+                    transform: `scale(${view.zoom})`,
+                    transformOrigin: 'top left',
+                }}
+                onOpen={() => openSheet({ kind: NOTES_TARGET })}
+            />
         </div>
     )
 }

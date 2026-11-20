@@ -1,6 +1,10 @@
 import { createImageExportAction } from '@/core/templates/shell/imageExportAction'
 import { createTomlExportAction } from '@/core/templates/shell/tomlExportAction'
 import type { AnyTemplateDefinition } from '@/core/templates/types'
+import {
+    exportPagesOf,
+    withoutSessionNotes,
+} from '@/templates/pbta/shared/sessionNotes'
 import { PlaybookAppearancePanel } from './editor/PlaybookAppearancePanel'
 import { PlaybookEditorPanel } from './editor/PlaybookEditorPanel'
 import { PlaybookImageExportSettings } from './editor/PlaybookImageExportSettings'
@@ -37,6 +41,8 @@ const playbookTemplate: AnyTemplateDefinition = {
         renderPanel: () => <PlaybookAppearancePanel />,
     },
     export: {
+        pages: () => exportPagesOf('playbook'),
+        withoutNotes: withoutSessionNotes,
         actions: [
             createTomlExportAction({
                 exportToml: exportToTOML,

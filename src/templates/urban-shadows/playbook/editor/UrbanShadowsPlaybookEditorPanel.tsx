@@ -9,6 +9,11 @@ import type {
     ScalarKind,
 } from '@/core/editor-schema/types'
 import { useUiText, type TranslationKey } from '@/i18n/text'
+import {
+    NOTES_TARGET,
+    SessionNotesPanel,
+    withSessionNotes,
+} from '@/templates/pbta/shared/sessionNotes'
 import { useGameDefinitionForGame } from '@/templates/pbta/shared/gameDefinition'
 import { PublishedCollectionEditor } from '@/templates/pbta/specialized/collectionAdapters'
 import {
@@ -205,6 +210,15 @@ export function UrbanShadowsPlaybookEditorPanel() {
             <p className="text-sm text-muted-foreground">
                 {text('pbta:urbanShadows.editor.hint')}
             </p>
+        )
+    if (target.kind === NOTES_TARGET)
+        return (
+            <SessionNotesPanel
+                value={playbook.sessionNotes}
+                onChange={(notes) =>
+                    setPlaybook(withSessionNotes(playbook, notes))
+                }
+            />
         )
     const region = regionById(
         target.kind === 'basic' ? 'game-identity' : target.kind

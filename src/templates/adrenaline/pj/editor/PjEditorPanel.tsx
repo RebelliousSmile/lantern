@@ -25,6 +25,7 @@ import {
     ValueField,
 } from '../../shared/editor/FieldPrimitives'
 import { pjLimit } from '../../shared/editor/pjLimits'
+import { maxLengthAt } from '../../shared/editor/schemaShapes'
 import {
     FORMATION_TYPES,
     formationColumns,
@@ -35,6 +36,7 @@ import { useAdrenalineDocument } from '../../shared/hooks'
 import { hasContent } from '../../shared/presentation'
 import { CHARACTERISTIC_FIELDS, WEAPON_FIELDS } from '../../shared/schemaFields'
 import type { PjSection } from '../../shared/sections'
+import { NotesForm } from '../../../shared/notes/NotesForm'
 import { blankPj } from '../sample'
 import { PjDefence } from './CompactDefence'
 import { PjThresholds } from './CompactFields'
@@ -632,6 +634,26 @@ export function PjPanels({
                                         : document.equipement
                                 }
                                 onChange={setEquipment}
+                            />
+                        </section>
+                    )}
+                    {target === 'notes' && (
+                        <section className="grid gap-3">
+                            <h3 className="font-semibold">
+                                {text('notes.heading')}
+                            </h3>
+                            <NotesForm
+                                label={text('notes.heading')}
+                                value={String(document.notesDePartie ?? '')}
+                                capacity={
+                                    maxLengthAt('pj', '/notesDePartie') ?? 0
+                                }
+                                onChange={(value) =>
+                                    set(
+                                        'notesDePartie',
+                                        value === '' ? undefined : value
+                                    )
+                                }
                             />
                         </section>
                     )}

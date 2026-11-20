@@ -1,0 +1,41 @@
+/*
+ * Native PDF export: `printPages` clones each sheet page into #lantern-print-root and names one
+ * `@page` per page (its size is the page's own, read at print time). Only while that class is set
+ * does printing change: the usual Ctrl+P is left alone.
+ */
+#lantern-print-root {
+    display: none;
+}
+
+@media print {
+    html.lantern-printing,
+    html.lantern-printing body {
+        margin: 0;
+        padding: 0;
+        height: auto !important;
+        overflow: visible !important;
+        background: none;
+    }
+
+    html.lantern-printing body > *:not(#lantern-print-root) {
+        display: none !important;
+    }
+
+    html.lantern-printing #lantern-print-root {
+        display: block !important;
+    }
+
+    html.lantern-printing * {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    html.lantern-printing [data-print-page] {
+        break-after: page;
+        break-inside: avoid;
+    }
+
+    html.lantern-printing [data-print-page]:last-child {
+        break-after: auto;
+    }
+}

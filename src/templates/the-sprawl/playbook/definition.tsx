@@ -1,6 +1,10 @@
 import { createImageExportAction } from '@/core/templates/shell/imageExportAction'
 import { createTomlExportAction } from '@/core/templates/shell/tomlExportAction'
 import type { AnyTemplateDefinition } from '@/core/templates/types'
+import {
+    exportPagesOf,
+    withoutSessionNotes,
+} from '@/templates/pbta/shared/sessionNotes'
 import { SprawlPlaybookAppearancePanel } from './editor/SprawlPlaybookAppearancePanel'
 import { SprawlPlaybookEditorPanel } from './editor/SprawlPlaybookEditorPanel'
 import { SprawlPlaybookImageExportSettings } from './editor/SprawlPlaybookImageExportSettings'
@@ -31,6 +35,9 @@ const template: AnyTemplateDefinition = {
         renderPanel: () => <SprawlPlaybookAppearancePanel />,
     },
     export: {
+        /* The pages are the ones the pack publishes (both faces, then the notes). */
+        pages: () => exportPagesOf('the-sprawl-playbook'),
+        withoutNotes: withoutSessionNotes,
         actions: [
             createTomlExportAction({
                 exportToml: exportToTOML,

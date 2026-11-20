@@ -49,17 +49,9 @@ export const templateLoaders: Record<string, TemplateLoader> = {
     'monsterhearts.playbook': () =>
         import('@/templates/monsterhearts/playbook/definition'),
     'masks.playbook': () => import('@/templates/masks/playbook/definition'),
-    'monster-of-the-week.playbook': () =>
-        import('@/templates/monster-of-the-week/playbook/definition'),
     'the-sprawl.playbook': () =>
         import('@/templates/the-sprawl/playbook/definition'),
     'masks.npc': () => import('@/templates/masks/npc/definition'),
-    'monster-of-the-week.monster': () =>
-        import('@/templates/monster-of-the-week/monster/definition'),
-    'monster-of-the-week.threat': () =>
-        import('@/templates/monster-of-the-week/threat/definition'),
-    'monster-of-the-week.team': () =>
-        import('@/templates/monster-of-the-week/team/definition'),
     'the-sprawl.mission': () =>
         import('@/templates/the-sprawl/mission/definition'),
     'the-sprawl.threat': () =>

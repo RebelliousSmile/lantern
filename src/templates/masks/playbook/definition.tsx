@@ -1,11 +1,15 @@
 import { createImageExportAction } from '@/core/templates/shell/imageExportAction'
 import { createTomlExportAction } from '@/core/templates/shell/tomlExportAction'
 import type { AnyTemplateDefinition } from '@/core/templates/types'
+import {
+    exportPagesOf,
+    withoutSessionNotes,
+} from '@/templates/pbta/shared/sessionNotes'
 import { MasksPlaybookAppearancePanel } from './editor/MasksPlaybookAppearancePanel'
 import { MasksPlaybookEditorPanel } from './editor/MasksPlaybookEditorPanel'
 import { MasksPlaybookImageExportSettings } from './editor/MasksPlaybookImageExportSettings'
 import { getMasksPreviewWidth } from './hooks'
-import type { ViewState } from './model'
+import { type ViewState } from './model'
 import { MasksPlaybookPreview } from './preview/MasksPlaybookPreview'
 import staticDefinition from './static'
 import { exportToTOML, importFromTOMLWithWarnings } from './toml'
@@ -31,6 +35,9 @@ const template: AnyTemplateDefinition = {
         renderPanel: () => <MasksPlaybookAppearancePanel />,
     },
     export: {
+        /* The pages are the ones the pack publishes (both faces, then the notes). */
+        pages: () => exportPagesOf('masks-playbook'),
+        withoutNotes: withoutSessionNotes,
         actions: [
             createTomlExportAction({
                 exportToml: exportToTOML,

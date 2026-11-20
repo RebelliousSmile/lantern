@@ -8,6 +8,18 @@
 @import '../../shared/tokens.css';
 @import '../../shared/preview/ruleAndSpecial.css';
 
+/* The sheet's pages stack with a gap; each is a frame of its own. */
+.os-character-pages {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* The notes page keeps the sheet's margins around its title and text. */
+.os-card.os-character.lantern-notes-page {
+    padding: 1.6rem 1.8rem;
+}
+
 .os-card.os-character {
     width: 100%;
 }

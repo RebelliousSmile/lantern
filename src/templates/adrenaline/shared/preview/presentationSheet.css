@@ -21,6 +21,12 @@
     outline: 2px solid var(--adrenaline-rule);
     outline-offset: 2px;
 }
+/* Les pages de la fiche, l'une sous l'autre : chacune s'exporte et s'imprime à part. */
+.adr-pj-pages {
+    display: grid;
+    gap: 24px;
+}
+
 .adr-pj {
     position: relative;
     box-sizing: border-box;

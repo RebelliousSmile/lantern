@@ -1,3 +1,8 @@
+import {
+    NOTES_TARGET,
+    PlaybookNotesPage,
+    sheetPageIdOf,
+} from '@/templates/pbta/shared/sessionNotes'
 import { SectionGate } from '../../shared/preview/components/SectionGate'
 import { SectionHeader } from '../../shared/preview/components/SectionHeader'
 import {
@@ -37,7 +42,10 @@ export function PlaybookPreview() {
                     transformOrigin: 'top left',
                 }}
             >
-                <div className="pbta-card pbta-playbook-sheet">
+                <div
+                    className="pbta-card pbta-playbook-sheet"
+                    data-export-page={sheetPageIdOf('playbook')}
+                >
                     <PbHeader
                         onClick={() =>
                             openSheet({ kind: 'basic', mode: 'edit' })
@@ -184,6 +192,12 @@ export function PlaybookPreview() {
                         </SectionGate>
                     </div>
                 </div>
+                <PlaybookNotesPage
+                    target="playbook"
+                    value={playbook.sessionNotes}
+                    className="pbta-card pbta-playbook-sheet"
+                    onOpen={() => openSheet({ kind: NOTES_TARGET, mode: 'edit' })}
+                />
             </div>
         </div>
     )

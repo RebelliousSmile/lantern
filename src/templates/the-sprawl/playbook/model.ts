@@ -1,4 +1,5 @@
 import contract from 'schema-pbta/packs/the-sprawl/presentation-contract.json'
+import { NOTES_TARGET } from '@/templates/pbta/shared/sessionNotes'
 import type { TheSprawlPlaybook as Published } from './schema'
 
 /** The document is the published one: every field a region of the contract holds is there. */
@@ -14,7 +15,7 @@ export type RegionId = Region['id']
 export const regionById = (id: RegionId): Region | undefined =>
     contract.regions.find((region) => region.id === id)
 export type SectionId = RegionId
-export type SheetTarget = { kind: RegionId }
+export type SheetTarget = { kind: RegionId | typeof NOTES_TARGET }
 export type ViewState = {
     zoom: number
     previewWidth: number

@@ -1,5 +1,10 @@
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { useUiText } from '@/i18n/text'
+import {
+    NOTES_TARGET,
+    SessionNotesPanel,
+    withSessionNotes,
+} from '@/templates/pbta/shared/sessionNotes'
 import { Info } from 'lucide-react'
 import { useGameDefinitionForGame } from '../../shared/gameDefinition'
 import { usePlaybookSheetStore, usePlaybookStore } from '../hooks'
@@ -27,9 +32,25 @@ function renderForm(kind: string) {
             return <CreationForm />
         case 'gear':
             return <GearForm />
+        case NOTES_TARGET:
+            return <NotesForm />
         default:
             return null
     }
+}
+
+function NotesForm() {
+    const { playbook, setPlaybook } = usePlaybookStore()
+    return (
+        <SessionNotesPanel
+            value={playbook.sessionNotes}
+            onChange={(notes) =>
+                setPlaybook({
+                    sessionNotes: withSessionNotes(playbook, notes).sessionNotes,
+                })
+            }
+        />
+    )
 }
 
 export function PlaybookEditorPanel() {

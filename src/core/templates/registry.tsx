@@ -12,10 +12,6 @@ import { storyThemeDescriptor as storyThemeTemplate } from '@/templates/legend-i
 import { themeKitDescriptor as themeKitTemplate } from '@/templates/legend-in-the-mist/theme-kit/descriptor'
 import masksNpcTemplate from '@/templates/masks/npc/static'
 import masksPlaybookTemplate from '@/templates/masks/playbook/static'
-import motwMonsterTemplate from '@/templates/monster-of-the-week/monster/static'
-import monsterOfTheWeekPlaybookTemplate from '@/templates/monster-of-the-week/playbook/static'
-import motwTeamTemplate from '@/templates/monster-of-the-week/team/static'
-import motwThreatTemplate from '@/templates/monster-of-the-week/threat/static'
 import monsterheartsPlaybookTemplate from '@/templates/monsterhearts/playbook/static'
 import otherscapeChallengeTemplate from '@/templates/otherscape/challenge/descriptor'
 import otherscapeCharacterTropeTemplate from '@/templates/otherscape/character-trope/descriptor'
@@ -61,10 +57,6 @@ export const templateRegistry: AnyStaticTemplateDefinition[] = [
     monsterheartsPlaybookTemplate,
     masksPlaybookTemplate,
     masksNpcTemplate,
-    monsterOfTheWeekPlaybookTemplate,
-    motwMonsterTemplate,
-    motwThreatTemplate,
-    motwTeamTemplate,
     theSprawlPlaybookTemplate,
     sprawlMissionTemplate,
     sprawlThreatTemplate,

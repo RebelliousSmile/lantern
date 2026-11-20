@@ -17,8 +17,8 @@ export const staticDefinition: StaticTemplateDefinition<
     typeof defaultPlaybookSheetState
 > = {
     id: 'pbta.playbook',
-    gameId: 'apocalypse-world',
-    gameLabel: 'Apocalypse World',
+    gameId: 'pbta',
+    gameLabel: 'PbtA',
     label: 'pbta:playbook.label',
     implemented: true,
     contractKey: 'pbta/playbook',

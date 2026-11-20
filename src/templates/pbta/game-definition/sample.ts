@@ -1,13 +1,13 @@
 import type { PbtaGameDefinition } from './model'
 
-/* An original Salvage Run game definition for the Apocalypse World pack -
+/* An original sample game definition for the generic PbtA templates -
    not a transcription of any published game - that still exercises every section: five stats, one
    Resource and one Clock attribute, an NPC section, an MC section and a
    fronts section with a clock preset. */
 export function getSamplePbtaGameDefinition(): PbtaGameDefinition {
     return {
-        game: 'salvage-run',
-        name: 'Salvage Run',
+        game: 'sample-game',
+        name: 'Sample Game',
         version: '1.0.0',
         source: 'Original playtest draft',
         rollFormula: '2d6',

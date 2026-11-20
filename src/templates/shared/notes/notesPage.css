@@ -1,0 +1,24 @@
+/*
+ * La page de notes de partie : une feuille de taille fixe (A4 portrait) dont le texte ne déborde
+ * jamais. L'éditeur refuse ce qui ne tient pas ; ici le débordement est coupé par sécurité.
+ */
+.lantern-notes-page {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    aspect-ratio: 210 / 297;
+}
+
+.lantern-notes-page__title {
+    flex: none;
+    margin: 0;
+}
+
+.lantern-notes-page__body {
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    cursor: text;
+}

@@ -16,8 +16,8 @@ export const staticDefinition: StaticTemplateDefinition<
     typeof defaultGameDefinitionSheetState
 > = {
     id: 'pbta.gameDefinition',
-    gameId: 'apocalypse-world',
-    gameLabel: 'Apocalypse World',
+    gameId: 'pbta',
+    gameLabel: 'PbtA',
     label: 'pbta:gameDefinition.label',
     implemented: true,
     contractKey: 'pbta/game-definition',

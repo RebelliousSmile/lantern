@@ -23,7 +23,8 @@ const corpus = (target: string, kind: string) =>
         'utf8'
     )
 
-assert.equal(BLOCK_CONFIGS.length, 9, 'nine published blocks')
+/* Which blocks the packs publish is asserted by `assert:presentation-coverage`; here, each one declared has its template. */
+assert.ok(BLOCK_CONFIGS.length > 0, 'at least one published block')
 for (const config of BLOCK_CONFIGS) {
     const target = config.contractKey.replace(/^pbta\//, '')
     const contract = nodeDocumentContracts.require(config.contractKey) as {

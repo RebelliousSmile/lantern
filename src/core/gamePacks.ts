@@ -21,8 +21,9 @@ import type { GameId } from './templates/types'
    keep working — the setting is about what can be started, not about what is
    already on the workbench. */
 export const GAME_PACKS_STORAGE_KEY = 'mist:game-packs:v1'
-const LEGACY_PBTA_PACK_ID = 'pbta'
-const APOCALYPSE_WORLD_PACK_ID = 'apocalypse-world'
+const PBTA_PACK_ID = 'pbta'
+/* The id the group of the generic PbtA templates carried while it was named after a game. */
+const RETIRED_PBTA_PACK_ID = 'apocalypse-world'
 
 type StoredGamePacks = {
     disabled: string[]
@@ -38,7 +39,7 @@ export function migratePackIds(ids: string[]): string[] {
     return [
         ...new Set(
             ids.map((id) =>
-                id === LEGACY_PBTA_PACK_ID ? APOCALYPSE_WORLD_PACK_ID : id
+                id === RETIRED_PBTA_PACK_ID ? PBTA_PACK_ID : id
             )
         ),
     ]

@@ -51,6 +51,8 @@ export type OtherscapeCharacter = {
     tag_combos: TagCombo[]
     loadout: LoadoutItem[]
     meta: CharacterMeta
+    /** Free text the player writes during the game; it has a page of its own. */
+    session_notes?: string
 }
 
 function toTagCombo(combo: TagComboData): TagCombo {
@@ -84,6 +86,7 @@ export function toOtherscapeCharacterDocument(
         tag_combos: (otherscapeCharacter.tag_combos ?? []).map(toTagCombo),
         loadout: (otherscapeCharacter.loadout ?? []).map(toLoadoutItem),
         meta: otherscapeCharacter.meta ?? { publication_type: 'homebrew' },
+        session_notes: otherscapeCharacter.session_notes,
     }
 }
 
@@ -162,6 +165,12 @@ export function toOtherscapeCharacterPayload(
     if (loadout.length) payload.loadout = loadout
     else if (sourceHas('loadout')) payload.loadout = []
 
+    // Empty notes are absent from the file, unless the import held some that
+    // would otherwise come back.
+    if (otherscapeCharacter.session_notes) {
+        payload.session_notes = otherscapeCharacter.session_notes
+    } else if (sourceHas('session_notes')) payload.session_notes = ''
+
     const metaSource = otherscapeCharacter.meta
     const meta: Record<string, unknown> = {
         publication_type: metaSource.publication_type || 'homebrew',
@@ -184,6 +193,9 @@ export function toOtherscapeCharacterPayload(
 }
 
 export type SectionId = 'upgrades' | 'combos' | 'loadout' | 'themes' | 'meta'
+
+/** The page the notes are written on; its id is the one the published presentation declares. */
+export const NOTES_PAGE_ID = 'notes'
 
 export type Background = 'neon' | 'plain'
 
@@ -217,6 +229,7 @@ export type SheetTarget =
           mode?: 'edit'
       }
     | { kind: 'meta'; mode?: 'edit' }
+    | { kind: 'notes'; mode?: 'edit' }
 
 export type OtherscapeCharacterSheetState = {
     open: boolean

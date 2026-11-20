@@ -13,6 +13,7 @@ type Shape = {
     type?: string
     minimum?: number
     maximum?: number
+    maxLength?: number
     enum?: readonly string[]
     required?: readonly string[]
     properties?: Record<string, Shape>
@@ -59,6 +60,12 @@ export function enumAt(name: SchemaName, pointer: string): readonly string[] {
     const shape = shapeAt(name, pointer)
     return shape?.enum ?? shape?.items?.enum ?? []
 }
+
+/** The length the schema allows the text at `pointer`; none when it gives none. */
+export const maxLengthAt = (
+    name: SchemaName,
+    pointer: string
+): number | undefined => shapeAt(name, pointer)?.maxLength
 
 /** The keys the schema requires of the object at `pointer`; none when it requires none. */
 export function requiredAt(

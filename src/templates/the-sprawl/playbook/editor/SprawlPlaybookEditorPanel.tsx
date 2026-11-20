@@ -5,6 +5,11 @@ import type {
     ScalarKind,
 } from '@/core/editor-schema/types'
 import { useUiText, type TranslationKey } from '@/i18n/text'
+import {
+    NOTES_TARGET,
+    SessionNotesPanel,
+    withSessionNotes,
+} from '@/templates/pbta/shared/sessionNotes'
 import { PublishedCollectionEditor } from '@/templates/pbta/specialized/collectionAdapters'
 import {
     collectionItems,
@@ -110,6 +115,15 @@ export function SprawlPlaybookEditorPanel() {
             <p className="text-sm text-muted-foreground">
                 {text('pbta:sprawl.editor.hint')}
             </p>
+        )
+    if (target.kind === NOTES_TARGET)
+        return (
+            <SessionNotesPanel
+                value={playbook.sessionNotes}
+                onChange={(notes) =>
+                    setPlaybook(withSessionNotes(playbook, notes))
+                }
+            />
         )
     const region = regionById(target.kind)
     /* Stat names are the keys of the document: the game definition names them. */
