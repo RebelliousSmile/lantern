@@ -19,10 +19,13 @@ export function OptionalTextField({
     label,
     value,
     onChange,
+    maxLength,
 }: {
     label: string
     value: unknown
     onChange: (value: string | undefined) => void
+    /** The length the published schema allows: the zone of the sheet has a fixed size. */
+    maxLength?: number
 }) {
     const describedBy = useDescribedBy()
     return (
@@ -30,6 +33,7 @@ export function OptionalTextField({
             <span>{label}</span>
             <Input
                 aria-describedby={describedBy}
+                maxLength={maxLength}
                 value={typeof value === 'string' ? value : ''}
                 onChange={(event) => onChange(filled(event.target.value))}
             />

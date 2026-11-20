@@ -6,6 +6,7 @@ export const NOT_EDITABLE = {
     pj: [],
     pnj: ['etatDePartie'],
     monstre: ['etatPrincipal', 'etatDeBase', 'etatAlternatif'],
+    relations: [],
 }
 
 /**

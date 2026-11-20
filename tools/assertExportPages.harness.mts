@@ -32,11 +32,47 @@ const check = (id: string, what: string, test: () => void) => {
     }
 }
 
+/*
+ * The sheets that print a notes page: the Adrenaline player character, the Otherscape character
+ * and the PbtA booklets. City of Mist and Legend in the Mist keep their own sheets without one.
+ * Which sheet is in the scope is a decision of the product; what the pages of a sheet are, and
+ * which one holds the notes, is read from the pages it declares, which the packs publish.
+ */
+const WITH_NOTES = new Set([
+    'adrenaline.pj',
+    'otherscape.character',
+    'pbta.playbook',
+    'masks.playbook',
+    'the-sprawl.playbook',
+    'urban-shadows.playbook',
+    'monsterhearts.playbook',
+])
+const WITHOUT_NOTES = /^(city|legend)\./
+
+/** What is wrong with the notes page of a sheet, by name; nothing when the scope is held. */
+function notesScopeFindings(
+    id: string,
+    pages: TemplateExportPage[] | undefined
+): string[] {
+    const notes = (pages ?? []).filter((page) => page.notes)
+    const last = pages?.[pages.length - 1]
+    if (WITHOUT_NOTES.test(id))
+        return notes.length ? [`${id}: prints a notes page, which its game does not`] : []
+    if (!WITH_NOTES.has(id))
+        return notes.length ? [`${id}: prints a notes page and is not in the scope of the notes`] : []
+    if (!pages?.length || notes.length === 0)
+        return [`${id}: declares no notes page`]
+    if (notes.length > 1) return [`${id}: declares ${notes.length} notes pages`]
+    return last?.notes ? [] : [`${id}: its notes page is not the last page`]
+}
+
 /* 1. Templates that declare pages draw one node per page. */
 let declaring = 0
+const declared = new Map<string, TemplateExportPage[] | undefined>()
 for (const entry of templateRegistry) {
     const definition = (await templateLoaders[entry.id]!()).default
     const declare = definition.export.pages
+    declared.set(entry.id, declare?.(definition.createExample()))
     if (!declare) continue
     declaring += 1
     const example = definition.createExample()
@@ -67,10 +103,11 @@ for (const entry of templateRegistry) {
         const drawn: string[] = []
         const re = /data-export-page="([^"]+)"/g
         for (let m = re.exec(html); m; m = re.exec(html)) drawn.push(m[1])
-        check(entry.id, 'every declared page is drawn', () => {
+        /* The preview shows what the export prints: the same pages, in the same order. */
+        check(entry.id, 'every declared page is drawn, in the declared order', () => {
             assert.deepEqual(
-                drawn.filter((id) => pages.some((p) => p.id === id)).sort(),
-                pages.map((p) => p.id).sort()
+                drawn.filter((id) => pages.some((p) => p.id === id)),
+                pages.map((p) => p.id)
             )
         })
     } catch (error) {
@@ -85,6 +122,46 @@ for (const entry of templateRegistry) {
 check('registry', 'at least one template declares pages', () =>
     assert.ok(declaring > 0, 'no template declares pages')
 )
+
+/* The notes scope: every sheet that should print notes does, last, and no other does. */
+for (const [id, pages] of declared)
+    for (const finding of notesScopeFindings(id, pages))
+        failures.push(`notes scope: ${finding}`)
+check('notes scope', 'every sheet of the scope is a registered template', () => {
+    const missing = [...WITH_NOTES].filter((id) => !declared.has(id))
+    assert.deepEqual(missing, [], `not registered: ${missing.join(', ')}`)
+})
+/* The rule itself: it names a sheet that lost its notes page, one that has it first, one that gained it. */
+check('notes scope', 'the rule names the sheet that breaks it', () => {
+    const page = (id: string, notes = false): TemplateExportPage => ({
+        id,
+        label: { text: id },
+        notes,
+    })
+    const held = [page('recto'), page('notes', true)]
+    assert.deepEqual(notesScopeFindings('masks.playbook', held), [])
+    assert.match(
+        notesScopeFindings('masks.playbook', [page('recto')])[0],
+        /^masks\.playbook: declares no notes page/
+    )
+    assert.match(
+        notesScopeFindings('masks.playbook', [page('notes', true), page('recto')])[0],
+        /^masks\.playbook: its notes page is not the last page/
+    )
+    assert.match(
+        notesScopeFindings('adrenaline.pj', undefined)[0],
+        /^adrenaline\.pj: declares no notes page/
+    )
+    assert.match(
+        notesScopeFindings('city.danger', held)[0],
+        /^city\.danger: prints a notes page/
+    )
+    assert.match(
+        notesScopeFindings('legend.journey', held)[0],
+        /^legend\.journey: prints a notes page/
+    )
+    assert.deepEqual(notesScopeFindings('legend.journey', undefined), [])
+})
 
 /* 2. The page choice. */
 const sheet: TemplateExportPage[] = [

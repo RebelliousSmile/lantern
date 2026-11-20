@@ -5,6 +5,13 @@ All notable changes to this project are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.34.0] - 2026-11-20
+
+### Added
+
+- The Adrenaline relationship sheet (schema-adrenaline 6.4.0): a new template with its editor (header, other characters, numbered NPCs with attitude, link type and cross-links), its one-page preview, its TOML import and export, and its PNG / PDF / TOML export like every other sheet. A new NPC takes the smallest free number, a duplicated number is flagged, and a link towards a missing NPC is signalled.
+
+
 ## [v0.33.0] - 2026-11-20
 
 ### Added

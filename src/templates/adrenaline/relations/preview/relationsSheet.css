@@ -1,0 +1,154 @@
+/*
+ * Feuille de relations Adrenaline : transposition de la feuille Handbook
+ * (src/styles/adrenaline/_relations.scss), préfixe renommé adr-pj. Elle s'appuie sur
+ * presentationSheet.css (racine, bandeaux de section, lignes d'écriture, cartes) : seules les formes
+ * propres à cette feuille sont posées ici. Toutes les couleurs sont des jetons du pack publié.
+ */
+
+/* Une section publie ses colonnes pour ses blocs-grilles (fiches, PNJ) : chaque bloc occupe la largeur entière. */
+.adr-pj-relations .adr-pj__section-body > .adr-pj__block {
+    grid-column: 1 / -1;
+}
+
+.adr-pj__columns-4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+/* En-tête : trois cartes sur une rangée (personnage, joueur, partie). */
+.adr-pj__form-name-card:has(> .adr-pj__card-row) {
+    display: grid;
+    gap: 8px;
+}
+
+.adr-pj__card-row {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+}
+
+.adr-pj__card-row > .adr-pj__card {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--adrenaline-field-border);
+    min-width: 0;
+}
+
+.adr-pj__card-row .adr-pj__card-value {
+    justify-content: center;
+    padding: 3px 6px;
+    min-height: 1.9em;
+    text-align: center;
+}
+
+/* Autres personnages : quatre fiches côte à côte. */
+.adr-pj__form-pc-ties {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+}
+
+.adr-pj__tie {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    border: 1px solid var(--adrenaline-field-border);
+    padding: 6px;
+    min-width: 0;
+}
+
+/* Compteur de tests de Drame. */
+.adr-pj__counter {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 42px;
+    border: 1px solid var(--adrenaline-field-border);
+}
+
+.adr-pj__counter > .adr-pj__card-label {
+    display: flex;
+    align-items: center;
+    align-self: stretch;
+    padding: 2px 6px;
+}
+
+.adr-pj__counter-value {
+    justify-content: center;
+    align-items: center;
+    border-left: 1px solid var(--adrenaline-field-border);
+    min-height: 20px;
+}
+
+/* PNJ : deux colonnes de cinq fiches, remplies colonne par colonne. */
+.adr-pj__npc-columns {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    gap: 10px;
+}
+
+.adr-pj__npc-column {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+}
+
+.adr-pj__npc {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    border: 1px solid var(--adrenaline-field-border);
+    padding: 5px 6px 6px;
+    min-width: 0;
+}
+
+.adr-pj__npc-head {
+    display: grid;
+    grid-template-columns: 26px minmax(0, 1fr);
+    align-items: end;
+    gap: 6px;
+}
+
+.adr-pj__npc-number {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid var(--adrenaline-field-border);
+    min-height: 22px;
+    color: var(--adrenaline-rule);
+    font-weight: 800;
+    font-size: 12px;
+    font-family: var(--font-header-theme);
+}
+
+.adr-pj__npc-name {
+    border-bottom: 1px dotted var(--adrenaline-field-border);
+    min-height: 1.25em;
+}
+
+.adr-pj__npc-modifier {
+    border: 1px solid var(--adrenaline-field-border);
+    padding: 0 4px;
+    color: var(--adrenaline-rule);
+    font-weight: 800;
+    font-size: 9px;
+    font-family: var(--font-header-theme);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.adr-pj__modifier--bonus {
+    color: var(--adrenaline-handwritten-ink);
+}
+
+.adr-pj__modifier--malus {
+    border-style: dashed;
+}
+
+/* Sous une largeur de feuille étroite, les rangées se replient avant de s'écraser. */
+@container (max-width: 34rem) {
+    .adr-pj__card-row,
+    .adr-pj__form-pc-ties,
+    .adr-pj__npc-columns {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}

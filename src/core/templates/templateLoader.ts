@@ -11,6 +11,8 @@ export type TemplateLoader = () => Promise<{
 export const templateLoaders: Record<string, TemplateLoader> = {
     'adrenaline.pj': () => import('@/templates/adrenaline/pj/definition'),
     'adrenaline.pnj': () => import('@/templates/adrenaline/pnj/definition'),
+    'adrenaline.relations': () =>
+        import('@/templates/adrenaline/relations/definition'),
     'adrenaline.monstre': () =>
         import('@/templates/adrenaline/monstre/definition'),
     'city.danger': () => import('@/templates/city-of-mist/danger/definition'),

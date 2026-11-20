@@ -57,6 +57,7 @@ const sheets = [
     ['pj', published.PJ_PRESENTATION, 'PresentationBlocks.tsx'],
     ['pnj', published.PNJ_PRESENTATION, 'CompactCard.tsx'],
     ['monstre', published.MONSTRE_PRESENTATION, 'CompactCard.tsx'],
+    ['relations', published.RELATIONS_PRESENTATION, 'PresentationBlocks.tsx'],
 ]
 
 const problems = []

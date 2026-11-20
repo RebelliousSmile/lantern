@@ -2,6 +2,7 @@ import { inferObject } from '@/core/editor-schema/inferSchema'
 import adrenalineMonstreTemplate from '@/templates/adrenaline/monstre/descriptor'
 import adrenalinePjTemplate from '@/templates/adrenaline/pj/descriptor'
 import adrenalinePnjTemplate from '@/templates/adrenaline/pnj/descriptor'
+import adrenalineRelationsTemplate from '@/templates/adrenaline/relations/descriptor'
 import { customMoveDescriptor as cityCustomMoveTemplate } from '@/templates/city-of-mist/custom-move/descriptor'
 import { dangerDescriptor as dangerTemplate } from '@/templates/city-of-mist/danger/descriptor'
 import { themeCardDescriptor as cityThemeCardTemplate } from '@/templates/city-of-mist/theme-card/descriptor'
@@ -36,6 +37,7 @@ export const templateRegistry: AnyStaticTemplateDefinition[] = [
     adrenalinePjTemplate,
     adrenalinePnjTemplate,
     adrenalineMonstreTemplate,
+    adrenalineRelationsTemplate,
     dangerTemplate,
     cityCustomMoveTemplate,
     cityThemeKitTemplate,

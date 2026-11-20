@@ -16,6 +16,12 @@ export type PnjSection =
     | 'equipment'
     | 'narrative'
     | 'meta'
+/** Relations sections: the three the sheet publishes, plus provenance. */
+export type RelationsSection =
+    | 'entete'
+    | 'autresPersonnages'
+    | 'pnjs'
+    | 'meta'
 export type MonstreSection =
     | 'basic'
     | 'statistics'
@@ -57,6 +63,12 @@ export const pnjSections = sections<PnjSection>([
     'formations',
     'equipment',
     'narrative',
+    'meta',
+])
+export const relationsSections = sections<RelationsSection>([
+    'entete',
+    'autresPersonnages',
+    'pnjs',
     'meta',
 ])
 export const monstreSections = sections<MonstreSection>([

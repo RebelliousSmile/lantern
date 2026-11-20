@@ -86,11 +86,14 @@ export function TextField({
     inline = false,
     invalid = false,
     describedBy: explained,
+    maxLength,
 }: {
     label: string
     value: string
     onChange: (value: string) => void
     inline?: boolean
+    /** The length the published schema allows: the zone of the sheet has a fixed size. */
+    maxLength?: number
     /** The typed text is not what the document holds: the field is flagged and `describedBy` says why. */
     invalid?: boolean
     describedBy?: string
@@ -101,6 +104,7 @@ export function TextField({
             <span>{label}</span>
             <Input
                 value={value}
+                maxLength={maxLength}
                 aria-invalid={invalid ? true : undefined}
                 aria-describedby={invalid && explained ? explained : describedBy}
                 onChange={(event) => onChange(event.target.value)}
@@ -119,11 +123,14 @@ export function RequiredTextField({
     value,
     onChange,
     inline = false,
+    maxLength,
 }: {
     label: string
     value: string
     onChange: (value: string) => void
     inline?: boolean
+    /** The length the published schema allows: the zone of the sheet has a fixed size. */
+    maxLength?: number
 }) {
     const text = useUiText()
     const statusId = useId()
@@ -136,6 +143,7 @@ export function RequiredTextField({
                 <span>{label}</span>
                 <Input
                     value={typed ?? value}
+                    maxLength={maxLength}
                     aria-invalid={blank ? true : undefined}
                     aria-describedby={blank ? statusId : describedBy}
                     onChange={(event) => {
@@ -814,11 +822,14 @@ export function RecordRows<T>({
     children,
     fold,
     at,
+    max,
 }: {
     label: string
     values: T[]
     create: () => T
     onChange: (values: T[]) => void
+    /** The places the published schema allows (`maxItems`): once taken, no row is added. */
+    max?: number
     /**
      * Where the schema of the document describes one row (`/formations[]`): a row that lacks a key
      * it requires is a draft, signalled and left out of the export.
@@ -888,6 +899,7 @@ export function RecordRows<T>({
             <Button
                 type="button"
                 variant="outline"
+                disabled={max !== undefined && values.length >= max}
                 onClick={() => {
                     if (fold) setOpened(values.length)
                     onChange([...values, create()])

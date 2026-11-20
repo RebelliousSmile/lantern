@@ -1,19 +1,21 @@
 import monstreSchema from 'schema-adrenaline/schemas/monstre.schema.json'
 import pjSchema from 'schema-adrenaline/schemas/pj.schema.json'
 import pnjSchema from 'schema-adrenaline/schemas/pnj.schema.json'
+import relationsSchema from 'schema-adrenaline/schemas/relations.schema.json'
 
 /*
- * The published JSON schemas of the three documents, read by pointer: what a field is bounded by,
+ * The published JSON schemas of the four documents, read by pointer: what a field is bounded by,
  * what it may hold. Nothing here restates a value the contract publishes. Arrays are written `[]`
  * in a pointer: `/formations[]/competences[]/total`.
  */
-export type SchemaName = 'pj' | 'pnj' | 'monstre'
+export type SchemaName = 'pj' | 'pnj' | 'monstre' | 'relations'
 
 type Shape = {
     type?: string
     minimum?: number
     maximum?: number
     maxLength?: number
+    maxItems?: number
     enum?: readonly string[]
     required?: readonly string[]
     properties?: Record<string, Shape>
@@ -26,6 +28,7 @@ const roots: Record<SchemaName, Shape> = {
     pj: pjSchema as unknown as Shape,
     pnj: pnjSchema as unknown as Shape,
     monstre: monstreSchema as unknown as Shape,
+    relations: relationsSchema as unknown as Shape,
 }
 
 /** The node a pointer names, or undefined when the schema declares nothing there. */

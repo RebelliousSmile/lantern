@@ -1,4 +1,5 @@
 import type {
+    FeuilleDeRelationsValeur,
     MonstreDocument,
     PersonnageJoueurValeur,
     PersonnageNonJoueValeur,
@@ -10,8 +11,8 @@ import {
 } from './documentContract'
 
 /**
- * The three Adrenaline targets as registry entries, keyed `adrenaline/<target>`:
- * `pj`, `pnj`, `monstre`.
+ * The four Adrenaline targets as registry entries, keyed `adrenaline/<target>`:
+ * `pj`, `pnj`, `monstre`, `relations`.
  *
  * The package is a runtime dependency: the three browser templates use these
  * same codecs for their TOML boundary. Its codecs also publish a JSON pair,
@@ -24,3 +25,4 @@ export const adrenalineDocumentContracts: AnyDocumentContract[] =
 export type AdrenalinePj = PersonnageJoueurValeur
 export type AdrenalinePnj = PersonnageNonJoueValeur
 export type AdrenalineMonstre = MonstreDocument
+export type AdrenalineRelations = FeuilleDeRelationsValeur

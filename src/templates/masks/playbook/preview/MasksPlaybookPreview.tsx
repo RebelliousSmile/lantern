@@ -3,6 +3,7 @@ import type { CSSProperties, ReactNode } from 'react'
 import {
     NOTES_TARGET,
     PlaybookNotesPage,
+    playbookPages,
 } from '@/templates/pbta/shared/sessionNotes'
 import appearance from 'schema-pbta/packs/masks/appearance-contract.json'
 import {
@@ -22,6 +23,20 @@ import './masksPlaybookTheme.css'
 /* The tokens of the published base variant, set on the sheet. */
 const tokens = (appearance.variants.find((variant) => variant.id === 'base')
     ?.tokens ?? {}) as CSSProperties
+
+/*
+ * The faces in the order the pack publishes its pages for the export (recto, verso), so the preview
+ * shows what the export prints. A face the pages do not name keeps its place after the others.
+ */
+const publishedOrder = playbookPages('masks-playbook').map((page) => page.id)
+const rank = (id: string) => {
+    const index = publishedOrder.indexOf(id)
+    return index < 0 ? publishedOrder.length : index
+}
+const faces = presentation.faces
+    .map((face, position) => ({ face, position }))
+    .sort((a, b) => rank(a.face.id) - rank(b.face.id) || a.position - b.position)
+    .map(({ face }) => face)
 
 type Text = (key: TranslationKey) => string
 type Context = { playbook: MasksPlaybook; text: Text }
@@ -294,7 +309,7 @@ export function MasksPlaybookPreview() {
         )
     }
     const placed = new Set<RegionId>()
-    for (const face of presentation.faces) {
+    for (const face of faces) {
         placed.add(face.header as RegionId)
         for (const ids of face.columns) for (const id of ids) placed.add(id as RegionId)
     }
@@ -310,7 +325,7 @@ export function MasksPlaybookPreview() {
                 }}
             >
                 {/* Each face is laid out by the columns the presentation contract publishes (rows of the sheet). */}
-                {presentation.faces.map((face) => (
+                {faces.map((face) => (
                     <div
                         key={face.id}
                         className="handbook-masks-face"

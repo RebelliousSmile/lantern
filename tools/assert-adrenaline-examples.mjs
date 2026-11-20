@@ -9,7 +9,7 @@ import { join, resolve } from 'node:path'
 
 const root = resolve(import.meta.dirname, '..')
 const problems = []
-for (const kind of ['pnj', 'monstre', 'pj']) {
+for (const kind of ['pnj', 'monstre', 'pj', 'relations']) {
     const file = join(root, 'src', 'templates', 'adrenaline', kind, 'sample.ts')
     const source = readFileSync(file, 'utf8')
     const match =
@@ -30,5 +30,5 @@ if (problems.length > 0) {
     process.exit(1)
 }
 console.log(
-    'assert:adrenaline-examples: 3 templates start from a published example'
+    'assert:adrenaline-examples: 4 templates start from a published example'
 )

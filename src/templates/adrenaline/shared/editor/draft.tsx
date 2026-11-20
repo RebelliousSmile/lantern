@@ -23,6 +23,7 @@ export const useSchemaName = (): SchemaName | undefined =>
 /** The caption of each required key, as the panels word it; a key not listed is shown as published. */
 export const REQUIRED_LABELS: Record<string, string> = {
     nom: 'fields.name',
+    numero: 'adrenaline:relations.form.number',
     type: 'adrenaline:shared.type',
     versant: 'adrenaline:pj.form.stateSide',
     pourcentage: 'adrenaline:shared.percentage',

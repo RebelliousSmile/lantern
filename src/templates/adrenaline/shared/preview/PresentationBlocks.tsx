@@ -6,7 +6,7 @@ import {
     type AdrenalinePresentationSection,
 } from 'schema-adrenaline/presentation'
 import { pjLimit } from '../editor/pjLimits'
-import { enumAt, STATE_SIDES } from '../editor/schemaShapes'
+import { enumAt, shapeAt, STATE_SIDES } from '../editor/schemaShapes'
 import {
     formationColumns,
     formationTypeLabel,
@@ -158,6 +158,30 @@ function Circles({ count, filled }: { count: number; filled: number }) {
 }
 
 function NameCard({ block, source }: BlockProps) {
+    /* A banner of labelled cards (the relations header): one row of cards per published row of pointers.
+       A cell whose value the document leaves out is not printed. */
+    if (block.pointerRows && block.pointerRows.length > 0)
+        return (
+            <>
+                {block.pointerRows.map((row, index) => (
+                    <div className="adr-pj__card-row" key={index}>
+                        {row
+                            .filter((cell) => text(at(source, cell.path)))
+                            .map((cell) => (
+                                <div className="adr-pj__card" key={cell.path}>
+                                    <span className="adr-pj__card-label">
+                                        {cell.label ??
+                                            humanize(lastSegment(cell.path))}
+                                    </span>
+                                    <Value className="adr-pj__card-value">
+                                        {text(at(source, cell.path))}
+                                    </Value>
+                                </div>
+                            ))}
+                    </div>
+                ))}
+            </>
+        )
     const suffix =
         block.valueSuffix && block.valueSuffix !== block.label
             ? ` ${block.valueSuffix}`
@@ -1020,6 +1044,195 @@ function Unknown({ block, source }: BlockProps) {
     ))
 }
 
+/* The sheet prints the places the published schema allows, never fewer than the entries held. */
+function slotCount(pointer: string, entries: number): number {
+    return Math.max(entries, shapeAt('relations', pointer)?.maxItems ?? 0)
+}
+
+const relationsLabel = (key: string) => t(`relations.sheet.${key}`)
+
+/** The other characters: one printed place per `maxItems`, each a column of written lines. */
+function PcTies({ block, source }: BlockProps) {
+    const pointer = block.paths[0]
+    const entries = records(at(source, pointer))
+    const slots = slotCount(pointer, entries.length)
+    const rows = fieldRows(block) ?? []
+    return (
+        <>
+            {Array.from({ length: slots }, (_, index) => (
+                <div
+                    className="adr-pj__tie"
+                    data-zone={`tie:${index}`}
+                    key={index}
+                >
+                    {rows.map((row) =>
+                        row.map((key) => (
+                            <WriteLine
+                                key={key}
+                                label={relationsLabel(key)}
+                                value={text(entries[index]?.[key])}
+                            />
+                        ))
+                    )}
+                </div>
+            ))}
+        </>
+    )
+}
+
+function Counter({ block, source }: BlockProps) {
+    return (
+        <div className="adr-pj__counter">
+            <span className="adr-pj__card-label">{block.label}</span>
+            <Value className="adr-pj__counter-value">
+                {text(at(source, block.paths[0]))}
+            </Value>
+        </div>
+    )
+}
+
+/* The modifier an attitude sets is the published level's: it is never read from the document. */
+function AttitudeLine({
+    label,
+    attitude,
+    block,
+}: {
+    label: string
+    attitude: unknown
+    block: AdrenalinePresentationBlock
+}) {
+    const key = typeof attitude === 'string' ? attitude : ''
+    const level = (block.attitudeLevels ?? []).find(
+        (candidate) => candidate.key === key
+    )
+    return (
+        <div className="adr-pj__write-line">
+            <b className="adr-pj__write-label">{label}</b>
+            <Value className="adr-pj__write-field">
+                {level ? level.label : key}
+            </Value>
+            {level ? (
+                <span
+                    className={`adr-pj__npc-modifier adr-pj__modifier--${level.nature}`}
+                >
+                    {level.nature === 'aucun'
+                        ? relationsLabel('aucun')
+                        : `${relationsLabel(level.nature)} ${level.count}`}
+                </span>
+            ) : null}
+        </div>
+    )
+}
+
+function NpcField({
+    block,
+    field,
+    entry,
+}: {
+    block: AdrenalinePresentationBlock
+    field: string
+    entry: Record<string, unknown>
+}) {
+    const label = relationsLabel(field)
+    if (field === 'attitude')
+        return (
+            <AttitudeLine
+                label={label}
+                attitude={entry.attitude}
+                block={block}
+            />
+        )
+    if (field === 'lien') {
+        const link = asRecord(entry.lien)
+        const type =
+            typeof link?.type === 'string'
+                ? relationsLabel(link.type)
+                : ''
+        return (
+            <WriteLine
+                label={label}
+                value={[type, text(link?.description)]
+                    .filter(Boolean)
+                    .join(' · ')}
+            />
+        )
+    }
+    if (field === 'reliesA') {
+        /* A number no NPC carries is shown as typed: the sheet does not decide it is wrong. */
+        const numbers = Array.isArray(entry.reliesA)
+            ? entry.reliesA.filter(
+                  (item): item is number => typeof item === 'number'
+              )
+            : []
+        return <WriteLine label={label} value={numbers.join(', ')} />
+    }
+    return <WriteLine label={label} value={text(entry[field])} />
+}
+
+/** The NPCs: one card per place, filled column by column as the paper sheet is. */
+function NpcEntries({ block, source }: BlockProps) {
+    const pointer = block.paths[0]
+    const entries = records(at(source, pointer))
+    const slots = slotCount(pointer, entries.length)
+    const columns = Math.max(1, block.columns ?? 1)
+    const perColumn = Math.ceil(slots / columns)
+    const rows = fieldRows(block) ?? []
+    return (
+        <div className="adr-pj__npc-columns">
+            {Array.from({ length: columns }, (_, column) => (
+                <div className="adr-pj__npc-column" key={column}>
+                    {Array.from(
+                        {
+                            length: Math.max(
+                                0,
+                                Math.min(slots, (column + 1) * perColumn) -
+                                    column * perColumn
+                            ),
+                        },
+                        (_, offset) => {
+                            const index = column * perColumn + offset
+                            const entry = entries[index]
+                            return (
+                                <div
+                                    className={`adr-pj__npc${entry ? '' : ' adr-pj__npc--empty'}`}
+                                    data-zone={`npc:${index}`}
+                                    key={index}
+                                >
+                                    {rows.map((row) =>
+                                        row.length === 2 &&
+                                        row[0] === 'numero' ? (
+                                            <div
+                                                className="adr-pj__npc-head"
+                                                key={row.join(':')}
+                                            >
+                                                <Value className="adr-pj__npc-number">
+                                                    {text(entry?.numero)}
+                                                </Value>
+                                                <Value className="adr-pj__npc-name">
+                                                    {text(entry?.nom)}
+                                                </Value>
+                                            </div>
+                                        ) : (
+                                            row.map((field) => (
+                                                <NpcField
+                                                    key={field}
+                                                    block={block}
+                                                    field={field}
+                                                    entry={entry ?? {}}
+                                                />
+                                            ))
+                                        )
+                                    )}
+                                </div>
+                            )
+                        }
+                    )}
+                </div>
+            ))}
+        </div>
+    )
+}
+
 const FORMS: Partial<Record<string, (props: BlockProps) => ReactNode>> = {
     'name-card': NameCard,
     'game-parameters': GameParameters,
@@ -1040,6 +1253,9 @@ const FORMS: Partial<Record<string, (props: BlockProps) => ReactNode>> = {
     'fatigue-circles': ShockCircles,
     'shock-circles': ShockCircles,
     'malus-scale': MalusScale,
+    'pc-ties': PcTies,
+    counter: Counter,
+    'npc-entries': NpcEntries,
 }
 
 /* The cartouche prints its own banner label; formation columns print one subhead per column. */
@@ -1052,6 +1268,7 @@ const TITLED_ELSEWHERE = new Set([
     'shock-circles',
     'malus-scale',
     'circle-row',
+    'counter',
 ])
 
 function titledElsewhere(
