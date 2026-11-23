@@ -6,7 +6,7 @@ const adrenaline: ResourceShape<typeof en> = {
         emptyState: 'Cliquez sur l’aperçu pour modifier une section précise.',
         basic: 'En-tête',
         parameters: 'Personnage et paramètres',
-        identity: 'Identité',
+        identity: 'Verso de la fiche',
         characteristics: 'Caractéristiques',
         statistics: 'Caractéristiques',
         health: 'Santé',

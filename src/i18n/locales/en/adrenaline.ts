@@ -4,7 +4,7 @@ const adrenaline = {
         emptyState: 'Click on the preview to edit a specific section.',
         basic: 'Header',
         parameters: 'Character and settings',
-        identity: 'Identity',
+        identity: 'Back of the sheet',
         characteristics: 'Characteristics',
         statistics: 'Characteristics',
         health: 'Health',
