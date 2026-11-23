@@ -218,7 +218,7 @@ export function RelationsEditorPanel() {
                         <OptionalNumberField
                             label={text(
                                 'adrenaline:relations.form.otherCharactersCount',
-                                { count: tieDefault }
+                                { count: tieDefault ?? tieMax ?? '' }
                             )}
                             at="/nombreDAutresPersonnages"
                             value={document.nombreDAutresPersonnages}
