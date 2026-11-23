@@ -51,6 +51,7 @@ export function RelationsPreview() {
                                 <PresentationBlock
                                     block={block}
                                     sectionLabel={section.label}
+                                    sectionColumns={section.columns}
                                     key={block.id}
                                     source={document}
                                     onOpen={

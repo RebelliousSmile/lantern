@@ -5,6 +5,7 @@ import { renderToStaticMarkup } from 'react-dom/server'
 import {
     ATTITUDE_LEVELS,
     RELATIONS_PRESENTATION,
+    placesPerRow,
 } from 'schema-adrenaline/presentation'
 import relationsSchema from 'schema-adrenaline/schemas/relations.schema.json'
 import type { AdrenalineRelations } from '../src/contracts/adrenaline'
@@ -131,6 +132,23 @@ for (const [label, doc] of [
         count(markup, 'data-zone="npc:'),
         npcSlots,
         `${label}: one printed place per NPC`
+    )
+}
+
+/* The places share the width: one row of as many as printed up to the section columns, even rows beyond. */
+{
+    const maxPerRow = RELATIONS_PRESENTATION.sections[1].columns ?? 1
+    for (let places = 1; places <= (tieSlots ?? 0); places += 1) {
+        const markup = preview({ ...blankRelations(), nombreDAutresPersonnages: places })
+        assert.ok(
+            markup.indexOf(`--ties-per-row:${placesPerRow(places, maxPerRow)}`) >= 0,
+            `${places} places: the row width the contract computes`
+        )
+    }
+    assert.deepEqual(
+        [1, 2, 3, 4, 5, 6].map((places) => placesPerRow(places, 4)),
+        [1, 2, 3, 4, 3, 3],
+        'up to four places fill one row, five and six make two rows of three'
     )
 }
 

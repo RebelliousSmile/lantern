@@ -40,15 +40,11 @@
     text-align: center;
 }
 
-/* Autres personnages : les fiches par rangées de quatre ; un titre ou une note s'étale sur la rangée. */
-.adr-pj__form-pc-ties {
+/* Autres personnages : les fiches sur toute la largeur jusqu'à quatre ; au-delà, des rangées égales (--ties-per-row, posé par le rendu). */
+.adr-pj__ties {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(var(--ties-per-row, 4), minmax(0, 1fr));
     gap: 8px;
-}
-
-.adr-pj__form-pc-ties > :not(.adr-pj__tie) {
-    grid-column: 1 / -1;
 }
 
 .adr-pj__tie {
@@ -139,7 +135,7 @@
 /* Sous une largeur de feuille étroite, les rangées se replient avant de s'écraser. */
 @container (max-width: 34rem) {
     .adr-pj__card-row,
-    .adr-pj__form-pc-ties,
+    .adr-pj__ties,
     .adr-pj__npc-columns {
         grid-template-columns: minmax(0, 1fr);
     }

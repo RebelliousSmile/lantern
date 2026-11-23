@@ -1,7 +1,8 @@
 import { translate, type TranslationValues } from '@/i18n/text'
-import type { ReactNode } from 'react'
+import type { CSSProperties, ReactNode } from 'react'
 import {
     PJ_PRESENTATION,
+    placesPerRow,
     type AdrenalinePresentationBlock,
     type AdrenalinePresentationSection,
 } from 'schema-adrenaline/presentation'
@@ -37,7 +38,12 @@ function t(key: string, values?: TranslationValues) {
 }
 
 type Source = Record<string, unknown>
-type BlockProps = { block: AdrenalinePresentationBlock; source: Source }
+type BlockProps = {
+    block: AdrenalinePresentationBlock
+    source: Source
+    /** The most places a row of the block holds (the `columns` of its section), for the blocks laid out in rows. */
+    maxPerRow?: number
+}
 
 function text(value: unknown, suffix = ''): string {
     const shown = currentValue(value)
@@ -1071,8 +1077,9 @@ function tieLabel(
 /**
  * The other characters: one printed place per count the document sets at `countPath`, else the
  * default the contract publishes, never fewer than the entries held; each a column of written lines.
+ * They fill the width up to the most a row holds, and split into even rows beyond it (`placesPerRow`).
  */
-function PcTies({ block, source }: BlockProps) {
+function PcTies({ block, source, maxPerRow = 1 }: BlockProps) {
     const pointer = block.paths[0]
     const entries = records(at(source, pointer))
     const entered =
@@ -1089,7 +1096,14 @@ function PcTies({ block, source }: BlockProps) {
             : Math.max(entries.length, printed)
     const rows = fieldRows(block) ?? []
     return (
-        <>
+        <div
+            className="adr-pj__ties"
+            style={
+                {
+                    '--ties-per-row': placesPerRow(slots, maxPerRow),
+                } as CSSProperties
+            }
+        >
             {Array.from({ length: slots }, (_, index) => (
                 <div
                     className="adr-pj__tie"
@@ -1107,7 +1121,7 @@ function PcTies({ block, source }: BlockProps) {
                     )}
                 </div>
             ))}
-        </>
+        </div>
     )
 }
 
@@ -1322,19 +1336,26 @@ export function PresentationBlock({
     onOpen,
     withNotes = true,
     sectionLabel,
+    sectionColumns,
 }: BlockProps & {
     onOpen?: (zone?: string) => void
     /** False when the section prints the block's notes itself, across all its columns. */
     withNotes?: boolean
     /** The title of the section holding the block: a block that repeats it prints no subhead of its own. */
     sectionLabel?: string
+    /** The columns of the section holding the block: the most places a row of a block laid out in rows takes. */
+    sectionColumns?: number
 }) {
     const Form = FORMS[block.form ?? ''] ?? Unknown
     const content = (
         <>
             {!titledElsewhere(block, source) &&
                 block.label !== sectionLabel && <Subhead label={block.label} />}
-            <Form block={block} source={source} />
+            <Form
+                block={block}
+                source={source}
+                maxPerRow={sectionColumns}
+            />
             {withNotes &&
                 (block.notes ?? []).map((note) => (
                     <p className="adr-pj__note adr-pj__block-note" key={note}>
