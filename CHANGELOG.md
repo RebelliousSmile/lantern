@@ -5,6 +5,12 @@ All notable changes to this project are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.34.1] - 2026-11-23
+
+### Fixed
+
+- The relationship sheet harness checked a character filled with a name alone against a sheet that also prints empty places, which stay whole; it now sets a single place. v0.34.0 was tagged but its release failed on this check and was never published.
+
 ## [v0.34.0] - 2026-11-20
 
 ### Added

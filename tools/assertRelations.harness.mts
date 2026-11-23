@@ -207,6 +207,8 @@ assert.equal(
     const labels = (genre?: string) =>
         preview({
             ...typed,
+            /* One place only: an empty place stays whole and would print every line. */
+            nombreDAutresPersonnages: 1,
             autresPersonnages: [{ nom: 'Paul', ...(genre ? { genre } : {}) }],
         })
     assert.ok(
