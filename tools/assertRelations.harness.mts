@@ -198,6 +198,10 @@ assert.equal(
     assert.ok(labels().indexOf('iel me doit') >= 0, 'no gender: the default wording')
     assert.equal(labels('masculin').indexOf('>masculin<'), -1, 'the gender is not printed')
     assert.equal(count(preview(typed), 'adr-pj__tick--on'), 1, 'the drama test is ticked on the one NPC that carries it')
+    assert.ok(
+        /adr-pj__npc-name[^>]*>[^<]*<\/[a-z]+><span class="adr-pj__tick/.test(preview(typed)),
+        'the tick sits right after the name of the NPC, unlabelled'
+    )
 }
 
 /* A cell the header's pointers give no value for is not printed. */

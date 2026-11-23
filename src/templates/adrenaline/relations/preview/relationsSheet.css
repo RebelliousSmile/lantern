@@ -82,7 +82,7 @@
 
 .adr-pj__npc-head {
     display: grid;
-    grid-template-columns: 26px minmax(0, 1fr);
+    grid-template-columns: 26px minmax(0, 1fr) auto;
     align-items: end;
     gap: 6px;
 }

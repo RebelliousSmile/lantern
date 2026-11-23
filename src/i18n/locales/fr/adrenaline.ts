@@ -148,7 +148,7 @@ const adrenaline: ResourceShape<typeof en> = {
             duplicateNumber: 'Un autre PNJ porte déjà le numéro {{number}}.',
             gender: 'Genre (accorde l’intitulé de ce qu’il, elle ou iel me doit)',
             genderNone: 'Sans genre',
-            dramaTest: 'PNJ touché par le drame',
+            dramaTest: 'Case cochée (touché par le drame, ou autre usage)',
             full: 'La feuille est pleine ({{max}} emplacements).',
         },
         sheet: {

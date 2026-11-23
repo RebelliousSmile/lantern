@@ -1183,12 +1183,7 @@ function NpcField({
 }) {
     const label = relationsLabel(field)
     if (field === 'toucheParLeDrame')
-        return (
-            <div className="adr-pj__write-line">
-                <b className="adr-pj__write-label">{label}</b>
-                <Tick on={entry.toucheParLeDrame === true} />
-            </div>
-        )
+        return <Tick on={entry.toucheParLeDrame === true} />
     return <WriteLine label={label} value={npcFieldText(block, field, entry)} />
 }
 
@@ -1222,7 +1217,6 @@ function NpcEntries({ block, source }: BlockProps) {
                                     key={index}
                                 >
                                     {rows.map((row) =>
-                                        row.length === 2 &&
                                         row[0] === 'numero' ? (
                                             <div
                                                 className="adr-pj__npc-head"
@@ -1234,6 +1228,14 @@ function NpcEntries({ block, source }: BlockProps) {
                                                 <Value className="adr-pj__npc-name">
                                                     {text(entry?.nom)}
                                                 </Value>
+                                                {row.slice(2).map((field) => (
+                                                    <NpcField
+                                                        key={field}
+                                                        block={block}
+                                                        field={field}
+                                                        entry={entry ?? {}}
+                                                    />
+                                                ))}
                                             </div>
                                         ) : (
                                             /* A row of several fields is one line of the card. */

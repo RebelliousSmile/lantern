@@ -146,7 +146,7 @@ const adrenaline = {
             duplicateNumber: 'Another NPC already has number {{number}}.',
             gender: 'Gender (words the label of what they owe me)',
             genderNone: 'No gender',
-            dramaTest: 'NPC touched by the drama',
+            dramaTest: 'Ticked (touched by the drama, or any other use)',
             full: 'The sheet is full ({{max}} places).',
         },
         sheet: {
