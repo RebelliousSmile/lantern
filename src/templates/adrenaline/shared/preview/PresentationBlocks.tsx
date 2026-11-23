@@ -1103,7 +1103,7 @@ function Narrative({ block, source }: BlockProps) {
 /* The image of the character: one picture beside the identity card, the name under it. */
 function Portrait({ block, source }: BlockProps) {
     const image = text(at(source, block.paths[0])).trim()
-    const shown = /^https:\/\//i.test(image) ? image : ''
+    const shown = /^https?:\/\//i.test(image) ? image : ''
     const name = text(source.nom)
     return (
         <figure
