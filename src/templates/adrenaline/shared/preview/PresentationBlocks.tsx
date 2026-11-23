@@ -1105,7 +1105,7 @@ function Counter({ block, source }: BlockProps) {
     )
 }
 
-/* The modifier an attitude sets is the published level's: it is never read from the document. */
+/* The attitude is worded by the published level; the modifier it sets is not printed. */
 function AttitudeLine({
     label,
     attitude,
@@ -1125,15 +1125,6 @@ function AttitudeLine({
             <Value className="adr-pj__write-field">
                 {level ? level.label : key}
             </Value>
-            {level ? (
-                <span
-                    className={`adr-pj__npc-modifier adr-pj__modifier--${level.nature}`}
-                >
-                    {level.nature === 'aucun'
-                        ? relationsLabel('aucun')
-                        : `${relationsLabel(level.nature)} ${level.count}`}
-                </span>
-            ) : null}
         </div>
     )
 }
@@ -1227,14 +1218,24 @@ function NpcEntries({ block, source }: BlockProps) {
                                                 </Value>
                                             </div>
                                         ) : (
-                                            row.map((field) => (
-                                                <NpcField
-                                                    key={field}
-                                                    block={block}
-                                                    field={field}
-                                                    entry={entry ?? {}}
-                                                />
-                                            ))
+                                            /* A row of several fields is one line of the card. */
+                                            <div
+                                                className={
+                                                    row.length > 1
+                                                        ? 'adr-pj__npc-row'
+                                                        : 'adr-pj__npc-line'
+                                                }
+                                                key={row.join(':')}
+                                            >
+                                                {row.map((field) => (
+                                                    <NpcField
+                                                        key={field}
+                                                        block={block}
+                                                        field={field}
+                                                        entry={entry ?? {}}
+                                                    />
+                                                ))}
+                                            </div>
                                         )
                                     )}
                                 </div>

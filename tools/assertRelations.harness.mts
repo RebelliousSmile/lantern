@@ -140,7 +140,7 @@ assert.equal(
     'one exportable page'
 )
 
-/* The modifier of an attitude is the published level's, never read from the document. */
+/* The attitude is worded by the published level; the modifier it sets is not printed, nor one typed in the document. */
 {
     const level = ATTITUDE_LEVELS.find((candidate) => candidate.key === 'hostile')
     assert.ok(level, 'the contract publishes the hostile level')
@@ -150,9 +150,14 @@ assert.equal(
     }
     const markup = preview(doc)
     assert.ok(markup.indexOf(level.label) >= 0, 'the attitude is printed')
+    assert.equal(
+        markup.indexOf('adr-pj__npc-modifier'),
+        -1,
+        'a hostile attitude prints no modifier'
+    )
     assert.ok(
-        markup.indexOf('adr-pj__modifier--malus') >= 0,
-        'a hostile attitude prints its malus'
+        markup.indexOf('adr-pj__npc-row') >= 0,
+        'the attitude and its links share one line'
     )
     assert.equal(
         markup.indexOf('bonus 9'),
@@ -230,5 +235,5 @@ assert.equal(
 }
 
 console.log(
-    `assert:relations: example and typed sheet round trip; ${tieSlots} ties and ${npcSlots} NPCs printed; attitude modifier from the published level; panels and click zones drawn`
+    `assert:relations: example and typed sheet round trip; ${tieSlots} ties and ${npcSlots} NPCs printed; attitude worded by the published level, no modifier printed; panels and click zones drawn`
 )

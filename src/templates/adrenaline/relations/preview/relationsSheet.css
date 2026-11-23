@@ -129,23 +129,12 @@
     min-height: 1.25em;
 }
 
-.adr-pj__npc-modifier {
-    border: 1px solid var(--adrenaline-field-border);
-    padding: 0 4px;
-    color: var(--adrenaline-rule);
-    font-weight: 800;
-    font-size: 9px;
-    font-family: var(--font-header-theme);
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-}
-
-.adr-pj__modifier--bonus {
-    color: var(--adrenaline-handwritten-ink);
-}
-
-.adr-pj__modifier--malus {
-    border-style: dashed;
+/* Une ligne à plusieurs champs : l'attitude prend la place, les numéros « relié à » (courts) le reste. */
+.adr-pj__npc-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+    gap: 0 10px;
+    align-items: baseline;
 }
 
 /* Sous une largeur de feuille étroite, les rangées se replient avant de s'écraser. */
