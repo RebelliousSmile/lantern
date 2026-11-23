@@ -1168,11 +1168,11 @@ function NpcField({
     entry: Record<string, unknown>
 }) {
     const label = relationsLabel(field)
-    if (field === 'testDeDrame')
+    if (field === 'toucheParLeDrame')
         return (
             <div className="adr-pj__write-line">
                 <b className="adr-pj__write-label">{label}</b>
-                <Tick on={entry.testDeDrame === true} />
+                <Tick on={entry.toucheParLeDrame === true} />
             </div>
         )
     return <WriteLine label={label} value={npcFieldText(block, field, entry)} />
@@ -1213,10 +1213,10 @@ function NpcTable({ block, source }: BlockProps) {
                                     key={row.join(':')}
                                 >
                                     {row.map((field) =>
-                                        field === 'testDeDrame' ? (
+                                        field === 'toucheParLeDrame' ? (
                                             <Tick
                                                 key={field}
-                                                on={entry?.testDeDrame === true}
+                                                on={entry?.toucheParLeDrame === true}
                                             />
                                         ) : (
                                             <Value

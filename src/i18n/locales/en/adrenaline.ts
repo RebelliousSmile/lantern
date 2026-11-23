@@ -146,7 +146,7 @@ const adrenaline = {
             duplicateNumber: 'Another NPC already has number {{number}}.',
             gender: 'Gender (words the label of what they owe me)',
             genderNone: 'No gender',
-            dramaTest: 'A drama test was made on this NPC',
+            dramaTest: 'NPC touched by the drama',
             full: 'The sheet is full ({{max}} places).',
         },
         sheet: {
@@ -158,7 +158,7 @@ const adrenaline = {
             masculin: 'Masculine',
             feminin: 'Feminine',
             neutre: 'Neutral',
-            testDeDrame: 'Drama test',
+            toucheParLeDrame: 'Touched',
             numero: 'No.',
             attitude: 'Attitude',
             lien: 'Link',

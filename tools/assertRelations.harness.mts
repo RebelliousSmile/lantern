@@ -83,7 +83,7 @@ const typed = {
             reliesA: [2],
             resume: 'A perdu sa fille',
             notes: 'Ne boit plus',
-            testDeDrame: true,
+            toucheParLeDrame: true,
         },
         { numero: 2, nom: 'La pharmacienne', attitude: 'loyale' },
     ],

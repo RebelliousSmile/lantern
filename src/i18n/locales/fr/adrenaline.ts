@@ -148,7 +148,7 @@ const adrenaline: ResourceShape<typeof en> = {
             duplicateNumber: 'Un autre PNJ porte déjà le numéro {{number}}.',
             gender: 'Genre (accorde l’intitulé de ce qu’il, elle ou iel me doit)',
             genderNone: 'Sans genre',
-            dramaTest: 'Test de drame fait sur ce PNJ',
+            dramaTest: 'PNJ touché par le drame',
             full: 'La feuille est pleine ({{max}} emplacements).',
         },
         sheet: {
@@ -160,7 +160,7 @@ const adrenaline: ResourceShape<typeof en> = {
             masculin: 'Masculin',
             feminin: 'Féminin',
             neutre: 'Neutre',
-            testDeDrame: 'Test de drame',
+            toucheParLeDrame: 'Touché',
             numero: 'N°',
             attitude: 'Attitude',
             lien: 'Lien',

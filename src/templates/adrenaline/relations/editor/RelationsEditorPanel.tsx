@@ -536,13 +536,13 @@ export function RelationsEditorPanel() {
                                                     'adrenaline:relations.form.dramaTest'
                                                 )}
                                                 checked={
-                                                    entry.testDeDrame === true
+                                                    entry.toucheParLeDrame === true
                                                 }
                                                 onChange={(done) =>
                                                     replace(
                                                         put(
                                                             entry,
-                                                            'testDeDrame',
+                                                            'toucheParLeDrame',
                                                             done
                                                                 ? true
                                                                 : undefined
