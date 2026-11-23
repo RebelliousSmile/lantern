@@ -69,14 +69,18 @@ export function zoneCarries(zone: readonly string[] | undefined) {
 export type PublishedZone = { id: string; label: string }
 
 /**
- * The zones of the identity as the sheet prints them once it holds something: one block each. A
+ * The zones of the identity (the portrait and the game notes included) as the sheet prints them once it holds something: one block each. A
  * blank sheet draws none of them, so the panel offers them itself, one click per zone.
  */
 export function identityZones(): PublishedZone[] {
     return blocks.flatMap((block) =>
         block.paths.length > 0 &&
         block.paths.every(
-            (path) => path === '/identite' || path.indexOf('/identite/') === 0
+            (path) =>
+                path === '/identite' ||
+                path.indexOf('/identite/') === 0 ||
+                path === '/portrait' ||
+                path === '/notesDePartie'
         )
             ? [{ id: block.id, label: block.label ?? block.id }]
             : []

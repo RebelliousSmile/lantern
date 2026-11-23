@@ -51,7 +51,6 @@ export const pjSections = sections<PjSection>([
     'formations',
     'equipment',
     'identity',
-    'notes',
     'meta',
 ])
 export const pnjSections = sections<PnjSection>([

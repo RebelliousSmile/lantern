@@ -1198,3 +1198,46 @@
     margin: 0;
     text-align: center;
 }
+
+/* The notes of the game: a zone of a fixed height, the editor measures the text against it. */
+.adr-pj__notes-body {
+    display: block;
+    border-bottom: none;
+    height: 28em;
+    overflow: hidden;
+    white-space: pre-wrap;
+}
+
+/* The portrait: one picture beside the identity card, the name under it. */
+figure.adr-pj__portrait {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 2px;
+    margin: 0;
+    border: 1px solid var(--adrenaline-field-border);
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    min-height: 9em;
+    overflow: hidden;
+    text-align: center;
+}
+
+figure.adr-pj__portrait img {
+    flex: 1 1 auto;
+    width: 100%;
+    min-height: 0;
+    object-fit: cover;
+}
+
+figure.adr-pj__portrait.adr-pj__portrait--empty span {
+    opacity: 0.6;
+    font-style: italic;
+}
+
+figure.adr-pj__portrait figcaption {
+    padding-block: 2px;
+    font-size: 0.85em;
+}

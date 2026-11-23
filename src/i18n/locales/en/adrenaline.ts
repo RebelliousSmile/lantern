@@ -35,6 +35,9 @@ const adrenaline = {
         exportPng: 'Export the current PJ preview as PNG.',
         form: {
             addIdentity: 'Fill in the identity',
+            portrait: 'Portrait',
+            portraitHint:
+                'Address (https) of the image: the printed sheet keeps the place of the portrait.',
             characterHeading: 'Character and settings',
             player: 'Player',
             creationMethod: 'Creation method',
@@ -76,6 +79,8 @@ const adrenaline = {
             },
         },
         sheet: {
+            portraitAlt: 'Portrait of {{name}}',
+            portraitMissing: 'Portrait to add',
             parameters: {
                 player: 'Player',
                 creation: 'Creation',

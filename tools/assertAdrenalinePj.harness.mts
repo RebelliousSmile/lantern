@@ -121,11 +121,19 @@ assert.ok(
     /notesDePartie/.test(exportToTOML(noted)),
     'the notes are in the TOML'
 )
+const bare = { ...typed } as Record<string, unknown>
+delete bare.notesDePartie
+delete bare.portrait
 assert.equal(
-    /notesDePartie/.test(exportToTOML(typed)),
+    /notesDePartie|portrait/.test(exportToTOML(bare as unknown as AdrenalinePj)),
     false,
-    'no notes key without notes'
+    'no notes or portrait key without them'
 )
+const pictured = {
+    ...typed,
+    portrait: 'Zombiology/Portraits/x.png',
+} as unknown as AdrenalinePj
+assert.deepEqual(roundTrip(pictured), pictured, 'the portrait round trips')
 
 /* A second pass changes nothing, and equipment holds no mental weapons. */
 assert.equal(exportToTOML(back), exportToTOML(typed), 'a stable export')
@@ -1317,7 +1325,12 @@ runAll(
         .filter(
             (block) =>
                 block.paths.length > 0 &&
-                block.paths.every((path) => path.indexOf('/identite') === 0)
+                block.paths.every(
+                    (path) =>
+                        path.indexOf('/identite') === 0 ||
+                        path === '/portrait' ||
+                        path === '/notesDePartie'
+                )
         )
         .map((block) => block.id)
     assert.ok(zones.length >= 3, 'the sheet prints the identity in zones')

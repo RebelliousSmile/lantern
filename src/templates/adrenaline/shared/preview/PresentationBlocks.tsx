@@ -6,6 +6,7 @@ import {
     type AdrenalinePresentationBlock,
     type AdrenalinePresentationSection,
 } from 'schema-adrenaline/presentation'
+import { NOTES_BODY_ATTRIBUTE } from '../../../shared/notes/notesFit'
 import { pjLimit } from '../editor/pjLimits'
 import { enumAt, shapeAt, STATE_SIDES } from '../editor/schemaShapes'
 import {
@@ -21,6 +22,8 @@ import {
     sortedBlocks,
 } from '../presentation'
 import { currentValue } from './SheetPrimitives'
+
+const NOTES_POINTER = '/notesDePartie'
 
 /*
  * One component per published block form. The presentation names the blocks, their order, their
@@ -1042,11 +1045,42 @@ function CompactRows({ block, source }: BlockProps) {
 
 /* Free prose under the block title, on ruled lines. */
 function Narrative({ block, source }: BlockProps) {
-    return block.paths.map((pointer) => (
-        <Value className="adr-pj__narrative" key={pointer}>
-            {text(at(source, pointer))}
-        </Value>
-    ))
+    return block.paths.map((pointer) =>
+        pointer === NOTES_POINTER ? (
+            /* The notes zone has a fixed size: the editor measures the text against this very element. */
+            <span
+                className="adr-pj__value adr-pj__narrative adr-pj__notes-body"
+                key={pointer}
+                {...{ [NOTES_BODY_ATTRIBUTE]: '' }}
+            >
+                {text(at(source, pointer))}
+            </span>
+        ) : (
+            <Value className="adr-pj__narrative" key={pointer}>
+                {text(at(source, pointer))}
+            </Value>
+        )
+    )
+}
+
+/* The image of the character: one picture beside the identity card, the name under it. */
+function Portrait({ block, source }: BlockProps) {
+    const image = text(at(source, block.paths[0])).trim()
+    const shown = /^https:\/\//i.test(image) ? image : ''
+    const name = text(source.nom)
+    return (
+        <figure
+            className={`adr-pj__portrait${shown ? '' : ' adr-pj__portrait--empty'}`}
+            data-zone="portrait"
+        >
+            {shown ? (
+                <img src={shown} alt={t('pj.sheet.portraitAlt', { name })} />
+            ) : (
+                <span>{t('pj.sheet.portraitMissing')}</span>
+            )}
+            {name && <figcaption>{name}</figcaption>}
+        </figure>
+    )
 }
 
 function Unknown({ block, source }: BlockProps) {
@@ -1334,6 +1368,7 @@ const FORMS: Partial<Record<string, (props: BlockProps) => ReactNode>> = {
     'circle-row': CircleRow,
     'compact-rows': CompactRows,
     ['narrative']: Narrative,
+    portrait: Portrait,
     'stress-dice': StressDice,
     'threshold-rows': ThresholdRows,
     'status-frames': StatusFrames,
@@ -1349,6 +1384,7 @@ const TITLED_ELSEWHERE = new Set([
     'name-card',
     'game-parameters',
     'formation-columns',
+    'portrait',
     // The Malus column prints its labels on the band of each frame, as the paper sheet does.
     'fatigue-circles',
     'shock-circles',

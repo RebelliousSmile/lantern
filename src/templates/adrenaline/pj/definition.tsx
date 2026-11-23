@@ -30,7 +30,7 @@ const template: AnyTemplateDefinition = {
         renderPanel: () => <AdrenalineAppearancePanel />,
     },
     export: {
-        /* The pages are the ones the published presentation declares, the notes page last. */
+        /* The pages are the ones the published presentation declares: the notes sit in the identity. */
         pages: () =>
             PJ_PRESENTATION.pages.map((page) => ({
                 id: page.id,
@@ -39,13 +39,7 @@ const template: AnyTemplateDefinition = {
                         ? page.label.fr
                         : page.label.en,
                 },
-                notes: 'notesPath' in page,
             })),
-        withoutNotes: (doc) => {
-            const rest = { ...(doc as Record<string, unknown>) }
-            delete rest.notesDePartie
-            return rest
-        },
         actions: [
             createTomlExportAction({
                 exportToml: exportToTOML,

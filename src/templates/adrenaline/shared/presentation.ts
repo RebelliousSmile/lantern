@@ -230,7 +230,8 @@ export const editTargets = {
     protections: 'protections',
     sante: 'health',
     etatDePartie: 'health',
-    notesDePartie: 'notes',
+    portrait: 'identity',
+    notesDePartie: 'identity',
 } as const
 
 export function editTarget(block: AdrenalinePresentationBlock): PjSection {

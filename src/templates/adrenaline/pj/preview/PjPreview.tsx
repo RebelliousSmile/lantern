@@ -1,7 +1,5 @@
-import i18n from '@/i18n'
 import { useEffect } from 'react'
 import { PJ_PRESENTATION } from 'schema-adrenaline/presentation'
-import { NotesPage } from '../../../shared/notes/NotesPage'
 import { useAdrenalineDocument } from '../../shared/hooks'
 import {
     adrenalineSheetTokens,
@@ -119,7 +117,7 @@ function PjRow({
  * The sheet is laid out by the published presentation: sections, block order, placements,
  * decorations and appearance all come from schema-adrenaline, colours and fonts from its pack. It
  * is drawn page by page as the presentation declares the pages: each page is a node of its own, so
- * it leaves as one image and prints on one sheet, and the notes page comes last.
+ * it leaves as one image and prints on one sheet.
  */
 export function PjPreview() {
     const { document, openSection } = useAdrenalineDocument<
@@ -132,22 +130,6 @@ export function PjPreview() {
     return (
         <div className="adr-pj-pages">
             {PJ_PRESENTATION.pages.map((page) => {
-                if ('notesPath' in page)
-                    return (
-                        <NotesPage
-                            key={page.id}
-                            id={page.id}
-                            title={
-                                i18n.language.startsWith('fr')
-                                    ? page.label.fr
-                                    : page.label.en
-                            }
-                            value={document.notesDePartie as string | undefined}
-                            className={classes}
-                            style={adrenalineSheetTokens}
-                            onOpen={() => openSection('notes')}
-                        />
-                    )
                 const ids = page.sections as readonly string[]
                 return (
                     <article

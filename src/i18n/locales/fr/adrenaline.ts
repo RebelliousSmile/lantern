@@ -37,6 +37,9 @@ const adrenaline: ResourceShape<typeof en> = {
         exportPng: 'Exporter l’aperçu du PJ actuel en PNG.',
         form: {
             addIdentity: 'Renseigner l’identité',
+            portrait: 'Portrait',
+            portraitHint:
+                'Adresse https de l’image : la feuille imprimée garde l’emplacement du portrait.',
             characterHeading: 'Personnage et paramètres',
             player: 'Joueur',
             creationMethod: 'Type de création',
@@ -78,6 +81,8 @@ const adrenaline: ResourceShape<typeof en> = {
             },
         },
         sheet: {
+            portraitAlt: 'Portrait de {{name}}',
+            portraitMissing: 'Portrait à ajouter',
             parameters: {
                 player: 'Joueur',
                 creation: 'Création',

@@ -5,6 +5,13 @@ All notable changes to this project are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.35.0] - 2026-11-23
+
+### Changed
+
+- The Adrenaline player sheet preview: the name, game parameters and XP header is back at the top of the first page, and the back of the sheet is the Identity section. The game notes move from their own page into the Identity section, and the Notes section of the editor is gone: they are edited with the identity.
+- The player sheet gets a portrait beside the identity card, with the character name as caption and a "Portrait to add" frame while empty; its reference is entered with the identity fields.
+
 ## [v0.34.2] - 2026-11-23
 
 ### Fixed
