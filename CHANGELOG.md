@@ -5,6 +5,12 @@ All notable changes to this project are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.34.2] - 2026-11-23
+
+### Fixed
+
+- The relationship sheet preview: on the card of another character and of an NPC, a label opens the first line and the text continues beneath it at full width.
+
 ## [v0.34.1] - 2026-11-23
 
 ### Fixed

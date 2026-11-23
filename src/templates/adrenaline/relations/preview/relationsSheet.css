@@ -114,17 +114,35 @@
     align-items: baseline;
     gap: 0 10px;
 }
-/* Libellé, champ à sa droite : un texte long passe à la ligne dans son champ, jamais sous le libellé. */
+/* Fiche d'un autre personnage ou d'un PNJ : le libellé ouvre la première ligne, le texte passe ensuite sous lui à pleine largeur. */
+.adr-pj__tie,
+.adr-pj__npc {
+    --tie-line: 20px;
+}
 .adr-pj__tie .adr-pj__write-line,
 .adr-pj__npc .adr-pj__write-line {
-    flex-wrap: nowrap;
-    align-items: baseline;
+    display: block;
+}
+.adr-pj__tie .adr-pj__write-label,
+.adr-pj__npc .adr-pj__write-label {
+    float: left;
+    margin-right: 5px;
+    line-height: var(--tie-line);
 }
 .adr-pj__tie .adr-pj__write-field,
 .adr-pj__npc .adr-pj__write-field {
-    flex: 1 1 3em;
+    display: block;
+    border-bottom: 0;
+    min-height: var(--tie-line);
+    line-height: var(--tie-line);
+    background: repeating-linear-gradient(
+        to bottom,
+        transparent 0,
+        transparent calc(var(--tie-line) - 1px),
+        var(--adrenaline-field-border) calc(var(--tie-line) - 1px),
+        var(--adrenaline-field-border) var(--tie-line)
+    );
 }
-
 /* Repère de genre, à droite du nom d'un personnage (autre PJ ou PNJ) : un encadré rempli, comme le badge de dés des cartes. */
 .adr-pj__gender-mark {
     flex: 0 0 auto;
