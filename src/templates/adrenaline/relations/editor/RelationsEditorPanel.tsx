@@ -499,7 +499,7 @@ export function RelationsEditorPanel() {
                                                 }
                                             />
                                             {(
-                                                ['ceQuiLuiEstArrive', 'notes'] as const
+                                                ['resume', 'notes'] as const
                                             ).map((field) => (
                                                 <OptionalTextField
                                                     key={field}

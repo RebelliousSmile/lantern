@@ -136,6 +136,10 @@
     gap: 0 10px;
     align-items: baseline;
 }
+/* Dans une rangée partagée, le champ garde une base courte : libellé et champ tiennent côte à côte. */
+.adr-pj__npc-row .adr-pj__write-field {
+    flex-basis: 3em;
+}
 
 /* Sous une largeur de feuille étroite, les rangées se replient avant de s'écraser. */
 @container (max-width: 34rem) {

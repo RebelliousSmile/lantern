@@ -81,7 +81,7 @@ const typed = {
             attitude: 'hostile',
             lien: { type: 'travail', description: 'Ancien patron' },
             reliesA: [2],
-            ceQuiLuiEstArrive: 'A perdu sa fille',
+            resume: 'A perdu sa fille',
             notes: 'Ne boit plus',
         },
         { numero: 2, nom: 'La pharmacienne', attitude: 'loyale' },

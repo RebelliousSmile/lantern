@@ -157,7 +157,7 @@ const adrenaline: ResourceShape<typeof en> = {
             attitude: 'Attitude',
             lien: 'Lien',
             reliesA: 'Relié à',
-            ceQuiLuiEstArrive: 'Résumé',
+            resume: 'Résumé',
             notes: 'Notes',
             bonus: 'bonus',
             malus: 'malus',
