@@ -197,6 +197,8 @@ assert.equal(
     assert.ok(labels('neutre').indexOf('iel me doit') >= 0, 'neutral wording')
     assert.ok(labels().indexOf('iel me doit') >= 0, 'no gender: the default wording')
     assert.equal(labels('masculin').indexOf('>masculin<'), -1, 'the gender is not printed')
+    const marks = (genre?: string) => (labels(genre).match(/adr-pj__gender-mark">([^<]*)</g) ?? []).map((found) => found.replace(/^.*">/, '').replace('<', ''))
+    assert.deepEqual([marks('masculin'), marks('feminin'), marks('neutre'), marks()], [['il'], ['elle'], ['iel'], []], 'the gender is marked beside the name with the published text, and not when absent')
     assert.equal(count(preview(typed), 'adr-pj__tick--on'), 1, 'the drama test is ticked on the one NPC that carries it')
     assert.ok(
         /adr-pj__npc-name[^>]*>[^<]*<\/[a-z]+><span class="adr-pj__tick/.test(preview(typed)),

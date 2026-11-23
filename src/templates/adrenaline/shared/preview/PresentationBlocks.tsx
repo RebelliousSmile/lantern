@@ -109,11 +109,20 @@ function Subhead({
     )
 }
 
-function WriteLine({ label, value }: { label: string; value: string }) {
+function WriteLine({
+    label,
+    value,
+    mark,
+}: {
+    label: string
+    value: string
+    mark?: string
+}) {
     return (
         <div className="adr-pj__write-line">
             <b className="adr-pj__write-label">{label}</b>
             <Value className="adr-pj__write-field">{value}</Value>
+            {mark ? <span className="adr-pj__gender-mark">{mark}</span> : null}
         </div>
     )
 }
@@ -1074,6 +1083,21 @@ function tieLabel(
         : worded.labels.default
 }
 
+/** The short mark of the gender printed beside a field of another character: the published text for their gender, nothing without one. */
+function genderMark(
+    block: AdrenalinePresentationBlock,
+    key: string,
+    entry: Record<string, unknown> | undefined
+): string {
+    const mark = block.genderMark
+    if (!mark || mark.key !== key) return ''
+    const gender = entry?.[mark.genderKey]
+    const marks: Record<string, string> = mark.marks
+    return typeof gender === 'string' && marks[gender] !== undefined
+        ? marks[gender]
+        : ''
+}
+
 /**
  * The other characters: one printed place per count the document sets at `countPath`, else the
  * default the contract publishes, never fewer than the entries held; each a column of written lines.
@@ -1116,6 +1140,7 @@ function PcTies({ block, source, maxPerRow = 1 }: BlockProps) {
                                 key={key}
                                 label={tieLabel(block, key, entries[index])}
                                 value={text(entries[index]?.[key])}
+                                mark={genderMark(block, key, entries[index])}
                             />
                         ))
                     )}

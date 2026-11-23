@@ -116,6 +116,17 @@
     flex-basis: 3em;
 }
 
+/* Repère de genre, à droite du nom d'un autre personnage : petit, sans prendre la place de l'écriture. */
+.adr-pj__gender-mark {
+    flex: 0 0 auto;
+    color: var(--adrenaline-rule);
+    font-family: var(--font-header-theme);
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
 /* Case de test de Drame : cochée, elle prend la couleur du jeu. */
 .adr-pj__tick {
     display: inline-flex;
