@@ -1066,24 +1066,7 @@ function slotCount(pointer: string, entries: number): number {
 
 const relationsLabel = (key: string) => t(`relations.sheet.${key}`)
 
-/** The label of a field of another character: the published wording that follows their gender, else the plain label. */
-function tieLabel(
-    block: AdrenalinePresentationBlock,
-    key: string,
-    entry: Record<string, unknown> | undefined
-): string {
-    const worded = (block.genderedLabels ?? []).find(
-        (candidate) => candidate.key === key
-    )
-    if (!worded) return relationsLabel(key)
-    const gender = entry?.[worded.genderKey]
-    const labels: Record<string, string> = worded.labels
-    return typeof gender === 'string' && labels[gender] !== undefined
-        ? labels[gender]
-        : worded.labels.default
-}
-
-/** The short mark of the gender printed beside a field of another character: the published text for their gender, nothing without one. */
+/** The short mark of the gender printed beside a field of a character: the published text for their gender, nothing without one. */
 function genderMark(
     block: AdrenalinePresentationBlock,
     key: string,
@@ -1135,14 +1118,25 @@ function PcTies({ block, source, maxPerRow = 1 }: BlockProps) {
                     key={index}
                 >
                     {rows.map((row) =>
-                        row.map((key) => (
-                            <WriteLine
-                                key={key}
-                                label={tieLabel(block, key, entries[index])}
-                                value={text(entries[index]?.[key])}
-                                mark={genderMark(block, key, entries[index])}
-                            />
-                        ))
+                        row
+                            /* A place the document fills prints only the lines it fills; an empty place stays whole. */
+                            .filter(
+                                (key) =>
+                                    !entries[index] ||
+                                    text(entries[index][key]) !== ''
+                            )
+                            .map((key) => (
+                                <WriteLine
+                                    key={key}
+                                    label={relationsLabel(key)}
+                                    value={text(entries[index]?.[key])}
+                                    mark={genderMark(
+                                        block,
+                                        key,
+                                        entries[index]
+                                    )}
+                                />
+                            ))
                     )}
                 </div>
             ))}
@@ -1212,6 +1206,38 @@ function NpcField({
     return <WriteLine label={label} value={npcFieldText(block, field, entry)} />
 }
 
+/** A row of the card: one line, or a line shared by several fields. A place the document fills prints only the fields it fills. */
+function NpcLine({
+    block,
+    row,
+    entry,
+}: {
+    block: AdrenalinePresentationBlock
+    row: readonly string[]
+    entry: Record<string, unknown> | undefined
+}) {
+    const printed = row.filter(
+        (field) => !entry || npcFieldText(block, field, entry) !== ''
+    )
+    if (printed.length === 0) return null
+    return (
+        <div
+            className={
+                printed.length > 1 ? 'adr-pj__npc-row' : 'adr-pj__npc-line'
+            }
+        >
+            {printed.map((field) => (
+                <NpcField
+                    key={field}
+                    block={block}
+                    field={field}
+                    entry={entry ?? {}}
+                />
+            ))}
+        </div>
+    )
+}
+
 /** The NPCs: one card per place, filled column by column as the paper sheet is. */
 function NpcEntries({ block, source }: BlockProps) {
     const pointer = block.paths[0]
@@ -1253,6 +1279,19 @@ function NpcEntries({ block, source }: BlockProps) {
                                                 <Value className="adr-pj__npc-name">
                                                     {text(entry?.nom)}
                                                 </Value>
+                                                {genderMark(
+                                                    block,
+                                                    'nom',
+                                                    entry
+                                                ) ? (
+                                                    <span className="adr-pj__gender-mark">
+                                                        {genderMark(
+                                                            block,
+                                                            'nom',
+                                                            entry
+                                                        )}
+                                                    </span>
+                                                ) : null}
                                                 {row.slice(2).map((field) => (
                                                     <NpcField
                                                         key={field}
@@ -1263,24 +1302,12 @@ function NpcEntries({ block, source }: BlockProps) {
                                                 ))}
                                             </div>
                                         ) : (
-                                            /* A row of several fields is one line of the card. */
-                                            <div
-                                                className={
-                                                    row.length > 1
-                                                        ? 'adr-pj__npc-row'
-                                                        : 'adr-pj__npc-line'
-                                                }
+                                            <NpcLine
                                                 key={row.join(':')}
-                                            >
-                                                {row.map((field) => (
-                                                    <NpcField
-                                                        key={field}
-                                                        block={block}
-                                                        field={field}
-                                                        entry={entry ?? {}}
-                                                    />
-                                                ))}
-                                            </div>
+                                                block={block}
+                                                row={row}
+                                                entry={entry}
+                                            />
                                         )
                                     )}
                                 </div>
@@ -1378,11 +1405,7 @@ export function PresentationBlock({
         <>
             {!titledElsewhere(block, source) &&
                 block.label !== sectionLabel && <Subhead label={block.label} />}
-            <Form
-                block={block}
-                source={source}
-                maxPerRow={sectionColumns}
-            />
+            <Form block={block} source={source} maxPerRow={sectionColumns} />
             {withNotes &&
                 (block.notes ?? []).map((note) => (
                     <p className="adr-pj__note adr-pj__block-note" key={note}>

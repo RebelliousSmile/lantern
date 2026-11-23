@@ -139,9 +139,14 @@ for (const [label, doc] of [
 {
     const maxPerRow = RELATIONS_PRESENTATION.sections[1].columns ?? 1
     for (let places = 1; places <= (tieSlots ?? 0); places += 1) {
-        const markup = preview({ ...blankRelations(), nombreDAutresPersonnages: places })
+        const markup = preview({
+            ...blankRelations(),
+            nombreDAutresPersonnages: places,
+        })
         assert.ok(
-            markup.indexOf(`--ties-per-row:${placesPerRow(places, maxPerRow)}`) >= 0,
+            markup.indexOf(
+                `--ties-per-row:${placesPerRow(places, maxPerRow)}`
+            ) >= 0,
             `${places} places: the row width the contract computes`
         )
     }
@@ -154,18 +159,30 @@ for (const [label, doc] of [
 
 /* The page is one node of its own, named by the published sheet. */
 assert.equal(
-    count(preview(example), `data-export-page="${RELATIONS_PRESENTATION.sheet.id}"`),
+    count(
+        preview(example),
+        `data-export-page="${RELATIONS_PRESENTATION.sheet.id}"`
+    ),
     1,
     'one exportable page'
 )
 
 /* The attitude is worded by the published level; the modifier it sets is not printed, nor one typed in the document. */
 {
-    const level = ATTITUDE_LEVELS.find((candidate) => candidate.key === 'hostile')
+    const level = ATTITUDE_LEVELS.find(
+        (candidate) => candidate.key === 'hostile'
+    )
     assert.ok(level, 'the contract publishes the hostile level')
     const doc = {
         ...typed,
-        pnjs: [{ numero: 1, nom: 'X', attitude: 'hostile', modificateur: 'bonus 9' }],
+        pnjs: [
+            {
+                numero: 1,
+                nom: 'X',
+                attitude: 'hostile',
+                modificateur: 'bonus 9',
+            },
+        ],
     }
     const markup = preview(doc)
     assert.ok(markup.indexOf(level.label) >= 0, 'the attitude is printed')
@@ -185,23 +202,53 @@ assert.equal(
     )
 }
 
-/* The label of what another character owes follows their gender, which is not printed; the drama test is ticked on the NPC. */
+/* The gender is marked and not printed; an empty line is not printed; the drama test is ticked on the NPC. */
 {
     const labels = (genre?: string) =>
         preview({
             ...typed,
             autresPersonnages: [{ nom: 'Paul', ...(genre ? { genre } : {}) }],
         })
-    assert.ok(labels('masculin').indexOf('Ce qu&#x27;il me doit') >= 0 || labels('masculin').indexOf('Ce qu’il me doit') >= 0 || labels('masculin').indexOf("Ce qu'il me doit") >= 0, 'masculine wording')
-    assert.ok(labels('feminin').indexOf('elle me doit') >= 0, 'feminine wording')
-    assert.ok(labels('neutre').indexOf('iel me doit') >= 0, 'neutral wording')
-    assert.ok(labels().indexOf('iel me doit') >= 0, 'no gender: the default wording')
-    assert.equal(labels('masculin').indexOf('>masculin<'), -1, 'the gender is not printed')
-    const marks = (genre?: string) => (labels(genre).match(/adr-pj__gender-mark">([^<]*)</g) ?? []).map((found) => found.replace(/^.*">/, '').replace('<', ''))
-    assert.deepEqual([marks('masculin'), marks('feminin'), marks('neutre'), marks()], [['il'], ['elle'], ['iel'], []], 'the gender is marked beside the name with the published text, and not when absent')
-    assert.equal(count(preview(typed), 'adr-pj__tick--on'), 1, 'the drama test is ticked on the one NPC that carries it')
     assert.ok(
-        /adr-pj__npc-name[^>]*>[^<]*<\/[a-z]+><span class="adr-pj__tick/.test(preview(typed)),
+        labels('masculin').indexOf('>Secrets<') < 0 &&
+            labels('masculin').indexOf('me doit') < 0,
+        'a character filled with a name alone prints no empty line, and no wording follows the gender'
+    )
+    assert.equal(
+        labels('masculin').indexOf('>masculin<'),
+        -1,
+        'the gender is not printed'
+    )
+    const marks = (genre?: string) =>
+        (labels(genre).match(/adr-pj__gender-mark">([^<]*)</g) ?? []).map(
+            (found) => found.replace(/^.*">/, '').replace('<', '')
+        )
+    assert.deepEqual(
+        [marks('masculin'), marks('feminin'), marks('neutre'), marks()],
+        [['il'], ['elle'], ['iel'], []],
+        'the gender is marked beside the name with the published text, and not when absent'
+    )
+    const npcMark = preview({
+        ...typed,
+        pnjs: [
+            { numero: 1, nom: 'X', genre: 'feminin', toucheParLeDrame: true },
+        ],
+    })
+    assert.ok(
+        /adr-pj__npc-name[^>]*>[^<]*<\/[a-z]+><span class="adr-pj__gender-mark">elle<\/span><span class="adr-pj__tick/.test(
+            npcMark
+        ),
+        'the mark of an NPC sits between the name and the tick'
+    )
+    assert.equal(
+        count(preview(typed), 'adr-pj__tick--on'),
+        1,
+        'the drama test is ticked on the one NPC that carries it'
+    )
+    assert.ok(
+        /adr-pj__npc-name[^>]*>[^<]*<\/[a-z]+><span class="adr-pj__tick/.test(
+            preview(typed)
+        ),
         'the tick sits right after the name of the NPC, unlabelled'
     )
 }
@@ -214,7 +261,10 @@ assert.equal(
 
 /* The panels: one per section, empty when nothing is opened. */
 {
-    const empty = drawn(RelationsEditorPanel, example, { open: false, target: null })
+    const empty = drawn(RelationsEditorPanel, example, {
+        open: false,
+        target: null,
+    })
     assert.ok(
         empty.indexOf('Seul') === -1 && empty.indexOf('data-control') === -1,
         'a closed sheet edits nothing'
@@ -262,7 +312,9 @@ assert.equal(
         'a gap is filled before the list grows'
     )
     assert.equal(
-        nextNumber(Array.from({ length: 99 }, (_, index) => ({ numero: index + 1 }))),
+        nextNumber(
+            Array.from({ length: 99 }, (_, index) => ({ numero: index + 1 }))
+        ),
         undefined,
         'no number is offered once all are taken'
     )

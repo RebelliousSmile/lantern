@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { useUiText, type TranslationKey } from '@/i18n/text'
 import { ATTITUDE_LEVELS } from 'schema-adrenaline/presentation'
+import { MetaFields } from '../../shared/editor/AdrenalineFields'
 import { put, withoutHollow } from '../../shared/editor/clean'
 import { SchemaProvider } from '../../shared/editor/draft'
 import {
@@ -17,12 +18,7 @@ import {
     OptionalTextField,
 } from '../../shared/editor/OptionalFields'
 import { limitAt } from '../../shared/editor/pjLimits'
-import {
-    enumAt,
-    maxLengthAt,
-    shapeAt,
-} from '../../shared/editor/schemaShapes'
-import { MetaFields } from '../../shared/editor/AdrenalineFields'
+import { enumAt, maxLengthAt, shapeAt } from '../../shared/editor/schemaShapes'
 import { useAdrenalineDocument } from '../../shared/hooks'
 import type { RelationsSection } from '../../shared/sections'
 import { blankRelations } from '../sample'
@@ -136,7 +132,9 @@ function attitudeModifier(
     attitude: unknown,
     text: ReturnType<typeof useUiText>
 ) {
-    const level = ATTITUDE_LEVELS.find((candidate) => candidate.key === attitude)
+    const level = ATTITUDE_LEVELS.find(
+        (candidate) => candidate.key === attitude
+    )
     if (!level) return undefined
     return level.nature === 'aucun'
         ? text(sheetLabel('aucun'))
@@ -176,10 +174,14 @@ export function RelationsEditorPanel() {
     const tie = openedEntry(keys, 'tie')
     const npc = openedEntry(keys, 'npc')
     const tieMax = shapeAt('relations', '/autresPersonnages')?.maxItems
-    const tieDefault = shapeAt('relations', '/nombreDAutresPersonnages')?.default
+    const tieDefault = shapeAt(
+        'relations',
+        '/nombreDAutresPersonnages'
+    )?.default
     const npcMax = shapeAt('relations', '/pnjs')?.maxItems
     const linkTypes = enumAt('relations', '/pnjs[]/lien/type')
     const genders = enumAt('relations', '/autresPersonnages[]/genre')
+    const npcGenders = enumAt('relations', '/pnjs[]/genre')
     return (
         <SchemaProvider value="relations">
             <div className="space-y-6 p-1">
@@ -287,7 +289,9 @@ export function RelationsEditorPanel() {
                                             )}
                                             value={entry[field]}
                                             onChange={(value) =>
-                                                replace(put(entry, field, value))
+                                                replace(
+                                                    put(entry, field, value)
+                                                )
                                             }
                                         />
                                     ))}
@@ -325,7 +329,8 @@ export function RelationsEditorPanel() {
                                             )
                                             .join(' · '),
                                     open: npc,
-                                    only: npc !== undefined && npc < npcs.length,
+                                    only:
+                                        npc !== undefined && npc < npcs.length,
                                 }}
                                 create={() => {
                                     const numero = nextNumber(npcs)
@@ -394,6 +399,32 @@ export function RelationsEditorPanel() {
                                                     }
                                                 />
                                             </div>
+                                            <OptionSelect
+                                                label={text(
+                                                    'adrenaline:relations.form.gender'
+                                                )}
+                                                value={entry.genre}
+                                                options={npcGenders.map(
+                                                    (gender) => ({
+                                                        value: gender,
+                                                        label: text(
+                                                            sheetLabel(gender)
+                                                        ),
+                                                    })
+                                                )}
+                                                noneLabel={text(
+                                                    'adrenaline:relations.form.genderNone'
+                                                )}
+                                                onChange={(genre) =>
+                                                    replace(
+                                                        put(
+                                                            entry,
+                                                            'genre',
+                                                            genre
+                                                        )
+                                                    )
+                                                }
+                                            />
                                             {duplicate && (
                                                 <p
                                                     role="status"
@@ -464,7 +495,10 @@ export function RelationsEditorPanel() {
                                                             'lien',
                                                             type === undefined
                                                                 ? undefined
-                                                                : { ...link, type }
+                                                                : {
+                                                                      ...link,
+                                                                      type,
+                                                                  }
                                                         )
                                                     )
                                                 }
@@ -508,35 +542,36 @@ export function RelationsEditorPanel() {
                                                     )
                                                 }
                                             />
-                                            {(
-                                                ['resume', 'notes'] as const
-                                            ).map((field) => (
-                                                <OptionalTextField
-                                                    key={field}
-                                                    label={text(
-                                                        sheetLabel(field)
-                                                    )}
-                                                    maxLength={lengthAt(
-                                                        `/pnjs[]/${field}`
-                                                    )}
-                                                    value={entry[field]}
-                                                    onChange={(value) =>
-                                                        replace(
-                                                            put(
-                                                                entry,
-                                                                field,
-                                                                value
+                                            {(['resume', 'notes'] as const).map(
+                                                (field) => (
+                                                    <OptionalTextField
+                                                        key={field}
+                                                        label={text(
+                                                            sheetLabel(field)
+                                                        )}
+                                                        maxLength={lengthAt(
+                                                            `/pnjs[]/${field}`
+                                                        )}
+                                                        value={entry[field]}
+                                                        onChange={(value) =>
+                                                            replace(
+                                                                put(
+                                                                    entry,
+                                                                    field,
+                                                                    value
+                                                                )
                                                             )
-                                                        )
-                                                    }
-                                                />
-                                            ))}
+                                                        }
+                                                    />
+                                                )
+                                            )}
                                             <CheckField
                                                 label={text(
                                                     'adrenaline:relations.form.dramaTest'
                                                 )}
                                                 checked={
-                                                    entry.toucheParLeDrame === true
+                                                    entry.toucheParLeDrame ===
+                                                    true
                                                 }
                                                 onChange={(done) =>
                                                     replace(

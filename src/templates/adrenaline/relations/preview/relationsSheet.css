@@ -82,7 +82,10 @@
 
 .adr-pj__npc-head {
     display: grid;
-    grid-template-columns: 26px minmax(0, 1fr) auto;
+    /* Numéro, nom ; puis, chacun à sa largeur, le repère de genre et la case libre. */
+    grid-template-columns: 26px minmax(0, 1fr);
+    grid-auto-columns: auto;
+    grid-auto-flow: column;
     align-items: end;
     gap: 6px;
 }
@@ -108,24 +111,30 @@
 .adr-pj__npc-row {
     display: grid;
     grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+    align-items: baseline;
     gap: 0 10px;
+}
+/* Libellé, champ à sa droite : un texte long passe à la ligne dans son champ, jamais sous le libellé. */
+.adr-pj__tie .adr-pj__write-line,
+.adr-pj__npc .adr-pj__write-line {
+    flex-wrap: nowrap;
     align-items: baseline;
 }
-/* Dans une rangée partagée, le champ garde une base courte : libellé et champ tiennent côte à côte. */
-.adr-pj__npc-row .adr-pj__write-field {
-    flex-basis: 3em;
+.adr-pj__tie .adr-pj__write-field,
+.adr-pj__npc .adr-pj__write-field {
+    flex: 1 1 3em;
 }
 
-/* Repère de genre, à droite du nom d'un autre personnage : un encadré rempli, comme le badge de dés des cartes. */
+/* Repère de genre, à droite du nom d'un personnage (autre PJ ou PNJ) : un encadré rempli, comme le badge de dés des cartes. */
 .adr-pj__gender-mark {
     flex: 0 0 auto;
-    padding: 0 0.35rem;
     border-radius: 0.2rem;
     background: var(--adrenaline-dice-badge-bg);
+    padding: 0 0.35rem;
     color: var(--adrenaline-dice-badge-ink);
-    font-family: var(--font-header-theme);
-    font-size: 9px;
     font-weight: 800;
+    font-size: 9px;
+    font-family: var(--font-header-theme);
     letter-spacing: 0.04em;
     text-transform: uppercase;
 }
