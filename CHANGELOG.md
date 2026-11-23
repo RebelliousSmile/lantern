@@ -11,6 +11,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - The Adrenaline player sheet preview: the particular signs are shown one per line under their label, instead of joined by dots on a single wrapped line.
 - The player sheet portrait also draws from an `http://` address, not only from `https://`.
+- The Adrenaline TOML export writes texts with line breaks as `"""` multi-line strings instead of `\r\n` escapes, so they stay editable by hand (CRLF is written as LF).
 
 ## [v0.35.0] - 2026-11-23
 

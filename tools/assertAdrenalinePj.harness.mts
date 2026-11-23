@@ -121,6 +121,23 @@ assert.ok(
     /notesDePartie/.test(exportToTOML(noted)),
     'the notes are in the TOML'
 )
+assert.ok(
+    exportToTOML(noted).includes('notesDePartie = """\n'),
+    'the notes with line breaks are written as a multi-line string'
+)
+assert.ok(
+    !/\\n/.test(exportToTOML(noted)),
+    'no line break is written as an escape'
+)
+const crlf = {
+    ...typed,
+    notesDePartie: 'Ligne 1\r\n\r\nLigne "2" \\ fin\n"""',
+} as unknown as AdrenalinePj
+assert.equal(
+    (roundTrip(crlf) as unknown as { notesDePartie: string }).notesDePartie,
+    'Ligne 1\n\nLigne "2" \\ fin\n"""',
+    'a text with CRLF, quotes and a backslash reads back, CRLF aside'
+)
 const bare = { ...typed } as Record<string, unknown>
 delete bare.notesDePartie
 delete bare.portrait
