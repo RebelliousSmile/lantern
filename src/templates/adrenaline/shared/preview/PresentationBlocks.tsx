@@ -130,6 +130,30 @@ function WriteLine({
     )
 }
 
+/** A list written one entry per dotted line; a single entry is a plain write line. */
+function WriteLines({
+    label,
+    values,
+}: {
+    label: string
+    values: readonly string[]
+}) {
+    if (values.length < 2)
+        return <WriteLine label={label} value={values[0] ?? ''} />
+    return (
+        <div className="adr-pj__write-line adr-pj__write-line--stacked">
+            <b className="adr-pj__write-label">{label}</b>
+            <div className="adr-pj__write-stack">
+                {values.map((item, index) => (
+                    <Value className="adr-pj__write-field" key={index}>
+                        {item}
+                    </Value>
+                ))}
+            </div>
+        </div>
+    )
+}
+
 function Metric({
     name,
     values,
@@ -451,11 +475,13 @@ function IdentityFields({ block, source }: BlockProps) {
                 row.map((key) => {
                     const raw = identity[key]
                     const age = text(raw)
-                    const shown = Array.isArray(raw)
-                        ? strings(raw).join(' · ')
-                        : key === 'age' && age
-                          ? t('pj.sheet.years', { age })
-                          : text(raw)
+                    const list = Array.isArray(raw)
+                        ? strings(raw).filter((item) => item.trim() !== '')
+                        : undefined
+                    const shown =
+                        key === 'age' && age
+                            ? t('pj.sheet.years', { age })
+                            : text(raw)
                     const label = IDENTITY_LABELS[key]
                     return (
                         <div
@@ -466,14 +492,25 @@ function IdentityFields({ block, source }: BlockProps) {
                             }
                             key={key}
                         >
-                            <WriteLine
-                                label={
-                                    label
-                                        ? t(`shared.identity.${label}`)
-                                        : humanize(key)
-                                }
-                                value={shown}
-                            />
+                            {list ? (
+                                <WriteLines
+                                    label={
+                                        label
+                                            ? t(`shared.identity.${label}`)
+                                            : humanize(key)
+                                    }
+                                    values={list}
+                                />
+                            ) : (
+                                <WriteLine
+                                    label={
+                                        label
+                                            ? t(`shared.identity.${label}`)
+                                            : humanize(key)
+                                    }
+                                    value={shown}
+                                />
+                            )}
                         </div>
                     )
                 })

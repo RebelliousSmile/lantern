@@ -483,6 +483,23 @@
     flex: 1 1 0;
 }
 
+/* A list (distinguishing marks): one entry per dotted line, the label faces the first. */
+.adr-pj__write-line--stacked {
+    align-items: flex-start;
+}
+
+.adr-pj__write-stack {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 0;
+    gap: 2px;
+    min-width: 0;
+}
+
+.adr-pj__write-stack > .adr-pj__write-field {
+    flex: none;
+}
+
 .adr-pj__field {
     min-width: 0;
 }

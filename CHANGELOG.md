@@ -5,6 +5,12 @@ All notable changes to this project are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.35.1] - 2026-11-23
+
+### Fixed
+
+- The Adrenaline player sheet preview: the particular signs are shown one per line under their label, instead of joined by dots on a single wrapped line.
+
 ## [v0.35.0] - 2026-11-23
 
 ### Changed
