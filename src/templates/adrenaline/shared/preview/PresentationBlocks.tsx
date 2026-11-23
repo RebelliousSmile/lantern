@@ -1178,77 +1178,8 @@ function NpcField({
     return <WriteLine label={label} value={npcFieldText(block, field, entry)} />
 }
 
-/** The NPCs as a table: a column per row of `fieldRows`, headed by its field, and a row per place. */
-function NpcTable({ block, source }: BlockProps) {
-    const pointer = block.paths[0]
-    const entries = records(at(source, pointer))
-    const slots = slotCount(pointer, entries.length)
-    const rows = fieldRows(block) ?? []
-    return (
-        <table className="adr-pj__npc-table">
-            <thead>
-                <tr className="adr-pj__npc-table-row">
-                    {rows.map((row) => (
-                        <th
-                            className={`adr-pj__npc-table-cell adr-pj__npc-table-cell--${row.join('-')}`}
-                            key={row.join(':')}
-                        >
-                            {row.map((field) => relationsLabel(field)).join(' · ')}
-                        </th>
-                    ))}
-                </tr>
-            </thead>
-            <tbody>
-                {Array.from({ length: slots }, (_, index) => {
-                    const entry = entries[index]
-                    return (
-                        <tr
-                            className={`adr-pj__npc-table-row${entry ? '' : ' adr-pj__npc--empty'}`}
-                            data-zone={`npc:${index}`}
-                            key={index}
-                        >
-                            {rows.map((row) => (
-                                <td
-                                    className={`adr-pj__npc-table-cell adr-pj__npc-table-cell--${row.join('-')}`}
-                                    key={row.join(':')}
-                                >
-                                    {row.map((field) =>
-                                        field === 'toucheParLeDrame' ? (
-                                            <Tick
-                                                key={field}
-                                                on={entry?.toucheParLeDrame === true}
-                                            />
-                                        ) : (
-                                            <Value
-                                                key={field}
-                                                className={
-                                                    field === 'numero'
-                                                        ? 'adr-pj__npc-number'
-                                                        : 'adr-pj__write-field'
-                                                }
-                                            >
-                                                {npcFieldText(
-                                                    block,
-                                                    field,
-                                                    entry ?? {}
-                                                )}
-                                            </Value>
-                                        )
-                                    )}
-                                </td>
-                            ))}
-                        </tr>
-                    )
-                })}
-            </tbody>
-        </table>
-    )
-}
-
 /** The NPCs: one card per place, filled column by column as the paper sheet is. */
 function NpcEntries({ block, source }: BlockProps) {
-    if (block.display === 'table')
-        return <NpcTable block={block} source={source} />
     const pointer = block.paths[0]
     const entries = records(at(source, pointer))
     const slots = slotCount(pointer, entries.length)

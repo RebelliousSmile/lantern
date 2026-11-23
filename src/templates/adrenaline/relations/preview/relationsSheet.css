@@ -120,49 +120,6 @@
     flex-basis: 3em;
 }
 
-/* PNJ en tableau : une rangée par PNJ, une colonne par champ, le lignage pointillé des champs. */
-.adr-pj__npc-table {
-    width: 100%;
-    border-collapse: collapse;
-    table-layout: fixed;
-}
-
-.adr-pj__npc-table thead .adr-pj__npc-table-cell {
-    padding: 2px 4px;
-    background: var(--adrenaline-band);
-    color: var(--adrenaline-band-ink);
-    font-weight: 800;
-    font-size: 9px;
-    font-family: var(--font-header-theme);
-    letter-spacing: 0.04em;
-    text-align: center;
-    text-transform: uppercase;
-}
-
-.adr-pj__npc-table tbody .adr-pj__npc-table-cell {
-    vertical-align: top;
-    padding: 2px 4px;
-    border: 1px solid var(--adrenaline-field-border);
-}
-
-.adr-pj__npc-table-cell--numero,
-.adr-pj__npc-table-cell--toucheParLeDrame {
-    width: 3.2em;
-    text-align: center;
-}
-
-.adr-pj__npc-table-cell--attitude,
-.adr-pj__npc-table-cell--reliesA {
-    width: 6.5em;
-}
-
-.adr-pj__npc-table .adr-pj__write-field,
-.adr-pj__npc-table .adr-pj__npc-number {
-    display: block;
-    border: 0;
-    min-height: 1.5em;
-}
-
 /* Case de test de Drame : cochée, elle prend la couleur du jeu. */
 .adr-pj__tick {
     display: inline-flex;

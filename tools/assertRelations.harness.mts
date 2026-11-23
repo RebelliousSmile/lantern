@@ -157,8 +157,8 @@ assert.equal(
         'a hostile attitude prints no modifier'
     )
     assert.ok(
-        markup.indexOf('adr-pj__npc-table') >= 0,
-        'the NPCs are printed as a table'
+        markup.indexOf('adr-pj__npc-row') >= 0,
+        'the attitude and its links share one line'
     )
     assert.equal(
         markup.indexOf('bonus 9'),
