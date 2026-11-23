@@ -155,7 +155,7 @@ const adrenaline = {
             attitude: 'Attitude',
             lien: 'Link',
             reliesA: 'Related to',
-            ceQuiLuiEstArrive: 'What happened to them',
+            ceQuiLuiEstArrive: 'Summary',
             notes: 'Notes',
             bonus: 'bonus',
             malus: 'malus',
