@@ -16,6 +16,7 @@ type Shape = {
     maximum?: number
     maxLength?: number
     maxItems?: number
+    default?: number
     enum?: readonly string[]
     required?: readonly string[]
     properties?: Record<string, Shape>

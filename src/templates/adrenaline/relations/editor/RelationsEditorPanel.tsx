@@ -175,6 +175,7 @@ export function RelationsEditorPanel() {
     const tie = openedEntry(keys, 'tie')
     const npc = openedEntry(keys, 'npc')
     const tieMax = shapeAt('relations', '/autresPersonnages')?.maxItems
+    const tieDefault = shapeAt('relations', '/nombreDAutresPersonnages')?.default
     const npcMax = shapeAt('relations', '/pnjs')?.maxItems
     const linkTypes = enumAt('relations', '/pnjs[]/lien/type')
     return (
@@ -214,6 +215,17 @@ export function RelationsEditorPanel() {
                                 'adrenaline:relations.form.otherCharactersHeading'
                             )}
                         </h3>
+                        <OptionalNumberField
+                            label={text(
+                                'adrenaline:relations.form.otherCharactersCount',
+                                { count: tieDefault }
+                            )}
+                            at="/nombreDAutresPersonnages"
+                            value={document.nombreDAutresPersonnages}
+                            onChange={(count) =>
+                                set('nombreDAutresPersonnages', count)
+                            }
+                        />
                         <RecordRows
                             key={`tie:${tie ?? ''}`}
                             at="/autresPersonnages[]"

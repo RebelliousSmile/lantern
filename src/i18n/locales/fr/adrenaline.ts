@@ -129,6 +129,8 @@ const adrenaline: ResourceShape<typeof en> = {
             player: 'Joueur',
             game: 'Partie',
             otherCharactersHeading: 'Autres personnages',
+            otherCharactersCount:
+                'Emplacements imprimés (par défaut {{count}}, quatre par rangée)',
             otherCharacter: 'Autre personnage',
             npcsHeading: 'PNJ',
             npc: 'PNJ',

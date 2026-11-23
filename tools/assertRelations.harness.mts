@@ -64,6 +64,7 @@ const typed = {
     personnage: 'Ines Marchal',
     joueur: 'Camille',
     partie: 'Les Brumes du Nord',
+    nombreDAutresPersonnages: 5,
     autresPersonnages: [
         {
             nom: 'Paul',
@@ -95,10 +96,19 @@ const properties = (
     }
 ).properties
 const tieSlots = properties.autresPersonnages.maxItems
+const tieDefault = (
+    relationsSchema as unknown as {
+        properties: Record<string, { default?: number }>
+    }
+).properties.nombreDAutresPersonnages.default
 const npcSlots = properties.pnjs.maxItems
 assert.ok(
-    typeof tieSlots === 'number' && typeof npcSlots === 'number',
-    'the schema publishes both list bounds'
+    typeof tieSlots === 'number' &&
+        typeof npcSlots === 'number' &&
+        typeof tieDefault === 'number' &&
+        tieDefault <= 4 &&
+        tieDefault <= tieSlots,
+    'the schema publishes both list bounds and the default places, on one row of four'
 )
 
 /* The preview prints every place the schema allows, filled or not, never fewer than the entries held. */
@@ -110,8 +120,11 @@ for (const [label, doc] of [
     const markup = preview(doc)
     assert.equal(
         count(markup, 'data-zone="tie:'),
-        tieSlots,
-        `${label}: one printed place per other character`
+        Math.max(
+            doc.autresPersonnages?.length ?? 0,
+            doc.nombreDAutresPersonnages ?? tieDefault ?? 0
+        ),
+        `${label}: one printed place per count, never fewer than the characters held`
     )
     assert.equal(
         count(markup, 'data-zone="npc:'),

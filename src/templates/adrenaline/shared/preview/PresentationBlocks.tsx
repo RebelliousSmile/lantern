@@ -1051,11 +1051,25 @@ function slotCount(pointer: string, entries: number): number {
 
 const relationsLabel = (key: string) => t(`relations.sheet.${key}`)
 
-/** The other characters: one printed place per `maxItems`, each a column of written lines. */
+/**
+ * The other characters: one printed place per count the document sets at `countPath`, else the
+ * default the contract publishes, never fewer than the entries held; each a column of written lines.
+ */
 function PcTies({ block, source }: BlockProps) {
     const pointer = block.paths[0]
     const entries = records(at(source, pointer))
-    const slots = slotCount(pointer, entries.length)
+    const entered =
+        block.countPath === undefined ? undefined : at(source, block.countPath)
+    const printed =
+        typeof entered === 'number'
+            ? entered
+            : block.countPath === undefined
+              ? undefined
+              : shapeAt('relations', block.countPath)?.default
+    const slots =
+        printed === undefined
+            ? slotCount(pointer, entries.length)
+            : Math.max(entries.length, printed)
     const rows = fieldRows(block) ?? []
     return (
         <>

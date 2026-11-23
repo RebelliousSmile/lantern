@@ -40,11 +40,15 @@
     text-align: center;
 }
 
-/* Autres personnages : quatre fiches côte à côte. */
+/* Autres personnages : les fiches par rangées de quatre ; un titre ou une note s'étale sur la rangée. */
 .adr-pj__form-pc-ties {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 8px;
+}
+
+.adr-pj__form-pc-ties > :not(.adr-pj__tie) {
+    grid-column: 1 / -1;
 }
 
 .adr-pj__tie {

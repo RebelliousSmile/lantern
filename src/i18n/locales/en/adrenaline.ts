@@ -127,6 +127,8 @@ const adrenaline = {
             player: 'Player',
             game: 'Game',
             otherCharactersHeading: 'Other characters',
+            otherCharactersCount:
+                'Printed places (default {{count}}, four to a row)',
             otherCharacter: 'Other character',
             npcsHeading: 'NPCs',
             npc: 'NPC',
