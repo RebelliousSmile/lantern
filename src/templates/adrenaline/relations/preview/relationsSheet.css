@@ -60,27 +60,6 @@
     min-width: 0;
 }
 
-/* Compteur de tests de Drame. */
-.adr-pj__counter {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) 42px;
-    border: 1px solid var(--adrenaline-field-border);
-}
-
-.adr-pj__counter > .adr-pj__card-label {
-    display: flex;
-    align-items: center;
-    align-self: stretch;
-    padding: 2px 6px;
-}
-
-.adr-pj__counter-value {
-    justify-content: center;
-    align-items: center;
-    border-left: 1px solid var(--adrenaline-field-border);
-    min-height: 20px;
-}
-
 /* PNJ : deux colonnes de cinq fiches, remplies colonne par colonne. */
 .adr-pj__npc-columns {
     display: grid;
@@ -139,6 +118,65 @@
 /* Dans une rangée partagée, le champ garde une base courte : libellé et champ tiennent côte à côte. */
 .adr-pj__npc-row .adr-pj__write-field {
     flex-basis: 3em;
+}
+
+/* PNJ en tableau : une rangée par PNJ, une colonne par champ, le lignage pointillé des champs. */
+.adr-pj__npc-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.adr-pj__npc-table thead .adr-pj__npc-table-cell {
+    padding: 2px 4px;
+    background: var(--adrenaline-band);
+    color: var(--adrenaline-band-ink);
+    font-weight: 800;
+    font-size: 9px;
+    font-family: var(--font-header-theme);
+    letter-spacing: 0.04em;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+.adr-pj__npc-table tbody .adr-pj__npc-table-cell {
+    vertical-align: top;
+    padding: 2px 4px;
+    border: 1px solid var(--adrenaline-field-border);
+}
+
+.adr-pj__npc-table-cell--numero,
+.adr-pj__npc-table-cell--testDeDrame {
+    width: 3.2em;
+    text-align: center;
+}
+
+.adr-pj__npc-table-cell--attitude,
+.adr-pj__npc-table-cell--reliesA {
+    width: 6.5em;
+}
+
+.adr-pj__npc-table .adr-pj__write-field,
+.adr-pj__npc-table .adr-pj__npc-number {
+    display: block;
+    border: 0;
+    min-height: 1.5em;
+}
+
+/* Case de test de Drame : cochée, elle prend la couleur du jeu. */
+.adr-pj__tick {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid var(--adrenaline-field-border);
+    width: 1.3em;
+    height: 1.3em;
+    line-height: 1;
+}
+
+.adr-pj__tick--on {
+    background: var(--adrenaline-band);
+    color: var(--adrenaline-band-ink);
 }
 
 /* Sous une largeur de feuille étroite, les rangées se replient avant de s'écraser. */

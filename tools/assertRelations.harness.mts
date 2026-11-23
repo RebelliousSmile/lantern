@@ -68,12 +68,12 @@ const typed = {
     autresPersonnages: [
         {
             nom: 'Paul',
+            genre: 'masculin',
             ceQueJeSais: 'Il ment sur son passé',
             ceQueJeLuiDois: 'Une nuit au chaud',
-            ceQuIlMeDoit: 'Une explication',
+            ceQuOnMeDoit: 'Une explication',
         },
     ],
-    testsDeDrame: 3,
     pnjs: [
         {
             numero: 1,
@@ -83,6 +83,7 @@ const typed = {
             reliesA: [2],
             resume: 'A perdu sa fille',
             notes: 'Ne boit plus',
+            testDeDrame: true,
         },
         { numero: 2, nom: 'La pharmacienne', attitude: 'loyale' },
     ],
@@ -156,14 +157,29 @@ assert.equal(
         'a hostile attitude prints no modifier'
     )
     assert.ok(
-        markup.indexOf('adr-pj__npc-row') >= 0,
-        'the attitude and its links share one line'
+        markup.indexOf('adr-pj__npc-table') >= 0,
+        'the NPCs are printed as a table'
     )
     assert.equal(
         markup.indexOf('bonus 9'),
         -1,
         'a modifier typed in the document is not printed'
     )
+}
+
+/* The label of what another character owes follows their gender, which is not printed; the drama test is ticked on the NPC. */
+{
+    const labels = (genre?: string) =>
+        preview({
+            ...typed,
+            autresPersonnages: [{ nom: 'Paul', ...(genre ? { genre } : {}) }],
+        })
+    assert.ok(labels('masculin').indexOf('Ce qu&#x27;il me doit') >= 0 || labels('masculin').indexOf('Ce qu’il me doit') >= 0 || labels('masculin').indexOf("Ce qu'il me doit") >= 0, 'masculine wording')
+    assert.ok(labels('feminin').indexOf('elle me doit') >= 0, 'feminine wording')
+    assert.ok(labels('neutre').indexOf('iel me doit') >= 0, 'neutral wording')
+    assert.ok(labels().indexOf('iel me doit') >= 0, 'no gender: the default wording')
+    assert.equal(labels('masculin').indexOf('>masculin<'), -1, 'the gender is not printed')
+    assert.equal(count(preview(typed), 'adr-pj__tick--on'), 1, 'the drama test is ticked on the one NPC that carries it')
 }
 
 /* A cell the header's pointers give no value for is not printed. */
@@ -196,7 +212,7 @@ assert.equal(
     )
 }
 
-/* A click on one NPC opens that NPC alone; a click on the counter opens the counter alone. */
+/* A click on one NPC opens that NPC alone. */
 {
     const all = panel(typed, 'pnjs')
     const one = panel(typed, 'pnjs', ['pnjs', 'npc:1'])
@@ -209,12 +225,6 @@ assert.equal(
         one.indexOf('Ancien patron'),
         -1,
         'the other NPC is not opened by that click'
-    )
-    const counter = panel(typed, 'pnjs', ['testsDeDrame'])
-    assert.equal(
-        counter.indexOf('Le maire'),
-        -1,
-        'a click on the counter opens no NPC'
     )
 }
 

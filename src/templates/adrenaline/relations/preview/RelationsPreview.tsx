@@ -50,6 +50,7 @@ export function RelationsPreview() {
                             {sortedBlocks(section).map((block) => (
                                 <PresentationBlock
                                     block={block}
+                                    sectionLabel={section.label}
                                     key={block.id}
                                     source={document}
                                     onOpen={

@@ -5,6 +5,7 @@ import { ATTITUDE_LEVELS } from 'schema-adrenaline/presentation'
 import { put, withoutHollow } from '../../shared/editor/clean'
 import { SchemaProvider } from '../../shared/editor/draft'
 import {
+    CheckField,
     NumberField,
     OptionSelect,
     RecordRows,
@@ -178,6 +179,7 @@ export function RelationsEditorPanel() {
     const tieDefault = shapeAt('relations', '/nombreDAutresPersonnages')?.default
     const npcMax = shapeAt('relations', '/pnjs')?.maxItems
     const linkTypes = enumAt('relations', '/pnjs[]/lien/type')
+    const genders = enumAt('relations', '/autresPersonnages[]/genre')
     return (
         <SchemaProvider value="relations">
             <div className="space-y-6 p-1">
@@ -254,11 +256,27 @@ export function RelationsEditorPanel() {
                                             replace({ ...entry, nom })
                                         }
                                     />
+                                    <OptionSelect
+                                        label={text(
+                                            'adrenaline:relations.form.gender'
+                                        )}
+                                        value={entry.genre}
+                                        options={genders.map((gender) => ({
+                                            value: gender,
+                                            label: text(sheetLabel(gender)),
+                                        }))}
+                                        noneLabel={text(
+                                            'adrenaline:relations.form.genderNone'
+                                        )}
+                                        onChange={(genre) =>
+                                            replace(put(entry, 'genre', genre))
+                                        }
+                                    />
                                     {(
                                         [
                                             'ceQueJeSais',
                                             'ceQueJeLuiDois',
-                                            'ceQuIlMeDoit',
+                                            'ceQuOnMeDoit',
                                         ] as const
                                     ).map((field) => (
                                         <OptionalTextField
@@ -290,14 +308,6 @@ export function RelationsEditorPanel() {
                         <h3 className="font-semibold">
                             {text('adrenaline:relations.form.npcsHeading')}
                         </h3>
-                        {shows(keys, 'testsDeDrame') && (
-                            <OptionalNumberField
-                                label={text('adrenaline:relations.form.dramaTests')}
-                                at="/testsDeDrame"
-                                value={document.testsDeDrame}
-                                onChange={(tests) => set('testsDeDrame', tests)}
-                            />
-                        )}
                         {shows(keys, 'pnjs') && (
                             <RecordRows
                                 key={`npc:${npc ?? ''}`}
@@ -521,6 +531,25 @@ export function RelationsEditorPanel() {
                                                     }
                                                 />
                                             ))}
+                                            <CheckField
+                                                label={text(
+                                                    'adrenaline:relations.form.dramaTest'
+                                                )}
+                                                checked={
+                                                    entry.testDeDrame === true
+                                                }
+                                                onChange={(done) =>
+                                                    replace(
+                                                        put(
+                                                            entry,
+                                                            'testDeDrame',
+                                                            done
+                                                                ? true
+                                                                : undefined
+                                                        )
+                                                    )
+                                                }
+                                            />
                                         </div>
                                     )
                                 }}

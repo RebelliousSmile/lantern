@@ -1051,6 +1051,23 @@ function slotCount(pointer: string, entries: number): number {
 
 const relationsLabel = (key: string) => t(`relations.sheet.${key}`)
 
+/** The label of a field of another character: the published wording that follows their gender, else the plain label. */
+function tieLabel(
+    block: AdrenalinePresentationBlock,
+    key: string,
+    entry: Record<string, unknown> | undefined
+): string {
+    const worded = (block.genderedLabels ?? []).find(
+        (candidate) => candidate.key === key
+    )
+    if (!worded) return relationsLabel(key)
+    const gender = entry?.[worded.genderKey]
+    const labels: Record<string, string> = worded.labels
+    return typeof gender === 'string' && labels[gender] !== undefined
+        ? labels[gender]
+        : worded.labels.default
+}
+
 /**
  * The other characters: one printed place per count the document sets at `countPath`, else the
  * default the contract publishes, never fewer than the entries held; each a column of written lines.
@@ -1083,7 +1100,7 @@ function PcTies({ block, source }: BlockProps) {
                         row.map((key) => (
                             <WriteLine
                                 key={key}
-                                label={relationsLabel(key)}
+                                label={tieLabel(block, key, entries[index])}
                                 value={text(entries[index]?.[key])}
                             />
                         ))
@@ -1094,38 +1111,50 @@ function PcTies({ block, source }: BlockProps) {
     )
 }
 
-function Counter({ block, source }: BlockProps) {
-    return (
-        <div className="adr-pj__counter">
-            <span className="adr-pj__card-label">{block.label}</span>
-            <Value className="adr-pj__counter-value">
-                {text(at(source, block.paths[0]))}
-            </Value>
-        </div>
-    )
-}
-
-/* The attitude is worded by the published level; the modifier it sets is not printed. */
-function AttitudeLine({
-    label,
-    attitude,
-    block,
-}: {
-    label: string
-    attitude: unknown
+/* The attitude as the presentation words it, read from the levels it publishes; the modifier it sets is not printed. */
+function attitudeLabel(
+    attitude: unknown,
     block: AdrenalinePresentationBlock
-}) {
+): string {
     const key = typeof attitude === 'string' ? attitude : ''
     const level = (block.attitudeLevels ?? []).find(
         (candidate) => candidate.key === key
     )
+    return level ? level.label : key
+}
+
+/** What an NPC field prints, on a card line or in a table cell. */
+function npcFieldText(
+    block: AdrenalinePresentationBlock,
+    field: string,
+    entry: Record<string, unknown>
+): string {
+    if (field === 'attitude') return attitudeLabel(entry.attitude, block)
+    if (field === 'lien') {
+        const link = asRecord(entry.lien)
+        const type =
+            typeof link?.type === 'string' ? relationsLabel(link.type) : ''
+        return [type, text(link?.description)].filter(Boolean).join(' · ')
+    }
+    if (field === 'reliesA') {
+        /* A number no NPC carries is shown as typed: the sheet does not decide it is wrong. */
+        return (
+            Array.isArray(entry.reliesA)
+                ? entry.reliesA.filter(
+                      (item): item is number => typeof item === 'number'
+                  )
+                : []
+        ).join(', ')
+    }
+    return text(entry[field])
+}
+
+/** The box a drama test is ticked in: filled when the document says a test was made on the NPC. */
+function Tick({ on }: { on: boolean }) {
     return (
-        <div className="adr-pj__write-line">
-            <b className="adr-pj__write-label">{label}</b>
-            <Value className="adr-pj__write-field">
-                {level ? level.label : key}
-            </Value>
-        </div>
+        <span className={`adr-pj__tick${on ? ' adr-pj__tick--on' : ''}`}>
+            {on ? '✓' : ''}
+        </span>
     )
 }
 
@@ -1139,43 +1168,87 @@ function NpcField({
     entry: Record<string, unknown>
 }) {
     const label = relationsLabel(field)
-    if (field === 'attitude')
+    if (field === 'testDeDrame')
         return (
-            <AttitudeLine
-                label={label}
-                attitude={entry.attitude}
-                block={block}
-            />
+            <div className="adr-pj__write-line">
+                <b className="adr-pj__write-label">{label}</b>
+                <Tick on={entry.testDeDrame === true} />
+            </div>
         )
-    if (field === 'lien') {
-        const link = asRecord(entry.lien)
-        const type =
-            typeof link?.type === 'string'
-                ? relationsLabel(link.type)
-                : ''
-        return (
-            <WriteLine
-                label={label}
-                value={[type, text(link?.description)]
-                    .filter(Boolean)
-                    .join(' · ')}
-            />
-        )
-    }
-    if (field === 'reliesA') {
-        /* A number no NPC carries is shown as typed: the sheet does not decide it is wrong. */
-        const numbers = Array.isArray(entry.reliesA)
-            ? entry.reliesA.filter(
-                  (item): item is number => typeof item === 'number'
-              )
-            : []
-        return <WriteLine label={label} value={numbers.join(', ')} />
-    }
-    return <WriteLine label={label} value={text(entry[field])} />
+    return <WriteLine label={label} value={npcFieldText(block, field, entry)} />
+}
+
+/** The NPCs as a table: a column per row of `fieldRows`, headed by its field, and a row per place. */
+function NpcTable({ block, source }: BlockProps) {
+    const pointer = block.paths[0]
+    const entries = records(at(source, pointer))
+    const slots = slotCount(pointer, entries.length)
+    const rows = fieldRows(block) ?? []
+    return (
+        <table className="adr-pj__npc-table">
+            <thead>
+                <tr className="adr-pj__npc-table-row">
+                    {rows.map((row) => (
+                        <th
+                            className={`adr-pj__npc-table-cell adr-pj__npc-table-cell--${row.join('-')}`}
+                            key={row.join(':')}
+                        >
+                            {row.map((field) => relationsLabel(field)).join(' · ')}
+                        </th>
+                    ))}
+                </tr>
+            </thead>
+            <tbody>
+                {Array.from({ length: slots }, (_, index) => {
+                    const entry = entries[index]
+                    return (
+                        <tr
+                            className={`adr-pj__npc-table-row${entry ? '' : ' adr-pj__npc--empty'}`}
+                            data-zone={`npc:${index}`}
+                            key={index}
+                        >
+                            {rows.map((row) => (
+                                <td
+                                    className={`adr-pj__npc-table-cell adr-pj__npc-table-cell--${row.join('-')}`}
+                                    key={row.join(':')}
+                                >
+                                    {row.map((field) =>
+                                        field === 'testDeDrame' ? (
+                                            <Tick
+                                                key={field}
+                                                on={entry?.testDeDrame === true}
+                                            />
+                                        ) : (
+                                            <Value
+                                                key={field}
+                                                className={
+                                                    field === 'numero'
+                                                        ? 'adr-pj__npc-number'
+                                                        : 'adr-pj__write-field'
+                                                }
+                                            >
+                                                {npcFieldText(
+                                                    block,
+                                                    field,
+                                                    entry ?? {}
+                                                )}
+                                            </Value>
+                                        )
+                                    )}
+                                </td>
+                            ))}
+                        </tr>
+                    )
+                })}
+            </tbody>
+        </table>
+    )
 }
 
 /** The NPCs: one card per place, filled column by column as the paper sheet is. */
 function NpcEntries({ block, source }: BlockProps) {
+    if (block.display === 'table')
+        return <NpcTable block={block} source={source} />
     const pointer = block.paths[0]
     const entries = records(at(source, pointer))
     const slots = slotCount(pointer, entries.length)
@@ -1269,7 +1342,6 @@ const FORMS: Partial<Record<string, (props: BlockProps) => ReactNode>> = {
     'shock-circles': ShockCircles,
     'malus-scale': MalusScale,
     'pc-ties': PcTies,
-    counter: Counter,
     'npc-entries': NpcEntries,
 }
 
@@ -1283,7 +1355,6 @@ const TITLED_ELSEWHERE = new Set([
     'shock-circles',
     'malus-scale',
     'circle-row',
-    'counter',
 ])
 
 function titledElsewhere(
@@ -1319,15 +1390,19 @@ export function PresentationBlock({
     source,
     onOpen,
     withNotes = true,
+    sectionLabel,
 }: BlockProps & {
     onOpen?: (zone?: string) => void
     /** False when the section prints the block's notes itself, across all its columns. */
     withNotes?: boolean
+    /** The title of the section holding the block: a block that repeats it prints no subhead of its own. */
+    sectionLabel?: string
 }) {
     const Form = FORMS[block.form ?? ''] ?? Unknown
     const content = (
         <>
-            {!titledElsewhere(block, source) && <Subhead label={block.label} />}
+            {!titledElsewhere(block, source) &&
+                block.label !== sectionLabel && <Subhead label={block.label} />}
             <Form block={block} source={source} />
             {withNotes &&
                 (block.notes ?? []).map((note) => (
