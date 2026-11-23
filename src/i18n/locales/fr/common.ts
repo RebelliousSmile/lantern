@@ -93,6 +93,7 @@ const common: ResourceShape<typeof en> = {
         importFile: 'Importer le fichier',
         pasteLabel: 'Coller du TOML',
         autoValidate: 'Validation automatique pendant la saisie ou le collage.',
+        fromClipboard: 'Repris du presse-papiers : c’est un TOML valide.',
         importPasted: 'Importer le TOML collé',
         noPreview:
             'Pas encore d’aperçu. Choisissez un fichier ou collez du TOML.',

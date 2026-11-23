@@ -6,7 +6,7 @@ import i18n from '@/i18n'
 import { formatError } from '@/i18n/formatError'
 import { translate } from '@/i18n/text'
 import * as React from 'react'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Trans, useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
@@ -52,6 +52,37 @@ export default function ImportDialog({ open, onOpenChange }: Props) {
     const [fileRawToml, setFileRawToml] = useState<string | null>(null)
 
     const [rawToml, setRawToml] = useState('')
+    const [fromClipboard, setFromClipboard] = useState(false)
+    // Set once the user types: a clipboard read that ends later must not overwrite what they wrote.
+    const typedRef = useRef(false)
+
+    /*
+     * An import usually follows a copy: on opening, the clipboard is read and, only when the template
+     * accepts it as a document, it fills the paste field. Anything else is left alone, and a clipboard
+     * the browser refuses to read is the same as an empty one.
+     */
+    useEffect(() => {
+        if (!open || !importToml) return
+        let cancelled = false
+        void (async () => {
+            try {
+                const text = await navigator.clipboard.readText()
+                if (cancelled || !text.trim()) return
+                const parsed = importToml(text)
+                if (typedRef.current) return
+                setRawToml(text)
+                setPreviewName(parsed.previewName || null)
+                setWarnings(parsed.warnings || [])
+                setError(null)
+                setFromClipboard(true)
+            } catch {
+                /* No readable clipboard, or not a document of this template. */
+            }
+        })()
+        return () => {
+            cancelled = true
+        }
+    }, [open, importToml])
 
     function resetAll() {
         setPreviewName(null)
@@ -59,6 +90,8 @@ export default function ImportDialog({ open, onOpenChange }: Props) {
         setError(null)
         setFileRawToml(null)
         setRawToml('')
+        setFromClipboard(false)
+        typedRef.current = false
         if (fileRef.current) fileRef.current.value = ''
     }
 
@@ -131,6 +164,8 @@ export default function ImportDialog({ open, onOpenChange }: Props) {
 
     function onTomlChange(value: string) {
         setRawToml(value)
+        setFromClipboard(false)
+        typedRef.current = true
         if (!value.trim()) {
             setPreviewName(null)
             setWarnings([])
@@ -190,7 +225,7 @@ export default function ImportDialog({ open, onOpenChange }: Props) {
                     </DialogDescription>
                 </DialogHeader>
 
-                <Tabs defaultValue="file" className="space-y-3">
+                <Tabs defaultValue="paste" className="space-y-3">
                     <TabsList>
                         <TabsTrigger value="file" className="gap-2">
                             <Upload className="h-4 w-4" />
@@ -281,7 +316,9 @@ export default function ImportDialog({ open, onOpenChange }: Props) {
                                 }
                             />
                             <div className="text-xs text-muted-foreground">
-                                {t('import.autoValidate')}
+                                {fromClipboard
+                                    ? t('import.fromClipboard')
+                                    : t('import.autoValidate')}
                             </div>
                         </div>
 

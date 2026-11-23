@@ -94,6 +94,7 @@ const common = {
         importFile: 'Import file',
         pasteLabel: 'Paste TOML',
         autoValidate: 'Auto-validates as you type/paste.',
+        fromClipboard: 'Taken from the clipboard: it is valid TOML.',
         importPasted: 'Import pasted TOML',
         noPreview: 'No preview yet. Select a file or paste TOML.',
         document: 'Document:',
