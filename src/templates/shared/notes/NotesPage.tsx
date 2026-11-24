@@ -1,4 +1,5 @@
 import type { CSSProperties } from 'react'
+import { FoldablePage } from '../FoldablePage'
 import { NOTES_BODY_ATTRIBUTE } from './notesFit'
 import './notesPage.css'
 
@@ -23,32 +24,34 @@ export function NotesPage({
     onOpen?: () => void
 }) {
     return (
-        <article
-            className={['lantern-notes-page', className]
-                .filter(Boolean)
-                .join(' ')}
-            style={style}
-            data-export-page={id}
-        >
-            <h4 className="lantern-notes-page__title">{title}</h4>
-            <div
-                className="lantern-notes-page__body"
-                {...{ [NOTES_BODY_ATTRIBUTE]: '' }}
-                role={onOpen ? 'button' : undefined}
-                tabIndex={onOpen ? 0 : undefined}
-                onClick={onOpen}
-                onKeyDown={(event) => {
-                    if (
-                        onOpen &&
-                        (event.key === 'Enter' || event.key === ' ')
-                    ) {
-                        event.preventDefault()
-                        onOpen()
-                    }
-                }}
+        <FoldablePage label={title}>
+            <article
+                className={['lantern-notes-page', className]
+                    .filter(Boolean)
+                    .join(' ')}
+                style={style}
+                data-export-page={id}
             >
-                {value}
-            </div>
-        </article>
+                <h4 className="lantern-notes-page__title">{title}</h4>
+                <div
+                    className="lantern-notes-page__body"
+                    {...{ [NOTES_BODY_ATTRIBUTE]: '' }}
+                    role={onOpen ? 'button' : undefined}
+                    tabIndex={onOpen ? 0 : undefined}
+                    onClick={onOpen}
+                    onKeyDown={(event) => {
+                        if (
+                            onOpen &&
+                            (event.key === 'Enter' || event.key === ' ')
+                        ) {
+                            event.preventDefault()
+                            onOpen()
+                        }
+                    }}
+                >
+                    {value}
+                </div>
+            </article>
+        </FoldablePage>
     )
 }

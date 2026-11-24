@@ -15,6 +15,7 @@ import {
     collectionItems,
     replaceCollectionItems,
 } from '@/templates/pbta/specialized/collectionPolicy'
+import { createDescriptorFactories } from '@/templates/pbta/specialized/descriptorFactories'
 import { getPbtaCollectionPresentation } from 'schema-pbta'
 import { useSprawlPlaybookStore, useSprawlSheetStore } from '../hooks'
 import { regionById, type TheSprawlPlaybook } from '../model'
@@ -46,15 +47,7 @@ function descriptors(
 ): Record<string, EditorDescriptor> {
     const name = (key: string) =>
         text(`pbta:sprawl.fields.${key}` as TranslationKey)
-    const scalar = (
-        id: string,
-        kind: ScalarKind = 'text'
-    ): EditorDescriptor => ({
-        id,
-        label: name(id),
-        kind: 'scalar',
-        scalar: kind,
-    })
+    const { scalar } = createDescriptorFactories({ name })
     const labelled = (id: string, valueKind: ScalarKind): EditorDescriptor => ({
         id,
         label: name(id),
@@ -65,12 +58,16 @@ function descriptors(
             id: 'item',
             label: name(id),
             kind: 'object',
-            fields: id === 'links'
-                ? [
-                      scalar('linkName'),
-                      { ...scalar('value', valueKind), label: name('value') },
-                  ]
-                : [scalar('label'), scalar('value')],
+            fields:
+                id === 'links'
+                    ? [
+                          scalar('linkName'),
+                          {
+                              ...scalar('value', valueKind),
+                              label: name('value'),
+                          },
+                      ]
+                    : [scalar('label'), scalar('value')],
         },
     })
 
@@ -148,7 +145,8 @@ export function SprawlPlaybookEditorPanel() {
                             />
                         ) : (
                             <p className="text-sm text-muted-foreground">
-                                {text('pbta:sprawl.editor.unknownField')} {field}
+                                {text('pbta:sprawl.editor.unknownField')}{' '}
+                                {field}
                             </p>
                         )}
                     </section>

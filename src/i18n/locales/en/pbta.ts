@@ -101,6 +101,15 @@ const pbta = {
             name: 'Name',
             description: 'Description',
         },
+        itemNames: {
+            creation: 'Creation question',
+            options: 'Option',
+            backstory: 'Backstory line',
+            statProfiles: 'Stat profile',
+            startingMoves: 'Starting move',
+            gear: 'Piece of gear',
+            tags: 'Tag',
+        },
         defaults: {
             condition: 'New Condition',
             play: 'Advice for playing this skin.',
@@ -163,8 +172,14 @@ const pbta = {
             advances: 'Corruption advances',
             track: 'Corruption boxes',
         },
+        preview: {
+            illustrationMissing: 'Illustration to add',
+            faceRecto: 'Front',
+            faceVerso: 'Back',
+        },
         editor: {
             hint: 'Click a region of the sheet to edit it.',
+            openCreation: 'Creation questions (not printed)',
             gameRequired:
                 'Open the Urban Shadows game definition to apply a creation answer.',
             apply: 'Apply selection',
@@ -175,6 +190,9 @@ const pbta = {
         },
         fields: {
             name: 'Name',
+            characterName: 'Name (pronouns)',
+            demeanor: 'Demeanor',
+            look: 'Look',
             description: 'Description',
             playbookImage: 'Illustration (https address)',
             heading: 'Heading',
@@ -212,7 +230,7 @@ const pbta = {
             options: 'Options',
             value: 'Value',
             statProfiles: 'Stat profiles',
-            key: 'Key',
+            key: 'Technical identifier (not printed)',
             choiceSets: 'Choice sets',
             title: 'Title',
             type: 'Type (single or multi)',
@@ -231,6 +249,28 @@ const pbta = {
             quantity: 'Quantity',
             tags: 'Tags',
         },
+        itemNames: {
+            startingMoves: 'Starting move',
+            advancementCircles: 'Circle',
+            markedCircles: 'Marked circle',
+            laterAdvancement: 'Later advance',
+            scars: 'Scar',
+            letItOut: 'Line',
+            debts: 'Debt',
+            creation: 'Creation question',
+            options: 'Option',
+            statProfiles: 'Stat profile',
+            choiceSets: 'Choice set',
+            choices: 'Choice',
+            mortalRelationships: 'Mortal relationship',
+            extras: 'Frame',
+            items: 'Item',
+            gear: 'Piece of gear',
+            tags: 'Tag',
+        },
+    },
+    sheet: {
+        verso: 'Back',
     },
     masks: {
         editor: {

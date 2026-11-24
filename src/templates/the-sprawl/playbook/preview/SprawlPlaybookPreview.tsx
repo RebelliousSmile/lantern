@@ -1,9 +1,10 @@
 import { useUiText, type TranslationKey } from '@/i18n/text'
-import type { CSSProperties, ReactNode } from 'react'
 import {
     NOTES_TARGET,
     PlaybookNotesPage,
 } from '@/templates/pbta/shared/sessionNotes'
+import { FoldablePage } from '@/templates/shared/FoldablePage'
+import type { CSSProperties, ReactNode } from 'react'
 import appearance from 'schema-pbta/packs/the-sprawl/appearance-contract.json'
 import {
     useSprawlPlaybookStore,
@@ -13,11 +14,11 @@ import {
 import {
     presentation,
     regionById,
-    type TheSprawlPlaybook,
     type Line,
     type Link,
     type Move,
     type RegionId,
+    type TheSprawlPlaybook,
 } from '../model'
 import './sprawlPlaybookTheme.css'
 
@@ -279,25 +280,38 @@ export function SprawlPlaybookPreview() {
                 }}
             >
                 {/* Each face is laid out by the columns the presentation contract publishes (rows of the sheet). */}
-                {presentation.faces.map((face) => (
-                    <div
-                        key={face.id}
-                        className="handbook-sprawl-face"
-                        data-face={face.id}
-                        data-export-page={face.id}
-                    >
-                        {region(face.header as RegionId)}
-                        {face.columns.map((ids, columnIndex) => (
-                            <div
-                                key={columnIndex}
-                                className="handbook-sprawl-column"
-                                data-column={columnIndex + 1}
-                            >
-                                {ids.map((id) => region(id as RegionId))}
-                            </div>
-                        ))}
-                    </div>
-                ))}
+                {presentation.faces.map((face) => {
+                    const page = (
+                        <div
+                            key={face.id}
+                            className="handbook-sprawl-face"
+                            data-face={face.id}
+                            data-export-page={face.id}
+                        >
+                            {region(face.header as RegionId)}
+                            {face.columns.map((ids, columnIndex) => (
+                                <div
+                                    key={columnIndex}
+                                    className="handbook-sprawl-column"
+                                    data-column={columnIndex + 1}
+                                >
+                                    {ids.map((id) => region(id as RegionId))}
+                                </div>
+                            ))}
+                        </div>
+                    )
+                    /* The back is folded by default and unfolds on demand. */
+                    return face.id === 'verso' ? (
+                        <FoldablePage
+                            key={face.id}
+                            label={text('pbta:sheet.verso')}
+                        >
+                            {page}
+                        </FoldablePage>
+                    ) : (
+                        page
+                    )
+                })}
                 {/* Regions the contract leaves out of every face follow in canonical order. */}
                 {presentation.canonicalOrder
                     .filter((id) => !placed.has(id))

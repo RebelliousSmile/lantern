@@ -6,20 +6,20 @@ import { inferObject } from '@/core/editor-schema/inferSchema'
 import type {
     EditorDescriptor,
     ObjectDescriptor,
-    ScalarKind,
 } from '@/core/editor-schema/types'
 import { useUiText, type TranslationKey } from '@/i18n/text'
+import { useGameDefinitionForGame } from '@/templates/pbta/shared/gameDefinition'
 import {
     NOTES_TARGET,
     SessionNotesPanel,
     withSessionNotes,
 } from '@/templates/pbta/shared/sessionNotes'
-import { useGameDefinitionForGame } from '@/templates/pbta/shared/gameDefinition'
 import { PublishedCollectionEditor } from '@/templates/pbta/specialized/collectionAdapters'
 import {
     collectionItems,
     replaceCollectionItems,
 } from '@/templates/pbta/specialized/collectionPolicy'
+import { createDescriptorFactories } from '@/templates/pbta/specialized/descriptorFactories'
 import { useState, type ReactNode } from 'react'
 import { getPbtaCollectionPresentation } from 'schema-pbta'
 import {
@@ -44,32 +44,13 @@ function descriptors(text: Text): Record<string, EditorDescriptor> {
         text(`pbta:urbanShadows.fields.${key}` as TranslationKey)
     const term = (key: string) =>
         text(`pbta:urbanShadows.terms.${key}` as TranslationKey)
-    const scalar = (
-        id: string,
-        kind: ScalarKind = 'text',
-        label = name(id)
-    ): EditorDescriptor => ({ id, label, kind: 'scalar', scalar: kind })
-    const object = (
-        id: string,
-        fields: EditorDescriptor[],
-        label = name(id)
-    ): ObjectDescriptor => ({ id, label, kind: 'object', fields })
-    const list = (
-        id: string,
-        item: EditorDescriptor,
-        createEmpty: () => unknown
-    ): EditorDescriptor => ({
-        id,
-        label: name(id),
-        kind: 'collection',
-        item,
-        createEmpty,
-        reorderable: true,
-    })
-    const strings = (id: string, kind: ScalarKind = 'text') =>
-        list(id, scalar('item', kind, name('item')), () => '')
-    const records = (id: string, fields: EditorDescriptor[]) =>
-        list(id, object('item', fields, name('item')), () => ({}))
+    const itemName = (key: string) =>
+        text(`pbta:urbanShadows.itemNames.${key}` as TranslationKey)
+    const { scalar, object, list, strings, records } =
+        createDescriptorFactories({
+            name,
+            itemName,
+        })
     const numbers = (
         id: string,
         keys: string[],
@@ -93,6 +74,9 @@ function descriptors(text: Text): Record<string, EditorDescriptor> {
 
     return {
         name: scalar('name'),
+        characterName: scalar('characterName'),
+        demeanor: scalar('demeanor'),
+        look: scalar('look'),
         description: scalar('description', 'textarea'),
         playbookImage: scalar('playbookImage'),
         'editorial.opening': editorial('opening'),
@@ -201,15 +185,35 @@ function withLabelledOptions(playbook: UrbanShadowsPlaybook): Document {
     }
 }
 
+/** Creation is a construction aid, not printed: it is reached from the panel, never from the sheet. */
+function CreationLink() {
+    const text = useUiText() as Text
+    const { target, openSheet } = useUrbanShadowsSheetStore()
+    if (target?.kind === 'urban-shadows-creation') return null
+    return (
+        <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => openSheet({ kind: 'urban-shadows-creation' })}
+        >
+            {text('pbta:urbanShadows.editor.openCreation')}
+        </Button>
+    )
+}
+
 export function UrbanShadowsPlaybookEditorPanel() {
     const text = useUiText() as Text
     const { open, target } = useUrbanShadowsSheetStore()
     const { playbook, setPlaybook } = useUrbanShadowsPlaybookStore()
     if (!open || !target)
         return (
-            <p className="text-sm text-muted-foreground">
-                {text('pbta:urbanShadows.editor.hint')}
-            </p>
+            <div className="space-y-3">
+                <p className="text-sm text-muted-foreground">
+                    {text('pbta:urbanShadows.editor.hint')}
+                </p>
+                <CreationLink />
+            </div>
         )
     if (target.kind === NOTES_TARGET)
         return (
@@ -294,6 +298,7 @@ export function UrbanShadowsPlaybookEditorPanel() {
                     </section>
                 )
             })}
+            <CreationLink />
         </div>
     )
 }

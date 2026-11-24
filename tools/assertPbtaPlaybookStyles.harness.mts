@@ -95,6 +95,7 @@ const urbanShadowsData = {
     statProfiles: [
         { key: 'night-shift', label: 'De nuit', stats: { mind: 1 } },
     ],
+    playbookImage: 'https://example.com/the-aware.png',
     editorial: {
         ...urbanShadows.editorial,
         identity: {

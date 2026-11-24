@@ -1,10 +1,11 @@
 import { useUiText, type TranslationKey } from '@/i18n/text'
-import type { CSSProperties, ReactNode } from 'react'
 import {
     NOTES_TARGET,
     PlaybookNotesPage,
     playbookPages,
 } from '@/templates/pbta/shared/sessionNotes'
+import { FoldablePage } from '@/templates/shared/FoldablePage'
+import type { CSSProperties, ReactNode } from 'react'
 import appearance from 'schema-pbta/packs/masks/appearance-contract.json'
 import {
     useMasksPlaybookStore,
@@ -14,8 +15,8 @@ import {
 import {
     presentation,
     regionById,
-    type Move,
     type MasksPlaybook,
+    type Move,
     type RegionId,
 } from '../model'
 import './masksPlaybookTheme.css'
@@ -35,7 +36,9 @@ const rank = (id: string) => {
 }
 const faces = presentation.faces
     .map((face, position) => ({ face, position }))
-    .sort((a, b) => rank(a.face.id) - rank(b.face.id) || a.position - b.position)
+    .sort(
+        (a, b) => rank(a.face.id) - rank(b.face.id) || a.position - b.position
+    )
     .map(({ face }) => face)
 
 type Text = (key: TranslationKey) => string
@@ -138,7 +141,11 @@ const RENDERERS: Record<RegionId, Renderer> = {
                         .filter(([value]) => value)
                         .map(([value, key]) => (
                             <div key={key} className="handbook-masks-row">
-                                <dt>{text(`pbta:masks.fields.${key}` as TranslationKey)}</dt>
+                                <dt>
+                                    {text(
+                                        `pbta:masks.fields.${key}` as TranslationKey
+                                    )}
+                                </dt>
                                 <dd>{value}</dd>
                             </div>
                         ))}
@@ -311,7 +318,8 @@ export function MasksPlaybookPreview() {
     const placed = new Set<RegionId>()
     for (const face of faces) {
         placed.add(face.header as RegionId)
-        for (const ids of face.columns) for (const id of ids) placed.add(id as RegionId)
+        for (const ids of face.columns)
+            for (const id of ids) placed.add(id as RegionId)
     }
 
     return (
@@ -325,25 +333,38 @@ export function MasksPlaybookPreview() {
                 }}
             >
                 {/* Each face is laid out by the columns the presentation contract publishes (rows of the sheet). */}
-                {faces.map((face) => (
-                    <div
-                        key={face.id}
-                        className="handbook-masks-face"
-                        data-face={face.id}
-                        data-export-page={face.id}
-                    >
-                        {region(face.header as RegionId)}
-                        {face.columns.map((ids, columnIndex) => (
-                            <div
-                                key={columnIndex}
-                                className="handbook-masks-column"
-                                data-column={columnIndex + 1}
-                            >
-                                {ids.map((id) => region(id as RegionId))}
-                            </div>
-                        ))}
-                    </div>
-                ))}
+                {faces.map((face) => {
+                    const page = (
+                        <div
+                            key={face.id}
+                            className="handbook-masks-face"
+                            data-face={face.id}
+                            data-export-page={face.id}
+                        >
+                            {region(face.header as RegionId)}
+                            {face.columns.map((ids, columnIndex) => (
+                                <div
+                                    key={columnIndex}
+                                    className="handbook-masks-column"
+                                    data-column={columnIndex + 1}
+                                >
+                                    {ids.map((id) => region(id as RegionId))}
+                                </div>
+                            ))}
+                        </div>
+                    )
+                    /* The back is folded by default and unfolds on demand. */
+                    return face.id === 'verso' ? (
+                        <FoldablePage
+                            key={face.id}
+                            label={text('pbta:sheet.verso')}
+                        >
+                            {page}
+                        </FoldablePage>
+                    ) : (
+                        page
+                    )
+                })}
                 {/* Regions the contract leaves out of every face follow in canonical order. */}
                 {presentation.canonicalOrder
                     .filter((id) => !placed.has(id))

@@ -3,6 +3,9 @@ export const getSampleUrbanShadowsPlaybook = () => ({
     ...blankPlaybook(),
     slug: 'the-aware',
     name: 'The Aware',
+    characterName: 'Alex (they/them)',
+    demeanor: 'Watchful',
+    look: 'Rain-soaked coat',
     description: 'A mortal who has learned the city has monsters.',
     stats: {
         blood: 0,

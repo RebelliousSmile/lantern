@@ -10,11 +10,7 @@ import {
     TooltipTrigger,
 } from '@/components/ui/tooltip'
 import { SchemaEditor } from '@/core/editor-schema/SchemaEditor'
-import type {
-    EditorDescriptor,
-    ObjectDescriptor,
-    ScalarKind,
-} from '@/core/editor-schema/types'
+import type { EditorDescriptor } from '@/core/editor-schema/types'
 import { useUiText } from '@/i18n/text'
 import {
     NOTES_TARGET,
@@ -26,6 +22,7 @@ import {
     collectionItems,
     replaceCollectionItems,
 } from '@/templates/pbta/specialized/collectionPolicy'
+import { createDescriptorFactories } from '@/templates/pbta/specialized/descriptorFactories'
 import { ChevronDown, ChevronUp, X } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -535,32 +532,15 @@ function PublishedFields({ fields }: { fields: string[] }) {
         t(
             `pbta:monsterhearts.fields.${key}` as 'pbta:monsterhearts.fields.name'
         )
-    const scalar = (
-        id: string,
-        kind: ScalarKind = 'text',
-        label = name(id)
-    ): EditorDescriptor => ({ id, label, kind: 'scalar', scalar: kind })
-    const object = (
-        id: string,
-        fields: EditorDescriptor[],
-        label = name(id)
-    ): ObjectDescriptor => ({ id, label, kind: 'object', fields })
-    const list = (
-        id: string,
-        item: EditorDescriptor,
-        createEmpty: () => unknown
-    ): EditorDescriptor => ({
-        id,
-        label: name(id),
-        kind: 'collection',
-        item,
-        createEmpty,
-        reorderable: true,
-    })
-    const strings = (id: string, kind: ScalarKind = 'text') =>
-        list(id, scalar('item', kind), () => '')
-    const records = (id: string, fields: EditorDescriptor[]) =>
-        list(id, object('item', fields), () => ({}))
+    const itemName = (key: string) =>
+        t(
+            `pbta:monsterhearts.itemNames.${key}` as 'pbta:monsterhearts.fields.name'
+        )
+    const { scalar, object, list, strings, records } =
+        createDescriptorFactories({
+            name,
+            itemName,
+        })
     const known: Record<string, EditorDescriptor> = {
         playbookImage: scalar('playbookImage'),
         creation: records('creation', [

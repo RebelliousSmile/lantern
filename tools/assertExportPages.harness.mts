@@ -33,9 +33,10 @@ const check = (id: string, what: string, test: () => void) => {
 }
 
 /*
- * The sheets that print a notes page: the Otherscape character and the PbtA booklets. City of Mist,
- * Legend in the Mist and the Adrenaline player character keep their own sheets without one (the
- * Adrenaline notes sit in the identity, on the back of the sheet).
+ * The sheets that print a notes page: the Otherscape character and the PbtA booklets that end with
+ * one. City of Mist, Legend in the Mist and the Adrenaline player character keep their own sheets
+ * without one (the Adrenaline notes sit in the identity, on the back of the sheet); Urban Shadows
+ * and Monsterhearts print the notes in a region of their back, so no page of theirs is a notes page.
  * Which sheet is in the scope is a decision of the product; what the pages of a sheet are, and
  * which one holds the notes, is read from the pages it declares, which the packs publish.
  */
@@ -44,10 +45,8 @@ const WITH_NOTES = new Set([
     'pbta.playbook',
     'masks.playbook',
     'the-sprawl.playbook',
-    'urban-shadows.playbook',
-    'monsterhearts.playbook',
 ])
-const WITHOUT_NOTES = /^(city|legend|adrenaline)\./
+const WITHOUT_NOTES = /^(city|legend|adrenaline|urban-shadows|monsterhearts)\./
 
 /** What is wrong with the notes page of a sheet, by name; nothing when the scope is held. */
 function notesScopeFindings(
@@ -155,6 +154,10 @@ check('notes scope', 'the rule names the sheet that breaks it', () => {
     assert.match(
         notesScopeFindings('adrenaline.pj', held)[0],
         /^adrenaline\.pj: prints a notes page/
+    )
+    assert.match(
+        notesScopeFindings('urban-shadows.playbook', held)[0],
+        /^urban-shadows\.playbook: prints a notes page/
     )
     assert.match(
         notesScopeFindings('city.danger', held)[0],

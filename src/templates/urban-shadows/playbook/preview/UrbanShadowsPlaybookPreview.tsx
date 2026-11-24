@@ -1,15 +1,19 @@
 import { useUiText, type TranslationKey } from '@/i18n/text'
-import type { CSSProperties, ReactNode } from 'react'
 import {
-    NOTES_TARGET,
-    PlaybookNotesPage,
-} from '@/templates/pbta/shared/sessionNotes'
+    localizedHeading,
+    localizedLabel,
+} from '@/templates/pbta/shared/localizedLabel'
+import { NOTES_TARGET } from '@/templates/pbta/shared/sessionNotes'
+import { FoldablePage } from '@/templates/shared/FoldablePage'
+import { NotesRegion } from '@/templates/shared/notes/NotesRegion'
+import type { CSSProperties, ReactNode } from 'react'
 import appearance from 'schema-pbta/packs/urban-shadows/appearance-contract.json'
-import brushFontUrl from 'schema-pbta/packs/urban-shadows/assets/fonts/caveat-brush-400-normal.woff2'
+import brushFontUrl from 'schema-pbta/packs/urban-shadows/assets/fonts/protest-revolution-latin-400-normal.woff2'
 import displayFontUrl from 'schema-pbta/packs/urban-shadows/assets/fonts/league-gothic-latin-400-normal.woff2'
 import textFontUrl from 'schema-pbta/packs/urban-shadows/assets/fonts/source-serif-4-latin-400-normal.woff2'
 import textBoldFontUrl from 'schema-pbta/packs/urban-shadows/assets/fonts/source-serif-4-latin-700-normal.woff2'
 import 'schema-pbta/packs/urban-shadows/assets/styles/playbook.css'
+import '../../../pbta/preview/playbookPages.css'
 import '../../../pbta/preview/playbookRegionInteraction.css'
 import {
     useUrbanShadowsPlaybookStore,
@@ -51,7 +55,15 @@ type Context = { playbook: UrbanShadowsPlaybook; text: Text }
 type Renderer = (context: Context, id: RegionId) => ReactNode
 
 const signed = (value: number) => (value > 0 ? `+${value}` : String(value))
-const label = (id: RegionId) => regionById(id)?.label ?? id
+/** An editorial heading kept as the player wrote it, unless it is only the published label. */
+const headingOf = (id: RegionId, typed: string) => {
+    const published = regionById(id)?.label
+    return published ? localizedHeading(published, typed) : typed
+}
+const label = (id: RegionId) => {
+    const published = regionById(id)?.label
+    return published ? localizedLabel(published) : id
+}
 
 /** Stats and Circles are keys of the document; the interface language names them. */
 const KNOWN_TERMS = [
@@ -191,24 +203,35 @@ const RENDERERS: Record<string, Renderer> = {
             <h2>{playbook.name}</h2>
             <p>{playbook.description}</p>
             <div className="handbook-urban-shadows-identity-bar">
-                {(['name', 'demeanor', 'look'] as const).map((key) => (
+                {(
+                    [
+                        ['name', playbook.characterName],
+                        ['demeanor', playbook.demeanor],
+                        ['look', playbook.look],
+                    ] as const
+                ).map(([key, typed]) => (
                     <p key={key}>
                         <span className="handbook-urban-shadows-label">
                             {text(`pbta:urbanShadows.identity.${key}`)} :
                         </span>
-                        <Fill />
+                        {typed ? <span>{typed}</span> : <Fill />}
                     </p>
                 ))}
             </div>
-            {/^https:\/\//i.test(playbook.playbookImage?.trim() ?? '') ? (
-                <img src={playbook.playbookImage?.trim()} alt={playbook.name} />
-            ) : null}
         </>
     ),
+    /* The picture of the playbook has a region of its own, under the identity text of the first column. */
+    'urban-shadows-illustration': ({ playbook, text }) =>
+        /^https:\/\//i.test(playbook.playbookImage?.trim() ?? '') ? (
+            <img src={playbook.playbookImage?.trim()} alt={playbook.name} />
+        ) : (
+            /* Without a picture the zone stays visible, so a click on it opens the field to fill in. */
+            <span>{text('pbta:urbanShadows.preview.illustrationMissing')}</span>
+        ),
     'urban-shadows-opening': ({ playbook }) => (
         <Paragraphs values={playbook.editorial.opening.paragraphs} />
     ),
-    'character-identity': ({ playbook }) => {
+    'character-identity': ({ playbook }, id) => {
         const lines = playbook.editorial.identity.paragraphs.map(
             (paragraph) => ({
                 paragraph,
@@ -217,7 +240,7 @@ const RENDERERS: Record<string, Renderer> = {
         )
         return (
             <>
-                <h3>{playbook.editorial.identity.heading}</h3>
+                <h3>{headingOf(id, playbook.editorial.identity.heading)}</h3>
                 {lines
                     .filter((line) => !line.labelled)
                     .map((line, index) => (
@@ -405,25 +428,8 @@ const RENDERERS: Record<string, Renderer> = {
             <p>{playbook.endMove}</p>
         </>
     ),
-    /* Creation is edited here, so the questions are shown; the printed sheet keeps only the answers. */
-    'urban-shadows-creation': ({ playbook }, id) =>
-        playbook.creation?.length ? (
-            <>
-                <h3>{label(id)}</h3>
-                {playbook.creation.map((question, index) => (
-                    <p key={index}>
-                        <strong>{question.label}</strong>{' '}
-                        {question.options
-                            .map((option) =>
-                                typeof option === 'string'
-                                    ? option
-                                    : option.label
-                            )
-                            .join(', ')}
-                    </p>
-                ))}
-            </>
-        ) : null,
+    /* Creation is a construction aid: it is edited from the panel and never drawn on the sheet, which keeps only the answers. */
+    'urban-shadows-creation': () => null,
     'urban-shadows-debts': ({ playbook }, id) => (
         <>
             <h3>{label(id)}</h3>
@@ -518,11 +524,15 @@ const RENDERERS: Record<string, Renderer> = {
             ) : null}
         </>
     ),
-    'urban-shadows-play': ({ playbook }) => (
+    'urban-shadows-play': ({ playbook }, id) => (
         <>
-            <h3>{playbook.editorial.playAdvice.heading}</h3>
+            <h3>{headingOf(id, playbook.editorial.playAdvice.heading)}</h3>
             <Paragraphs values={playbook.editorial.playAdvice.paragraphs} />
         </>
+    ),
+    /* The notes of the game: a region of the back, always drawn so the player can write in it. */
+    'urban-shadows-notes': ({ playbook }, id) => (
+        <NotesRegion title={label(id)} value={playbook.sessionNotes} />
     ),
 }
 
@@ -538,7 +548,14 @@ export function UrbanShadowsPlaybookPreview() {
         const content = RENDERERS[id]?.({ playbook, text }, id)
         if (!content) return null
         const open = () =>
-            openSheet({ kind: id === 'game-identity' ? 'basic' : id })
+            openSheet({
+                kind:
+                    id === 'game-identity'
+                        ? 'basic'
+                        : id === 'urban-shadows-notes'
+                          ? NOTES_TARGET
+                          : id,
+            })
         return (
             <section
                 key={id}
@@ -609,37 +626,43 @@ export function UrbanShadowsPlaybookPreview() {
     return (
         <>
             <style>{fontFaces}</style>
-            <article
-                className="handbook-pbta-playbook handbook-urban-shadows-playbook"
-                style={{
-                    ...tokens,
-                    transform: `scale(${view.zoom})`,
-                    transformOrigin: 'top left',
-                }}
-            >
-                {faces.map(({ face, children }) => (
-                    <div
-                        key={face}
-                        className="handbook-urban-shadows-face"
-                        data-face={face}
-                        data-export-page={face}
-                    >
-                        {children}
-                    </div>
-                ))}
-            </article>
-            {/* The notes page: one more sheet on the same paper, after the faces. */}
-            <PlaybookNotesPage
-                target="urban-shadows-playbook"
-                value={playbook.sessionNotes}
-                className="handbook-pbta-playbook handbook-urban-shadows-playbook"
-                style={{
-                    ...tokens,
-                    transform: `scale(${view.zoom})`,
-                    transformOrigin: 'top left',
-                }}
-                onOpen={() => openSheet({ kind: NOTES_TARGET })}
-            />
+            {/* One sheet per face, as on paper: the back is a page of its own. */}
+            <div className="lantern-pbta-pages">
+                {faces.map(({ face, children }) => {
+                    const page = (
+                        <article
+                            className="handbook-pbta-playbook handbook-urban-shadows-playbook"
+                            data-face={face}
+                            data-export-page={face}
+                            style={{
+                                ...tokens,
+                                transform: `scale(${view.zoom})`,
+                                transformOrigin: 'top left',
+                            }}
+                        >
+                            <div className="handbook-urban-shadows-face">
+                                {children}
+                            </div>
+                        </article>
+                    )
+                    /* The back is folded by default and unfolds on demand, as the folding sections of the Adrenaline sheet. */
+                    return face === 'verso' ? (
+                        <FoldablePage
+                            key={face}
+                            label={text('pbta:urbanShadows.preview.faceVerso')}
+                        >
+                            {page}
+                        </FoldablePage>
+                    ) : (
+                        <div key={face} className="lantern-pbta-page">
+                            <p className="lantern-pbta-page-label">
+                                {text('pbta:urbanShadows.preview.faceRecto')}
+                            </p>
+                            {page}
+                        </div>
+                    )
+                })}
+            </div>
         </>
     )
 }

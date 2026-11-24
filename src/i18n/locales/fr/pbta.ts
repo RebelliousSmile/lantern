@@ -103,6 +103,15 @@ const pbta: ResourceShape<typeof en> = {
             name: 'Nom',
             description: 'Description',
         },
+        itemNames: {
+            creation: 'Question de création',
+            options: 'Option',
+            backstory: 'Ligne d’historique',
+            statProfiles: 'Profil de caractéristiques',
+            startingMoves: 'Action de départ',
+            gear: 'Pièce d’équipement',
+            tags: 'Étiquette',
+        },
         defaults: {
             condition: 'Nouvel état',
             play: 'Conseils pour jouer cette mue.',
@@ -166,8 +175,14 @@ const pbta: ResourceShape<typeof en> = {
             advances: 'Avancées de corruption',
             track: 'Cases de corruption',
         },
+        preview: {
+            illustrationMissing: 'Illustration à ajouter',
+            faceRecto: 'Recto',
+            faceVerso: 'Verso',
+        },
         editor: {
             hint: 'Cliquez sur une région de la fiche pour la modifier.',
+            openCreation: 'Questions de création (non imprimées)',
             gameRequired:
                 'Ouvrez la définition de jeu Urban Shadows pour appliquer une réponse de création.',
             apply: 'Appliquer la sélection',
@@ -178,6 +193,9 @@ const pbta: ResourceShape<typeof en> = {
         },
         fields: {
             name: 'Nom',
+            characterName: 'Nom (pronoms)',
+            demeanor: 'Attitude',
+            look: 'Apparence',
             description: 'Description',
             playbookImage: 'Illustration (adresse https)',
             heading: 'Titre',
@@ -215,7 +233,7 @@ const pbta: ResourceShape<typeof en> = {
             options: 'Options',
             value: 'Valeur',
             statProfiles: 'Profils de caractéristiques',
-            key: 'Clé',
+            key: 'Identifiant technique (non imprimé)',
             choiceSets: 'Jeux de choix',
             title: 'Titre',
             type: 'Type (single ou multi)',
@@ -234,6 +252,28 @@ const pbta: ResourceShape<typeof en> = {
             quantity: 'Quantité',
             tags: 'Étiquettes',
         },
+        itemNames: {
+            startingMoves: 'Action de départ',
+            advancementCircles: 'Cercle',
+            markedCircles: 'Cercle coché',
+            laterAdvancement: 'Progression tardive',
+            scars: 'Séquelle',
+            letItOut: 'Ligne',
+            debts: 'Dette',
+            creation: 'Question de création',
+            options: 'Option',
+            statProfiles: 'Profil de caractéristiques',
+            choiceSets: 'Jeu de choix',
+            choices: 'Choix',
+            mortalRelationships: 'Relation mortelle',
+            extras: 'Encadré',
+            items: 'Élément',
+            gear: 'Pièce d’équipement',
+            tags: 'Étiquette',
+        },
+    },
+    sheet: {
+        verso: 'Verso',
     },
     masks: {
         editor: {

@@ -39,6 +39,8 @@ for (const [id, target] of Object.entries(BOOKLETS)) {
     if (!published) continue
     const example = definition.createExample() as Record<string, unknown>
 
+    /* A booklet either ends with one notes page, or prints its notes in a region of the back. */
+    const hasNotesPage = published.some((page) => page.notes_field)
     check(id, 'declared pages are the published ones, notes last', () => {
         const declared = definition.export.pages!(example)
         assert.deepEqual(
@@ -49,7 +51,9 @@ for (const [id, target] of Object.entries(BOOKLETS)) {
             declared.map((page) => Boolean(page.notes)),
             published.map((page) => Boolean(page.notes_field))
         )
-        assert.equal(declared[declared.length - 1].notes, true)
+        if (hasNotesPage)
+            assert.equal(declared[declared.length - 1].notes, true)
+        else assert.ok(!declared.some((page) => page.notes), 'a notes page')
     })
 
     check(id, 'the pack holds the notes to the shared capacity', () =>
@@ -82,6 +86,14 @@ for (const [id, target] of Object.entries(BOOKLETS)) {
         const drawn: string[] = []
         const re = /data-export-page="([^"]+)"/g
         for (let m = re.exec(html); m; m = re.exec(html)) drawn.push(m[1])
+        if (!hasNotesPage)
+            check(id, 'the notes are a region of the back, drawn even when blank', () => {
+                const region = new RegExp(
+                    `data-region="${id.split('.')[0]}-notes"`
+                )
+                assert.ok(region.test(html), 'no notes region in the preview')
+                assert.ok(!html.includes('lantern-notes-page'), 'a notes page')
+            })
         check(id, 'every published page is drawn once', () => {
             const own = drawn.filter((page) =>
                 published.some((candidate) => candidate.id === page)

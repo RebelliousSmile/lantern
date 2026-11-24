@@ -1,5 +1,5 @@
-import contract from 'schema-pbta/packs/urban-shadows/presentation-contract.json'
 import { NOTES_TARGET } from '@/templates/pbta/shared/sessionNotes'
+import contract from 'schema-pbta/packs/urban-shadows/presentation-contract.json'
 import type { UrbanShadowsPlaybook as PublishedUrbanShadowsPlaybook } from './schema'
 
 /** The document is the published one: every field a region of the contract holds is there. */

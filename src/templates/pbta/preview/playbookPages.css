@@ -1,0 +1,24 @@
+/*
+ * The sheets of a PbtaPlaybook preview: one card per printed face, so the back
+ * reads as a page of its own, and an editing aid kept apart from the paper.
+ * Dressing (fonts, paper, columns) comes from the published `playbook.css`.
+ */
+.lantern-pbta-pages {
+    display: grid;
+    gap: 1.5rem;
+}
+
+.lantern-pbta-page-label {
+    opacity: 0.55;
+    margin: 0;
+    font:
+        600 0.7rem/1 system-ui,
+        sans-serif;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.lantern-pbta-page {
+    display: grid;
+    gap: 0.4rem;
+}

@@ -1,4 +1,11 @@
 import {
+    localizedHeading,
+    localizedLabel,
+} from '@/templates/pbta/shared/localizedLabel'
+import { NOTES_TARGET } from '@/templates/pbta/shared/sessionNotes'
+import { FoldablePage } from '@/templates/shared/FoldablePage'
+import { NotesRegion } from '@/templates/shared/notes/NotesRegion'
+import {
     Fragment,
     type CSSProperties,
     type KeyboardEvent,
@@ -20,11 +27,6 @@ import imFellDoublePicaUrl from 'schema-pbta/packs/monsterhearts/assets/fonts/im
 import yellowMagicianUrl from 'schema-pbta/packs/monsterhearts/assets/fonts/yellow-magician-latin-400-normal.woff2'
 import 'schema-pbta/packs/monsterhearts/assets/styles/playbook.css'
 import { PBTA_MONSTERHEARTS_APPEARANCE_ASSET_URLS } from 'schema-pbta/presentation/monsterhearts-appearance-assets'
-import {
-    NOTES_TARGET,
-    PlaybookNotesPage,
-    sheetPageIdOf,
-} from '@/templates/pbta/shared/sessionNotes'
 import '../../../pbta/preview/playbookRegionInteraction.css'
 import {
     useMonsterheartsSheet,
@@ -42,7 +44,7 @@ import type { MonsterheartsPlaybook, SectionId } from '../model'
  */
 
 type MoveEntry = MonsterheartsPlaybook['moves'][number]
-type Panel = SectionId | 'basic'
+type Panel = SectionId | 'basic' | typeof NOTES_TARGET
 
 const viteAssetUrls = new Map([
     [
@@ -104,7 +106,20 @@ export function getMonsterheartsRegionLayout(
 export const getMonsterheartsRegionLabel = (
     id: PbtaMonsterheartsRegionId,
     presentation: PbtaMonsterheartsPlaybookPresentation = PBTA_MONSTERHEARTS_PLAYBOOK_PRESENTATION
-) => presentation.regions.find((region) => region.id === id)?.label ?? id
+) => {
+    const published = presentation.regions.find(
+        (region) => region.id === id
+    )?.label
+    return published ? localizedLabel(published) : id
+}
+
+/** An editorial heading kept as the player wrote it, unless it is only the published label. */
+const headingOf = (id: PbtaMonsterheartsRegionId, typed: string) => {
+    const published = PBTA_MONSTERHEARTS_PLAYBOOK_PRESENTATION.regions.find(
+        (region) => region.id === id
+    )?.label
+    return published ? localizedHeading(published, typed) : typed
+}
 
 function foldText(value: string) {
     return value.toLocaleLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
@@ -262,7 +277,7 @@ export function MonsterheartsPlaybookPreview() {
     const editorialRegion = (
         id: PbtaMonsterheartsRegionId,
         block: { heading: string; paragraphs: string[] } | undefined,
-        heading = block?.heading
+        heading = block ? headingOf(id, block.heading) : undefined
     ) =>
         block && isVisible('editorial')
             ? region(
@@ -328,7 +343,7 @@ export function MonsterheartsPlaybookPreview() {
                     </>
                 ) : null}
             </>,
-            editorial.identity.heading
+            headingOf(id, editorial.identity.heading)
         )
     }
 
@@ -494,7 +509,7 @@ export function MonsterheartsPlaybookPreview() {
                     </>
                 ) : null}
             </>,
-            editorial.progression.heading
+            headingOf(id, editorial.progression.heading)
         )
 
     /* An empty list is drawn only while editing, so that it can be filled;
@@ -548,6 +563,16 @@ export function MonsterheartsPlaybookPreview() {
                     </div>,
                     getMonsterheartsRegionLabel(id)
                 )
+            case 'monsterhearts-notes':
+                /* The notes of the game: a region of the back, always drawn so the player can write in it. */
+                return region(
+                    id,
+                    NOTES_TARGET,
+                    <NotesRegion
+                        title={getMonsterheartsRegionLabel(id)}
+                        value={playbook.sessionNotes}
+                    />
+                )
             case 'gear': {
                 const gear = playbook.gear ?? []
                 if (!isVisible('gear') || (!gear.length && !editing))
@@ -588,6 +613,23 @@ export function MonsterheartsPlaybookPreview() {
         transformOrigin: 'top left',
     } as CSSProperties
 
+    /* One printed page per face the contract names (recto, verso): a row belongs to the page of its first region. */
+    const faceOf = (id: PbtaMonsterheartsRegionId) =>
+        PBTA_MONSTERHEARTS_PLAYBOOK_PRESENTATION.regions.find(
+            (candidate) => candidate.id === id
+        )?.group === 'notes'
+            ? 'verso'
+            : 'recto'
+    const faces = (['recto', 'verso'] as const)
+        .map((face) => ({
+            face,
+            rows: layout.rows
+                .map((columns, index) => ({ columns, index }))
+                .filter(({ columns }) => faceOf(columns[0][0]) === face),
+            trailing: layout.trailing.filter((id) => faceOf(id) === face),
+        }))
+        .filter(({ rows, trailing }) => rows.length || trailing.length)
+
     return (
         <>
             <style>
@@ -600,40 +642,45 @@ export function MonsterheartsPlaybookPreview() {
             </style>
             {/* The page width and the zoom belong to the host; every dressing
                 value comes from the published stylesheet. */}
-            <article
-                className="handbook-pbta-playbook handbook-monsterhearts-playbook"
-                data-appearance-variant={appearance.id}
-                data-export-page={sheetPageIdOf('monsterhearts-playbook')}
-                style={sheetStyle}
-            >
-                {layout.rows.map((columns, rowIndex) => (
-                    <div
-                        key={rowIndex}
-                        className="handbook-monsterhearts-layout-row"
-                        data-row={rowIndex + 1}
+            {faces.map(({ face, rows, trailing }) => {
+                const page = (
+                    <article
+                        className="handbook-pbta-playbook handbook-monsterhearts-playbook"
+                        data-appearance-variant={appearance.id}
+                        data-face={face}
+                        data-export-page={face}
+                        style={sheetStyle}
                     >
-                        {columns.map((ids, columnIndex) => (
+                        {rows.map(({ columns, index }) => (
                             <div
-                                key={columnIndex}
-                                className="handbook-monsterhearts-column"
-                                data-column={columnIndex + 1}
+                                key={index}
+                                className="handbook-monsterhearts-layout-row"
+                                data-row={index + 1}
                             >
-                                {ids.map(renderRegion)}
+                                {columns.map((ids, columnIndex) => (
+                                    <div
+                                        key={columnIndex}
+                                        className="handbook-monsterhearts-column"
+                                        data-column={columnIndex + 1}
+                                    >
+                                        {ids.map(renderRegion)}
+                                    </div>
+                                ))}
                             </div>
                         ))}
-                    </div>
-                ))}
-                {/* Regions the contract leaves out of every row follow in canonical order. */}
-                {layout.trailing.map(renderRegion)}
-            </article>
-            {/* The notes page: one more sheet on the same paper, after the sheet. */}
-            <PlaybookNotesPage
-                target="monsterhearts-playbook"
-                value={playbook.sessionNotes}
-                className="handbook-pbta-playbook handbook-monsterhearts-playbook"
-                style={sheetStyle}
-                onOpen={() => open(NOTES_TARGET)}
-            />
+                        {/* Regions the contract leaves out of every row follow in canonical order. */}
+                        {trailing.map(renderRegion)}
+                    </article>
+                )
+                /* The back is folded by default and unfolds on demand. */
+                return face === 'verso' ? (
+                    <FoldablePage key={face} label={t('pbta:sheet.verso')}>
+                        {page}
+                    </FoldablePage>
+                ) : (
+                    <Fragment key={face}>{page}</Fragment>
+                )
+            })}
         </>
     )
 }

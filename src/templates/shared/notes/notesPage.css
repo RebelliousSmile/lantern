@@ -22,3 +22,15 @@
     overflow-wrap: anywhere;
     cursor: text;
 }
+
+/*
+ * Les notes de partie comme région du verso : une zone de hauteur fixe, dont le texte ne déborde
+ * jamais. L'éditeur mesure le texte contre ce corps ; ici le débordement est coupé par sécurité.
+ */
+.lantern-notes-region__body {
+    height: 22rem;
+    overflow: hidden;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    cursor: text;
+}

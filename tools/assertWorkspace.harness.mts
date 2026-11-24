@@ -6,6 +6,7 @@ import {
     setVisibility,
     toggleVisibility,
 } from '../src/templates/shared/visibility'
+import { localizedLabel } from '../src/templates/pbta/shared/localizedLabel'
 import { cloneValue } from '../src/utils/clone'
 
 const visibilityDefaults = { moves: false, gear: true }
@@ -167,10 +168,23 @@ assert.ok(
         monsterheartsLayout.rows.flat(2).includes('ascendants-and-conditions'),
     'Monsterhearts places the published play and ascendants-and-conditions regions'
 )
+const publishedPlay = PBTA_MONSTERHEARTS_PLAYBOOK_PRESENTATION.regions.find(
+    (region) => region.id === 'monsterhearts-play'
+)!.label
+assert.equal(
+    localizedLabel(publishedPlay, 'fr'),
+    'Jouer la mue',
+    'a published label is read in French in a French interface'
+)
+assert.notEqual(
+    localizedLabel(publishedPlay, 'en'),
+    localizedLabel(publishedPlay, 'fr'),
+    'a published label is read in English in any other interface'
+)
 assert.equal(
     getMonsterheartsRegionLabel('monsterhearts-play'),
-    'Jouer la mue',
-    'region labels come from the published presentation'
+    localizedLabel(publishedPlay),
+    'region labels come from the published presentation, in the interface language'
 )
 assert.equal(
     MONSTERHEARTS_MAX_MOVES,

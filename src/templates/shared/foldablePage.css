@@ -1,0 +1,44 @@
+/* A folding page: its label is the handle, folded by default. */
+.lantern-foldable-page {
+    display: grid;
+    gap: 0.4rem;
+}
+
+.lantern-foldable-page__handle {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    cursor: pointer;
+    text-align: left;
+    font: 600 0.7rem/1 system-ui, sans-serif;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: 0.55;
+}
+
+.lantern-foldable-page__handle::before {
+    content: '▸ ';
+}
+
+.lantern-foldable-page__handle[aria-expanded='true']::before {
+    content: '▾ ';
+}
+
+/* Folded: the page keeps its size (an export measures it) but takes no room on screen. */
+.lantern-foldable-page[data-folded] > .lantern-foldable-page__body {
+    height: 0;
+    overflow: hidden;
+}
+
+@media print {
+    .lantern-foldable-page[data-folded] > .lantern-foldable-page__body {
+        height: auto;
+        overflow: visible;
+    }
+
+    .lantern-foldable-page__handle {
+        display: none;
+    }
+}
