@@ -5,6 +5,14 @@ All notable changes to this project are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.36.0] - 2026-11-24
+
+### Changed
+
+- The Urban Shadows playbook adopts the contract v16: the labels follow the interface language, the header is editable, and the game notes are the back of the sheet.
+- The Urban Shadows titles are drawn with the Protest Revolution brush (uppercase, purple, slanted).
+- The Urban Shadows, Monsterhearts and The Sprawl list editors share one set of descriptor factories, and each list names its own item.
+
 ## [v0.35.1] - 2026-11-23
 
 ### Fixed
