@@ -8,6 +8,7 @@ import type {
     ObjectDescriptor,
 } from '@/core/editor-schema/types'
 import { ChevronDown, ChevronUp, X } from 'lucide-react'
+import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
     PBTA_COLLECTION_ITEM_EDITORS,
@@ -18,6 +19,10 @@ import {
 import { ChoiceSetsEditor } from '../playbook/editor/ChoiceSetsEditor'
 import { MovesEditor } from '../playbook/editor/MovesEditor'
 import type { ChoiceSet, MoveEntry } from '../playbook/model'
+import {
+    EquipmentItemEditor,
+    NamedObjectItemEditor,
+} from './equipmentItemEditors'
 
 export type CollectionAdapterProps = {
     presentation: PbtaCollectionPresentation
@@ -108,6 +113,8 @@ function blankItem(
         case 'pbta-creation-question':
             return { label: 'New question', options: [] }
         case 'pbta-gear':
+        case 'pbta-equipment':
+        case 'pbta-named-object':
             return { name: 'New gear' }
         case 'pbta-relationship':
             return { key: 'new-relationship', label: 'New relationship' }
@@ -122,6 +129,14 @@ function blankItem(
     }
 }
 
+type GenericProps = CollectionAdapterProps & {
+    /** An editor of the item's own, in place of the one inferred from its keys. */
+    renderItem?: (
+        item: Record<string, unknown>,
+        update: (next: Record<string, unknown>) => void
+    ) => ReactNode
+}
+
 function GenericCollectionAdapter({
     presentation,
     items,
@@ -129,7 +144,8 @@ function GenericCollectionAdapter({
     labelFor,
     maxItems,
     createItem,
-}: CollectionAdapterProps) {
+    renderItem,
+}: GenericProps) {
     const { t } = useTranslation()
     const full = maxItems !== undefined && items.length >= maxItems
     const mutable = presentation.cardinality === 'mutable'
@@ -247,6 +263,13 @@ function GenericCollectionAdapter({
                         />
                     ) : item &&
                       typeof item === 'object' &&
+                      !Array.isArray(item) &&
+                      renderItem ? (
+                        renderItem(item as Record<string, unknown>, (next) =>
+                            update(index, next)
+                        )
+                    ) : item &&
+                      typeof item === 'object' &&
                       !Array.isArray(item) ? (
                         <SchemaEditor
                             schema={schemaFor(item as Record<string, unknown>)}
@@ -335,6 +358,24 @@ const generic = (props: CollectionAdapterProps) => (
     <GenericCollectionAdapter {...props} />
 )
 
+const equipment = (props: CollectionAdapterProps) => (
+    <GenericCollectionAdapter
+        {...props}
+        renderItem={(item, update) => (
+            <EquipmentItemEditor item={item} update={update} />
+        )}
+    />
+)
+
+const namedObject = (props: CollectionAdapterProps) => (
+    <GenericCollectionAdapter
+        {...props}
+        renderItem={(item, update) => (
+            <NamedObjectItemEditor item={item} update={update} />
+        )}
+    />
+)
+
 export const PBTA_COLLECTION_ADAPTERS = {
     'pbta-ascendant': generic,
     'pbta-advancement': generic,
@@ -343,8 +384,10 @@ export const PBTA_COLLECTION_ADAPTERS = {
     'pbta-condition': generic,
     'pbta-creation-option': generic,
     'pbta-creation-question': generic,
+    'pbta-equipment': equipment,
     'pbta-gear': generic,
     'pbta-move': MovesAdapter,
+    'pbta-named-object': namedObject,
     'pbta-relationship': generic,
     'pbta-scar': generic,
     'pbta-stat-profile': generic,

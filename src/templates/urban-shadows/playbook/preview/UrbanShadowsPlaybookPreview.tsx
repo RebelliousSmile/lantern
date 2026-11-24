@@ -15,6 +15,7 @@ import textBoldFontUrl from 'schema-pbta/packs/urban-shadows/assets/fonts/source
 import 'schema-pbta/packs/urban-shadows/assets/styles/playbook.css'
 import '../../../pbta/preview/playbookPages.css'
 import '../../../pbta/preview/playbookRegionInteraction.css'
+import { gearLine } from '../gearLine'
 import {
     useUrbanShadowsPlaybookStore,
     useUrbanShadowsSheetStore,
@@ -160,16 +161,10 @@ function Marks({
     )
 }
 
-function MoveCard({
-    move,
-    startingMoves,
-}: {
-    move: Move
-    startingMoves: readonly string[]
-}) {
+function MoveCard({ move }: { move: Move }) {
     const name = 'ref' in move ? move.ref : move.name
-    const acquired =
-        move.checked ?? ('ref' in move && startingMoves.includes(move.ref))
+    /* A move is acquired when the sheet says so: a bare reference is not. */
+    const acquired = move.checked === true
     return (
         <article
             className="handbook-urban-shadows-move"
@@ -325,11 +320,7 @@ const RENDERERS: Record<string, Renderer> = {
             <>
                 <h3>{label(id)}</h3>
                 {playbook.moves.map((move, index) => (
-                    <MoveCard
-                        key={index}
-                        move={move}
-                        startingMoves={playbook.startingMoves ?? []}
-                    />
+                    <MoveCard key={index} move={move} />
                 ))}
             </>
         ) : null,
@@ -490,11 +481,7 @@ const RENDERERS: Record<string, Renderer> = {
                 <h3>{label(id)}</h3>
                 <ul>
                     {playbook.gear.map((item, index) => (
-                        <li key={index}>
-                            {item.name}
-                            {item.quantity ? ` × ${item.quantity}` : ''}
-                            {item.description ? ` — ${item.description}` : ''}
-                        </li>
+                        <li key={index}>{gearLine(item)}</li>
                     ))}
                 </ul>
             </>

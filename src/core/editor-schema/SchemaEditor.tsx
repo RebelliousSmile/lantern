@@ -131,6 +131,14 @@ function Field({
             </Label>
         )
     }
+    if (descriptor.kind === 'object' && descriptor.bare)
+        return (
+            <SchemaEditor
+                schema={descriptor}
+                value={(value as Record<string, unknown>) ?? {}}
+                onChange={update}
+            />
+        )
     if (descriptor.kind === 'object')
         return (
             <fieldset className="space-y-3 rounded-md border p-3">
@@ -178,13 +186,21 @@ function CollectionField({
     const list = Array.isArray(entries) ? entries : []
     const replace = (next: unknown[]) => onChange(replaceAt(root, path, next))
     const text = useUiText()
+    const inline = descriptor.item.kind === 'scalar'
     return (
         <fieldset className="space-y-2 rounded-md border p-3">
             <legend className="px-1 text-sm font-medium">
                 {descriptor.label}
             </legend>
             {list.map((entry, index) => (
-                <div key={index} className="space-y-2 rounded border p-2">
+                <div
+                    key={index}
+                    className={
+                        inline
+                            ? 'flex items-start gap-1'
+                            : 'space-y-2 rounded border p-2'
+                    }
+                >
                     {descriptor.item.kind === 'object' ? (
                         <SchemaEditor
                             schema={descriptor.item}
@@ -198,20 +214,29 @@ function CollectionField({
                             }
                         />
                     ) : (
-                        <Field
-                            descriptor={descriptor.item}
-                            root={{ value: entry }}
-                            path={['value']}
-                            onChange={(next) =>
-                                replace(
-                                    list.map((item, itemIndex) =>
-                                        itemIndex === index ? next.value : item
+                        <div className="min-w-0 flex-1">
+                            <Field
+                                descriptor={descriptor.item}
+                                root={{ value: entry }}
+                                path={['value']}
+                                onChange={(next) =>
+                                    replace(
+                                        list.map((item, itemIndex) =>
+                                            itemIndex === index
+                                                ? next.value
+                                                : item
+                                        )
                                     )
-                                )
-                            }
-                        />
+                                }
+                            />
+                        </div>
                     )}
-                    <div className="flex gap-1">
+                    <div
+                        className={cn(
+                            'flex gap-1',
+                            inline && 'shrink-0 flex-col'
+                        )}
+                    >
                         {descriptor.reorderable ? (
                             <>
                                 <Button

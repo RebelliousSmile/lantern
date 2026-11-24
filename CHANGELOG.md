@@ -5,6 +5,14 @@ All notable changes to this project are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.37.0] - 2026-11-24
+
+### Changed
+
+- The Urban Shadows and Monsterhearts playbooks adopt the contract v17: the starting moves are gone, an action is acquired only by its `checked` flag, and the preview writes the gear the way the booklet does.
+- The Urban Shadows gear editor offers harm (a number or stun), armour (base or bonus), the range and the tags as choices read from the published vocabulary, with a free tag field for the rest; the quantity and the equipment type are gone.
+- The Monsterhearts gear editor is a name and a description.
+
 ## [v0.36.0] - 2026-11-24
 
 ### Changed

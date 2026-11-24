@@ -272,6 +272,22 @@ const pbta: ResourceShape<typeof en> = {
             tags: 'Étiquette',
         },
     },
+    equipment: {
+        name: 'Nom',
+        description: 'Description',
+        harm: 'Dégâts',
+        stun: 'Étourdissant (stun)',
+        armor: 'Armure',
+        armorMode: 'Type d’armure',
+        armorModes: {
+            base: 'Armure de base',
+            bonus: 'Bonus d’armure',
+        },
+        range: 'Portée',
+        tags: 'Étiquettes',
+        freeTag: 'Autre étiquette',
+        addTag: 'Ajouter l’étiquette',
+    },
     sheet: {
         verso: 'Verso',
     },

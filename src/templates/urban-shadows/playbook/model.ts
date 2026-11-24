@@ -48,7 +48,6 @@ export const blankPlaybook = (): UrbanShadowsPlaybook => ({
     statuses: {},
     attributes: {},
     moves: [],
-    startingMoves: [],
     mortalRelationships: [],
     harm: { armor: 0, faint: 1, serious: 1, critical: 1 },
     scars: [],

@@ -31,6 +31,8 @@ export type ScalarDescriptor = BaseDescriptor & {
 export type ObjectDescriptor = BaseDescriptor & {
     kind: 'object'
     fields: EditorDescriptor[]
+    /** Pure grouping for the data path: fields render without a bordered box or legend. */
+    bare?: boolean
 }
 
 export type CollectionDescriptor = BaseDescriptor & {

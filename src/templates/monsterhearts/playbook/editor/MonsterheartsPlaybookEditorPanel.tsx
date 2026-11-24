@@ -564,7 +564,6 @@ function PublishedFields({ fields }: { fields: string[] }) {
                 t('pbta:monsterhearts.sections.stats')
             ),
         ]),
-        startingMoves: strings('startingMoves'),
         strings: object(
             'strings',
             [
@@ -573,13 +572,6 @@ function PublishedFields({ fields }: { fields: string[] }) {
             ],
             t('pbta:monsterhearts.sections.strings')
         ),
-        gear: records('gear', [
-            scalar('name'),
-            scalar('equipmentType'),
-            scalar('description', 'textarea'),
-            scalar('quantity', 'number'),
-            strings('tags'),
-        ]),
         'editorial.progression': object(
             'editorial',
             [
@@ -786,13 +778,10 @@ export function MonsterheartsPlaybookEditorPanel() {
     }
     if (sheet.target === 'moves')
         return (
-            <div className="space-y-5">
-                <MonsterheartsCollection
-                    path="moves"
-                    maxItems={MONSTERHEARTS_MAX_MOVES}
-                />
-                <PublishedFields fields={['startingMoves']} />
-            </div>
+            <MonsterheartsCollection
+                path="moves"
+                maxItems={MONSTERHEARTS_MAX_MOVES}
+            />
         )
     if (sheet.target === 'stats')
         return (
@@ -816,7 +805,7 @@ export function MonsterheartsPlaybookEditorPanel() {
                 <MonsterheartsCollection path="ascendants" />
             </div>
         )
-    if (sheet.target === 'gear') return <PublishedFields fields={['gear']} />
+    if (sheet.target === 'gear') return <MonsterheartsCollection path="gear" />
     if (sheet.target === 'conditions') return <MonsterheartsConditionsEditor />
     return (
         <Label className="grid gap-1 text-sm">
@@ -861,6 +850,7 @@ function MonsterheartsCollection({
         ascendants: t('pbta:monsterhearts.sections.ascendants'),
         conditions: t('pbta:monsterhearts.sections.conditions'),
         advances: t('pbta:monsterhearts.sections.advances'),
+        gear: t('pbta:monsterhearts.sections.gear'),
     }
     const fieldLabels = {
         label: 'pbta:monsterhearts.fields.label',

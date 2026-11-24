@@ -269,6 +269,22 @@ const pbta = {
             tags: 'Tag',
         },
     },
+    equipment: {
+        name: 'Name',
+        description: 'Description',
+        harm: 'Harm',
+        stun: 'Stun',
+        armor: 'Armor',
+        armorMode: 'Armor type',
+        armorModes: {
+            base: 'Base armor',
+            bonus: 'Armor bonus',
+        },
+        range: 'Range',
+        tags: 'Tags',
+        freeTag: 'Other tag',
+        addTag: 'Add tag',
+    },
     sheet: {
         verso: 'Back',
     },

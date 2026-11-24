@@ -60,17 +60,24 @@ function descriptors(text: Text): Record<string, EditorDescriptor> {
             id,
             keys.map((key) => scalar(key, 'number', label(key)))
         )
-    const editorial = (id: string) =>
-        object('editorial', [
-            object(id, [
-                scalar('heading'),
-                list(
-                    'paragraphs',
-                    scalar('item', 'textarea', name('paragraph')),
-                    () => ''
-                ),
-            ]),
-        ])
+    // `editorial.<id>` only shapes the data path: both levels render bare so the
+    // panel shows the heading and the paragraphs, not nested boxes.
+    const editorial = (id: string) => ({
+        ...object('editorial', [
+            {
+                ...object(id, [
+                    scalar('heading'),
+                    list(
+                        'paragraphs',
+                        scalar('item', 'textarea', name('paragraph')),
+                        () => ''
+                    ),
+                ]),
+                bare: true,
+            },
+        ]),
+        bare: true,
+    })
 
     return {
         name: scalar('name'),
@@ -86,7 +93,6 @@ function descriptors(text: Text): Record<string, EditorDescriptor> {
         stats: numbers('stats', [...STATS, ...CIRCLES], term),
         statsDetail: scalar('statsDetail', 'textarea'),
         statuses: numbers('statuses', CIRCLES, term),
-        startingMoves: strings('startingMoves'),
         advancementCircles: strings('advancementCircles'),
         markedCircles: strings('markedCircles'),
         laterAdvancement: records('laterAdvancement', [
@@ -139,13 +145,6 @@ function descriptors(text: Text): Record<string, EditorDescriptor> {
             scalar('label'),
             scalar('text', 'textarea'),
             strings('items'),
-        ]),
-        gear: records('gear', [
-            scalar('name'),
-            scalar('equipmentType'),
-            scalar('description', 'textarea'),
-            scalar('quantity', 'number'),
-            strings('tags'),
         ]),
         corruption: object('corruption', [
             scalar(
@@ -238,6 +237,7 @@ export function UrbanShadowsPlaybookEditorPanel() {
         advancementCircles: () => <AdvancementCirclesEditor />,
         markedCircles: () => <MarkedCirclesEditor />,
         advancement: () => <UrbanCollection path="advancement" />,
+        gear: () => <UrbanCollection path="gear" />,
         corruption: () => (
             <>
                 <SchemaEditor
@@ -427,12 +427,16 @@ function UrbanCollection({ path }: { path: string }) {
         advancement: 'pbta:urbanShadows.fields.advancement',
         'corruption.advances': 'pbta:urbanShadows.corruption.advances',
         'corruption.moves': 'pbta:urbanShadows.corruption.moves',
+        gear: 'pbta:urbanShadows.fields.gear',
     }
     return (
         <section className="space-y-2">
             <h3 className="text-sm font-semibold">{text(heading[path])}</h3>
             <PublishedCollectionEditor
-                presentation={presentation}
+                presentation={{
+                    ...presentation,
+                    label: text(heading[path]),
+                }}
                 items={items}
                 onChange={(next) =>
                     setPlaybook(

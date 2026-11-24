@@ -160,16 +160,10 @@ function formatRoll(roll: { rollType: string; rollMod?: number }) {
     return `${roll.rollType} ${roll.rollMod >= 0 ? '+' : ''}${roll.rollMod}`
 }
 
-function MoveCard({
-    move,
-    startingMoves,
-}: {
-    move: MoveEntry
-    startingMoves: readonly string[]
-}) {
+function MoveCard({ move }: { move: MoveEntry }) {
     const { t } = useTranslation()
-    const acquired =
-        move.checked ?? ('ref' in move && startingMoves.includes(move.ref))
+    /* A move is acquired when the sheet says so: a bare reference is not. */
+    const acquired = move.checked === true
     const roll =
         'ref' in move || !move.roll
             ? null
@@ -486,7 +480,6 @@ export function MonsterheartsPlaybookPreview() {
                                 description: named[2],
                                 checked: false,
                             }}
-                            startingMoves={[]}
                         />
                     ) : (
                         <p key={index}>{paragraph}</p>
@@ -537,7 +530,6 @@ export function MonsterheartsPlaybookPreview() {
                               <MoveCard
                                   key={`${'ref' in move ? move.ref : move.name}-${index}`}
                                   move={move}
-                                  startingMoves={playbook.startingMoves ?? []}
                               />
                           ))
                         : empty('moves'),
@@ -584,7 +576,7 @@ export function MonsterheartsPlaybookPreview() {
                         <ul>
                             {gear.map((item, index) => (
                                 <li key={`${item.name}-${index}`}>
-                                    {`${item.name}${item.quantity ? ` × ${item.quantity}` : ''}${item.description ? ` — ${item.description}` : ''}`}
+                                    {`${item.name}${item.description ? ` — ${item.description}` : ''}`}
                                 </li>
                             ))}
                         </ul>
